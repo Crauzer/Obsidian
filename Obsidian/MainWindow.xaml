@@ -4,9 +4,76 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Obsidian"
+        xmlns:valueConverters="clr-namespace:Obsidian.ValueConverters"
         mc:Ignorable="d"
-        Title="Obsidian" Height="685" Width="1150" Icon="icon.ico" ResizeMode="CanMinimize">
+        Title="Obsidian" Height="685" Width="1150" Icon="icon.ico" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <valueConverters:SizeValueConverter x:Key="SizeValueConverter"/>
+        <valueConverters:HexStringValueConverter x:Key="HexStringValueConverter"/>
+        <Storyboard x:Key="blurIn">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.BitmapEffect).(BlurBitmapEffect.Radius)" Storyboard.TargetName="image">
+                <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="4"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="blurOut">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.BitmapEffect).(BlurBitmapEffect.Radius)" Storyboard.TargetName="image">
+                <EasingDoubleKeyFrame KeyTime="0" Value="4"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+    </Window.Resources>
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="UIElement.MouseEnter" SourceName="image">
+            <BeginStoryboard Storyboard="{StaticResource blurIn}"/>
+        </EventTrigger>
+        <EventTrigger RoutedEvent="UIElement.MouseLeave" SourceName="image">
+            <BeginStoryboard Storyboard="{StaticResource blurOut}"/>
+        </EventTrigger>
+    </Window.Triggers>
     <Grid>
-
+        <StackPanel Orientation="Vertical">
+            <Grid>
+                <DataGrid Height="500" x:Name="datagridWadEntries" Margin="10,10,10,0" AutoGenerateColumns="False" ItemsSource="{Binding Entries, NotifyOnSourceUpdated=True}" GridLinesVisibility="Vertical" VerticalGridLinesBrush="#7F000000" SelectedCellsChanged="datagridWadEntries_SelectedCellsChanged" BeginningEdit="datagridWadEntries_BeginningEdit">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Binding="{Binding XXHash, Converter={StaticResource HexStringValueConverter}}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Type" Binding="{Binding Type}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Size" Binding="{Binding UncompressedSize, Converter={StaticResource SizeValueConverter}}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="File Redirection" Binding="{Binding FileRedirection}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0" Height="136">
+                <StackPanel Orientation="Horizontal" Margin="10,10,0,10">
+                    <Image x:Name="image" Width="45" Source="icon.ico" Cursor="Hand">
+                        <Image.BitmapEffect>
+                            <BlurBitmapEffect Radius="0"/>
+                        </Image.BitmapEffect>
+                    </Image>
+                    <TextBlock Text="OBSIDIAN" FontSize="40" FontFamily="Microsoft JhengHei UI" TextDecorations="{x:Null}" FontWeight="Bold" TextAlignment="Center" Margin="5,35,0,0"/>
+                </StackPanel>
+                <Canvas Margin="15,0,0,0">
+                    <Line Stroke="DarkGray" StrokeThickness="4" Y1="136"/>
+                </Canvas>
+                <StackPanel Orientation="Horizontal" Margin="15,0,0,0">
+                    <GroupBox Header="IO">
+                        <StackPanel Orientation="Vertical" Margin="10">
+                            <Button x:Name="buttonOpenWadFile" Content="Open WAD File" Click="buttonOpenWadFile_Click" Height="31" Width="134"/>
+                            <Button x:Name="buttonSaveWadFile" Content="Save WAD File" Height="31" Width="134" Click="buttonSaveWadFile_Click" Margin="0,25,0,0"/>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Header="Modify" Margin="10,0,0,0 ">
+                        <StackPanel Orientation="Vertical" Margin="10">
+                            <Button x:Name="buttonModifyData" Content="Modfy Data" Height="31" Width="134" IsEnabled="False" Click="buttonModifyData_Click"/>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Header="Extract" Margin="10,0,0,0">
+                        <StackPanel Orientation="Vertical" Margin="10">
+                            <Button x:Name="buttonExtract" Content="Extract" Height="31" Width="134" IsEnabled="False" Click="buttonExtract_Click"/>
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </Window>
