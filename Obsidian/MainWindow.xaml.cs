@@ -33,6 +33,12 @@ namespace Obsidian
             InitializeComponent();
         }
 
+        private void image_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            AboutWindow aboutWindow = new AboutWindow();
+            aboutWindow.Show();
+        }
+
         private void buttonOpenWadFile_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();

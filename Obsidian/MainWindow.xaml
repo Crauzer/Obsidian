@@ -10,25 +10,25 @@
     <Window.Resources>
         <valueConverters:SizeValueConverter x:Key="SizeValueConverter"/>
         <valueConverters:HexStringValueConverter x:Key="HexStringValueConverter"/>
-        <Storyboard x:Key="blurIn">
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.BitmapEffect).(BlurBitmapEffect.Radius)" Storyboard.TargetName="image">
+        <Storyboard x:Key="shadowIn">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.BitmapEffect).(DropShadowBitmapEffect.ShadowDepth)" Storyboard.TargetName="image">
                 <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="4"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="5"/>
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
-        <Storyboard x:Key="blurOut">
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.BitmapEffect).(BlurBitmapEffect.Radius)" Storyboard.TargetName="image">
-                <EasingDoubleKeyFrame KeyTime="0" Value="4"/>
+        <Storyboard x:Key="shadowOut">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.BitmapEffect).(DropShadowBitmapEffect.ShadowDepth)" Storyboard.TargetName="image">
+                <EasingDoubleKeyFrame KeyTime="0" Value="5"/>
                 <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="0"/>
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
     </Window.Resources>
     <Window.Triggers>
         <EventTrigger RoutedEvent="UIElement.MouseEnter" SourceName="image">
-            <BeginStoryboard Storyboard="{StaticResource blurIn}"/>
+            <BeginStoryboard Storyboard="{StaticResource shadowIn}"/>
         </EventTrigger>
         <EventTrigger RoutedEvent="UIElement.MouseLeave" SourceName="image">
-            <BeginStoryboard Storyboard="{StaticResource blurOut}"/>
+            <BeginStoryboard Storyboard="{StaticResource shadowOut}"/>
         </EventTrigger>
     </Window.Triggers>
     <Grid>
@@ -45,12 +45,16 @@
             </Grid>
             <StackPanel Orientation="Horizontal" Margin="0,5,0,0" Height="136">
                 <StackPanel Orientation="Horizontal" Margin="10,10,0,10">
-                    <Image x:Name="image" Width="45" Source="icon.ico" Cursor="Hand">
+                    <Image x:Name="image" Width="45" Source="icon.ico" Cursor="Hand" MouseDown="image_MouseDown">
                         <Image.BitmapEffect>
-                            <BlurBitmapEffect Radius="0"/>
+                            <DropShadowBitmapEffect ShadowDepth="0"/>
                         </Image.BitmapEffect>
                     </Image>
-                    <TextBlock Text="OBSIDIAN" FontSize="40" FontFamily="Microsoft JhengHei UI" TextDecorations="{x:Null}" FontWeight="Bold" TextAlignment="Center" Margin="5,35,0,0"/>
+                    <TextBlock Text="OBSIDIAN" FontWeight="ExtraLight" FontSize="40" FontFamily="Segoe UI Light" TextDecorations="{x:Null}" TextAlignment="Center" Margin="5,30,0,0" FontStyle="Italic">
+                        <TextBlock.Effect>
+                            <DropShadowEffect ShadowDepth="2"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
                 </StackPanel>
                 <Canvas Margin="15,0,0,0">
                     <Line Stroke="DarkGray" StrokeThickness="4" Y1="136"/>
