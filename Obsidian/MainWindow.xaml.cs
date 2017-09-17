@@ -126,6 +126,8 @@ namespace Obsidian
                         Utilities.GetEntryExtension(Utilities.GetLeagueFileExtensionType(dataToWrite))),
                         dataToWrite);
                 }
+
+                MessageBox.Show("Extraction Succesfull!", "", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
     }
