@@ -1,8 +1,10 @@
 ﻿using Fantome.Libraries.League.Helpers.Utilities;
 using Fantome.Libraries.League.IO.WAD;
 using Microsoft.Win32;
+using Obsidian.Windows;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -28,6 +30,7 @@ namespace Obsidian
         public WADFile wad { get; set; }
         public WADEntry currentlySelectedEntry { get; set; }
 
+
         public MainWindow()
         {
             InitializeComponent();
@@ -49,8 +52,11 @@ namespace Obsidian
             if (dialog.ShowDialog() == true)
             {
                 this.wad = new WADFile(dialog.FileName);
+                this.buttonSaveWadFile.IsEnabled = true;
+                this.buttonAddFile.IsEnabled = true;
+                this.butonAddFileRedirection.IsEnabled = true;
                 this.currentlySelectedEntry = null;
-                this.datagridWadEntries.DataContext = wad;
+                this.datagridWadEntries.ItemsSource = this.wad.Entries;
             }
         }
 
@@ -73,6 +79,7 @@ namespace Obsidian
         {
             if (this.datagridWadEntries.SelectedItem != null && this.datagridWadEntries.SelectedItem is WADEntry)
             {
+                this.buttonRemoveEntry.IsEnabled = true;
                 if ((this.datagridWadEntries.SelectedItem as WADEntry).Type != EntryType.FileRedirection)
                 {
                     this.currentlySelectedEntry = this.datagridWadEntries.SelectedItem as WADEntry;
@@ -103,6 +110,30 @@ namespace Obsidian
             }
         }
 
+        private void buttonAddFile_Click(object sender, RoutedEventArgs e)
+        {
+            FileAddWindow fileAddWindow = new FileAddWindow(this);
+            fileAddWindow.Show();
+            this.IsEnabled = false;
+        }
+
+        private void butonAddFileRedirection_Click(object sender, RoutedEventArgs e)
+        {
+            FileRedirectionAddWindow fileRedirectionAddWindow = new FileRedirectionAddWindow(this);
+            fileRedirectionAddWindow.Show();
+            this.IsEnabled = false;
+        }
+
+        private void buttonRemoveEntry_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (WADEntry entry in this.datagridWadEntries.SelectedItems.Cast<WADEntry>())
+            {
+                this.wad.RemoveEntry(entry.XXHash);
+                this.datagridWadEntries.ItemsSource.Cast<WADEntry>().ToList().Remove(entry);
+            }
+            CollectionViewSource.GetDefaultView(this.datagridWadEntries.ItemsSource).Refresh();
+        }
+
         private void buttonModifyData_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
@@ -122,13 +153,14 @@ namespace Obsidian
 
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
+
                 foreach (WADEntry entry in this.datagridWadEntries.SelectedItems.Cast<WADEntry>().Where(x => x.Type != EntryType.FileRedirection))
                 {
                     byte[] dataToWrite = entry.GetContent(true);
 
                     File.WriteAllBytes(string.Format("{0}//{1}.{2}",
                         dialog.SelectedPath,
-                        Utilities.ByteArrayToHex(BitConverter.GetBytes(entry.XXHash)),
+                        Utilities.ByteArrayToHex(BitConverter.GetBytes(entry.XXHash), true),
                         Utilities.GetEntryExtension(Utilities.GetLeagueFileExtensionType(dataToWrite))),
                         dataToWrite);
                 }

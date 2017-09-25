@@ -1,0 +1,26 @@
+﻿<Window x:Class="Obsidian.Windows.FileAddWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Obsidian.Windows"
+        mc:Ignorable="d"
+        Title="Add Entry" Height="150" Width="750" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <StackPanel Orientation="Vertical" Margin="10">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="File: " TextAlignment="Center" Margin="0" FontSize="20"/>
+                <TextBox x:Name="textboxFile" Height="25" MinWidth="641" Margin="9,0,0,0" IsReadOnly="True"/>
+                <Button x:Name="buttonSelectFile" Margin="3,1,0,1" Width="29" Click="buttonSelectFile_Click"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Path: " TextAlignment="Center" Margin="0" FontSize="20"/>
+                <TextBox x:Name="textboxPath" Height="25" MinWidth="673"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="buttonAddEntry" Content="Add Entry" Margin="300,10,0,0" Height="28" Width="79" IsEnabled="False" Click="buttonAddEntry_Click"/>
+                <CheckBox x:Name="checkboxCompress" Content="Compress" FontSize="15" Margin="10,15,0,0" IsChecked="True"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

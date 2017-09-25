@@ -55,10 +55,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ValueConverters\HexStringValueConverter.cs" />
+    <Compile Include="ValueConverters\WadNameConverter.cs" />
     <Compile Include="ValueConverters\SizeValueConverter.cs" />
     <Compile Include="Windows\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\FileAddWindow.xaml.cs">
+      <DependentUpon>FileAddWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\FileRedirectionAddWindow.xaml.cs">
+      <DependentUpon>FileRedirectionAddWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -73,6 +79,14 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Windows\AboutWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\FileAddWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\FileRedirectionAddWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

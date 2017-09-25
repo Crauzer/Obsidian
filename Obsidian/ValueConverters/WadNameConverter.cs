@@ -5,11 +5,11 @@ using System.Windows.Data;
 
 namespace Obsidian.ValueConverters
 {
-    class HexStringValueConverter : IValueConverter
+    public class WadNameConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return Utilities.ByteArrayToHex(BitConverter.GetBytes((UInt64)value));
+            return Utilities.ByteArrayToHex(BitConverter.GetBytes((ulong)value), true);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
