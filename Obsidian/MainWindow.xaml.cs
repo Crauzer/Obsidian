@@ -27,8 +27,8 @@ namespace Obsidian
     /// </summary>
     public partial class MainWindow : Window
     {
-        public WADFile wad { get; set; }
-        public WADEntry currentlySelectedEntry { get; set; }
+        public WADFile Wad { get; set; }
+        public WADEntry CurrentlySelectedEntry { get; set; }
 
 
         public MainWindow()
@@ -36,13 +36,13 @@ namespace Obsidian
             InitializeComponent();
         }
 
-        private void image_MouseDown(object sender, MouseButtonEventArgs e)
+        private void Image_MouseDown(object sender, MouseButtonEventArgs e)
         {
             AboutWindow aboutWindow = new AboutWindow();
             aboutWindow.Show();
         }
 
-        private void buttonOpenWadFile_Click(object sender, RoutedEventArgs e)
+        private void ButtonOpenWadFile_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Title = "Select the WAD File you want to open";
@@ -51,16 +51,16 @@ namespace Obsidian
 
             if (dialog.ShowDialog() == true)
             {
-                this.wad = new WADFile(dialog.FileName);
+                this.Wad = new WADFile(dialog.FileName);
                 this.buttonSaveWadFile.IsEnabled = true;
                 this.buttonAddFile.IsEnabled = true;
                 this.butonAddFileRedirection.IsEnabled = true;
-                this.currentlySelectedEntry = null;
-                this.datagridWadEntries.ItemsSource = this.wad.Entries;
+                this.CurrentlySelectedEntry = null;
+                this.datagridWadEntries.ItemsSource = this.Wad.Entries;
             }
         }
 
-        private void buttonSaveWadFile_Click(object sender, RoutedEventArgs e)
+        private void ButtonSaveWadFile_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog dialog = new SaveFileDialog();
             dialog.Title = "Select the path to save your WAD File";
@@ -70,24 +70,24 @@ namespace Obsidian
             if (dialog.ShowDialog() == true)
             {
                 string filePath = dialog.FileName;
-                this.wad.Write(filePath);
+                this.Wad.Write(filePath);
                 MessageBox.Show("Writing Succesful!", "", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
-        private void datagridWadEntries_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
+        private void DatagridWadEntries_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
         {
             if (this.datagridWadEntries.SelectedItem != null && this.datagridWadEntries.SelectedItem is WADEntry)
             {
                 this.buttonRemoveEntry.IsEnabled = true;
                 if ((this.datagridWadEntries.SelectedItem as WADEntry).Type != EntryType.FileRedirection)
                 {
-                    this.currentlySelectedEntry = this.datagridWadEntries.SelectedItem as WADEntry;
+                    this.CurrentlySelectedEntry = this.datagridWadEntries.SelectedItem as WADEntry;
                     this.buttonModifyData.IsEnabled = true;
                 }
                 else
                 {
-                    this.currentlySelectedEntry = null;
+                    this.CurrentlySelectedEntry = null;
                     this.buttonModifyData.IsEnabled = false;
                 }
             }
@@ -102,7 +102,7 @@ namespace Obsidian
             }
         }
 
-        private void datagridWadEntries_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
+        private void DatagridWadEntries_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
         {
             if ((e.Row.DataContext as WADEntry).Type != EntryType.FileRedirection)
             {
@@ -110,31 +110,31 @@ namespace Obsidian
             }
         }
 
-        private void buttonAddFile_Click(object sender, RoutedEventArgs e)
+        private void ButtonAddFile_Click(object sender, RoutedEventArgs e)
         {
             FileAddWindow fileAddWindow = new FileAddWindow(this);
             fileAddWindow.Show();
             this.IsEnabled = false;
         }
 
-        private void butonAddFileRedirection_Click(object sender, RoutedEventArgs e)
+        private void ButonAddFileRedirection_Click(object sender, RoutedEventArgs e)
         {
             FileRedirectionAddWindow fileRedirectionAddWindow = new FileRedirectionAddWindow(this);
             fileRedirectionAddWindow.Show();
             this.IsEnabled = false;
         }
 
-        private void buttonRemoveEntry_Click(object sender, RoutedEventArgs e)
+        private void ButtonRemoveEntry_Click(object sender, RoutedEventArgs e)
         {
             foreach (WADEntry entry in this.datagridWadEntries.SelectedItems.Cast<WADEntry>())
             {
-                this.wad.RemoveEntry(entry.XXHash);
+                this.Wad.RemoveEntry(entry.XXHash);
                 this.datagridWadEntries.ItemsSource.Cast<WADEntry>().ToList().Remove(entry);
             }
             CollectionViewSource.GetDefaultView(this.datagridWadEntries.ItemsSource).Refresh();
         }
 
-        private void buttonModifyData_Click(object sender, RoutedEventArgs e)
+        private void ButtonModifyData_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Multiselect = false;
@@ -142,12 +142,13 @@ namespace Obsidian
 
             if (dialog.ShowDialog() == true)
             {
-                this.currentlySelectedEntry.EditData(File.ReadAllBytes(dialog.FileName));
+                this.CurrentlySelectedEntry.EditData(File.ReadAllBytes(dialog.FileName));
+                CollectionViewSource.GetDefaultView(this.datagridWadEntries.ItemsSource).Refresh();
                 MessageBox.Show("Entry Modified Succesfully!", "", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
-        private void buttonExtract_Click(object sender, RoutedEventArgs e)
+        private void ButtonExtract_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
 
