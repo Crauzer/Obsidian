@@ -1,10 +1,11 @@
-﻿using Fantome.Libraries.League.Helpers.Utilities;
+﻿using Fantome.Libraries.League.Helpers.Cryptography;
+using Fantome.Libraries.League.Helpers.Utilities;
+using Fantome.Libraries.League.IO.BIN;
 using Fantome.Libraries.League.IO.WAD;
 using Microsoft.Win32;
 using Obsidian.Windows;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,16 +13,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Threading;
-using Fantome.Libraries.League.IO.BIN;
-using Newtonsoft.Json;
-using Fantome.Libraries.League.Helpers.Cryptography;
 
 namespace Obsidian
 {
@@ -166,6 +158,15 @@ namespace Obsidian
                     this.CurrentlySelectedEntry = null;
                     this.buttonModifyData.IsEnabled = false;
                 }
+
+                string entryName = "";
+                using (XXHash64 xxHash = XXHash64.Create())
+                {
+                    entryName = this.StringDictionary.Find(x =>
+                    BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(x.ToLower())), 0) == (this.datagridWadEntries.SelectedItem as WADEntry).XXHash);
+                }
+
+                this.textBlockSelectedEntryName.Text = entryName;
             }
 
             if (this.datagridWadEntries.SelectedItems != null && this.datagridWadEntries.SelectedItems.Cast<WADEntry>().ToList().Exists(x => x.Type != EntryType.FileRedirection))
