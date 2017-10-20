@@ -83,7 +83,7 @@ namespace Obsidian
                             {
                                 wadEntryStrings.Add(binValue.Value as string);
                             }
-                            else if (
+                            else if(
                             binValue.Type == BINFileValueType.DoubleTypeList ||
                             binValue.Type == BINFileValueType.LargeStaticTypeList ||
                             binValue.Type == BINFileValueType.List ||
@@ -233,23 +233,24 @@ namespace Obsidian
 
                 foreach (WADEntry entry in this.datagridWadEntries.SelectedItems.Cast<WADEntry>().Where(x => x.Type != EntryType.FileRedirection))
                 {
-                    byte[] dataToWrite = entry.GetContent(true);
+                    byte[] entryData = entry.GetContent(true);
                     string entryName;
                     using (XXHash64 xxHash = XXHash64.Create())
                     {
                         entryName = this.StringDictionary.Find(x => BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(x.ToLower())), 0) == entry.XXHash);
                     }
 
-                    if(entryName == null)
+                    if (entryName == null)
                     {
                         entryName = Utilities.ByteArrayToHex(BitConverter.GetBytes(entry.XXHash), true);
+                        entryName += "." + Utilities.GetEntryExtension(Utilities.GetLeagueFileExtensionType(entryData));
                     }
                     else
                     {
                         Directory.CreateDirectory(string.Format("{0}//{1}", dialog.SelectedPath, System.IO.Path.GetDirectoryName(entryName)));
                     }
 
-                    File.WriteAllBytes(string.Format("{0}//{1}", dialog.SelectedPath, entryName), dataToWrite);
+                    File.WriteAllBytes(string.Format("{0}//{1}", dialog.SelectedPath, entryName), entryData);
                 }
 
                 MessageBox.Show("Extraction Succesfull!", "", MessageBoxButton.OK, MessageBoxImage.Information);
