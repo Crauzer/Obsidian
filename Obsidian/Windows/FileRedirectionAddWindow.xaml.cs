@@ -15,10 +15,10 @@ namespace Obsidian.Windows
         {
             this.MainWindow = window;
             InitializeComponent();
-            this.Closed += FileRedirectionAddWindow_Closed;
+            this.Closed += fileRedirectionAddWindow_Closed;
         }
 
-        private void FileRedirectionAddWindow_Closed(object sender, EventArgs e)
+        private void fileRedirectionAddWindow_Closed(object sender, EventArgs e)
         {
             this.MainWindow.IsEnabled = true;
         }
@@ -32,7 +32,7 @@ namespace Obsidian.Windows
         {
             try
             {
-                this.MainWindow.wad.AddEntry(this.textboxFile.Text, this.textboxPath.Text);
+                this.MainWindow.Wad.AddEntry(this.textboxFile.Text, this.textboxPath.Text);
                 CollectionViewSource.GetDefaultView(this.MainWindow.datagridWadEntries.ItemsSource).Refresh();
                 this.Close();
             }

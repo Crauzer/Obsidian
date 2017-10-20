@@ -10,14 +10,14 @@
         <StackPanel Orientation="Vertical" Margin="10">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="File: " TextAlignment="Center" Margin="0" FontSize="20"/>
-                <TextBox x:Name="textboxFile" Height="25" MinWidth="673" MaxWidth="673" Margin="9,0,0,0" TextChanged="TextboxFile_TextChanged"/>
+                <TextBox x:Name="textboxFile" Height="25" MinWidth="673" MaxWidth="673" Margin="9,0,0,0" TextChanged="textboxFile_TextChanged"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Path: " TextAlignment="Center" Margin="0" FontSize="20"/>
                 <TextBox x:Name="textboxPath" Height="25" MinWidth="673"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
-                <Button x:Name="buttonAddFileRedirectionEntry" Content="Add File Redirection Entry" Margin="275,10,0,0" Height="28" Width="150" IsEnabled="False" Click="ButtonAddFileRedirectionEntry_Click"/>
+                <Button x:Name="buttonAddFileRedirectionEntry" Content="Add File Redirection Entry" Margin="275,10,0,0" Height="28" Width="150" IsEnabled="False" Click="buttonAddFileRedirectionEntry_Click"/>
             </StackPanel>
         </StackPanel>
     </Grid>

@@ -19,6 +19,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using Fantome.Libraries.League.IO.BIN;
+using Newtonsoft.Json;
+using Fantome.Libraries.League.Helpers.Cryptography;
 
 namespace Obsidian
 {
@@ -29,20 +32,20 @@ namespace Obsidian
     {
         public WADFile Wad { get; set; }
         public WADEntry CurrentlySelectedEntry { get; set; }
-
+        public List<string> StringDictionary { get; set; }
 
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private void Image_MouseDown(object sender, MouseButtonEventArgs e)
+        private void image_MouseDown(object sender, MouseButtonEventArgs e)
         {
             AboutWindow aboutWindow = new AboutWindow();
             aboutWindow.Show();
         }
 
-        private void ButtonOpenWadFile_Click(object sender, RoutedEventArgs e)
+        private void buttonOpenWadFile_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Title = "Select the WAD File you want to open";
@@ -57,10 +60,83 @@ namespace Obsidian
                 this.butonAddFileRedirection.IsEnabled = true;
                 this.CurrentlySelectedEntry = null;
                 this.datagridWadEntries.ItemsSource = this.Wad.Entries;
+
+                GenerateWADStrings();
             }
         }
 
-        private void ButtonSaveWadFile_Click(object sender, RoutedEventArgs e)
+        private void GenerateWADStrings()
+        {
+            this.StringDictionary = new List<string>();
+            foreach (WADEntry wadEntry in this.Wad.Entries.Where(x => x.Type == EntryType.Compressed))
+            {
+                byte[] entryData = wadEntry.GetContent(true);
+                if (Utilities.GetLeagueFileExtensionType(entryData) == LeagueFileType.BIN)
+                {
+                    List<string> wadEntryStrings = new List<string>();
+                    BINFile bin = new BINFile(new MemoryStream(entryData));
+                    Parallel.ForEach(bin.Entries, (binEntry) =>
+                    {
+                        foreach (BINFileValue binValue in binEntry.Values.Where(x => x.Type == BINFileValueType.String || x.Value.GetType() == typeof(BINFileValueList)))
+                        {
+                            if (binValue.Type == BINFileValueType.String)
+                            {
+                                wadEntryStrings.Add(binValue.Value as string);
+                            }
+                            else if (
+                            binValue.Type == BINFileValueType.DoubleTypeList ||
+                            binValue.Type == BINFileValueType.LargeStaticTypeList ||
+                            binValue.Type == BINFileValueType.List ||
+                            binValue.Type == BINFileValueType.List2 ||
+                            binValue.Type == BINFileValueType.SmallStaticTypeList)
+                            {
+                                wadEntryStrings.AddRange(GetValueStrings(binValue));
+                            }
+                        }
+                    });
+
+                    this.StringDictionary.AddRange(wadEntryStrings);
+                }
+            }
+
+            this.StringDictionary.RemoveAll(x => x == null);
+        }
+
+        public IEnumerable<string> GetValueStrings(BINFileValue value)
+        {
+            List<string> strings = new List<string>();
+            if (value.Type == BINFileValueType.String)
+            {
+                strings.Add(value.Value as string);
+            }
+            else
+            {
+                BINFileValueList valueList = value.Value as BINFileValueList;
+                foreach (BINFileValue binValue in valueList.Entries)
+                {
+                    if (binValue.Type == BINFileValueType.String)
+                    {
+                        strings.Add(binValue.Value as string);
+                    }
+                    else if (
+                    binValue.Type == BINFileValueType.DoubleTypeList ||
+                    binValue.Type == BINFileValueType.LargeStaticTypeList ||
+                    binValue.Type == BINFileValueType.List ||
+                    binValue.Type == BINFileValueType.List2 ||
+                    binValue.Type == BINFileValueType.SmallStaticTypeList)
+                    {
+                        foreach (BINFileValue binValue2 in (binValue.Value as BINFileValueList).Entries.Where(x => x.Type == BINFileValueType.String || x.Value.GetType() == typeof(BINFileValueList)))
+                        {
+                            strings.AddRange(GetValueStrings(binValue2));
+                        }
+                    }
+                }
+            }
+
+            return strings.AsEnumerable();
+        }
+
+        private void buttonSaveWadFile_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog dialog = new SaveFileDialog();
             dialog.Title = "Select the path to save your WAD File";
@@ -75,7 +151,7 @@ namespace Obsidian
             }
         }
 
-        private void DatagridWadEntries_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
+        private void datagridWadEntries_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
         {
             if (this.datagridWadEntries.SelectedItem != null && this.datagridWadEntries.SelectedItem is WADEntry)
             {
@@ -102,7 +178,7 @@ namespace Obsidian
             }
         }
 
-        private void DatagridWadEntries_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
+        private void datagridWadEntries_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
         {
             if ((e.Row.DataContext as WADEntry).Type != EntryType.FileRedirection)
             {
@@ -110,21 +186,21 @@ namespace Obsidian
             }
         }
 
-        private void ButtonAddFile_Click(object sender, RoutedEventArgs e)
+        private void buttonAddFile_Click(object sender, RoutedEventArgs e)
         {
             FileAddWindow fileAddWindow = new FileAddWindow(this);
             fileAddWindow.Show();
             this.IsEnabled = false;
         }
 
-        private void ButonAddFileRedirection_Click(object sender, RoutedEventArgs e)
+        private void buttonAddFileRedirection_Click(object sender, RoutedEventArgs e)
         {
             FileRedirectionAddWindow fileRedirectionAddWindow = new FileRedirectionAddWindow(this);
             fileRedirectionAddWindow.Show();
             this.IsEnabled = false;
         }
 
-        private void ButtonRemoveEntry_Click(object sender, RoutedEventArgs e)
+        private void buttonRemoveEntry_Click(object sender, RoutedEventArgs e)
         {
             foreach (WADEntry entry in this.datagridWadEntries.SelectedItems.Cast<WADEntry>())
             {
@@ -134,7 +210,7 @@ namespace Obsidian
             CollectionViewSource.GetDefaultView(this.datagridWadEntries.ItemsSource).Refresh();
         }
 
-        private void ButtonModifyData_Click(object sender, RoutedEventArgs e)
+        private void buttonModifyData_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Multiselect = false;
@@ -148,7 +224,7 @@ namespace Obsidian
             }
         }
 
-        private void ButtonExtract_Click(object sender, RoutedEventArgs e)
+        private void buttonExtract_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
 
@@ -158,12 +234,22 @@ namespace Obsidian
                 foreach (WADEntry entry in this.datagridWadEntries.SelectedItems.Cast<WADEntry>().Where(x => x.Type != EntryType.FileRedirection))
                 {
                     byte[] dataToWrite = entry.GetContent(true);
+                    string entryName;
+                    using (XXHash64 xxHash = XXHash64.Create())
+                    {
+                        entryName = this.StringDictionary.Find(x => BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(x.ToLower())), 0) == entry.XXHash);
+                    }
 
-                    File.WriteAllBytes(string.Format("{0}//{1}.{2}",
-                        dialog.SelectedPath,
-                        Utilities.ByteArrayToHex(BitConverter.GetBytes(entry.XXHash), true),
-                        Utilities.GetEntryExtension(Utilities.GetLeagueFileExtensionType(dataToWrite))),
-                        dataToWrite);
+                    if(entryName == null)
+                    {
+                        entryName = Utilities.ByteArrayToHex(BitConverter.GetBytes(entry.XXHash), true);
+                    }
+                    else
+                    {
+                        Directory.CreateDirectory(string.Format("{0}//{1}", dialog.SelectedPath, System.IO.Path.GetDirectoryName(entryName)));
+                    }
+
+                    File.WriteAllBytes(string.Format("{0}//{1}", dialog.SelectedPath, entryName), dataToWrite);
                 }
 
                 MessageBox.Show("Extraction Succesfull!", "", MessageBoxButton.OK, MessageBoxImage.Information);

@@ -33,8 +33,9 @@
     </Window.Triggers>
     <Grid>
         <StackPanel Orientation="Vertical">
+            <TextBlock x:Name="textBlockSelectedEntryName" Margin="11,10,9,0" Height="20"/>
             <Grid>
-                <DataGrid Height="500" x:Name="datagridWadEntries" Margin="10,10,10,0" AutoGenerateColumns="False" GridLinesVisibility="Vertical" VerticalGridLinesBrush="#7F000000" SelectedCellsChanged="DatagridWadEntries_SelectedCellsChanged" BeginningEdit="DatagridWadEntries_BeginningEdit">
+                <DataGrid Height="475" x:Name="datagridWadEntries" Margin="10,10,10,0" AutoGenerateColumns="False" GridLinesVisibility="Vertical" VerticalGridLinesBrush="#7F000000" SelectedCellsChanged="datagridWadEntries_SelectedCellsChanged" BeginningEdit="datagridWadEntries_BeginningEdit">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Name" Binding="{Binding XXHash, Converter={StaticResource WadNameConverter}}" IsReadOnly="True"/>
                         <DataGridTextColumn Header="Type" Binding="{Binding Type}" IsReadOnly="True"/>
@@ -45,7 +46,7 @@
             </Grid>
             <StackPanel Orientation="Horizontal" Margin="0,5,0,0" Height="136">
                 <StackPanel Orientation="Horizontal" Margin="10,10,0,10">
-                    <Image x:Name="image" Width="45" Source="icon.ico" Cursor="Hand" MouseDown="Image_MouseDown">
+                    <Image x:Name="image" Width="45" Source="icon.ico" Cursor="Hand" MouseDown="image_MouseDown">
                         <Image.BitmapEffect>
                             <DropShadowBitmapEffect ShadowDepth="0"/>
                         </Image.BitmapEffect>
@@ -62,25 +63,25 @@
                 <StackPanel Orientation="Horizontal" Margin="15,0,0,0">
                     <GroupBox Header="IO">
                         <StackPanel Orientation="Vertical" Margin="10">
-                            <Button x:Name="buttonOpenWadFile" Content="Open WAD File" Click="ButtonOpenWadFile_Click" Height="31" Width="134"/>
-                            <Button x:Name="buttonSaveWadFile" Content="Save WAD File" Height="31" Width="134" Click="ButtonSaveWadFile_Click" Margin="0,25,0,0" IsEnabled="False"/>
+                            <Button x:Name="buttonOpenWadFile" Content="Open WAD File" Click="buttonOpenWadFile_Click" Height="31" Width="134"/>
+                            <Button x:Name="buttonSaveWadFile" Content="Save WAD File" Height="31" Width="134" Click="buttonSaveWadFile_Click" Margin="0,25,0,0" IsEnabled="False"/>
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Header="Add/Remove" Margin="10,0,0,0">
                         <StackPanel Orientation="Vertical" Margin="10">
-                            <Button x:Name="buttonAddFile" Content="Add File" Height="25" Width="134" Click="ButtonAddFile_Click" IsEnabled="False"/>
-                            <Button x:Name="butonAddFileRedirection" Content="Add File Redirection" Height="25" Width="134" Margin="0, 7" Click="ButonAddFileRedirection_Click" IsEnabled="False"/>
-                            <Button x:Name="buttonRemoveEntry" Content="Remove" Height="25" Width="134" Click="ButtonRemoveEntry_Click" IsEnabled="False"/>
+                            <Button x:Name="buttonAddFile" Content="Add File" Height="25" Width="134" Click="buttonAddFile_Click" IsEnabled="False"/>
+                            <Button x:Name="butonAddFileRedirection" Content="Add File Redirection" Height="25" Width="134" Margin="0, 7" Click="buttonAddFileRedirection_Click" IsEnabled="False"/>
+                            <Button x:Name="buttonRemoveEntry" Content="Remove" Height="25" Width="134" Click="buttonRemoveEntry_Click" IsEnabled="False"/>
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Header="Modify" Margin="10,0,0,0 ">
                         <StackPanel Orientation="Vertical" Margin="10">
-                            <Button x:Name="buttonModifyData" Content="Modify Data" Height="31" Width="134" IsEnabled="False" Click="ButtonModifyData_Click"/>
+                            <Button x:Name="buttonModifyData" Content="Modify Data" Height="31" Width="134" IsEnabled="False" Click="buttonModifyData_Click"/>
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Header="Extract" Margin="10,0,0,0">
                         <StackPanel Orientation="Vertical" Margin="10">
-                            <Button x:Name="buttonExtract" Content="Extract" Height="31" Width="134" IsEnabled="False" Click="ButtonExtract_Click"/>
+                            <Button x:Name="buttonExtract" Content="Extract" Height="31" Width="134" IsEnabled="False" Click="buttonExtract_Click"/>
                         </StackPanel>
                     </GroupBox>
                 </StackPanel>

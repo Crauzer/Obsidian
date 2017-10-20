@@ -11,14 +11,14 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="File: " TextAlignment="Center" Margin="0" FontSize="20"/>
                 <TextBox x:Name="textboxFile" Height="25" MinWidth="641" MaxWidth="641" Margin="9,0,0,0"/>
-                <Button x:Name="buttonSelectFile" Margin="3,1,0,1" Width="29" Click="ButtonSelectFile_Click"/>
+                <Button x:Name="buttonSelectFile" Margin="3,1,0,1" Width="29" Click="buttonSelectFile_Click"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Path: " TextAlignment="Center" Margin="0" FontSize="20"/>
                 <TextBox x:Name="textboxPath" Height="25" MinWidth="673"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
-                <Button x:Name="buttonAddEntry" Content="Add Entry" Margin="300,10,0,0" Height="28" Width="79" IsEnabled="False" Click="ButtonAddEntry_Click"/>
+                <Button x:Name="buttonAddEntry" Content="Add Entry" Margin="300,10,0,0" Height="28" Width="79" IsEnabled="False" Click="buttonAddEntry_Click"/>
                 <CheckBox x:Name="checkboxCompress" Content="Compress" FontSize="15" Margin="10,15,0,0" IsChecked="True"/>
             </StackPanel>
         </StackPanel>

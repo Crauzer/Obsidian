@@ -16,10 +16,10 @@ namespace Obsidian.Windows
         {
             this.MainWindow = window;
             InitializeComponent();
-            this.Closed += FileAddWindow_Closed;
+            this.Closed += fileAddWindow_Closed;
         }
 
-        private void FileAddWindow_Closed(object sender, EventArgs e)
+        private void fileAddWindow_Closed(object sender, EventArgs e)
         {
             this.MainWindow.IsEnabled = true;
         }
@@ -40,7 +40,7 @@ namespace Obsidian.Windows
         {
             try
             {
-                this.MainWindow.wad.AddEntry(this.textboxPath.Text, File.ReadAllBytes(this.textboxFile.Text), this.checkboxCompress.IsChecked.Value);
+                this.MainWindow.Wad.AddEntry(this.textboxPath.Text, File.ReadAllBytes(this.textboxFile.Text), this.checkboxCompress.IsChecked.Value);
                 CollectionViewSource.GetDefaultView(this.MainWindow.datagridWadEntries.ItemsSource).Refresh();
                 this.Close();
             }
