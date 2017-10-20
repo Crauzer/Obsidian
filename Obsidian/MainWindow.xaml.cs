@@ -24,7 +24,7 @@ namespace Obsidian
     {
         public WADFile Wad { get; set; }
         public WADEntry CurrentlySelectedEntry { get; set; }
-        public List<string> StringDictionary { get; set; }
+        public static List<string> StringDictionary { get; set; }
 
         public MainWindow()
         {
@@ -47,19 +47,19 @@ namespace Obsidian
             if (dialog.ShowDialog() == true)
             {
                 this.Wad = new WADFile(dialog.FileName);
+                GenerateWADStrings();
+
                 this.buttonSaveWadFile.IsEnabled = true;
                 this.buttonAddFile.IsEnabled = true;
                 this.butonAddFileRedirection.IsEnabled = true;
                 this.CurrentlySelectedEntry = null;
                 this.datagridWadEntries.ItemsSource = this.Wad.Entries;
-
-                GenerateWADStrings();
             }
         }
 
         private void GenerateWADStrings()
         {
-            this.StringDictionary = new List<string>();
+            StringDictionary = new List<string>();
             foreach (WADEntry wadEntry in this.Wad.Entries.Where(x => x.Type == EntryType.Compressed))
             {
                 byte[] entryData = wadEntry.GetContent(true);
@@ -87,11 +87,11 @@ namespace Obsidian
                         }
                     });
 
-                    this.StringDictionary.AddRange(wadEntryStrings);
+                    StringDictionary.AddRange(wadEntryStrings);
                 }
             }
 
-            this.StringDictionary.RemoveAll(x => x == null);
+            StringDictionary.RemoveAll(x => x == null);
         }
 
         public IEnumerable<string> GetValueStrings(BINFileValue value)
@@ -162,7 +162,7 @@ namespace Obsidian
                 string entryName = "";
                 using (XXHash64 xxHash = XXHash64.Create())
                 {
-                    entryName = this.StringDictionary.Find(x =>
+                    entryName = StringDictionary.Find(x =>
                     BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(x.ToLower())), 0) == (this.datagridWadEntries.SelectedItem as WADEntry).XXHash);
                 }
 
@@ -238,7 +238,7 @@ namespace Obsidian
                     string entryName;
                     using (XXHash64 xxHash = XXHash64.Create())
                     {
-                        entryName = this.StringDictionary.Find(x => BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(x.ToLower())), 0) == entry.XXHash);
+                        entryName = StringDictionary.Find(x => BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(x.ToLower())), 0) == entry.XXHash);
                     }
 
                     if (entryName == null)

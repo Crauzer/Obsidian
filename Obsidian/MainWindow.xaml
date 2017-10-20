@@ -37,7 +37,7 @@
             <Grid>
                 <DataGrid Height="475" x:Name="datagridWadEntries" Margin="10,10,10,0" AutoGenerateColumns="False" GridLinesVisibility="Vertical" VerticalGridLinesBrush="#7F000000" SelectedCellsChanged="datagridWadEntries_SelectedCellsChanged" BeginningEdit="datagridWadEntries_BeginningEdit">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Name" Binding="{Binding XXHash, Converter={StaticResource WadNameConverter}}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Converter={StaticResource WadNameConverter}}" IsReadOnly="True"/>
                         <DataGridTextColumn Header="Type" Binding="{Binding Type}" IsReadOnly="True"/>
                         <DataGridTextColumn Header="Size" Binding="{Binding UncompressedSize, Converter={StaticResource SizeValueConverter}}" IsReadOnly="True"/>
                         <DataGridTextColumn Header="File Redirection" Binding="{Binding FileRedirection}"/>
