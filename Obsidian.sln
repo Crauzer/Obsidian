@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Obsidian", "Obsidian\Obsidian.csproj", "{7ABEFBE2-A68B-4D8E-A24E-7867C4AD1364}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fantome.Libraries.League", "..\Fantome.Libraries.League\Fantome.League\Fantome.Libraries.League.csproj", "{80F5DF93-19A2-4731-8CD1-982F165D7361}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fantome.Libraries.League", "Fantome.Libraries.League\Fantome.League\Fantome.Libraries.League.csproj", "{80F5DF93-19A2-4731-8CD1-982F165D7361}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
