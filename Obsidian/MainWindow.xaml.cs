@@ -67,7 +67,7 @@ namespace Obsidian
                 {
                     List<string> wadEntryStrings = new List<string>();
                     BINFile bin = new BINFile(new MemoryStream(entryData));
-                    Parallel.ForEach(bin.Entries, (binEntry) =>
+                    foreach(BINFileEntry binEntry in bin.Entries)
                     {
                         foreach (BINFileValue binValue in binEntry.Values.Where(x => x.Type == BINFileValueType.String || x.Value.GetType() == typeof(BINFileValueList)))
                         {
@@ -75,7 +75,7 @@ namespace Obsidian
                             {
                                 wadEntryStrings.Add(binValue.Value as string);
                             }
-                            else if(
+                            else if (
                             binValue.Type == BINFileValueType.DoubleTypeList ||
                             binValue.Type == BINFileValueType.LargeStaticTypeList ||
                             binValue.Type == BINFileValueType.List ||
@@ -85,7 +85,7 @@ namespace Obsidian
                                 wadEntryStrings.AddRange(GetValueStrings(binValue));
                             }
                         }
-                    });
+                    }
 
                     StringDictionary.AddRange(wadEntryStrings);
                 }
