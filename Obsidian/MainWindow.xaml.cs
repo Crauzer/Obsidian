@@ -24,7 +24,7 @@ namespace Obsidian
     {
         public WADFile Wad { get; set; }
         public WADEntry CurrentlySelectedEntry { get; set; }
-        public static List<string> StringDictionary { get; set; }
+        public static Dictionary<ulong, string> StringDictionary { get; set; } = new Dictionary<ulong, string>();
 
         public MainWindow()
         {
@@ -47,9 +47,12 @@ namespace Obsidian
             if (dialog.ShowDialog() == true)
             {
                 this.Wad = new WADFile(dialog.FileName);
+                StringDictionary = new Dictionary<ulong, string>();
                 GenerateWADStrings();
 
                 this.buttonSaveWadFile.IsEnabled = true;
+                this.buttonImportHashtable.IsEnabled = true;
+                this.buttonExtractHashtable.IsEnabled = true;
                 this.buttonAddFile.IsEnabled = true;
                 this.butonAddFileRedirection.IsEnabled = true;
                 this.CurrentlySelectedEntry = null;
@@ -59,7 +62,6 @@ namespace Obsidian
 
         private void GenerateWADStrings()
         {
-            StringDictionary = new List<string>();
             foreach (WADEntry wadEntry in this.Wad.Entries.Where(x => x.Type == EntryType.Compressed))
             {
                 byte[] entryData = wadEntry.GetContent(true);
@@ -67,7 +69,7 @@ namespace Obsidian
                 {
                     List<string> wadEntryStrings = new List<string>();
                     BINFile bin = new BINFile(new MemoryStream(entryData));
-                    foreach(BINFileEntry binEntry in bin.Entries)
+                    foreach (BINFileEntry binEntry in bin.Entries)
                     {
                         foreach (BINFileValue binValue in binEntry.Values.Where(x => x.Type == BINFileValueType.String || x.Value.GetType() == typeof(BINFileValueList)))
                         {
@@ -87,11 +89,23 @@ namespace Obsidian
                         }
                     }
 
-                    StringDictionary.AddRange(wadEntryStrings);
+                    using (XXHash64 xxHash = XXHash64.Create())
+                    {
+                        wadEntryStrings.ForEach(x =>
+                        {
+                            if (x != "")
+                            {
+                                string loweredName = x.ToLower();
+                                ulong hash = BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(loweredName)), 0);
+                                if (!StringDictionary.ContainsKey(hash))
+                                {
+                                    StringDictionary.Add(hash, x);
+                                }
+                            }
+                        });
+                    }
                 }
             }
-
-            StringDictionary.RemoveAll(x => x == null);
         }
 
         public IEnumerable<string> GetValueStrings(BINFileValue value)
@@ -143,6 +157,33 @@ namespace Obsidian
             }
         }
 
+        private void buttonImportHashtable_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Title = "Select the Hashtable files you want to load";
+            dialog.Multiselect = true;
+            dialog.Filter = "Hashtable Files (*.hashtable)|*.hashtable";
+
+            if (dialog.ShowDialog() == true)
+            {
+                foreach (string fileName in dialog.FileNames)
+                {
+                    foreach (string line in File.ReadAllLines(fileName))
+                    {
+                        ulong hash = 0;
+                        string[] lineSplit = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                        if (ulong.TryParse(lineSplit[0], out hash) && !StringDictionary.ContainsKey(hash))
+                        {
+                            StringDictionary.Add(ulong.Parse(lineSplit[0]), lineSplit[1]);
+                        }
+                    }
+                }
+
+                CollectionViewSource.GetDefaultView(this.datagridWadEntries.ItemsSource).Refresh();
+            }
+        }
+
         private void datagridWadEntries_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
         {
             if (this.datagridWadEntries.SelectedItem != null && this.datagridWadEntries.SelectedItem is WADEntry)
@@ -159,14 +200,14 @@ namespace Obsidian
                     this.buttonModifyData.IsEnabled = false;
                 }
 
-                string entryName = "";
-                using (XXHash64 xxHash = XXHash64.Create())
+                if (StringDictionary.ContainsKey((this.datagridWadEntries.SelectedItem as WADEntry).XXHash))
                 {
-                    entryName = StringDictionary.Find(x =>
-                    BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(x.ToLower())), 0) == (this.datagridWadEntries.SelectedItem as WADEntry).XXHash);
+                    this.textBlockSelectedEntryName.Text = StringDictionary[(this.datagridWadEntries.SelectedItem as WADEntry).XXHash];
                 }
-
-                this.textBlockSelectedEntryName.Text = entryName;
+                else
+                {
+                    this.textBlockSelectedEntryName.Text = "";
+                }
             }
 
             if (this.datagridWadEntries.SelectedItems != null && this.datagridWadEntries.SelectedItems.Cast<WADEntry>().ToList().Exists(x => x.Type != EntryType.FileRedirection))
@@ -235,26 +276,42 @@ namespace Obsidian
                 foreach (WADEntry entry in this.datagridWadEntries.SelectedItems.Cast<WADEntry>().Where(x => x.Type != EntryType.FileRedirection))
                 {
                     byte[] entryData = entry.GetContent(true);
-                    string entryName;
-                    using (XXHash64 xxHash = XXHash64.Create())
+                    string entryName = "";
+                    if (StringDictionary.ContainsKey(entry.XXHash))
                     {
-                        entryName = StringDictionary.Find(x => BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(x.ToLower())), 0) == entry.XXHash);
-                    }
-
-                    if (entryName == null)
-                    {
-                        entryName = Utilities.ByteArrayToHex(BitConverter.GetBytes(entry.XXHash), true);
-                        entryName += "." + Utilities.GetEntryExtension(Utilities.GetLeagueFileExtensionType(entryData));
+                        entryName = StringDictionary[entry.XXHash];
+                        Directory.CreateDirectory(string.Format("{0}//{1}", dialog.SelectedPath, System.IO.Path.GetDirectoryName(entryName)));
                     }
                     else
                     {
-                        Directory.CreateDirectory(string.Format("{0}//{1}", dialog.SelectedPath, System.IO.Path.GetDirectoryName(entryName)));
+                        entryName = Encoding.ASCII.GetString(BitConverter.GetBytes(entry.XXHash));
+                        entryName += "." + Utilities.GetEntryExtension(Utilities.GetLeagueFileExtensionType(entryData));
                     }
 
                     File.WriteAllBytes(string.Format("{0}//{1}", dialog.SelectedPath, entryName), entryData);
                 }
 
                 MessageBox.Show("Extraction Succesfull!", "", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private void buttonExtractHashtable_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog dialog = new SaveFileDialog();
+            dialog.Title = "Select the path to save your Hashtable File";
+            dialog.Filter = "Hashtable File (*.hashtable)|*.hashtable";
+            dialog.AddExtension = true;
+
+            if (dialog.ShowDialog() == true)
+            {
+                List<string> lines = new List<string>();
+                foreach (KeyValuePair<ulong, string> pair in StringDictionary)
+                {
+                    lines.Add(pair.Key.ToString() + " " + pair.Value);
+                }
+                File.WriteAllLines(dialog.FileName, lines.ToArray());
+
+                MessageBox.Show("Writing Succesful!", "", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
     }

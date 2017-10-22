@@ -13,15 +13,13 @@ namespace Obsidian.ValueConverters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             string finalName = "";
-            using (XXHash64 xxHash = XXHash64.Create())
+            if (MainWindow.StringDictionary.ContainsKey((value as WADEntry).XXHash))
             {
-                finalName = MainWindow.StringDictionary.Find(x =>
-                BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(x.ToLower())), 0) == (value as WADEntry).XXHash);
+                finalName = MainWindow.StringDictionary[(value as WADEntry).XXHash];
             }
-
-            if (finalName == null)
+            else
             {
-                finalName = Utilities.ByteArrayToHex(BitConverter.GetBytes((ulong)(value as WADEntry).XXHash), true);
+                finalName = BitConverter.ToString(BitConverter.GetBytes((value as WADEntry).XXHash)).Replace("-", "");
             }
 
             return finalName;

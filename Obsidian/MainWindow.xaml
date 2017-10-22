@@ -61,10 +61,11 @@
                     <Line Stroke="DarkGray" StrokeThickness="4" Y1="136"/>
                 </Canvas>
                 <StackPanel Orientation="Horizontal" Margin="15,0,0,0">
-                    <GroupBox Header="IO">
+                    <GroupBox Header="IO" Margin="10, 0, 0, 0">
                         <StackPanel Orientation="Vertical" Margin="10">
-                            <Button x:Name="buttonOpenWadFile" Content="Open WAD File" Click="buttonOpenWadFile_Click" Height="31" Width="134"/>
-                            <Button x:Name="buttonSaveWadFile" Content="Save WAD File" Height="31" Width="134" Click="buttonSaveWadFile_Click" Margin="0,25,0,0" IsEnabled="False"/>
+                            <Button x:Name="buttonOpenWadFile" Content="Open WAD File" Height="25" Width="134" Click="buttonOpenWadFile_Click" />
+                            <Button x:Name="buttonSaveWadFile" Content="Save WAD File" Height="25" Width="134" Click="buttonSaveWadFile_Click" Margin="0, 7" IsEnabled="False"/>
+                            <Button x:Name="buttonImportHashtable" Content="Import Hashtable" Height="25" Width="134" IsEnabled="False" Click="buttonImportHashtable_Click" />
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Header="Add/Remove" Margin="10,0,0,0">
@@ -82,6 +83,7 @@
                     <GroupBox Header="Extract" Margin="10,0,0,0">
                         <StackPanel Orientation="Vertical" Margin="10">
                             <Button x:Name="buttonExtract" Content="Extract" Height="31" Width="134" IsEnabled="False" Click="buttonExtract_Click"/>
+                            <Button x:Name="buttonExtractHashtable" Content="Extract Hashtable" Height="31" Width="134" Margin="0, 25" IsEnabled="false" Click="buttonExtractHashtable_Click"/>
                         </StackPanel>
                     </GroupBox>
                 </StackPanel>
