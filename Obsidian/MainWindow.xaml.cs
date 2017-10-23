@@ -284,7 +284,7 @@ namespace Obsidian
                     }
                     else
                     {
-                        entryName = Encoding.ASCII.GetString(BitConverter.GetBytes(entry.XXHash));
+                        entryName = BitConverter.ToString(BitConverter.GetBytes(entry.XXHash)).Replace("-", "");
                         entryName += "." + Utilities.GetEntryExtension(Utilities.GetLeagueFileExtensionType(entryData));
                     }
 
