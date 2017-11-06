@@ -1,0 +1,3 @@
+[submodule "Fantome.Libraries.League"]
+	path = Fantome.Libraries.League
+	url = https://github.com/LoL-Fantome/Fantome.Libraries.League

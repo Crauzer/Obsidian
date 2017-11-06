@@ -33,7 +33,7 @@
     </Window.Triggers>
     <Grid>
         <StackPanel Orientation="Vertical">
-            <TextBlock x:Name="textBlockSelectedEntryName" Margin="11,10,9,0" Height="20"/>
+            <ProgressBar x:Name="progressBarWadExtraction" Margin="11,10,9,0" Height="20" Visibility="Hidden"/>
             <Grid>
                 <DataGrid Height="475" x:Name="datagridWadEntries" Margin="10,10,10,0" AutoGenerateColumns="False" GridLinesVisibility="Vertical" VerticalGridLinesBrush="#7F000000" SelectedCellsChanged="datagridWadEntries_SelectedCellsChanged" BeginningEdit="datagridWadEntries_BeginningEdit">
                     <DataGrid.Columns>

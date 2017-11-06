@@ -34,7 +34,7 @@ namespace Obsidian.Windows
             {
                 this.MainWindow.Wad.AddEntry(this.textboxFile.Text, this.textboxPath.Text);
                 CollectionViewSource.GetDefaultView(this.MainWindow.datagridWadEntries.ItemsSource).Refresh();
-                this.Close();
+                Close();
             }
             catch (Exception exception)
             {

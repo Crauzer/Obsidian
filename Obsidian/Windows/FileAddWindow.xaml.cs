@@ -26,8 +26,10 @@ namespace Obsidian.Windows
 
         private void buttonSelectFile_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Multiselect = false;
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Multiselect = false
+            };
 
             if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -42,7 +44,7 @@ namespace Obsidian.Windows
             {
                 this.MainWindow.Wad.AddEntry(this.textboxPath.Text, File.ReadAllBytes(this.textboxFile.Text), this.checkboxCompress.IsChecked.Value);
                 CollectionViewSource.GetDefaultView(this.MainWindow.datagridWadEntries.ItemsSource).Refresh();
-                this.Close();
+                Close();
             }
             catch (Exception exception)
             {
