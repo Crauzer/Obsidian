@@ -15,7 +15,7 @@ namespace Obsidian.Utils
     {
         public static void GenerateWADStrings(ILog logger, WADFile wad, Dictionary<ulong, string> stringDictionary)
         {
-            foreach (WADEntry wadEntry in wad.Entries.Where(x => x.Type == EntryType.Compressed))
+            foreach (WADEntry wadEntry in wad.Entries.Where(x => x.Type == EntryType.Compressed || x.Type == EntryType.ZStandardCompressed))
             {
                 byte[] entryData = wadEntry.GetContent(true);
                 if (Utilities.GetLeagueFileExtensionType(entryData) == LeagueFileType.BIN)
