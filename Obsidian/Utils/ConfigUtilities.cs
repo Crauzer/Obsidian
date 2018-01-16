@@ -11,8 +11,8 @@ namespace Obsidian.Utils
         {
             { "LoggingPattern", "[%utcdate{ABSOLUTE}] | [%-5level] | [%-20logger: (%-4line)] | %message%newline" },
             { "LogLevel", Level.Info },
-            { "WadSaveMajorVersion", 3 },
-            { "WadSaveMinorVersion", 0 },
+            { "WadSaveMajorVersion", 3L },
+            { "WadSaveMinorVersion", 0L },
             { "GenerateWadDictionary", true },
             { "ParallelExtraction", true }
         };
