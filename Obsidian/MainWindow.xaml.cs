@@ -288,6 +288,36 @@ namespace Obsidian
             }
         }
 
+        private void buttonExtractHashtable_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog dialog = new SaveFileDialog
+            {
+                Title = "Select the path to save your Hashtable File",
+                Filter = "Hashtable File (*.hashtable)|*.hashtable",
+                AddExtension = true
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                try
+                {
+                    List<string> lines = new List<string>();
+                    foreach (KeyValuePair<ulong, string> pair in StringDictionary)
+                    {
+                        lines.Add(pair.Key.ToString() + " " + pair.Value);
+                    }
+                    File.WriteAllLines(dialog.FileName, lines.ToArray());
+                }
+                catch (Exception exception)
+                {
+                    Logging.LogException(Logger, "Failed to Extract the current Hashtable", exception);
+                    return;
+                }
+
+                MessageBox.Show("Writing Succesful!", "", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
         private void ExtractWAD(string selectedPath, List<WADEntry> selectedEntries)
         {
             this.progressBarWadExtraction.Visibility = Visibility.Visible;
@@ -359,36 +389,6 @@ namespace Obsidian
             };
 
             wadExtractor.RunWorkerAsync();
-        }
-
-        private void buttonExtractHashtable_Click(object sender, RoutedEventArgs e)
-        {
-            SaveFileDialog dialog = new SaveFileDialog
-            {
-                Title = "Select the path to save your Hashtable File",
-                Filter = "Hashtable File (*.hashtable)|*.hashtable",
-                AddExtension = true
-            };
-
-            if (dialog.ShowDialog() == true)
-            {
-                try
-                {
-                    List<string> lines = new List<string>();
-                    foreach (KeyValuePair<ulong, string> pair in StringDictionary)
-                    {
-                        lines.Add(pair.Key.ToString() + " " + pair.Value);
-                    }
-                    File.WriteAllLines(dialog.FileName, lines.ToArray());
-                }
-                catch (Exception exception)
-                {
-                    Logging.LogException(Logger, "Failed to Extract the current Hashtable", exception);
-                    return;
-                }
-
-                MessageBox.Show("Writing Succesful!", "", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
         }
     }
 }
