@@ -3,91 +3,109 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:Obsidian"
         xmlns:valueConverters="clr-namespace:Obsidian.ValueConverters"
         mc:Ignorable="d"
-        Title="Obsidian" Height="685" Width="1150" Icon="icon.ico" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        Title="Obsidian" Height="685" Width="1150" Icon="icon.ico" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <valueConverters:SizeValueConverter x:Key="SizeValueConverter"/>
         <valueConverters:WadNameConverter x:Key="WadNameConverter"/>
-        <Storyboard x:Key="shadowIn">
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.BitmapEffect).(DropShadowBitmapEffect.ShadowDepth)" Storyboard.TargetName="image">
-                <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="5"/>
-            </DoubleAnimationUsingKeyFrames>
-        </Storyboard>
-        <Storyboard x:Key="shadowOut">
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.BitmapEffect).(DropShadowBitmapEffect.ShadowDepth)" Storyboard.TargetName="image">
-                <EasingDoubleKeyFrame KeyTime="0" Value="5"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="0"/>
-            </DoubleAnimationUsingKeyFrames>
-        </Storyboard>
     </Window.Resources>
-    <Window.Triggers>
-        <EventTrigger RoutedEvent="UIElement.MouseEnter" SourceName="image">
-            <BeginStoryboard Storyboard="{StaticResource shadowIn}"/>
-        </EventTrigger>
-        <EventTrigger RoutedEvent="UIElement.MouseLeave" SourceName="image">
-            <BeginStoryboard Storyboard="{StaticResource shadowOut}"/>
-        </EventTrigger>
-    </Window.Triggers>
     <Grid>
-        <StackPanel Orientation="Vertical">
-            <ProgressBar x:Name="progressBarWadExtraction" Margin="11,10,9,0" Height="20" Visibility="Hidden"/>
-            <Grid>
-                <DataGrid Height="475" x:Name="datagridWadEntries" Margin="10,10,10,0" AutoGenerateColumns="False" GridLinesVisibility="Vertical" VerticalGridLinesBrush="#7F000000" SelectedCellsChanged="datagridWadEntries_SelectedCellsChanged" BeginningEdit="datagridWadEntries_BeginningEdit">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Name" Binding="{Binding Converter={StaticResource WadNameConverter}}" IsReadOnly="True"/>
-                        <DataGridTextColumn Header="Type" Binding="{Binding Type}" IsReadOnly="True"/>
-                        <DataGridTextColumn Header="Size" Binding="{Binding UncompressedSize, Converter={StaticResource SizeValueConverter}}" IsReadOnly="True"/>
-                        <DataGridTextColumn Header="File Redirection" Binding="{Binding FileRedirection}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="{Binding Width, ElementName=dockPanel}"/>
+            <RowDefinition Height="{Binding Height, ElementName=progressBarWadExtraction}"/>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <DockPanel x:Name="dockPanel">
+            <Grid x:Name="grid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Menu IsMainMenu="True" DockPanel.Dock="Top">
+                    <MenuItem Header="File" Grid.Column="0">
+                        <MenuItem x:Name="menuOpen" Header="Open" Click="menuOpen_Click">
+                            <MenuItem.Icon>
+                                <materialDesign:PackIcon Kind="File"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem x:Name="menuSave" Header="Save" Click="menuSave_Click" IsEnabled="False">
+                            <MenuItem.Icon>
+                                <materialDesign:PackIcon Kind="FileExport"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator/>
+                        <MenuItem x:Name="menuImportHashtable" Header="Import Hashtable" Click="menuImportHashtable_Click" IsEnabled="False">
+                            <MenuItem.Icon>
+                                <materialDesign:PackIcon Kind="FileDocument"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem x:Name="menuExportHashtable" Header="Export Hashtable" Click="menuExportHashtable_Click" IsEnabled="False">
+                            <MenuItem.Icon>
+                                <materialDesign:PackIcon Kind="FileDocument"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator/>
+                        <MenuItem x:Name="menuExportAll" Header="Export All" Click="menuExportAll_Click" IsEnabled="False">
+                            <MenuItem.Icon>
+                                <materialDesign:PackIcon Kind="ContentSaveAll"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem x:Name="menuExportSelected" Header="Export Selected" Click="menuExportSelected_Click" IsEnabled="False">
+                            <MenuItem.Icon>
+                                <materialDesign:PackIcon Kind="ContentSaveAll"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </MenuItem>
+                    <MenuItem Header="Edit" Grid.Column="0">
+                        <MenuItem x:Name="menuRemove" Header="Remove" Click="menuRemove_Click" IsEnabled="False">
+                            <MenuItem.Icon>
+                                <materialDesign:PackIcon Kind="PlaylistRemove"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator/>
+                        <MenuItem x:Name="menuAddFile" Header="Add File" Click="menuAddFile_Click" IsEnabled="False">
+                            <MenuItem.Icon>
+                                <materialDesign:PackIcon Kind="FileHidden"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem x:Name="menuAddFileRedirection" Header="Add File Redirection" Click="menuAddFileRedirection_Click" IsEnabled="False">
+                            <MenuItem.Icon>
+                                <materialDesign:PackIcon Kind="FileHidden"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator/>
+                        <MenuItem x:Name="menuModifyData" Header="Modify Data" Click="menuModifyData_Click" IsEnabled="False">
+                            <MenuItem.Icon>
+                                <materialDesign:PackIcon Kind="FileRestore"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </MenuItem>
+                    <TextBox x:Name="textBoxFilter" materialDesign:HintAssist.Hint="Filter" TextChanged="textBoxFilter_TextChanged" Grid.Column="0"/>
+                </Menu>
             </Grid>
-            <StackPanel Orientation="Horizontal" Margin="0,5,0,0" Height="136">
-                <StackPanel Orientation="Horizontal" Margin="10,10,0,10">
-                    <Image x:Name="image" Width="45" Source="icon.ico" Cursor="Hand" MouseDown="image_MouseDown">
-                        <Image.BitmapEffect>
-                            <DropShadowBitmapEffect ShadowDepth="0"/>
-                        </Image.BitmapEffect>
-                    </Image>
-                    <TextBlock Text="OBSIDIAN" FontWeight="ExtraLight" FontSize="40" FontFamily="Segoe UI Light" TextDecorations="{x:Null}" TextAlignment="Center" Margin="5,30,0,0" FontStyle="Italic">
-                        <TextBlock.Effect>
-                            <DropShadowEffect ShadowDepth="2"/>
-                        </TextBlock.Effect>
-                    </TextBlock>
-                </StackPanel>
-                <Canvas Margin="15,0,0,0">
-                    <Line Stroke="DarkGray" StrokeThickness="4" Y1="136"/>
-                </Canvas>
-                <StackPanel Orientation="Horizontal" Margin="15,0,0,0">
-                    <GroupBox Header="IO" Margin="10, 0, 0, 0">
-                        <StackPanel Orientation="Vertical" Margin="10">
-                            <Button x:Name="buttonOpenWadFile" Content="Open WAD File" Height="25" Width="134" Click="buttonOpenWadFile_Click" />
-                            <Button x:Name="buttonSaveWadFile" Content="Save WAD File" Height="25" Width="134" Click="buttonSaveWadFile_Click" Margin="0, 7" IsEnabled="False"/>
-                            <Button x:Name="buttonImportHashtable" Content="Import Hashtable" Height="25" Width="134" IsEnabled="False" Click="buttonImportHashtable_Click" />
-                        </StackPanel>
-                    </GroupBox>
-                    <GroupBox Header="Add/Remove" Margin="10,0,0,0">
-                        <StackPanel Orientation="Vertical" Margin="10">
-                            <Button x:Name="buttonAddFile" Content="Add File" Height="25" Width="134" Click="buttonAddFile_Click" IsEnabled="False"/>
-                            <Button x:Name="butonAddFileRedirection" Content="Add File Redirection" Height="25" Width="134" Margin="0, 7" Click="buttonAddFileRedirection_Click" IsEnabled="False"/>
-                            <Button x:Name="buttonRemoveEntry" Content="Remove" Height="25" Width="134" Click="buttonRemoveEntry_Click" IsEnabled="False"/>
-                        </StackPanel>
-                    </GroupBox>
-                    <GroupBox Header="Modify" Margin="10,0,0,0 ">
-                        <StackPanel Orientation="Vertical" Margin="10">
-                            <Button x:Name="buttonModifyData" Content="Modify Data" Height="31" Width="134" IsEnabled="False" Click="buttonModifyData_Click"/>
-                        </StackPanel>
-                    </GroupBox>
-                    <GroupBox Header="Extract" Margin="10,0,0,0">
-                        <StackPanel Orientation="Vertical" Margin="10">
-                            <Button x:Name="buttonExtract" Content="Extract" Height="31" Width="134" IsEnabled="False" Click="buttonExtract_Click"/>
-                            <Button x:Name="buttonExtractHashtable" Content="Extract Hashtable" Height="31" Width="134" Margin="0, 25" IsEnabled="false" Click="buttonExtractHashtable_Click"/>
-                        </StackPanel>
-                    </GroupBox>
-                </StackPanel>
-            </StackPanel>
-        </StackPanel>
+        </DockPanel>
+
+        <ProgressBar Grid.Row="1" x:Name="progressBarWadExtraction" Height="5" Value="100"/>
+        
+        <DataGrid Grid.Row="2" x:Name="datagridWadEntries" AutoGenerateColumns="False" GridLinesVisibility="Vertical" VerticalGridLinesBrush="#7F000000" SelectedCellsChanged="datagridWadEntries_SelectedCellsChanged" BeginningEdit="datagridWadEntries_BeginningEdit">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding Converter={StaticResource WadNameConverter}}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Type" Binding="{Binding Type}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Size" Binding="{Binding UncompressedSize, Converter={StaticResource SizeValueConverter}}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="File Redirection" Binding="{Binding FileRedirection}"/>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Window>

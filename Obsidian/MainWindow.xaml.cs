@@ -64,7 +64,35 @@ namespace Obsidian
             aboutWindow.Show();
         }
 
-        private void buttonOpenWadFile_Click(object sender, RoutedEventArgs e)
+        private void datagridWadEntries_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
+        {
+            if (this.datagridWadEntries.SelectedItem is WADEntry entry)
+            {
+                this.menuRemove.IsEnabled = true;
+                if (entry.Type != EntryType.FileRedirection)
+                {
+                    this.CurrentlySelectedEntry = entry;
+                    this.menuModifyData.IsEnabled = true;
+                }
+                else
+                {
+                    this.CurrentlySelectedEntry = null;
+                    this.menuModifyData.IsEnabled = false;
+                }
+            }
+
+            this.menuExportSelected.IsEnabled = this.datagridWadEntries.SelectedItems.Cast<WADEntry>().ToList().Exists(x => x.Type != EntryType.FileRedirection);
+        }
+
+        private void datagridWadEntries_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
+        {
+            if (((WADEntry)e.Row.DataContext).Type != EntryType.FileRedirection)
+            {
+                e.Cancel = true;
+            }
+        }
+
+        private void menuOpen_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog
             {
@@ -100,11 +128,12 @@ namespace Obsidian
                     }
                 }
 
-                this.buttonSaveWadFile.IsEnabled = true;
-                this.buttonImportHashtable.IsEnabled = true;
-                this.buttonExtractHashtable.IsEnabled = true;
-                this.buttonAddFile.IsEnabled = true;
-                this.butonAddFileRedirection.IsEnabled = true;
+                this.menuSave.IsEnabled = true;
+                this.menuImportHashtable.IsEnabled = true;
+                this.menuExportHashtable.IsEnabled = true;
+                this.menuExportAll.IsEnabled = true;
+                this.menuAddFile.IsEnabled = true;
+                this.menuAddFileRedirection.IsEnabled = true;
                 this.CurrentlySelectedEntry = null;
                 this.datagridWadEntries.ItemsSource = this.Wad.Entries;
 
@@ -112,7 +141,7 @@ namespace Obsidian
             }
         }
 
-        private void buttonSaveWadFile_Click(object sender, RoutedEventArgs e)
+        private void menuSave_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog dialog = new SaveFileDialog
             {
@@ -138,7 +167,7 @@ namespace Obsidian
             }
         }
 
-        private void buttonImportHashtable_Click(object sender, RoutedEventArgs e)
+        private void menuImportHashtable_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog
             {
@@ -187,49 +216,85 @@ namespace Obsidian
             }
         }
 
-        private void datagridWadEntries_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
+        private void menuExportHashtable_Click(object sender, RoutedEventArgs e)
         {
-            if (this.datagridWadEntries.SelectedItem is WADEntry)
+            SaveFileDialog dialog = new SaveFileDialog
             {
-                this.buttonRemoveEntry.IsEnabled = true;
-                if (((WADEntry)this.datagridWadEntries.SelectedItem).Type != EntryType.FileRedirection)
-                {
-                    this.CurrentlySelectedEntry = (WADEntry)this.datagridWadEntries.SelectedItem;
-                    this.buttonModifyData.IsEnabled = true;
-                }
-                else
-                {
-                    this.CurrentlySelectedEntry = null;
-                    this.buttonModifyData.IsEnabled = false;
-                }
-            }
+                Title = "Select the path to save your Hashtable File",
+                Filter = "Hashtable File (*.hashtable)|*.hashtable",
+                AddExtension = true
+            };
 
-            this.buttonExtract.IsEnabled = this.datagridWadEntries.SelectedItems.Cast<WADEntry>().ToList().Exists(x => x.Type != EntryType.FileRedirection);
+            if (dialog.ShowDialog() == true)
+            {
+                try
+                {
+                    List<string> lines = new List<string>();
+                    foreach (KeyValuePair<ulong, string> pair in StringDictionary)
+                    {
+                        lines.Add(pair.Key.ToString() + " " + pair.Value);
+                    }
+                    File.WriteAllLines(dialog.FileName, lines.ToArray());
+                }
+                catch (Exception exception)
+                {
+                    Logging.LogException(Logger, "Failed to Extract the current Hashtable", exception);
+                    return;
+                }
+
+                MessageBox.Show("Writing Succesful!", "", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
 
-        private void datagridWadEntries_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
+        private void menuExportAll_Click(object sender, RoutedEventArgs e)
         {
-            if (((WADEntry)e.Row.DataContext).Type != EntryType.FileRedirection)
+            System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
+
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                e.Cancel = true;
+                try
+                {
+                    ExtractWADEntries(dialog.SelectedPath, this.datagridWadEntries.Items.Cast<WADEntry>().Where(x => x.Type != EntryType.FileRedirection).ToList());
+                }
+                catch (Exception excp)
+                {
+                    Logging.LogException(Logger, "Extraction of the currently opened WAD File failed", excp);
+                }
             }
         }
 
-        private void buttonAddFile_Click(object sender, RoutedEventArgs e)
+        private void menuExportSelected_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
+
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                try
+                {
+                    ExtractWADEntries(dialog.SelectedPath, this.datagridWadEntries.SelectedItems.Cast<WADEntry>().Where(x => x.Type != EntryType.FileRedirection).ToList());
+                }
+                catch (Exception excp)
+                {
+                    Logging.LogException(Logger, "Extraction of the currently opened WAD File failed", excp);
+                }
+            }
+        }
+
+        private void menuAddFile_Click(object sender, RoutedEventArgs e)
         {
             FileAddWindow fileAddWindow = new FileAddWindow(this);
             fileAddWindow.Show();
             this.IsEnabled = false;
         }
 
-        private void buttonAddFileRedirection_Click(object sender, RoutedEventArgs e)
+        private void menuAddFileRedirection_Click(object sender, RoutedEventArgs e)
         {
             FileRedirectionAddWindow fileRedirectionAddWindow = new FileRedirectionAddWindow(this);
             fileRedirectionAddWindow.Show();
             this.IsEnabled = false;
         }
 
-        private void buttonRemoveEntry_Click(object sender, RoutedEventArgs e)
+        private void menuRemove_Click(object sender, RoutedEventArgs e)
         {
             foreach (WADEntry entry in this.datagridWadEntries.SelectedItems.Cast<WADEntry>())
             {
@@ -239,7 +304,7 @@ namespace Obsidian
             CollectionViewSource.GetDefaultView(this.datagridWadEntries.ItemsSource).Refresh();
         }
 
-        private void buttonModifyData_Click(object sender, RoutedEventArgs e)
+        private void menuModifyData_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog
             {
@@ -271,57 +336,29 @@ namespace Obsidian
             }
         }
 
-        private void buttonExtract_Click(object sender, RoutedEventArgs e)
+        private void textBoxFilter_TextChanged(object sender, TextChangedEventArgs e)
         {
-            System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
-
-            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            this.datagridWadEntries.Items.Filter = new Predicate<object>(entry =>
             {
-                try
+                string finalName = "";
+                if (StringDictionary.ContainsKey((entry as WADEntry).XXHash))
                 {
-                    ExtractWAD(dialog.SelectedPath, this.datagridWadEntries.SelectedItems.Cast<WADEntry>().Where(x => x.Type != EntryType.FileRedirection).ToList());
+                    finalName = StringDictionary[(entry as WADEntry).XXHash];
                 }
-                catch (Exception excp)
+                else
                 {
-                    Logging.LogException(Logger, "Extraction of the currently opened WAD File failed", excp);
+                    finalName = BitConverter.ToString(BitConverter.GetBytes((entry as WADEntry).XXHash)).Replace("-", "");
                 }
-            }
+
+                return finalName.ToLower().Contains(this.textBoxFilter.Text.ToLower());
+            });
+
+
         }
 
-        private void buttonExtractHashtable_Click(object sender, RoutedEventArgs e)
+        private void ExtractWADEntries(string selectedPath, List<WADEntry> entries)
         {
-            SaveFileDialog dialog = new SaveFileDialog
-            {
-                Title = "Select the path to save your Hashtable File",
-                Filter = "Hashtable File (*.hashtable)|*.hashtable",
-                AddExtension = true
-            };
-
-            if (dialog.ShowDialog() == true)
-            {
-                try
-                {
-                    List<string> lines = new List<string>();
-                    foreach (KeyValuePair<ulong, string> pair in StringDictionary)
-                    {
-                        lines.Add(pair.Key.ToString() + " " + pair.Value);
-                    }
-                    File.WriteAllLines(dialog.FileName, lines.ToArray());
-                }
-                catch (Exception exception)
-                {
-                    Logging.LogException(Logger, "Failed to Extract the current Hashtable", exception);
-                    return;
-                }
-
-                MessageBox.Show("Writing Succesful!", "", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-        }
-
-        private void ExtractWAD(string selectedPath, List<WADEntry> selectedEntries)
-        {
-            this.progressBarWadExtraction.Visibility = Visibility.Visible;
-            this.progressBarWadExtraction.Maximum = selectedEntries.Count;
+            this.progressBarWadExtraction.Maximum = entries.Count;
             this.IsEnabled = false;
 
             BackgroundWorker wadExtractor = new BackgroundWorker
@@ -336,10 +373,10 @@ namespace Obsidian
 
             wadExtractor.DoWork += (sender, e) =>
             {
-                Dictionary<string, byte[]> entries = new Dictionary<string, byte[]>();
+                Dictionary<string, byte[]> fileEntries = new Dictionary<string, byte[]>();
                 double progress = 0;
 
-                foreach (WADEntry entry in selectedEntries)
+                foreach (WADEntry entry in entries)
                 {
                     byte[] entryData = entry.GetContent(true);
                     string entryName;
@@ -354,14 +391,14 @@ namespace Obsidian
                         entryName += "." + Utilities.GetEntryExtension(Utilities.GetLeagueFileExtensionType(entryData));
                     }
 
-                    entries.Add(entryName, entryData);
+                    fileEntries.Add(entryName, entryData);
                     progress += 0.5;
                     wadExtractor.ReportProgress((int)progress);
                 }
 
                 if ((bool)this.Config["ParallelExtraction"])
                 {
-                    Parallel.ForEach(entries, (entry) =>
+                    Parallel.ForEach(fileEntries, (entry) =>
                     {
                         File.WriteAllBytes(string.Format("{0}//{1}", selectedPath, entry.Key), entry.Value);
                         progress += 0.5;
@@ -370,7 +407,7 @@ namespace Obsidian
                 }
                 else
                 {
-                    foreach (KeyValuePair<string, byte[]> entry in entries)
+                    foreach (KeyValuePair<string, byte[]> entry in fileEntries)
                     {
                         File.WriteAllBytes(string.Format("{0}//{1}", selectedPath, entry.Key), entry.Value);
                         progress += 0.5;
@@ -382,8 +419,8 @@ namespace Obsidian
             wadExtractor.RunWorkerCompleted += (sender, args) =>
             {
                 this.IsEnabled = true;
-                this.progressBarWadExtraction.Value = 0;
-                this.progressBarWadExtraction.Visibility = Visibility.Hidden;
+                this.progressBarWadExtraction.Maximum = 100;
+                this.progressBarWadExtraction.Value = 100;
                 MessageBox.Show("Extraction Succesfull!", "", MessageBoxButton.OK, MessageBoxImage.Information);
                 Logger.Info("WAD Extraction Successfull!");
             };
