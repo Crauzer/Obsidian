@@ -15,7 +15,136 @@ namespace Obsidian.Utils
     {
         public static void GenerateWADStrings(ILog logger, WADFile wad, Dictionary<ulong, string> stringDictionary)
         {
+            List<string> strings = new List<string>();
 
+            foreach (WADEntry entry in wad.Entries.Where(x => x.Type != EntryType.FileRedirection))
+            {
+                byte[] entryContent = entry.GetContent(true);
+                LeagueFileType fileType = Utilities.GetLeagueFileExtensionType(entryContent);
+
+                if (fileType == LeagueFileType.BIN)
+                {
+                    strings.AddRange(ProcessBINFile(new BINFile(new MemoryStream(entryContent))));
+                }
+            }
+
+            using (XXHash64 xxHash = XXHash64.Create())
+            {
+                for (int i = 0; i < strings.Count; i++)
+                {
+                    string fetchedString = strings[i];
+                    if (!string.IsNullOrEmpty(fetchedString))
+                    {
+                        ulong hash = BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(fetchedString.ToLower())), 0);
+
+                        if (!stringDictionary.ContainsKey(hash))
+                        {
+                            stringDictionary.Add(hash, fetchedString);
+                        }
+                    }
+                }
+            }
+        }
+
+        private static IEnumerable<string> ProcessBINFile(BINFile bin)
+        {
+            List<string> strings = new List<string>();
+
+            foreach (BINFileEntry entry in bin.Entries)
+            {
+                strings.AddRange(ProcessBINEntry(entry));
+            }
+
+            return strings.AsEnumerable();
+        }
+
+        private static IEnumerable<string> ProcessBINEntry(BINFileEntry entry)
+        {
+            List<string> strings = new List<string>();
+
+            foreach (BINFileValue value in entry.Values)
+            {
+                strings.AddRange(ProcessBINValue(value));
+            }
+
+            return strings.AsEnumerable();
+        }
+
+        private static IEnumerable<string> ProcessBINValue(BINFileValue value)
+        {
+            List<string> strings = new List<string>();
+
+            if (value.Type == BINFileValueType.String)
+            {
+                strings.Add(value.Value as string);
+            }
+            else if (value.Type == BINFileValueType.AdditionalOptionalData)
+            {
+                strings.AddRange(ProcessBINAdditionalData(value.Value as BINFileAdditionalData));
+            }
+            else if (value.Type == BINFileValueType.Container)
+            {
+                strings.AddRange(ProcessBINContainer(value.Value as BINFileContainer));
+            }
+            else if (value.Type == BINFileValueType.Embedded || value.Type == BINFileValueType.Structure)
+            {
+                strings.AddRange(ProcessBINStructure(value.Value as BINFileStructure));
+            }
+            else if (value.Type == BINFileValueType.Map)
+            {
+                strings.AddRange(ProcessBINMap(value.Value as BINFileMap));
+            }
+
+            return strings.AsEnumerable();
+        }
+
+        private static IEnumerable<string> ProcessBINAdditionalData(BINFileAdditionalData additionalData)
+        {
+            List<string> strings = new List<string>();
+
+            foreach (BINFileValue value in additionalData.Entries)
+            {
+                strings.AddRange(ProcessBINValue(value));
+            }
+
+            return strings.AsEnumerable();
+        }
+
+        private static IEnumerable<string> ProcessBINContainer(BINFileContainer container)
+        {
+            List<string> strings = new List<string>();
+
+            foreach (BINFileValue value in container.Entries)
+            {
+                strings.AddRange(ProcessBINValue(value));
+            }
+
+            return strings.AsEnumerable();
+        }
+
+        private static IEnumerable<string> ProcessBINStructure(BINFileStructure structure)
+        {
+            List<string> strings = new List<string>();
+
+            foreach (BINFileValue value in structure.Entries)
+            {
+                strings.AddRange(ProcessBINValue(value));
+            }
+
+            return strings.AsEnumerable();
+        }
+
+        private static IEnumerable<string> ProcessBINMap(BINFileMap map)
+        {
+            List<string> strings = new List<string>();
+
+            foreach (BINFileValuePair valuePair in map.Entries)
+            {
+                strings.AddRange(ProcessBINValue(valuePair.Pair.Key));
+                strings.AddRange(ProcessBINValue(valuePair.Pair.Value));
+            }
+
+            return strings.AsEnumerable();
         }
 
         private static IEnumerable<string> GetLinkedFileStrings(List<string> linkedFiles)

@@ -4,7 +4,6 @@ using log4net;
 using log4net.Core;
 using Microsoft.Win32;
 using Obsidian.Utils;
-using Obsidian.Windows;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -57,12 +56,6 @@ namespace Obsidian
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Logging.LogFatal(Logger, "An unhandled exception was thrown, the program will now terminate", (Exception)e.ExceptionObject);
-        }
-
-        private void image_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            AboutWindow aboutWindow = new AboutWindow();
-            aboutWindow.Show();
         }
 
         private void datagridWadEntries_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
