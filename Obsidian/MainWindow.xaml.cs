@@ -18,6 +18,7 @@ using System.Windows.Input;
 using Newtonsoft.Json.Linq;
 using Fantome.Libraries.League.Helpers.Cryptography;
 using System.Text;
+using MaterialDesignThemes.Wpf;
 
 namespace Obsidian
 {
@@ -280,18 +281,15 @@ namespace Obsidian
             }
         }
 
-        private void menuAddFile_Click(object sender, RoutedEventArgs e)
-        {
-            FileAddWindow fileAddWindow = new FileAddWindow(this);
-            fileAddWindow.Show();
-            this.IsEnabled = false;
-        }
-
         private void menuAddFileRedirection_Click(object sender, RoutedEventArgs e)
         {
-            FileRedirectionAddWindow fileRedirectionAddWindow = new FileRedirectionAddWindow(this);
-            fileRedirectionAddWindow.Show();
-            this.IsEnabled = false;
+            //Don't need these for file redirection
+            this.buttonAddFileOpen.Visibility = Visibility.Collapsed;
+            this.checkboxAddFileCompressed.Visibility = Visibility.Collapsed;
+
+            //File redirection needs other hints
+            HintAssist.SetHint(this.textboxAddFileFilePath, "Path");
+            HintAssist.SetHint(this.textboxAddFilePath, "File Redirection");
         }
 
         private void menuRemove_Click(object sender, RoutedEventArgs e)
@@ -426,6 +424,76 @@ namespace Obsidian
             };
 
             wadExtractor.RunWorkerAsync();
+        }
+
+        private void buttonAddFileOpen_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Multiselect = false
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                this.textboxAddFileFilePath.Text = openFileDialog.FileName;
+                this.buttonAddFileAdd.IsEnabled = true;
+            }
+        }
+
+        private void buttonAddFileAdd_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.buttonAddFileOpen.Visibility == Visibility.Visible)
+            {
+                try
+                {
+                    this.Wad.AddEntry(this.textboxAddFilePath.Text, File.ReadAllBytes(this.textboxAddFileFilePath.Text), this.checkboxAddFileCompressed.IsChecked.Value);
+
+                    using (XXHash64 xxHash = XXHash64.Create())
+                    {
+                        StringDictionary.Add(BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(this.textboxAddFilePath.Text.ToLower())), 0), this.textboxAddFilePath.Text);
+                    }
+
+                    CollectionViewSource.GetDefaultView(this.datagridWadEntries.ItemsSource).Refresh();
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show(exception.Message, "Please choose a different Path", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+            else
+            {
+                try
+                {
+                    this.Wad.AddEntry(this.textboxAddFileFilePath.Text, this.textboxAddFilePath.Text);
+
+                    using (XXHash64 xxHash = XXHash64.Create())
+                    {
+                        StringDictionary.Add(BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(this.textboxAddFileFilePath.Text.ToLower())), 0), this.textboxAddFileFilePath.Text);
+                    }
+
+                    CollectionViewSource.GetDefaultView(this.datagridWadEntries.ItemsSource).Refresh();
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show(exception.Message, "Please choose a different Path", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+        }
+
+        private void dialogHost_DialogClosing(object sender, DialogClosingEventArgs eventArgs)
+        {
+            //Default Values
+            this.textboxAddFileFilePath.Text = "";
+            this.textboxAddFilePath.Text = "";
+            this.checkboxAddFileCompressed.IsChecked = true;
+
+            //Default Hints
+            HintAssist.SetHint(this.textboxAddFileFilePath, "File Path");
+            HintAssist.SetHint(this.textboxAddFilePath, "Path");
+
+            //Default Visibility
+            this.checkboxAddFileCompressed.Visibility = Visibility.Visible;
+            this.buttonAddFileOpen.Visibility = Visibility.Visible;
         }
     }
 }

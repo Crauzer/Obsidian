@@ -19,93 +19,124 @@
         <valueConverters:SizeValueConverter x:Key="SizeValueConverter"/>
         <valueConverters:WadNameConverter x:Key="WadNameConverter"/>
     </Window.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="{Binding Width, ElementName=dockPanel}"/>
-            <RowDefinition Height="{Binding Height, ElementName=progressBarWadExtraction}"/>
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+    <materialDesign:DialogHost x:Name="dialogHost" DialogClosing="dialogHost_DialogClosing">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="{Binding Width, ElementName=dockPanel}"/>
+                <RowDefinition Height="{Binding Height, ElementName=progressBarWadExtraction}"/>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <DockPanel x:Name="dockPanel">
-            <Grid x:Name="grid">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+            <DockPanel x:Name="dockPanel">
+                <Grid x:Name="grid">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Menu IsMainMenu="True" DockPanel.Dock="Top">
+                        <MenuItem Header="File" Grid.Column="0">
+                            <MenuItem x:Name="menuOpen" Header="Open" Click="menuOpen_Click">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="File"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem x:Name="menuSave" Header="Save" Click="menuSave_Click" IsEnabled="False">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="FileExport"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <Separator/>
+                            <MenuItem x:Name="menuImportHashtable" Header="Import Hashtable" Click="menuImportHashtable_Click" IsEnabled="False">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="FileDocument"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem x:Name="menuExportHashtable" Header="Export Hashtable" Click="menuExportHashtable_Click" IsEnabled="False">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="FileDocument"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <Separator/>
+                            <MenuItem x:Name="menuExportAll" Header="Export All" Click="menuExportAll_Click" IsEnabled="False">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="ContentSaveAll"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem x:Name="menuExportSelected" Header="Export Selected" Click="menuExportSelected_Click" IsEnabled="False">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="ContentSaveAll"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </MenuItem>
+                        <MenuItem Header="Edit" Grid.Column="0">
+                            <MenuItem x:Name="menuRemove" Header="Remove" Click="menuRemove_Click" IsEnabled="False">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="PlaylistRemove"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <Separator/>
+                            <MenuItem x:Name="menuAddFile" Header="Add File" IsEnabled="False" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="FileHidden"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem x:Name="menuAddFileRedirection" Header="Add File Redirection" Click="menuAddFileRedirection_Click" IsEnabled="False" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="FileHidden"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <Separator/>
+                            <MenuItem x:Name="menuModifyData" Header="Modify Data" Click="menuModifyData_Click" IsEnabled="False">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="FileRestore"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </MenuItem>
+                        <TextBox x:Name="textBoxFilter" materialDesign:HintAssist.Hint="Filter" TextChanged="textBoxFilter_TextChanged" Grid.Column="0"/>
+                    </Menu>
+                </Grid>
+            </DockPanel>
 
-                <Menu IsMainMenu="True" DockPanel.Dock="Top">
-                    <MenuItem Header="File" Grid.Column="0">
-                        <MenuItem x:Name="menuOpen" Header="Open" Click="menuOpen_Click">
-                            <MenuItem.Icon>
-                                <materialDesign:PackIcon Kind="File"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem x:Name="menuSave" Header="Save" Click="menuSave_Click" IsEnabled="False">
-                            <MenuItem.Icon>
-                                <materialDesign:PackIcon Kind="FileExport"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <Separator/>
-                        <MenuItem x:Name="menuImportHashtable" Header="Import Hashtable" Click="menuImportHashtable_Click" IsEnabled="False">
-                            <MenuItem.Icon>
-                                <materialDesign:PackIcon Kind="FileDocument"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem x:Name="menuExportHashtable" Header="Export Hashtable" Click="menuExportHashtable_Click" IsEnabled="False">
-                            <MenuItem.Icon>
-                                <materialDesign:PackIcon Kind="FileDocument"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <Separator/>
-                        <MenuItem x:Name="menuExportAll" Header="Export All" Click="menuExportAll_Click" IsEnabled="False">
-                            <MenuItem.Icon>
-                                <materialDesign:PackIcon Kind="ContentSaveAll"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem x:Name="menuExportSelected" Header="Export Selected" Click="menuExportSelected_Click" IsEnabled="False">
-                            <MenuItem.Icon>
-                                <materialDesign:PackIcon Kind="ContentSaveAll"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                    </MenuItem>
-                    <MenuItem Header="Edit" Grid.Column="0">
-                        <MenuItem x:Name="menuRemove" Header="Remove" Click="menuRemove_Click" IsEnabled="False">
-                            <MenuItem.Icon>
-                                <materialDesign:PackIcon Kind="PlaylistRemove"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <Separator/>
-                        <MenuItem x:Name="menuAddFile" Header="Add File" Click="menuAddFile_Click" IsEnabled="False">
-                            <MenuItem.Icon>
-                                <materialDesign:PackIcon Kind="FileHidden"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem x:Name="menuAddFileRedirection" Header="Add File Redirection" Click="menuAddFileRedirection_Click" IsEnabled="False">
-                            <MenuItem.Icon>
-                                <materialDesign:PackIcon Kind="FileHidden"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <Separator/>
-                        <MenuItem x:Name="menuModifyData" Header="Modify Data" Click="menuModifyData_Click" IsEnabled="False">
-                            <MenuItem.Icon>
-                                <materialDesign:PackIcon Kind="FileRestore"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                    </MenuItem>
-                    <TextBox x:Name="textBoxFilter" materialDesign:HintAssist.Hint="Filter" TextChanged="textBoxFilter_TextChanged" Grid.Column="0"/>
-                </Menu>
+            <ProgressBar Grid.Row="1" x:Name="progressBarWadExtraction" Height="5" Value="100"/>
+
+            <DataGrid Grid.Row="2" x:Name="datagridWadEntries" AutoGenerateColumns="False" GridLinesVisibility="Vertical" VerticalGridLinesBrush="#7F000000" SelectedCellsChanged="datagridWadEntries_SelectedCellsChanged" BeginningEdit="datagridWadEntries_BeginningEdit">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Converter={StaticResource WadNameConverter}}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Type" Binding="{Binding Type}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Size" Binding="{Binding UncompressedSize, Converter={StaticResource SizeValueConverter}}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="File Redirection" Binding="{Binding FileRedirection}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+        <materialDesign:DialogHost.DialogContent>
+            <Grid x:Name="gridDrawer" Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Button x:Name="buttonAddFileClose" Grid.Row="0" Style="{DynamicResource MaterialDesignFloatingActionButton}" Width="25" Height="25" HorizontalAlignment="Right" Command="materialDesign:DialogHost.CloseDialogCommand">
+                    <materialDesign:PackIcon Kind="Close"/> 
+                </Button>
+
+                <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,15,0,0">
+                    <TextBox x:Name="textboxAddFileFilePath" materialDesign:HintAssist.Hint="File Path" materialDesign:HintAssist.IsFloating="True" Width="800" MaxWidth="800"/>
+                    <Button x:Name="buttonAddFileOpen" Margin="15,0,0,0" Style="{DynamicResource MaterialDesignFloatingActionButton}" Width="25" Height="25" Click="buttonAddFileOpen_Click">
+                        <materialDesign:PackIcon Kind="DotsHorizontal"/>
+                    </Button>
+                </StackPanel>
+                <StackPanel Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,5,0,0">
+                    <TextBox x:Name="textboxAddFilePath" materialDesign:HintAssist.Hint="Path" materialDesign:HintAssist.IsFloating="True" Width="800" MaxWidth="800"/>
+                </StackPanel>
+                <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,15,0,0">
+                    <Button x:Name="buttonAddFileAdd" Content="Add" Style="{DynamicResource MaterialDesignRaisedDarkButton}" Click="buttonAddFileAdd_Click" Command="materialDesign:DialogHost.CloseDialogCommand"/>
+                    <CheckBox x:Name="checkboxAddFileCompressed" Content="Compressed" Margin="20,0,0,0" IsChecked="True"/>
+                </StackPanel>
+
             </Grid>
-        </DockPanel>
-
-        <ProgressBar Grid.Row="1" x:Name="progressBarWadExtraction" Height="5" Value="100"/>
-        
-        <DataGrid Grid.Row="2" x:Name="datagridWadEntries" AutoGenerateColumns="False" GridLinesVisibility="Vertical" VerticalGridLinesBrush="#7F000000" SelectedCellsChanged="datagridWadEntries_SelectedCellsChanged" BeginningEdit="datagridWadEntries_BeginningEdit">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" Binding="{Binding Converter={StaticResource WadNameConverter}}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Type" Binding="{Binding Type}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Size" Binding="{Binding UncompressedSize, Converter={StaticResource SizeValueConverter}}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="File Redirection" Binding="{Binding FileRedirection}"/>
-            </DataGrid.Columns>
-        </DataGrid>
-    </Grid>
+        </materialDesign:DialogHost.DialogContent>
+    </materialDesign:DialogHost>
 </Window>
