@@ -128,6 +128,7 @@ namespace Obsidian
                 this.menuExportAll.IsEnabled = true;
                 this.menuAddFile.IsEnabled = true;
                 this.menuAddFileRedirection.IsEnabled = true;
+                this.menuAddFolder.IsEnabled = true;
                 this.CurrentlySelectedEntry = null;
                 this.datagridWadEntries.ItemsSource = this.Wad.Entries;
 
@@ -347,6 +348,207 @@ namespace Obsidian
 
         }
 
+        private void buttonAddFileOpen_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Multiselect = false
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                this.textboxAddFileFilePath.Text = openFileDialog.FileName;
+                this.buttonAddFileAdd.IsEnabled = true;
+            }
+        }
+
+        private void buttonAddFileAdd_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.buttonAddFileOpen.Visibility == Visibility.Visible)
+            {
+                try
+                {
+                    this.Wad.AddEntry(this.textboxAddFilePath.Text, File.ReadAllBytes(this.textboxAddFileFilePath.Text), this.checkboxAddFileCompressed.IsChecked.Value);
+
+                    using (XXHash64 xxHash = XXHash64.Create())
+                    {
+                        StringDictionary.Add(BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(this.textboxAddFilePath.Text.ToLower())), 0), this.textboxAddFilePath.Text);
+                    }
+
+                    CollectionViewSource.GetDefaultView(this.datagridWadEntries.ItemsSource).Refresh();
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show(exception.Message, "Please choose a different Path", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+            else
+            {
+                try
+                {
+                    this.Wad.AddEntry(this.textboxAddFileFilePath.Text, this.textboxAddFilePath.Text);
+
+                    using (XXHash64 xxHash = XXHash64.Create())
+                    {
+                        StringDictionary.Add(BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(this.textboxAddFileFilePath.Text.ToLower())), 0), this.textboxAddFileFilePath.Text);
+                    }
+
+                    CollectionViewSource.GetDefaultView(this.datagridWadEntries.ItemsSource).Refresh();
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show(exception.Message, "Please choose a different Path", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+        }
+
+        private void menuAddFolder_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog()
+            {
+                ShowNewFolderButton = false
+            };
+
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                DirectoryInfo directory = new DirectoryInfo(dialog.SelectedPath);
+
+                using (XXHash64 xxHash = XXHash64.Create())
+                {
+                    foreach (FileInfo fileInfo in directory.EnumerateFiles("*", SearchOption.AllDirectories))
+                    {
+                        string path = fileInfo.FullName.Substring(directory.FullName.Length + 1);
+                        ulong hashedPath = BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(path.ToLower())), 0);
+
+                        if (!StringDictionary.ContainsKey(hashedPath))
+                        {
+                            StringDictionary.Add(hashedPath, path);
+                        }
+
+                        this.Wad.AddEntry(hashedPath, File.ReadAllBytes(fileInfo.FullName), true);
+                    }
+                }
+
+                Logger.Info("Added files from directory: " + dialog.SelectedPath);
+            }
+        }
+
+        private void dialogHost_DialogClosing(object sender, DialogClosingEventArgs eventArgs)
+        {
+            //Default Values
+            this.textboxAddFileFilePath.Text = "";
+            this.textboxAddFilePath.Text = "";
+            this.checkboxAddFileCompressed.IsChecked = true;
+
+            //Default Hints
+            HintAssist.SetHint(this.textboxAddFileFilePath, "File Path");
+            HintAssist.SetHint(this.textboxAddFilePath, "Path");
+
+            //Default Visibility
+            this.checkboxAddFileCompressed.Visibility = Visibility.Visible;
+            this.buttonAddFileOpen.Visibility = Visibility.Visible;
+        }
+
+        private void menuCreateEmpty_Click(object sender, RoutedEventArgs e)
+        {
+            this.Wad?.Dispose();
+            this.Wad = new WADFile();
+
+            StringDictionary = new Dictionary<ulong, string>();
+
+            if ((bool)this.Config["GenerateWadDictionary"])
+            {
+                try
+                {
+                    WADHashGenerator.GenerateWADStrings(Logger, this.Wad, StringDictionary);
+                }
+                catch (Exception excp)
+                {
+                    Logging.LogException(Logger, "Failed to Generate WAD String Dictionary", excp);
+                }
+            }
+
+            this.menuSave.IsEnabled = true;
+            this.menuImportHashtable.IsEnabled = true;
+            this.menuExportHashtable.IsEnabled = true;
+            this.menuExportAll.IsEnabled = true;
+            this.menuAddFile.IsEnabled = true;
+            this.menuAddFileRedirection.IsEnabled = true;
+            this.menuAddFolder.IsEnabled = true;
+            this.CurrentlySelectedEntry = null;
+            this.datagridWadEntries.ItemsSource = this.Wad.Entries;
+
+            Logger.Info("Created empty WAD File");
+        }
+
+        private void menuCreateFromDirectory_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog()
+            {
+                ShowNewFolderButton = false
+            };
+
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                this.Wad?.Dispose();
+                this.Wad = new WADFile();
+                StringDictionary = new Dictionary<ulong, string>();
+
+                DirectoryInfo directory = new DirectoryInfo(dialog.SelectedPath);
+
+                using (XXHash64 xxHash = XXHash64.Create())
+                {
+                    foreach (FileInfo fileInfo in directory.EnumerateFiles("*", SearchOption.AllDirectories))
+                    {
+                        string path = fileInfo.FullName.Substring(directory.FullName.Length + 1);
+                        string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(path);
+                        bool hasUnknownPath = fileNameWithoutExtension.All(c => "ABCDEF0123456789".Contains(c)) && fileNameWithoutExtension.Length <= 16;
+
+                        if (hasUnknownPath)
+                        {
+                            ulong hashedPath = HexStringToUInt64(fileNameWithoutExtension);
+                            this.Wad.AddEntry(hashedPath, File.ReadAllBytes(fileInfo.FullName), true);
+                        }
+                        else
+                        {
+                            ulong hashedPath = BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(path.ToLower())), 0);
+                            if (!StringDictionary.ContainsKey(hashedPath))
+                            {
+                                StringDictionary.Add(hashedPath, path);
+                            }
+
+                            this.Wad.AddEntry(hashedPath, File.ReadAllBytes(fileInfo.FullName), true);
+                        }
+                    }
+                }
+
+                if ((bool)this.Config["GenerateWadDictionary"])
+                {
+                    try
+                    {
+                        WADHashGenerator.GenerateWADStrings(Logger, this.Wad, StringDictionary);
+                    }
+                    catch (Exception excp)
+                    {
+                        Logging.LogException(Logger, "Failed to Generate WAD String Dictionary", excp);
+                    }
+                }
+
+                this.menuSave.IsEnabled = true;
+                this.menuImportHashtable.IsEnabled = true;
+                this.menuExportHashtable.IsEnabled = true;
+                this.menuExportAll.IsEnabled = true;
+                this.menuAddFile.IsEnabled = true;
+                this.menuAddFileRedirection.IsEnabled = true;
+                this.menuAddFolder.IsEnabled = true;
+                this.CurrentlySelectedEntry = null;
+                this.datagridWadEntries.ItemsSource = this.Wad.Entries;
+
+                Logger.Info("Created WAD file from directory: " + dialog.SelectedPath);
+                CollectionViewSource.GetDefaultView(this.datagridWadEntries.ItemsSource).Refresh();
+            }
+        }
+
         private void ExtractWADEntries(string selectedPath, List<WADEntry> entries)
         {
             this.progressBarWadExtraction.Maximum = entries.Count;
@@ -419,74 +621,15 @@ namespace Obsidian
             wadExtractor.RunWorkerAsync();
         }
 
-        private void buttonAddFileOpen_Click(object sender, RoutedEventArgs e)
+        private ulong HexStringToUInt64(string hexString)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog
+            byte[] byteArray = new byte[hexString.Length / 2];
+            for (int i = 0; i < hexString.Length; i += 2)
             {
-                Multiselect = false
-            };
-
-            if (openFileDialog.ShowDialog() == true)
-            {
-                this.textboxAddFileFilePath.Text = openFileDialog.FileName;
-                this.buttonAddFileAdd.IsEnabled = true;
+                byteArray[i / 2] = Convert.ToByte(hexString.Substring(i, 2), 16);
             }
-        }
 
-        private void buttonAddFileAdd_Click(object sender, RoutedEventArgs e)
-        {
-            if (this.buttonAddFileOpen.Visibility == Visibility.Visible)
-            {
-                try
-                {
-                    this.Wad.AddEntry(this.textboxAddFilePath.Text, File.ReadAllBytes(this.textboxAddFileFilePath.Text), this.checkboxAddFileCompressed.IsChecked.Value);
-
-                    using (XXHash64 xxHash = XXHash64.Create())
-                    {
-                        StringDictionary.Add(BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(this.textboxAddFilePath.Text.ToLower())), 0), this.textboxAddFilePath.Text);
-                    }
-
-                    CollectionViewSource.GetDefaultView(this.datagridWadEntries.ItemsSource).Refresh();
-                }
-                catch (Exception exception)
-                {
-                    MessageBox.Show(exception.Message, "Please choose a different Path", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-            }
-            else
-            {
-                try
-                {
-                    this.Wad.AddEntry(this.textboxAddFileFilePath.Text, this.textboxAddFilePath.Text);
-
-                    using (XXHash64 xxHash = XXHash64.Create())
-                    {
-                        StringDictionary.Add(BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(this.textboxAddFileFilePath.Text.ToLower())), 0), this.textboxAddFileFilePath.Text);
-                    }
-
-                    CollectionViewSource.GetDefaultView(this.datagridWadEntries.ItemsSource).Refresh();
-                }
-                catch (Exception exception)
-                {
-                    MessageBox.Show(exception.Message, "Please choose a different Path", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-            }
-        }
-
-        private void dialogHost_DialogClosing(object sender, DialogClosingEventArgs eventArgs)
-        {
-            //Default Values
-            this.textboxAddFileFilePath.Text = "";
-            this.textboxAddFilePath.Text = "";
-            this.checkboxAddFileCompressed.IsChecked = true;
-
-            //Default Hints
-            HintAssist.SetHint(this.textboxAddFileFilePath, "File Path");
-            HintAssist.SetHint(this.textboxAddFilePath, "Path");
-
-            //Default Visibility
-            this.checkboxAddFileCompressed.Visibility = Visibility.Visible;
-            this.buttonAddFileOpen.Visibility = Visibility.Visible;
+            return BitConverter.ToUInt64(byteArray, 0);
         }
     }
 }

@@ -68,6 +68,17 @@
                                     <materialDesign:PackIcon Kind="ContentSaveAll"/>
                                 </MenuItem.Icon>
                             </MenuItem>
+                            <Separator/>
+                            <MenuItem x:Name="menuCreateEmpty" Header="Create Empty" Click="menuCreateEmpty_Click">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="CheckboxBlankOutline"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem x:Name="menuCreateFromDirectory" Header="Create From Directory" Click="menuCreateFromDirectory_Click">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="FileTree"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
                         </MenuItem>
                         <MenuItem Header="Edit" Grid.Column="0">
                             <MenuItem x:Name="menuRemove" Header="Remove" Click="menuRemove_Click" IsEnabled="False">
@@ -84,6 +95,11 @@
                             <MenuItem x:Name="menuAddFileRedirection" Header="Add File Redirection" Click="menuAddFileRedirection_Click" IsEnabled="False" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
                                 <MenuItem.Icon>
                                     <materialDesign:PackIcon Kind="FileHidden"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem x:Name="menuAddFolder" Header="Add Folder" Click="menuAddFolder_Click" IsEnabled="False">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="Folder"/>
                                 </MenuItem.Icon>
                             </MenuItem>
                             <Separator/>

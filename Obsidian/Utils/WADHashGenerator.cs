@@ -24,12 +24,23 @@ namespace Obsidian.Utils
 
                 if (fileType == LeagueFileType.BIN)
                 {
-                    BINFile bin = new BINFile(new MemoryStream(entryContent));
+                    BINFile bin = null;
+                    try
+                    {
+                        bin = new BINFile(new MemoryStream(entryContent));
+                    }
+                    catch (Exception excp)
+                    {
+                        Logging.LogException(logger, "There was an error while reading a BIN file", excp);
+                    }
 
-                    strings.AddRange(ProcessBINLinkedFiles(bin.LinkedFiles));
-                    strings = strings.Distinct().ToList();
+                    if (bin != null)
+                    {
+                        strings.AddRange(ProcessBINLinkedFiles(bin.LinkedFiles));
+                        strings = strings.Distinct().ToList();
 
-                    strings.AddRange(ProcessBINFile(bin));
+                        strings.AddRange(ProcessBINFile(bin));
+                    }
                 }
             }
 
@@ -177,31 +188,39 @@ namespace Obsidian.Utils
         {
             List<string> strings = new List<string>();
             string stringToProcess = linkedString;
-            string characterName = linkedString.Substring(5, linkedString.IndexOf('_') - 5);
-            string extension = linkedString.Substring(linkedString.LastIndexOf('.'), linkedString.Length - linkedString.LastIndexOf('.'));
 
-            stringToProcess = stringToProcess.Remove(0, 5 + characterName.Length + 1);
-            stringToProcess = stringToProcess.Remove(stringToProcess.Length - extension.Length);
-
-            while (stringToProcess.Length != 0)
+            try
             {
-                string directoryName = stringToProcess.Substring(0, stringToProcess.IndexOf('_'));
-                stringToProcess = stringToProcess.Remove(0, directoryName.Length + 1);
+                string characterName = linkedString.Substring(5, linkedString.IndexOf('_') - 5);
+                string extension = linkedString.Substring(linkedString.LastIndexOf('.'), linkedString.Length - linkedString.LastIndexOf('.'));
 
-                string skin = "";
-                int indexOfUnderscore = stringToProcess.IndexOf('_');
-                if (indexOfUnderscore != -1)
-                {
-                    skin = stringToProcess.Substring(0, stringToProcess.IndexOf('_'));
-                    stringToProcess = stringToProcess.Remove(0, skin.Length + 1);
-                }
-                else
-                {
-                    skin = stringToProcess;
-                    stringToProcess = stringToProcess.Remove(0);
-                }
+                stringToProcess = stringToProcess.Remove(0, 5 + characterName.Length + 1);
+                stringToProcess = stringToProcess.Remove(stringToProcess.Length - extension.Length);
 
-                strings.Add(string.Format("DATA/Characters/{0}/{1}/{2}{3}", characterName, directoryName, skin, extension));
+                while (stringToProcess.Length != 0)
+                {
+                    string directoryName = stringToProcess.Substring(0, stringToProcess.IndexOf('_'));
+                    stringToProcess = stringToProcess.Remove(0, directoryName.Length + 1);
+
+                    string skin = "";
+                    int indexOfUnderscore = stringToProcess.IndexOf('_');
+                    if (indexOfUnderscore != -1)
+                    {
+                        skin = stringToProcess.Substring(0, stringToProcess.IndexOf('_'));
+                        stringToProcess = stringToProcess.Remove(0, skin.Length + 1);
+                    }
+                    else
+                    {
+                        skin = stringToProcess;
+                        stringToProcess = stringToProcess.Remove(0);
+                    }
+
+                    strings.Add(string.Format("DATA/Characters/{0}/{1}/{2}{3}", characterName, directoryName, skin, extension));
+                }
+            }
+            catch (Exception excp)
+            {
+                strings.Add(linkedString);
             }
 
             return strings.AsEnumerable();
