@@ -116,7 +116,7 @@
 
             <ProgressBar Grid.Row="1" x:Name="progressBarWadExtraction" Height="5" Value="100"/>
 
-            <DataGrid Grid.Row="2" x:Name="datagridWadEntries" AutoGenerateColumns="False" GridLinesVisibility="Vertical" VerticalGridLinesBrush="#7F000000" SelectedCellsChanged="datagridWadEntries_SelectedCellsChanged" BeginningEdit="datagridWadEntries_BeginningEdit">
+            <DataGrid Grid.Row="2" x:Name="datagridWadEntries" AutoGenerateColumns="False" GridLinesVisibility="Vertical" VerticalGridLinesBrush="#7F000000" SelectedCellsChanged="datagridWadEntries_SelectedCellsChanged" BeginningEdit="datagridWadEntries_BeginningEdit" AllowDrop="True" Drop="datagridWadEntries_Drop">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Name" Binding="{Binding Converter={StaticResource WadNameConverter}}" IsReadOnly="True"/>
                     <DataGridTextColumn Header="Type" Binding="{Binding Type}" IsReadOnly="True"/>

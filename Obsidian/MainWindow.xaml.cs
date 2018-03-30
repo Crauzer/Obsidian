@@ -97,42 +97,7 @@ namespace Obsidian
 
             if (dialog.ShowDialog() == true)
             {
-                try
-                {
-                    this.Wad?.Dispose();
-                    this.Wad = new WADFile(dialog.FileName);
-                }
-                catch (Exception excp)
-                {
-                    Logging.LogException(Logger, "Failed to load WAD File: " + dialog.FileName, excp);
-                    return;
-                }
-
-                StringDictionary = new Dictionary<ulong, string>();
-
-                if ((bool)this.Config["GenerateWadDictionary"])
-                {
-                    try
-                    {
-                        WADHashGenerator.GenerateWADStrings(Logger, this.Wad, StringDictionary);
-                    }
-                    catch (Exception excp)
-                    {
-                        Logging.LogException(Logger, "Failed to Generate WAD String Dictionary", excp);
-                    }
-                }
-
-                this.menuSave.IsEnabled = true;
-                this.menuImportHashtable.IsEnabled = true;
-                this.menuExportHashtable.IsEnabled = true;
-                this.menuExportAll.IsEnabled = true;
-                this.menuAddFile.IsEnabled = true;
-                this.menuAddFileRedirection.IsEnabled = true;
-                this.menuAddFolder.IsEnabled = true;
-                this.CurrentlySelectedEntry = null;
-                this.datagridWadEntries.ItemsSource = this.Wad.Entries;
-
-                Logger.Info("Opened WAD File: " + dialog.FileName);
+                OpenWADFile(dialog.FileName);
             }
         }
 
@@ -549,6 +514,28 @@ namespace Obsidian
             }
         }
 
+        private void datagridWadEntries_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] dropPath = e.Data.GetData(DataFormats.FileDrop, true) as string[];
+                if (dropPath.Length != 1)
+                {
+                    MessageBox.Show("You cannot open more than one file", "", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                string extension = Path.GetExtension(dropPath[0]);
+                if (extension != ".client" && extension != ".wad")
+                {
+                    MessageBox.Show("This is not a valid WAD file", "", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                OpenWADFile(dropPath[0]);
+            }
+        }
+
         private void ExtractWADEntries(string selectedPath, List<WADEntry> entries)
         {
             this.progressBarWadExtraction.Maximum = entries.Count;
@@ -630,6 +617,46 @@ namespace Obsidian
             }
 
             return BitConverter.ToUInt64(byteArray, 0);
+        }
+
+        private void OpenWADFile(string filePath)
+        {
+            try
+            {
+                this.Wad?.Dispose();
+                this.Wad = new WADFile(filePath);
+            }
+            catch (Exception excp)
+            {
+                Logging.LogException(Logger, "Failed to load WAD File: " + filePath, excp);
+                return;
+            }
+
+            StringDictionary = new Dictionary<ulong, string>();
+
+            if ((bool)this.Config["GenerateWadDictionary"])
+            {
+                try
+                {
+                    WADHashGenerator.GenerateWADStrings(Logger, this.Wad, StringDictionary);
+                }
+                catch (Exception excp)
+                {
+                    Logging.LogException(Logger, "Failed to Generate WAD String Dictionary", excp);
+                }
+            }
+
+            this.menuSave.IsEnabled = true;
+            this.menuImportHashtable.IsEnabled = true;
+            this.menuExportHashtable.IsEnabled = true;
+            this.menuExportAll.IsEnabled = true;
+            this.menuAddFile.IsEnabled = true;
+            this.menuAddFileRedirection.IsEnabled = true;
+            this.menuAddFolder.IsEnabled = true;
+            this.CurrentlySelectedEntry = null;
+            this.datagridWadEntries.ItemsSource = this.Wad.Entries;
+
+            Logger.Info("Opened WAD File: " + filePath);
         }
     }
 }
