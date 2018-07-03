@@ -133,7 +133,7 @@ namespace Obsidian
             {
                 Title = "Select the Hashtable files you want to load",
                 Multiselect = true,
-                Filter = "Hashtable Files (*.hashtable)|*.hashtable"
+                Filter = "Text Files (*.txt)|*.txt"
             };
 
             if (dialog.ShowDialog() == true)
@@ -180,8 +180,8 @@ namespace Obsidian
         {
             SaveFileDialog dialog = new SaveFileDialog
             {
-                Title = "Select the path to save your Hashtable File",
-                Filter = "Hashtable File (*.hashtable)|*.hashtable",
+                Title = "Select the path to save the currently generated hashtable",
+                Filter = "Text File (*.txt)|*.txt",
                 AddExtension = true
             };
 
