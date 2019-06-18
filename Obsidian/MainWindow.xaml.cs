@@ -144,21 +144,16 @@ namespace Obsidian
                     {
                         foreach (string line in File.ReadAllLines(fileName))
                         {
-                            string[] lineSplit = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-                            if (ulong.TryParse(lineSplit[0], out ulong hash) && !StringDictionary.ContainsKey(hash))
+                            using (XXHash64 xxHash = XXHash64.Create())
                             {
-                                StringDictionary.Add(ulong.Parse(lineSplit[0]), lineSplit[1]);
-                            }
-                            else
-                            {
-                                using (XXHash64 xxHash = XXHash64.Create())
+                                ulong key = BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.UTF8.GetBytes(line.ToLower())), 0);
+                                if (!StringDictionary.ContainsKey(key))
                                 {
-                                    ulong key = BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(lineSplit[0].ToLower())), 0);
-                                    if (!StringDictionary.ContainsKey(key))
-                                    {
-                                        StringDictionary.Add(key, lineSplit[0].ToLower());
-                                    }
+                                    StringDictionary.Add(key, line.ToLower());
+                                }
+                                else if(StringDictionary[key].Length > line.Length)
+                                {
+                                    StringDictionary[key] = line.ToLower();
                                 }
                             }
                         }
