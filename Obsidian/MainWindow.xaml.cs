@@ -563,7 +563,8 @@ namespace Obsidian
                     if (StringDictionary.ContainsKey(entry.XXHash))
                     {
                         entryName = StringDictionary[entry.XXHash];
-                        Directory.CreateDirectory(string.Format("{0}//{1}", selectedPath, Path.GetDirectoryName(entryName)));
+                        int lastSeparatorPosition = entryName.LastIndexOf('/');
+                        Directory.CreateDirectory(Path.Combine(selectedPath, entryName.Substring(0, lastSeparatorPosition + 1)));
                     }
                     else
                     {
@@ -578,9 +579,9 @@ namespace Obsidian
 
                 if ((bool)this.Config["ParallelExtraction"])
                 {
-                    Parallel.ForEach(fileEntries, (entry) =>
+                    Parallel.ForEach(fileEntries, entry =>
                     {
-                        File.WriteAllBytes(string.Format("{0}//{1}", selectedPath, entry.Key), entry.Value);
+                        File.WriteAllBytes(Path.Combine(selectedPath, TruncateLongPath(entry.Key)), entry.Value);
                         progress += 0.5;
                         wadExtractor.ReportProgress((int)progress);
                     });
@@ -589,7 +590,7 @@ namespace Obsidian
                 {
                     foreach (KeyValuePair<string, byte[]> entry in fileEntries)
                     {
-                        File.WriteAllBytes(string.Format("{0}//{1}", selectedPath, entry.Key), entry.Value);
+                        File.WriteAllBytes(Path.Combine(selectedPath, TruncateLongPath(entry.Key)), entry.Value);
                         progress += 0.5;
                         wadExtractor.ReportProgress((int)progress);
                     }
@@ -598,14 +599,32 @@ namespace Obsidian
 
             wadExtractor.RunWorkerCompleted += (sender, args) =>
             {
-                this.IsEnabled = true;
+                if (args.Error != null)
+                {
+                    MessageBox.Show($"An error occured:\n{args.Error}", "", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                else
+                {
+                    MessageBox.Show("Extraction Successful!", "", MessageBoxButton.OK, MessageBoxImage.Information);
+                    Logger.Info("WAD Extraction Successful!");
+                }
+
                 this.progressBarWadExtraction.Maximum = 100;
                 this.progressBarWadExtraction.Value = 100;
-                MessageBox.Show("Extraction Succesfull!", "", MessageBoxButton.OK, MessageBoxImage.Information);
-                Logger.Info("WAD Extraction Successfull!");
+                this.IsEnabled = true;
             };
 
             wadExtractor.RunWorkerAsync();
+        }
+
+        private string TruncateLongPath(string path)
+        {
+            if (path.Length < 256 || Path.GetFileName(path).Length < 256)
+                return path;
+
+            int lastSeparatorPosition = path.LastIndexOf('/');
+            string extension = Path.GetExtension(path);
+            return path.Substring(0, lastSeparatorPosition + 1) + Path.GetFileNameWithoutExtension(path).Substring(0, 255 - extension.Length) + extension;
         }
 
         private ulong HexStringToUInt64(string hexString)
