@@ -620,8 +620,10 @@ namespace Obsidian
         private string TruncateLongPath(string path)
         {
             if (path.Length < 256 || Path.GetFileName(path).Length < 256)
+            {
                 return path;
-
+            }
+            
             int lastSeparatorPosition = path.LastIndexOf('/');
             string extension = Path.GetExtension(path);
             return path.Substring(0, lastSeparatorPosition + 1) + Path.GetFileNameWithoutExtension(path).Substring(0, 255 - extension.Length) + extension;
