@@ -601,7 +601,8 @@ namespace Obsidian
             {
                 if (args.Error != null)
                 {
-                    MessageBox.Show($"An error occured:\n{args.Error}", "", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(string.Format("An error occured:\n{0}", args.Error), "", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Logger.Error(string.Format("WAD extraction failed:\n{0}", args.Error));
                 }
                 else
                 {
@@ -623,7 +624,7 @@ namespace Obsidian
             {
                 return path;
             }
-            
+
             int lastSeparatorPosition = path.LastIndexOf('/');
             string extension = Path.GetExtension(path);
             return path.Substring(0, lastSeparatorPosition + 1) + Path.GetFileNameWithoutExtension(path).Substring(0, 255 - extension.Length) + extension;
