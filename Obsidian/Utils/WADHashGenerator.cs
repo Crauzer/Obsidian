@@ -95,7 +95,7 @@ namespace Obsidian.Utils
                 string valueString = value.Value as string;
                 strings.Add(valueString);
 
-                if(Path.GetExtension(valueString) == ".dds")
+                if (valueString.Contains('/') && Path.GetExtension(valueString) == ".dds")
                 {
                     int index = valueString.LastIndexOf('/');
                     strings.Add(valueString.Insert(index + 1, "2x_"));
