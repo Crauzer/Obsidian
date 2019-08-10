@@ -330,7 +330,11 @@ namespace Obsidian
 
                     using (XXHash64 xxHash = XXHash64.Create())
                     {
-                        StringDictionary.Add(BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(this.textboxAddFilePath.Text.ToLower())), 0), this.textboxAddFilePath.Text);
+                        ulong hash = BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(this.textboxAddFilePath.Text.ToLower())), 0);
+                        if (!StringDictionary.ContainsKey(hash))
+                        {
+                            StringDictionary.Add(hash, this.textboxAddFilePath.Text);
+                        }
                     }
 
                     CollectionViewSource.GetDefaultView(this.datagridWadEntries.ItemsSource).Refresh();
@@ -348,7 +352,11 @@ namespace Obsidian
 
                     using (XXHash64 xxHash = XXHash64.Create())
                     {
-                        StringDictionary.Add(BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(this.textboxAddFileFilePath.Text.ToLower())), 0), this.textboxAddFileFilePath.Text);
+                        ulong hash = BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(this.textboxAddFileFilePath.Text.ToLower())), 0);
+                        if(!StringDictionary.ContainsKey(hash))
+                        {
+                            StringDictionary.Add(hash, this.textboxAddFileFilePath.Text);
+                        }
                     }
 
                     CollectionViewSource.GetDefaultView(this.datagridWadEntries.ItemsSource).Refresh();
