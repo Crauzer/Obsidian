@@ -145,21 +145,12 @@ namespace Obsidian
                     {
                         foreach (string line in File.ReadAllLines(fileName))
                         {
-                            string[] lineSplit = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-                            if (ulong.TryParse(lineSplit[0], out ulong hash) && !StringDictionary.ContainsKey(hash))
+                            using (XXHash64 xxHash = XXHash64.Create())
                             {
-                                StringDictionary.Add(ulong.Parse(lineSplit[0]), lineSplit[1]);
-                            }
-                            else
-                            {
-                                using (XXHash64 xxHash = XXHash64.Create())
+                                ulong hash = BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(line.ToLower())), 0); ;
+                                if (!StringDictionary.ContainsKey(hash))
                                 {
-                                    ulong key = BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(lineSplit[0].ToLower())), 0);
-                                    if (!StringDictionary.ContainsKey(key))
-                                    {
-                                        StringDictionary.Add(key, lineSplit[0].ToLower());
-                                    }
+                                    StringDictionary.Add(hash, line);
                                 }
                             }
                         }
@@ -190,11 +181,12 @@ namespace Obsidian
             {
                 try
                 {
-                    List<string> lines = new List<string>();
-                    foreach (KeyValuePair<ulong, string> pair in StringDictionary)
+                    string[] lines = new string[StringDictionary.Count];
+                    for(int i = 0; i < StringDictionary.Count; i++)
                     {
-                        lines.Add(pair.Key.ToString() + " " + pair.Value);
+                        lines[i] = StringDictionary.ElementAt(i).Value;
                     }
+
                     File.WriteAllLines(dialog.FileName, lines.ToArray());
                 }
                 catch (Exception exception)
