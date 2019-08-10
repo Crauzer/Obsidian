@@ -18,6 +18,7 @@ using Newtonsoft.Json.Linq;
 using Fantome.Libraries.League.Helpers.Cryptography;
 using System.Text;
 using MaterialDesignThemes.Wpf;
+using Fantome.Libraries.League.IO.BIN;
 
 namespace Obsidian
 {
@@ -581,7 +582,15 @@ namespace Obsidian
                 {
                     Parallel.ForEach(fileEntries, entry =>
                     {
-                        File.WriteAllBytes(Path.Combine(selectedPath, TruncateLongPath(entry.Key)), entry.Value);
+                        if(entry.Key.StartsWith("data"))
+                        {
+                            ProcessPackedFile(selectedPath, entry.Key, entry.Value);
+                        }
+                        else
+                        {
+                            File.WriteAllBytes(Path.Combine(selectedPath, entry.Key), entry.Value);
+                        }
+                        
                         progress += 0.5;
                         wadExtractor.ReportProgress((int)progress);
                     });
@@ -590,7 +599,15 @@ namespace Obsidian
                 {
                     foreach (KeyValuePair<string, byte[]> entry in fileEntries)
                     {
-                        File.WriteAllBytes(Path.Combine(selectedPath, TruncateLongPath(entry.Key)), entry.Value);
+                        if (entry.Key.StartsWith("data"))
+                        {
+                            ProcessPackedFile(selectedPath, entry.Key, entry.Value);
+                        }
+                        else
+                        {
+                            File.WriteAllBytes(Path.Combine(selectedPath, entry.Key), entry.Value);
+                        }
+
                         progress += 0.5;
                         wadExtractor.ReportProgress((int)progress);
                     }
@@ -618,16 +635,33 @@ namespace Obsidian
             wadExtractor.RunWorkerAsync();
         }
 
-        private string TruncateLongPath(string path)
+        private void ProcessPackedFile(string selectedPath, string filePath, byte[] data)
         {
-            if (path.Length < 256 || Path.GetFileName(path).Length < 256)
-            {
-                return path;
-            }
+            string extension = Path.GetExtension(filePath);
+            string basePath = filePath.Substring(0, filePath.IndexOf('_')).Replace("/", "\\");
+            string[] packed = Path.GetFileNameWithoutExtension(filePath.Substring(filePath.IndexOf('_') + 1)).Split('_');
 
-            int lastSeparatorPosition = path.LastIndexOf('/');
-            string extension = Path.GetExtension(path);
-            return path.Substring(0, lastSeparatorPosition + 1) + Path.GetFileNameWithoutExtension(path).Substring(0, 255 - extension.Length) + extension;
+            for(int i = 0; i < packed.Length; i += 2)
+            {
+                string currentPath = string.Format("{0}\\{1}\\{2}{3}", basePath, packed[i], packed[i + 1], extension);
+                string fullPath = Path.Combine(selectedPath, currentPath);
+
+                Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
+
+                if(File.Exists(fullPath))
+                {
+                    BINFile binOld = new BINFile(fullPath);
+                    BINFile binNew = new BINFile(new MemoryStream(data));
+
+                    binOld.Entries.AddRange(binNew.Entries);
+
+                    binOld.Write(fullPath);
+                }
+                else
+                {
+                    File.WriteAllBytes(Path.Combine(selectedPath, currentPath), data);
+                }
+            }
         }
 
         private ulong HexStringToUInt64(string hexString)
