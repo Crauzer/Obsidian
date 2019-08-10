@@ -115,6 +115,7 @@ namespace Obsidian
             {
                 try
                 {
+                    this.Wad.Entries.OrderBy();
                     this.Wad.Write(dialog.FileName, (byte)(long)this.Config["WadSaveMajorVersion"], (byte)(long)this.Config["WadSaveMinorVersion"]);
                 }
                 catch (Exception excp)
@@ -322,28 +323,19 @@ namespace Obsidian
 
         private void buttonAddFileAdd_Click(object sender, RoutedEventArgs e)
         {
+            //Actual File
             if (this.buttonAddFileOpen.Visibility == Visibility.Visible)
             {
                 try
                 {
-                    this.Wad.AddEntry(this.textboxAddFilePath.Text, File.ReadAllBytes(this.textboxAddFileFilePath.Text), this.checkboxAddFileCompressed.IsChecked.Value);
-
-                    using (XXHash64 xxHash = XXHash64.Create())
-                    {
-                        ulong hash = BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(this.textboxAddFilePath.Text.ToLower())), 0);
-                        if (!StringDictionary.ContainsKey(hash))
-                        {
-                            StringDictionary.Add(hash, this.textboxAddFilePath.Text);
-                        }
-                    }
-
-                    CollectionViewSource.GetDefaultView(this.datagridWadEntries.ItemsSource).Refresh();
+                    AddFile(this.textboxAddFilePath.Text, File.ReadAllBytes(this.textboxAddFileFilePath.Text), this.checkboxAddFileCompressed.IsChecked.Value, true);
                 }
                 catch (Exception exception)
                 {
                     MessageBox.Show(exception.Message, "Please choose a different Path", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
+            // File Redirection
             else
             {
                 try
@@ -461,30 +453,20 @@ namespace Obsidian
                 StringDictionary = new Dictionary<ulong, string>();
 
                 DirectoryInfo directory = new DirectoryInfo(dialog.SelectedPath);
-
-                using (XXHash64 xxHash = XXHash64.Create())
+                foreach (FileInfo fileInfo in directory.EnumerateFiles("*", SearchOption.AllDirectories))
                 {
-                    foreach (FileInfo fileInfo in directory.EnumerateFiles("*", SearchOption.AllDirectories))
+                    string path = fileInfo.FullName.Substring(directory.FullName.Length + 1).Replace(@"\", "/");
+                    string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(path);
+                    bool hasUnknownPath = fileNameWithoutExtension.All(c => "ABCDEF0123456789".Contains(c)) && fileNameWithoutExtension.Length <= 16;
+
+                    if (hasUnknownPath)
                     {
-                        string path = fileInfo.FullName.Substring(directory.FullName.Length + 1);
-                        string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(path);
-                        bool hasUnknownPath = fileNameWithoutExtension.All(c => "ABCDEF0123456789".Contains(c)) && fileNameWithoutExtension.Length <= 16;
-
-                        if (hasUnknownPath)
-                        {
-                            ulong hashedPath = HexStringToUInt64(fileNameWithoutExtension);
-                            this.Wad.AddEntry(hashedPath, File.ReadAllBytes(fileInfo.FullName), true);
-                        }
-                        else
-                        {
-                            ulong hashedPath = BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(path.ToLower())), 0);
-                            if (!StringDictionary.ContainsKey(hashedPath))
-                            {
-                                StringDictionary.Add(hashedPath, path);
-                            }
-
-                            this.Wad.AddEntry(hashedPath, File.ReadAllBytes(fileInfo.FullName), true);
-                        }
+                        ulong hashedPath = HexStringToUInt64(fileNameWithoutExtension);
+                        AddFile(hashedPath, File.ReadAllBytes(fileInfo.FullName), true, false);
+                    }
+                    else
+                    {
+                        AddFile(path, File.ReadAllBytes(fileInfo.FullName), true, false);
                     }
                 }
 
@@ -713,6 +695,30 @@ namespace Obsidian
             this.datagridWadEntries.ItemsSource = this.Wad.Entries;
 
             Logger.Info("Opened WAD File: " + filePath);
+        }
+
+        private void AddFile(string path, byte[] data, bool compressed, bool refresh)
+        {
+            using (XXHash64 xxHash = XXHash64.Create())
+            {
+                ulong hash = BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(path.ToLower())), 0);
+                if (!StringDictionary.ContainsKey(hash))
+                {
+                    StringDictionary.Add(hash, path);
+                }
+
+                AddFile(hash, data, compressed, refresh);
+            }
+        }
+
+        private void AddFile(ulong hash, byte[] data, bool compressed, bool refresh)
+        {
+            this.Wad.AddEntry(hash, data, compressed);
+
+            if(refresh)
+            {
+                CollectionViewSource.GetDefaultView(this.datagridWadEntries.ItemsSource).Refresh();
+            }
         }
     }
 }
