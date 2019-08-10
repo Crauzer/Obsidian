@@ -92,7 +92,15 @@ namespace Obsidian.Utils
 
             if (value.Type == BINFileValueType.String)
             {
-                strings.Add(value.Value as string);
+                string valueString = value.Value as string;
+                strings.Add(valueString);
+
+                if(Path.GetExtension(valueString) == ".dds")
+                {
+                    int index = valueString.LastIndexOf('/');
+                    strings.Add(valueString.Insert(index + 1, "2x_"));
+                    strings.Add(valueString.Insert(index + 1, "4x_"));
+                }
             }
             else if (value.Type == BINFileValueType.AdditionalOptionalData)
             {
@@ -171,14 +179,8 @@ namespace Obsidian.Utils
             {
                 string fetchedString = linkedFiles[i];
 
-                if (fetchedString.StartsWith("DATA/Characters"))
-                {
-                    strings.Add(fetchedString);
-                }
-                else
-                {
-                    strings.AddRange(ProcessBINPackedLinkedFile(fetchedString));
-                }
+                strings.Add(fetchedString);
+                strings.AddRange(ProcessBINPackedLinkedFile(fetchedString));
             }
 
             return strings.AsEnumerable();
