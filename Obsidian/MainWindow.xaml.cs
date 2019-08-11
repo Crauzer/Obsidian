@@ -446,55 +446,92 @@ namespace Obsidian
             {
                 ShowNewFolderButton = false
             };
+            string selectedPath;
 
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                this.Wad?.Dispose();
-                this.Wad = new WADFile((byte)(long)this.Config["WadSaveMajorVersion"], (byte)(long)this.Config["WadSaveMinorVersion"]);
-                StringDictionary = new Dictionary<ulong, string>();
+                this.progressBarWadExtraction.Maximum = new DirectoryInfo(dialog.SelectedPath).EnumerateFiles("*", SearchOption.AllDirectories).ToList().Count;
+                this.IsEnabled = false;
+                selectedPath = dialog.SelectedPath;
 
-                DirectoryInfo directory = new DirectoryInfo(dialog.SelectedPath);
-                foreach (FileInfo fileInfo in directory.EnumerateFiles("*", SearchOption.AllDirectories))
+                BackgroundWorker wadCreator = new BackgroundWorker
                 {
-                    string path = fileInfo.FullName.Substring(directory.FullName.Length + 1).Replace(@"\", "/");
-                    string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(path);
-                    bool hasUnknownPath = fileNameWithoutExtension.All(c => "ABCDEF0123456789".Contains(c)) && fileNameWithoutExtension.Length <= 16;
+                    WorkerReportsProgress = true
+                };
 
-                    if (hasUnknownPath)
-                    {
-                        ulong hashedPath = HexStringToUInt64(fileNameWithoutExtension);
-                        AddFile(hashedPath, File.ReadAllBytes(fileInfo.FullName), true, false);
-                    }
-                    else
-                    {
-                        AddFile(path, File.ReadAllBytes(fileInfo.FullName), true, false);
-                    }
-                }
-
-                if ((bool)this.Config["GenerateWadDictionary"])
+                wadCreator.ProgressChanged += (sender2, args) =>
                 {
-                    try
-                    {
-                        WADHashGenerator.GenerateWADStrings(Logger, this.Wad, StringDictionary);
-                    }
-                    catch (Exception excp)
-                    {
-                        Logging.LogException(Logger, "Failed to Generate WAD String Dictionary", excp);
-                    }
-                }
+                    this.progressBarWadExtraction.Value = args.ProgressPercentage;
+                };
 
-                this.menuSave.IsEnabled = true;
-                this.menuImportHashtable.IsEnabled = true;
-                this.menuExportHashtable.IsEnabled = true;
-                this.menuExportAll.IsEnabled = true;
-                this.menuAddFile.IsEnabled = true;
-                this.menuAddFileRedirection.IsEnabled = true;
-                this.menuAddFolder.IsEnabled = true;
-                this.CurrentlySelectedEntry = null;
-                this.datagridWadEntries.ItemsSource = this.Wad.Entries;
+                wadCreator.DoWork += (sende2r, e2) =>
+                {
+                    this.Wad?.Dispose();
+                    this.Wad = new WADFile((byte)(long)this.Config["WadSaveMajorVersion"], (byte)(long)this.Config["WadSaveMinorVersion"]);
+                    StringDictionary = new Dictionary<ulong, string>();
+                    int progress = 0;
 
-                Logger.Info("Created WAD file from directory: " + dialog.SelectedPath);
-                CollectionViewSource.GetDefaultView(this.datagridWadEntries.ItemsSource).Refresh();
+                    DirectoryInfo directory = new DirectoryInfo(dialog.SelectedPath);
+                    List<FileInfo> files = directory.EnumerateFiles("*", SearchOption.AllDirectories).ToList();
+
+                    foreach (FileInfo fileInfo in files)
+                    {
+                        if (fileInfo.Name == "OBSIDIAN_PACKED_MAPPING.txt")
+                        {
+                            continue;
+                        }
+
+                        string path = fileInfo.FullName.Substring(directory.FullName.Length + 1).Replace(@"\", "/");
+                        string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(path);
+                        bool hasUnknownPath = fileNameWithoutExtension.All(c => "ABCDEF0123456789".Contains(c)) && fileNameWithoutExtension.Length <= 16;
+
+                        if (hasUnknownPath)
+                        {
+                            ulong hashedPath = HexStringToUInt64(fileNameWithoutExtension);
+                            AddFile(hashedPath, File.ReadAllBytes(fileInfo.FullName), true, false);
+                        }
+                        else
+                        {
+                            AddFile(path, File.ReadAllBytes(fileInfo.FullName), true, false);
+                        }
+
+                        progress += 1;
+                        wadCreator.ReportProgress(progress);
+                    }
+
+                    if ((bool)this.Config["GenerateWadDictionary"])
+                    {
+                        try
+                        {
+                            WADHashGenerator.GenerateWADStrings(Logger, this.Wad, StringDictionary);
+                        }
+                        catch (Exception excp)
+                        {
+                            Logging.LogException(Logger, "Failed to Generate WAD String Dictionary", excp);
+                        }
+                    }
+                };
+
+                wadCreator.RunWorkerCompleted += (sender2, args) =>
+                {
+                    this.menuSave.IsEnabled = true;
+                    this.menuImportHashtable.IsEnabled = true;
+                    this.menuExportHashtable.IsEnabled = true;
+                    this.menuExportAll.IsEnabled = true;
+                    this.menuAddFile.IsEnabled = true;
+                    this.menuAddFileRedirection.IsEnabled = true;
+                    this.menuAddFolder.IsEnabled = true;
+                    this.CurrentlySelectedEntry = null;
+                    this.datagridWadEntries.ItemsSource = this.Wad.Entries;
+                    this.progressBarWadExtraction.Maximum = 100;
+                    this.progressBarWadExtraction.Value = 100;
+                    this.IsEnabled = true;
+
+                    Logger.Info("Created WAD file from directory: " + dialog.SelectedPath);
+                    CollectionViewSource.GetDefaultView(this.datagridWadEntries.ItemsSource).Refresh();
+                };
+
+                wadCreator.RunWorkerAsync();
             }
         }
 
@@ -529,7 +566,6 @@ namespace Obsidian
             {
                 WorkerReportsProgress = true
             };
-
             wadExtractor.ProgressChanged += (sender, args) =>
             {
                 this.progressBarWadExtraction.Value = args.ProgressPercentage;
@@ -539,6 +575,8 @@ namespace Obsidian
             {
                 Dictionary<string, byte[]> fileEntries = new Dictionary<string, byte[]>();
                 double progress = 0;
+                bool createPackedMappingFile = false;
+                string packedMappingFileContent = "";
 
                 foreach (WADEntry entry in entries)
                 {
@@ -547,8 +585,19 @@ namespace Obsidian
                     if (StringDictionary.ContainsKey(entry.XXHash))
                     {
                         entryName = StringDictionary[entry.XXHash];
-                        int lastSeparatorPosition = entryName.LastIndexOf('/');
-                        Directory.CreateDirectory(Path.Combine(selectedPath, entryName.Substring(0, lastSeparatorPosition + 1)));
+
+                        if (Regex.IsMatch(entryName, @"^DATA\/.*_Skins_Skin\d\.bin"))
+                        {
+                            createPackedMappingFile = true;
+                            entryName = BitConverter.ToString(BitConverter.GetBytes(entry.XXHash)).Replace("-", "") + ".bin";
+                            packedMappingFileContent += string.Format("{0} = {1}\n", entryName, StringDictionary[entry.XXHash]);
+
+                        }
+                        else
+                        {
+                            int lastSeparatorPosition = entryName.LastIndexOf('/');
+                            Directory.CreateDirectory(Path.Combine(selectedPath, entryName.Substring(0, lastSeparatorPosition + 1)));
+                        }
                     }
                     else
                     {
@@ -565,15 +614,8 @@ namespace Obsidian
                 {
                     Parallel.ForEach(fileEntries, entry =>
                     {
-                        if(Regex.IsMatch(entry.Key, @"^DATA\/.*_Skins_Skin\d\.bin"))
-                        {
-                            WritePackedFile(selectedPath, entry.Key, entry.Value);
-                        }
-                        else
-                        {
-                            File.WriteAllBytes(Path.Combine(selectedPath, entry.Key), entry.Value);
-                        }
-                        
+                        File.WriteAllBytes(Path.Combine(selectedPath, entry.Key), entry.Value);
+
                         progress += 0.5;
                         wadExtractor.ReportProgress((int)progress);
                     });
@@ -582,18 +624,16 @@ namespace Obsidian
                 {
                     foreach (KeyValuePair<string, byte[]> entry in fileEntries)
                     {
-                        if (Regex.IsMatch(entry.Key, @"^DATA\/.*_Skins_Skin\d\.bin"))
-                        {
-                            WritePackedFile(selectedPath, entry.Key, entry.Value);
-                        }
-                        else
-                        {
-                            File.WriteAllBytes(Path.Combine(selectedPath, entry.Key), entry.Value);
-                        }
+                        File.WriteAllBytes(Path.Combine(selectedPath, entry.Key), entry.Value);
 
                         progress += 0.5;
                         wadExtractor.ReportProgress((int)progress);
                     }
+                }
+
+                if(createPackedMappingFile)
+                {
+                    File.WriteAllText(Path.Combine(selectedPath, "OBSIDIAN_PACKED_MAPPING.txt"), packedMappingFileContent);
                 }
             };
 
@@ -616,36 +656,6 @@ namespace Obsidian
             };
 
             wadExtractor.RunWorkerAsync();
-        }
-
-        private void WritePackedFile(string selectedPath, string filePath, byte[] data)
-        {
-            string extension = Path.GetExtension(filePath);
-            string basePath = filePath.Substring(0, filePath.IndexOf('_')).Replace("/", "\\");
-            string[] packed = Path.GetFileNameWithoutExtension(filePath.Substring(filePath.IndexOf('_') + 1)).Split('_');
-
-            //Checks if packing data file exists, if not create it
-            if(!File.Exists(Path.Combine(selectedPath, "OBSIDIAN_PACKING_DATA")))
-            {
-                File.Create(Path.Combine(selectedPath, "OBSIDIAN_PACKING_DATA"));
-            }
-
-            for(int i = 0; i < packed.Length; i += 2)
-            {
-                string currentPath = string.Format("{0}\\{1}\\{2}{3}", basePath, packed[i], packed[i + 1], extension);
-                string fullPath = Path.Combine(selectedPath, currentPath);
-
-                Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
-
-                if(File.Exists(fullPath))
-                {
-                    CombineBINFiles(new BINFile(fullPath), new BINFile(new MemoryStream(data))).Write(fullPath);
-                }
-                else
-                {
-                    File.WriteAllBytes(Path.Combine(selectedPath, currentPath), data);
-                }
-            }
         }
 
         private ulong HexStringToUInt64(string hexString)
@@ -721,28 +731,6 @@ namespace Obsidian
             {
                 CollectionViewSource.GetDefaultView(this.datagridWadEntries.ItemsSource).Refresh();
             }
-        }
-
-        private BINFile CombineBINFiles(BINFile binOld, BINFile binNew)
-        {
-            BINFile bin = binOld;
-
-            foreach(BINFileEntry newEntry in binNew.Entries)
-            {
-                if (bin.Entries.Exists(entry => entry.Type == newEntry.Type))
-                {
-                    if(!bin.Entries.Exists(entry => entry.Property == newEntry.Property))
-                    {
-                        bin.Entries.Add(newEntry);
-                    }
-                }
-                else
-                {
-                    bin.Entries.Add(newEntry);
-                }
-            }
-
-            return bin;
         }
     }
 }
