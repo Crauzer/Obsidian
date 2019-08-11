@@ -19,6 +19,7 @@ using Fantome.Libraries.League.Helpers.Cryptography;
 using System.Text;
 using MaterialDesignThemes.Wpf;
 using Fantome.Libraries.League.IO.BIN;
+using System.Text.RegularExpressions;
 
 namespace Obsidian
 {
@@ -115,7 +116,7 @@ namespace Obsidian
             {
                 try
                 {
-                    this.Wad.Entries.OrderBy();
+                    //this.Wad.Entries.OrderBy(entry => entry.XXHash);
                     this.Wad.Write(dialog.FileName, (byte)(long)this.Config["WadSaveMajorVersion"], (byte)(long)this.Config["WadSaveMinorVersion"]);
                 }
                 catch (Exception excp)
@@ -410,7 +411,7 @@ namespace Obsidian
         private void menuCreateEmpty_Click(object sender, RoutedEventArgs e)
         {
             this.Wad?.Dispose();
-            this.Wad = new WADFile();
+            this.Wad = new WADFile((byte)(long)this.Config["WadSaveMajorVersion"], (byte)(long)this.Config["WadSaveMinorVersion"]);
 
             StringDictionary = new Dictionary<ulong, string>();
 
@@ -449,7 +450,7 @@ namespace Obsidian
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 this.Wad?.Dispose();
-                this.Wad = new WADFile();
+                this.Wad = new WADFile((byte)(long)this.Config["WadSaveMajorVersion"], (byte)(long)this.Config["WadSaveMinorVersion"]);
                 StringDictionary = new Dictionary<ulong, string>();
 
                 DirectoryInfo directory = new DirectoryInfo(dialog.SelectedPath);
@@ -564,9 +565,9 @@ namespace Obsidian
                 {
                     Parallel.ForEach(fileEntries, entry =>
                     {
-                        if(entry.Key.StartsWith("data"))
+                        if(Regex.IsMatch(entry.Key, @"^DATA\/.*_Skins_Skin\d\.bin"))
                         {
-                            ProcessPackedFile(selectedPath, entry.Key, entry.Value);
+                            WritePackedFile(selectedPath, entry.Key, entry.Value);
                         }
                         else
                         {
@@ -581,9 +582,9 @@ namespace Obsidian
                 {
                     foreach (KeyValuePair<string, byte[]> entry in fileEntries)
                     {
-                        if (entry.Key.StartsWith("data"))
+                        if (Regex.IsMatch(entry.Key, @"^DATA\/.*_Skins_Skin\d\.bin"))
                         {
-                            ProcessPackedFile(selectedPath, entry.Key, entry.Value);
+                            WritePackedFile(selectedPath, entry.Key, entry.Value);
                         }
                         else
                         {
@@ -617,11 +618,17 @@ namespace Obsidian
             wadExtractor.RunWorkerAsync();
         }
 
-        private void ProcessPackedFile(string selectedPath, string filePath, byte[] data)
+        private void WritePackedFile(string selectedPath, string filePath, byte[] data)
         {
             string extension = Path.GetExtension(filePath);
             string basePath = filePath.Substring(0, filePath.IndexOf('_')).Replace("/", "\\");
             string[] packed = Path.GetFileNameWithoutExtension(filePath.Substring(filePath.IndexOf('_') + 1)).Split('_');
+
+            //Checks if packing data file exists, if not create it
+            if(!File.Exists(Path.Combine(selectedPath, "OBSIDIAN_PACKING_DATA")))
+            {
+                File.Create(Path.Combine(selectedPath, "OBSIDIAN_PACKING_DATA"));
+            }
 
             for(int i = 0; i < packed.Length; i += 2)
             {
@@ -632,12 +639,7 @@ namespace Obsidian
 
                 if(File.Exists(fullPath))
                 {
-                    BINFile binOld = new BINFile(fullPath);
-                    BINFile binNew = new BINFile(new MemoryStream(data));
-
-                    binOld.Entries.AddRange(binNew.Entries);
-
-                    binOld.Write(fullPath);
+                    CombineBINFiles(new BINFile(fullPath), new BINFile(new MemoryStream(data))).Write(fullPath);
                 }
                 else
                 {
@@ -719,6 +721,28 @@ namespace Obsidian
             {
                 CollectionViewSource.GetDefaultView(this.datagridWadEntries.ItemsSource).Refresh();
             }
+        }
+
+        private BINFile CombineBINFiles(BINFile binOld, BINFile binNew)
+        {
+            BINFile bin = binOld;
+
+            foreach(BINFileEntry newEntry in binNew.Entries)
+            {
+                if (bin.Entries.Exists(entry => entry.Type == newEntry.Type))
+                {
+                    if(!bin.Entries.Exists(entry => entry.Property == newEntry.Property))
+                    {
+                        bin.Entries.Add(newEntry);
+                    }
+                }
+                else
+                {
+                    bin.Entries.Add(newEntry);
+                }
+            }
+
+            return bin;
         }
     }
 }
