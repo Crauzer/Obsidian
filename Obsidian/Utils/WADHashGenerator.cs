@@ -46,9 +46,8 @@ namespace Obsidian.Utils
 
             using (XXHash64 xxHash = XXHash64.Create())
             {
-                for (int i = 0; i < strings.Count; i++)
+                foreach (string fetchedString in strings)
                 {
-                    string fetchedString = strings[i];
                     if (!string.IsNullOrEmpty(fetchedString))
                     {
                         ulong hash = BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(fetchedString.ToLower())), 0);
@@ -95,7 +94,7 @@ namespace Obsidian.Utils
                 string valueString = value.Value as string;
                 strings.Add(valueString);
 
-                if (valueString.Contains('/') && Path.GetExtension(valueString) == ".dds")
+                if ((valueString.StartsWith("ASSETS/", true, null) || valueString.StartsWith("LEVELS/", true, null)) && Path.GetExtension(valueString) == ".dds")
                 {
                     int index = valueString.LastIndexOf('/');
                     strings.Add(valueString.Insert(index + 1, "2x_"));
@@ -175,12 +174,13 @@ namespace Obsidian.Utils
         {
             List<string> strings = new List<string>();
 
-            for (int i = 0; i < linkedFiles.Count; i++)
+            foreach (string fetchedString in linkedFiles)
             {
-                string fetchedString = linkedFiles[i];
-
                 strings.Add(fetchedString);
-                strings.AddRange(ProcessBINPackedLinkedFile(fetchedString));
+                if (fetchedString.Contains("_skins_skin"))
+                {
+                    strings.AddRange(ProcessBINPackedLinkedFile(fetchedString));
+                }
             }
 
             return strings.AsEnumerable();
@@ -191,38 +191,31 @@ namespace Obsidian.Utils
             List<string> strings = new List<string>();
             string stringToProcess = linkedString;
 
-            try
+            string characterName = linkedString.Substring(5, linkedString.IndexOf('_') - 5);
+            string extension = linkedString.Substring(linkedString.LastIndexOf('.'), linkedString.Length - linkedString.LastIndexOf('.'));
+
+            stringToProcess = stringToProcess.Remove(0, 5 + characterName.Length + 1);
+            stringToProcess = stringToProcess.Remove(stringToProcess.Length - extension.Length);
+
+            while (stringToProcess.Length != 0)
             {
-                string characterName = linkedString.Substring(5, linkedString.IndexOf('_') - 5);
-                string extension = linkedString.Substring(linkedString.LastIndexOf('.'), linkedString.Length - linkedString.LastIndexOf('.'));
+                string directoryName = stringToProcess.Substring(0, stringToProcess.IndexOf('_'));
+                stringToProcess = stringToProcess.Remove(0, directoryName.Length + 1);
 
-                stringToProcess = stringToProcess.Remove(0, 5 + characterName.Length + 1);
-                stringToProcess = stringToProcess.Remove(stringToProcess.Length - extension.Length);
-
-                while (stringToProcess.Length != 0)
+                string skin;
+                int indexOfUnderscore = stringToProcess.IndexOf('_');
+                if (indexOfUnderscore != -1)
                 {
-                    string directoryName = stringToProcess.Substring(0, stringToProcess.IndexOf('_'));
-                    stringToProcess = stringToProcess.Remove(0, directoryName.Length + 1);
-
-                    string skin = "";
-                    int indexOfUnderscore = stringToProcess.IndexOf('_');
-                    if (indexOfUnderscore != -1)
-                    {
-                        skin = stringToProcess.Substring(0, stringToProcess.IndexOf('_'));
-                        stringToProcess = stringToProcess.Remove(0, skin.Length + 1);
-                    }
-                    else
-                    {
-                        skin = stringToProcess;
-                        stringToProcess = stringToProcess.Remove(0);
-                    }
-
-                    strings.Add(string.Format("DATA/Characters/{0}/{1}/{2}{3}", characterName, directoryName, skin, extension));
+                    skin = stringToProcess.Substring(0, stringToProcess.IndexOf('_'));
+                    stringToProcess = stringToProcess.Remove(0, skin.Length + 1);
                 }
-            }
-            catch (Exception excp)
-            {
-                strings.Add(linkedString);
+                else
+                {
+                    skin = stringToProcess;
+                    stringToProcess = stringToProcess.Remove(0);
+                }
+
+                strings.Add(string.Format("DATA/Characters/{0}/{1}/{2}{3}", characterName, directoryName, skin, extension));
             }
 
             return strings.AsEnumerable();

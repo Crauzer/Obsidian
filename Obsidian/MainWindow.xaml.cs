@@ -125,7 +125,7 @@ namespace Obsidian
                     return;
                 }
 
-                MessageBox.Show("Writing Succesful!", "", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Writing Successful!", "", MessageBoxButton.OK, MessageBoxImage.Information);
                 Logger.Info("Successfully written a WAD File to: " + dialog.FileName);
             }
         }
@@ -149,7 +149,7 @@ namespace Obsidian
                         {
                             using (XXHash64 xxHash = XXHash64.Create())
                             {
-                                ulong hash = BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(line.ToLower())), 0); ;
+                                ulong hash = BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(line.ToLower())), 0);
                                 if (!StringDictionary.ContainsKey(hash))
                                 {
                                     StringDictionary.Add(hash, line);
@@ -184,7 +184,7 @@ namespace Obsidian
                 try
                 {
                     string[] lines = new string[StringDictionary.Count];
-                    for(int i = 0; i < StringDictionary.Count; i++)
+                    for (int i = 0; i < StringDictionary.Count; i++)
                     {
                         lines[i] = StringDictionary.ElementAt(i).Value;
                     }
@@ -197,7 +197,7 @@ namespace Obsidian
                     return;
                 }
 
-                MessageBox.Show("Writing Succesful!", "", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Writing Successful!", "", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -273,39 +273,42 @@ namespace Obsidian
                 }
                 catch (Exception excp)
                 {
-                    string entryName = BitConverter.ToString(BitConverter.GetBytes(this.CurrentlySelectedEntry.XXHash)).Replace("-", "");
+                    string entryName;
                     if (StringDictionary.ContainsKey(this.CurrentlySelectedEntry.XXHash))
                     {
                         entryName = StringDictionary[this.CurrentlySelectedEntry.XXHash];
+                    }
+                    else
+                    {
+                        entryName = this.CurrentlySelectedEntry.XXHash.ToString("X16");
                     }
 
                     Logging.LogException(Logger, "Failed to modify the data of Entry: " + entryName, excp);
                     return;
                 }
 
-                Logger.Info("Modified Data of Entry: " + BitConverter.ToString(BitConverter.GetBytes(this.CurrentlySelectedEntry.XXHash)).Replace("-", ""));
-                MessageBox.Show("Entry Modified Succesfully!", "", MessageBoxButton.OK, MessageBoxImage.Information);
+                Logger.Info("Modified Data of Entry: " + this.CurrentlySelectedEntry.XXHash.ToString("X16"));
+                MessageBox.Show("Entry Modified Successfully!", "", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
         private void textBoxFilter_TextChanged(object sender, TextChangedEventArgs e)
         {
-            this.datagridWadEntries.Items.Filter = new Predicate<object>(entry =>
+            this.datagridWadEntries.Items.Filter = objectEntry =>
             {
-                string finalName = "";
-                if (StringDictionary.ContainsKey((entry as WADEntry).XXHash))
+                WADEntry entry = (WADEntry) objectEntry;
+                string finalName;
+                if (StringDictionary.ContainsKey(entry.XXHash))
                 {
-                    finalName = StringDictionary[(entry as WADEntry).XXHash];
+                    finalName = StringDictionary[entry.XXHash];
                 }
                 else
                 {
-                    finalName = BitConverter.ToString(BitConverter.GetBytes((entry as WADEntry).XXHash)).Replace("-", "");
+                    finalName = entry.XXHash.ToString("X16");
                 }
 
                 return finalName.ToLower().Contains(this.textBoxFilter.Text.ToLower());
-            });
-
-
+            };
         }
 
         private void buttonAddFileOpen_Click(object sender, RoutedEventArgs e)
@@ -346,7 +349,7 @@ namespace Obsidian
                     using (XXHash64 xxHash = XXHash64.Create())
                     {
                         ulong hash = BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(this.textboxAddFileFilePath.Text.ToLower())), 0);
-                        if(!StringDictionary.ContainsKey(hash))
+                        if (!StringDictionary.ContainsKey(hash))
                         {
                             StringDictionary.Add(hash, this.textboxAddFileFilePath.Text);
                         }
@@ -446,13 +449,13 @@ namespace Obsidian
             {
                 ShowNewFolderButton = false
             };
-            string selectedPath;
 
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                this.progressBarWadExtraction.Maximum = new DirectoryInfo(dialog.SelectedPath).EnumerateFiles("*", SearchOption.AllDirectories).ToList().Count;
+                DirectoryInfo selectedDirectory = new DirectoryInfo(dialog.SelectedPath);
+                List<FileInfo> files = selectedDirectory.EnumerateFiles("*", SearchOption.AllDirectories).ToList();
+                this.progressBarWadExtraction.Maximum = files.Count;
                 this.IsEnabled = false;
-                selectedPath = dialog.SelectedPath;
 
                 BackgroundWorker wadCreator = new BackgroundWorker
                 {
@@ -464,15 +467,12 @@ namespace Obsidian
                     this.progressBarWadExtraction.Value = args.ProgressPercentage;
                 };
 
-                wadCreator.DoWork += (sende2r, e2) =>
+                wadCreator.DoWork += (sender2, e2) =>
                 {
                     this.Wad?.Dispose();
                     this.Wad = new WADFile((byte)(long)this.Config["WadSaveMajorVersion"], (byte)(long)this.Config["WadSaveMinorVersion"]);
                     StringDictionary = new Dictionary<ulong, string>();
                     int progress = 0;
-
-                    DirectoryInfo directory = new DirectoryInfo(dialog.SelectedPath);
-                    List<FileInfo> files = directory.EnumerateFiles("*", SearchOption.AllDirectories).ToList();
 
                     foreach (FileInfo fileInfo in files)
                     {
@@ -481,13 +481,13 @@ namespace Obsidian
                             continue;
                         }
 
-                        string path = fileInfo.FullName.Substring(directory.FullName.Length + 1).Replace(@"\", "/");
+                        string path = fileInfo.FullName.Substring(selectedDirectory.FullName.Length + 1).Replace('\\', '/');
                         string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(path);
-                        bool hasUnknownPath = fileNameWithoutExtension.All(c => "ABCDEF0123456789".Contains(c)) && fileNameWithoutExtension.Length <= 16;
+                        bool hasUnknownPath = fileNameWithoutExtension.Length == 16 && fileNameWithoutExtension.All(c => "ABCDEF0123456789".Contains(c));
 
                         if (hasUnknownPath)
                         {
-                            ulong hashedPath = HexStringToUInt64(fileNameWithoutExtension);
+                            ulong hashedPath = Convert.ToUInt64(fileNameWithoutExtension, 16);
                             AddFile(hashedPath, File.ReadAllBytes(fileInfo.FullName), true, false);
                         }
                         else
@@ -586,23 +586,20 @@ namespace Obsidian
                     {
                         entryName = StringDictionary[entry.XXHash];
 
-                        if (Regex.IsMatch(entryName, @"^DATA\/.*_Skins_Skin\d\.bin"))
+                        if (Regex.IsMatch(entryName, @"^DATA/.*_Skins_Skin.*\.bin$"))
                         {
                             createPackedMappingFile = true;
-                            entryName = BitConverter.ToString(BitConverter.GetBytes(entry.XXHash)).Replace("-", "") + ".bin";
+                            entryName = entry.XXHash.ToString("X16") + ".bin";
                             packedMappingFileContent += string.Format("{0} = {1}\n", entryName, StringDictionary[entry.XXHash]);
-
                         }
                         else
                         {
-                            int lastSeparatorPosition = entryName.LastIndexOf('/');
-                            Directory.CreateDirectory(Path.Combine(selectedPath, entryName.Substring(0, lastSeparatorPosition + 1)));
+                            Directory.CreateDirectory(Path.Combine(selectedPath, Path.GetDirectoryName(entryName) ?? ""));
                         }
                     }
                     else
                     {
-                        entryName = BitConverter.ToString(BitConverter.GetBytes(entry.XXHash)).Replace("-", "");
-                        entryName += "." + Utilities.GetEntryExtension(Utilities.GetLeagueFileExtensionType(entryData));
+                        entryName = entry.XXHash.ToString("X16") + "." + Utilities.GetEntryExtension(Utilities.GetLeagueFileExtensionType(entryData));
                     }
 
                     fileEntries.Add(entryName, entryData);
@@ -631,7 +628,7 @@ namespace Obsidian
                     }
                 }
 
-                if(createPackedMappingFile)
+                if (createPackedMappingFile)
                 {
                     File.WriteAllText(Path.Combine(selectedPath, "OBSIDIAN_PACKED_MAPPING.txt"), packedMappingFileContent);
                 }
@@ -656,17 +653,6 @@ namespace Obsidian
             };
 
             wadExtractor.RunWorkerAsync();
-        }
-
-        private ulong HexStringToUInt64(string hexString)
-        {
-            byte[] byteArray = new byte[hexString.Length / 2];
-            for (int i = 0; i < hexString.Length; i += 2)
-            {
-                byteArray[i / 2] = Convert.ToByte(hexString.Substring(i, 2), 16);
-            }
-
-            return BitConverter.ToUInt64(byteArray, 0);
         }
 
         private void OpenWADFile(string filePath)
@@ -727,7 +713,7 @@ namespace Obsidian
         {
             this.Wad.AddEntry(hash, data, compressed);
 
-            if(refresh)
+            if (refresh)
             {
                 CollectionViewSource.GetDefaultView(this.datagridWadEntries.ItemsSource).Refresh();
             }
