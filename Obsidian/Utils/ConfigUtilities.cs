@@ -7,7 +7,7 @@ namespace Obsidian.Utils
 {
     public static class ConfigUtilities
     {
-        public static readonly Dictionary<string, object> DefaultConfig = new Dictionary<string, object>()
+        public static readonly Dictionary<string, object> DefaultConfig = new Dictionary<string, object>
         {
             { "LoggingPattern", "[%utcdate{ABSOLUTE}] | [%-5level] | [%-20logger: (%-4line)] | %message%newline" },
             { "LogLevel", Level.Info },

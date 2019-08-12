@@ -30,11 +30,11 @@ namespace Obsidian
     /// </summary>
     public partial class MainWindow
     {
-        public Dictionary<string, object> Config { get; }
+        private readonly Dictionary<string, object> Config;
         private static readonly ILog Logger = LogManager.GetLogger("MainWindow");
-        public WADFile Wad { get; set; }
-        public WADEntry CurrentlySelectedEntry { get; set; }
-        public static Dictionary<ulong, string> StringDictionary { get; set; } = new Dictionary<ulong, string>();
+        private WADFile Wad;
+        private WADEntry CurrentlySelectedEntry;
+        public static Dictionary<ulong, string> StringDictionary { get; private set; } = new Dictionary<ulong, string>();
 
         public MainWindow()
         {
@@ -368,7 +368,7 @@ namespace Obsidian
 
         private void menuAddFolder_Click(object sender, RoutedEventArgs e)
         {
-            FolderBrowserDialog dialog = new FolderBrowserDialog()
+            FolderBrowserDialog dialog = new FolderBrowserDialog
             {
                 ShowNewFolderButton = false
             };
@@ -447,7 +447,7 @@ namespace Obsidian
 
         private void menuCreateFromDirectory_Click(object sender, RoutedEventArgs e)
         {
-            FolderBrowserDialog dialog = new FolderBrowserDialog()
+            FolderBrowserDialog dialog = new FolderBrowserDialog
             {
                 ShowNewFolderButton = false
             };
