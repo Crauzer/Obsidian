@@ -183,7 +183,7 @@ namespace Obsidian.Utils
                 }
             }
 
-            return strings;
+            return strings.AsEnumerable();
         }
 
         private static IEnumerable<string> ProcessBINPackedLinkedFile(string linkedString)
