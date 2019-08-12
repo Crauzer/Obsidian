@@ -1,13 +1,13 @@
-﻿using Fantome.Libraries.League.Helpers.Cryptography;
-using Fantome.Libraries.League.Helpers.Utilities;
-using Fantome.Libraries.League.IO.BIN;
-using Fantome.Libraries.League.IO.WAD;
-using log4net;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Fantome.Libraries.League.Helpers.Cryptography;
+using Fantome.Libraries.League.Helpers.Utilities;
+using Fantome.Libraries.League.IO.BIN;
+using Fantome.Libraries.League.IO.WAD;
+using log4net;
 
 namespace Obsidian.Utils
 {

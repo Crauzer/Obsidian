@@ -1,7 +1,7 @@
-﻿using log4net.Core;
-using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
+using log4net.Core;
+using Newtonsoft.Json;
 
 namespace Obsidian.Utils
 {

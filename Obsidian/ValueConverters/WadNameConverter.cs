@@ -1,10 +1,7 @@
-﻿using Fantome.Libraries.League.Helpers.Cryptography;
-using Fantome.Libraries.League.Helpers.Utilities;
-using Fantome.Libraries.League.IO.WAD;
-using System;
+﻿using System;
 using System.Globalization;
-using System.Text;
 using System.Windows.Data;
+using Fantome.Libraries.League.IO.WAD;
 
 namespace Obsidian.ValueConverters
 {

@@ -1,32 +1,34 @@
-﻿using Fantome.Libraries.League.Helpers.Utilities;
-using Fantome.Libraries.League.IO.WAD;
-using log4net;
-using log4net.Core;
-using Microsoft.Win32;
-using Obsidian.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Input;
-using Newtonsoft.Json.Linq;
+using System.Windows.Forms;
 using Fantome.Libraries.League.Helpers.Cryptography;
-using System.Text;
+using Fantome.Libraries.League.Helpers.Utilities;
+using Fantome.Libraries.League.IO.WAD;
+using log4net;
+using log4net.Core;
 using MaterialDesignThemes.Wpf;
-using Fantome.Libraries.League.IO.BIN;
-using System.Text.RegularExpressions;
+using Obsidian.Utils;
+using DataFormats = System.Windows.DataFormats;
+using DragEventArgs = System.Windows.DragEventArgs;
+using MessageBox = System.Windows.MessageBox;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
+using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace Obsidian
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         public Dictionary<string, object> Config { get; }
         private static readonly ILog Logger = LogManager.GetLogger("MainWindow");
@@ -203,7 +205,7 @@ namespace Obsidian
 
         private void menuExportAll_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
+            FolderBrowserDialog dialog = new FolderBrowserDialog();
 
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -220,7 +222,7 @@ namespace Obsidian
 
         private void menuExportSelected_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
+            FolderBrowserDialog dialog = new FolderBrowserDialog();
 
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -366,7 +368,7 @@ namespace Obsidian
 
         private void menuAddFolder_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog()
+            FolderBrowserDialog dialog = new FolderBrowserDialog()
             {
                 ShowNewFolderButton = false
             };
@@ -445,7 +447,7 @@ namespace Obsidian
 
         private void menuCreateFromDirectory_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog()
+            FolderBrowserDialog dialog = new FolderBrowserDialog()
             {
                 ShowNewFolderButton = false
             };

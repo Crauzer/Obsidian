@@ -1,10 +1,10 @@
-﻿using log4net;
+﻿using System;
+using System.Windows;
+using log4net;
 using log4net.Appender;
 using log4net.Config;
 using log4net.Core;
 using log4net.Layout;
-using System;
-using System.Windows;
 
 namespace Obsidian.Utils
 {
