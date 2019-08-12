@@ -177,13 +177,13 @@ namespace Obsidian.Utils
             foreach (string fetchedString in linkedFiles)
             {
                 strings.Add(fetchedString);
-                if (fetchedString.Contains("_skins_skin"))
+                if (fetchedString.Contains("_Skins_Skin"))
                 {
                     strings.AddRange(ProcessBINPackedLinkedFile(fetchedString));
                 }
             }
 
-            return strings.AsEnumerable();
+            return strings;
         }
 
         private static IEnumerable<string> ProcessBINPackedLinkedFile(string linkedString)
