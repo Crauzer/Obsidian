@@ -189,33 +189,29 @@ namespace Obsidian.Utils
         private static IEnumerable<string> ProcessBINPackedLinkedFile(string linkedString)
         {
             List<string> strings = new List<string>();
-            string stringToProcess = linkedString;
+            string extension = Path.GetExtension(linkedString);
+            string[] unpacked = Path.GetFileNameWithoutExtension(linkedString).Split('_');
 
-            string characterName = linkedString.Substring(5, linkedString.IndexOf('_') - 5);
-            string extension = linkedString.Substring(linkedString.LastIndexOf('.'), linkedString.Length - linkedString.LastIndexOf('.'));
-
-            stringToProcess = stringToProcess.Remove(0, 5 + characterName.Length + 1);
-            stringToProcess = stringToProcess.Remove(stringToProcess.Length - extension.Length);
-
-            while (stringToProcess.Length != 0)
+            string characterName = "";
+            int startIndexSkinData = 0;
+            for (int i = 0; i < unpacked.Length; i++)
             {
-                string directoryName = stringToProcess.Substring(0, stringToProcess.IndexOf('_'));
-                stringToProcess = stringToProcess.Remove(0, directoryName.Length + 1);
-
-                string skin;
-                int indexOfUnderscore = stringToProcess.IndexOf('_');
-                if (indexOfUnderscore != -1)
+                string splitStringComponent = unpacked[i];
+                if (splitStringComponent != "Skins" && splitStringComponent != "Tiers")
                 {
-                    skin = stringToProcess.Substring(0, stringToProcess.IndexOf('_'));
-                    stringToProcess = stringToProcess.Remove(0, skin.Length + 1);
+                    characterName += splitStringComponent + "_";
                 }
                 else
                 {
-                    skin = stringToProcess;
-                    stringToProcess = stringToProcess.Remove(0);
+                    characterName = characterName.Remove(characterName.Length - 1, 1);
+                    startIndexSkinData = i;
+                    break;
                 }
+            }
 
-                strings.Add(string.Format("DATA/Characters/{0}/{1}/{2}{3}", characterName, directoryName, skin, extension));
+            for (int i = startIndexSkinData; i < unpacked.Length; i += 2)
+            {
+                strings.Add(string.Format("DATA/Characters/{0}/{1}/{2}{3}", characterName, unpacked[i], unpacked[i + 1], extension));
             }
 
             return strings;
