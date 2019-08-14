@@ -1,10 +1,7 @@
-﻿using Fantome.Libraries.League.Helpers.Cryptography;
-using Fantome.Libraries.League.Helpers.Utilities;
-using Fantome.Libraries.League.IO.WAD;
-using System;
+﻿using System;
 using System.Globalization;
-using System.Text;
 using System.Windows.Data;
+using Fantome.Libraries.League.IO.WAD;
 
 namespace Obsidian.ValueConverters
 {
@@ -12,14 +9,15 @@ namespace Obsidian.ValueConverters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            string finalName = "";
-            if (MainWindow.StringDictionary.ContainsKey((value as WADEntry).XXHash))
+            WADEntry wadEntry = value as WADEntry;
+            string finalName;
+            if (MainWindow.StringDictionary.ContainsKey(wadEntry.XXHash))
             {
-                finalName = MainWindow.StringDictionary[(value as WADEntry).XXHash];
+                finalName = MainWindow.StringDictionary[wadEntry.XXHash];
             }
             else
             {
-                finalName = (value as WADEntry).XXHash.ToString("X16");
+                finalName = wadEntry.XXHash.ToString("X16");
             }
 
             return finalName;
