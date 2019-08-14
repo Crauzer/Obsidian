@@ -19,7 +19,7 @@ namespace Obsidian.ValueConverters
             }
             else
             {
-                finalName = BitConverter.ToString(BitConverter.GetBytes((value as WADEntry).XXHash)).Replace("-", "");
+                finalName = (value as WADEntry).XXHash.ToString("X16");
             }
 
             return finalName;
