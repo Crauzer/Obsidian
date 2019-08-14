@@ -11,7 +11,6 @@ namespace Obsidian.ValueConverters
             uint uncompressedSize = (uint)value;
             string[] sizeSuffixes = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 
-            if (uncompressedSize < 0) { return "-" + Convert(-uncompressedSize, targetType, parameter, culture); }
             if (uncompressedSize == 0) { return "0.0 B"; }
 
             int mag = (int)Math.Log(uncompressedSize, 1024);
@@ -24,7 +23,7 @@ namespace Obsidian.ValueConverters
                 adjustedSize /= 1024;
             }
 
-            return string.Format("{0} {1}", adjustedSize.ToString("0.##"), sizeSuffixes[mag]);
+            return string.Format("{0:0.##} {1}", adjustedSize, sizeSuffixes[mag]);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

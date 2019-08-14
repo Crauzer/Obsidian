@@ -1,13 +1,13 @@
-﻿using Fantome.Libraries.League.Helpers.Cryptography;
-using Fantome.Libraries.League.Helpers.Utilities;
-using Fantome.Libraries.League.IO.BIN;
-using Fantome.Libraries.League.IO.WAD;
-using log4net;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Fantome.Libraries.League.Helpers.Cryptography;
+using Fantome.Libraries.League.Helpers.Utilities;
+using Fantome.Libraries.League.IO.BIN;
+using Fantome.Libraries.League.IO.WAD;
+using log4net;
 
 namespace Obsidian.Utils
 {
@@ -37,12 +37,12 @@ namespace Obsidian.Utils
                     if (bin != null)
                     {
                         strings.AddRange(ProcessBINLinkedFiles(bin.LinkedFiles));
-                        strings = strings.Distinct().ToList();
-
                         strings.AddRange(ProcessBINFile(bin));
                     }
                 }
             }
+
+            strings = strings.Distinct().ToList();
 
             using (XXHash64 xxHash = XXHash64.Create())
             {
@@ -70,7 +70,7 @@ namespace Obsidian.Utils
                 strings.AddRange(ProcessBINEntry(entry));
             }
 
-            return strings.AsEnumerable();
+            return strings;
         }
 
         private static IEnumerable<string> ProcessBINEntry(BINFileEntry entry)
@@ -82,7 +82,7 @@ namespace Obsidian.Utils
                 strings.AddRange(ProcessBINValue(value));
             }
 
-            return strings.AsEnumerable();
+            return strings;
         }
 
         private static IEnumerable<string> ProcessBINValue(BINFileValue value)
@@ -118,7 +118,7 @@ namespace Obsidian.Utils
                 strings.AddRange(ProcessBINMap(value.Value as BINFileMap));
             }
 
-            return strings.AsEnumerable();
+            return strings;
         }
 
         private static IEnumerable<string> ProcessBINAdditionalData(BINFileAdditionalData additionalData)
@@ -130,7 +130,7 @@ namespace Obsidian.Utils
                 strings.AddRange(ProcessBINValue(value));
             }
 
-            return strings.AsEnumerable();
+            return strings;
         }
 
         private static IEnumerable<string> ProcessBINContainer(BINFileContainer container)
@@ -142,7 +142,7 @@ namespace Obsidian.Utils
                 strings.AddRange(ProcessBINValue(value));
             }
 
-            return strings.AsEnumerable();
+            return strings;
         }
 
         private static IEnumerable<string> ProcessBINStructure(BINFileStructure structure)
@@ -154,7 +154,7 @@ namespace Obsidian.Utils
                 strings.AddRange(ProcessBINValue(value));
             }
 
-            return strings.AsEnumerable();
+            return strings;
         }
 
         private static IEnumerable<string> ProcessBINMap(BINFileMap map)
@@ -167,10 +167,10 @@ namespace Obsidian.Utils
                 strings.AddRange(ProcessBINValue(valuePair.Pair.Value));
             }
 
-            return strings.AsEnumerable();
+            return strings;
         }
 
-        private static IEnumerable<string> ProcessBINLinkedFiles(List<string> linkedFiles)
+        private static IEnumerable<string> ProcessBINLinkedFiles(IEnumerable<string> linkedFiles)
         {
             List<string> strings = new List<string>();
 
@@ -183,7 +183,7 @@ namespace Obsidian.Utils
                 }
             }
 
-            return strings.AsEnumerable();
+            return strings;
         }
 
         private static IEnumerable<string> ProcessBINPackedLinkedFile(string linkedString)
@@ -218,7 +218,7 @@ namespace Obsidian.Utils
                 strings.Add(string.Format("DATA/Characters/{0}/{1}/{2}{3}", characterName, directoryName, skin, extension));
             }
 
-            return strings.AsEnumerable();
+            return strings;
         }
     }
 }
