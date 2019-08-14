@@ -30,10 +30,10 @@ namespace Obsidian
     /// </summary>
     public partial class MainWindow
     {
-        private readonly Dictionary<string, object> Config;
+        public Dictionary<string, object> Config { get; }
         private static readonly ILog Logger = LogManager.GetLogger("MainWindow");
-        private WADFile Wad;
-        private WADEntry CurrentlySelectedEntry;
+        public WADFile WAD { get; set; }
+        public WADEntry CurrentlySelectedEntry { get; set; }
         public static Dictionary<ulong, string> StringDictionary { get; private set; } = new Dictionary<ulong, string>();
 
         public MainWindow()
@@ -119,7 +119,7 @@ namespace Obsidian
                 try
                 {
                     //this.Wad.Entries.OrderBy(entry => entry.XXHash);
-                    this.Wad.Write(dialog.FileName, (byte)(long)this.Config["WadSaveMajorVersion"], (byte)(long)this.Config["WadSaveMinorVersion"]);
+                    this.WAD.Write(dialog.FileName, (byte)(long)this.Config["WadSaveMajorVersion"], (byte)(long)this.Config["WadSaveMinorVersion"]);
                 }
                 catch (Exception excp)
                 {
@@ -252,7 +252,7 @@ namespace Obsidian
         {
             foreach (WADEntry entry in this.datagridWadEntries.SelectedItems.Cast<WADEntry>())
             {
-                this.Wad.RemoveEntry(entry.XXHash);
+                this.WAD.RemoveEntry(entry.XXHash);
                 this.datagridWadEntries.ItemsSource.Cast<WADEntry>().ToList().Remove(entry);
             }
             CollectionViewSource.GetDefaultView(this.datagridWadEntries.ItemsSource).Refresh();
@@ -346,7 +346,7 @@ namespace Obsidian
             {
                 try
                 {
-                    this.Wad.AddEntry(this.textboxAddFileFilePath.Text, this.textboxAddFilePath.Text);
+                    this.WAD.AddEntry(this.textboxAddFileFilePath.Text, this.textboxAddFilePath.Text);
 
                     using (XXHash64 xxHash = XXHash64.Create())
                     {
@@ -389,7 +389,7 @@ namespace Obsidian
                             StringDictionary.Add(hashedPath, path);
                         }
 
-                        this.Wad.AddEntry(hashedPath, File.ReadAllBytes(fileInfo.FullName), true);
+                        this.WAD.AddEntry(hashedPath, File.ReadAllBytes(fileInfo.FullName), true);
                     }
                 }
 
@@ -415,8 +415,8 @@ namespace Obsidian
 
         private void menuCreateEmpty_Click(object sender, RoutedEventArgs e)
         {
-            this.Wad?.Dispose();
-            this.Wad = new WADFile((byte)(long)this.Config["WadSaveMajorVersion"], (byte)(long)this.Config["WadSaveMinorVersion"]);
+            this.WAD?.Dispose();
+            this.WAD = new WADFile((byte)(long)this.Config["WadSaveMajorVersion"], (byte)(long)this.Config["WadSaveMinorVersion"]);
 
             StringDictionary = new Dictionary<ulong, string>();
 
@@ -424,7 +424,7 @@ namespace Obsidian
             {
                 try
                 {
-                    WADHashGenerator.GenerateWADStrings(Logger, this.Wad, StringDictionary);
+                    WADHashGenerator.GenerateWADStrings(Logger, this.WAD, StringDictionary);
                 }
                 catch (Exception excp)
                 {
@@ -440,7 +440,7 @@ namespace Obsidian
             this.menuAddFileRedirection.IsEnabled = true;
             this.menuAddFolder.IsEnabled = true;
             this.CurrentlySelectedEntry = null;
-            this.datagridWadEntries.ItemsSource = this.Wad.Entries;
+            this.datagridWadEntries.ItemsSource = this.WAD.Entries;
 
             Logger.Info("Created empty WAD File");
         }
@@ -471,8 +471,8 @@ namespace Obsidian
 
                 wadCreator.DoWork += (sender2, e2) =>
                 {
-                    this.Wad?.Dispose();
-                    this.Wad = new WADFile((byte)(long)this.Config["WadSaveMajorVersion"], (byte)(long)this.Config["WadSaveMinorVersion"]);
+                    this.WAD?.Dispose();
+                    this.WAD = new WADFile((byte)(long)this.Config["WadSaveMajorVersion"], (byte)(long)this.Config["WadSaveMinorVersion"]);
                     StringDictionary = new Dictionary<ulong, string>();
                     int progress = 0;
 
@@ -505,7 +505,7 @@ namespace Obsidian
                     {
                         try
                         {
-                            WADHashGenerator.GenerateWADStrings(Logger, this.Wad, StringDictionary);
+                            WADHashGenerator.GenerateWADStrings(Logger, this.WAD, StringDictionary);
                         }
                         catch (Exception excp)
                         {
@@ -524,7 +524,7 @@ namespace Obsidian
                     this.menuAddFileRedirection.IsEnabled = true;
                     this.menuAddFolder.IsEnabled = true;
                     this.CurrentlySelectedEntry = null;
-                    this.datagridWadEntries.ItemsSource = this.Wad.Entries;
+                    this.datagridWadEntries.ItemsSource = this.WAD.Entries;
                     this.progressBarWadExtraction.Maximum = 100;
                     this.progressBarWadExtraction.Value = 100;
                     this.IsEnabled = true;
@@ -661,8 +661,8 @@ namespace Obsidian
         {
             try
             {
-                this.Wad?.Dispose();
-                this.Wad = new WADFile(filePath);
+                this.WAD?.Dispose();
+                this.WAD = new WADFile(filePath);
             }
             catch (Exception excp)
             {
@@ -676,7 +676,7 @@ namespace Obsidian
             {
                 try
                 {
-                    WADHashGenerator.GenerateWADStrings(Logger, this.Wad, StringDictionary);
+                    WADHashGenerator.GenerateWADStrings(Logger, this.WAD, StringDictionary);
                 }
                 catch (Exception excp)
                 {
@@ -692,7 +692,7 @@ namespace Obsidian
             this.menuAddFileRedirection.IsEnabled = true;
             this.menuAddFolder.IsEnabled = true;
             this.CurrentlySelectedEntry = null;
-            this.datagridWadEntries.ItemsSource = this.Wad.Entries;
+            this.datagridWadEntries.ItemsSource = this.WAD.Entries;
 
             Logger.Info("Opened WAD File: " + filePath);
         }
@@ -713,7 +713,7 @@ namespace Obsidian
 
         private void AddFile(ulong hash, byte[] data, bool compressed, bool refresh)
         {
-            this.Wad.AddEntry(hash, data, compressed);
+            this.WAD.AddEntry(hash, data, compressed);
 
             if (refresh)
             {
