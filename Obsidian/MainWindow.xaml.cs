@@ -588,7 +588,7 @@ namespace Obsidian
                     {
                         entryName = StringDictionary[entry.XXHash];
 
-                        if (Regex.IsMatch(entryName, @"^DATA/.*_Skins_Skin.*\.bin$"))
+                        if (Regex.IsMatch(entryName, @"^DATA/.*_(Skins_Skin|Tiers_Tier|(Skins|Tiers)_Root).*\.bin$"))
                         {
                             createPackedMappingFile = true;
                             entryName = entry.XXHash.ToString("X16") + ".bin";
