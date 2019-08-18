@@ -177,7 +177,7 @@ namespace Obsidian.Utils
             foreach (string fetchedString in linkedFiles)
             {
                 strings.Add(fetchedString);
-                if (fetchedString.Contains("_Skins_Skin"))
+                if (fetchedString.Contains("_Skins_") || fetchedString.Contains("_Tiers_"))
                 {
                     strings.AddRange(ProcessBINPackedLinkedFile(fetchedString));
                 }
