@@ -9,19 +9,15 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Forms;
 using Fantome.Libraries.League.Helpers.Cryptography;
 using Fantome.Libraries.League.Helpers.Utilities;
 using Fantome.Libraries.League.IO.WAD;
 using log4net;
 using log4net.Core;
 using MaterialDesignThemes.Wpf;
+using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using Obsidian.Utils;
-using DataFormats = System.Windows.DataFormats;
-using DragEventArgs = System.Windows.DragEventArgs;
-using MessageBox = System.Windows.MessageBox;
-using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
-using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace Obsidian
 {
@@ -205,34 +201,40 @@ namespace Obsidian
 
         private void menuExportAll_Click(object sender, RoutedEventArgs e)
         {
-            FolderBrowserDialog dialog = new FolderBrowserDialog();
-
-            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
             {
-                try
+                dialog.IsFolderPicker = true;
+
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
-                    ExtractWADEntries(dialog.SelectedPath, this.datagridWadEntries.Items.Cast<WADEntry>().Where(x => x.Type != EntryType.FileRedirection).ToList());
-                }
-                catch (Exception excp)
-                {
-                    Logging.LogException(Logger, "Extraction of the currently opened WAD File failed", excp);
+                    try
+                    {
+                        ExtractWADEntries(dialog.FileName, this.datagridWadEntries.Items.Cast<WADEntry>().Where(x => x.Type != EntryType.FileRedirection).ToList());
+                    }
+                    catch (Exception excp)
+                    {
+                        Logging.LogException(Logger, "Extraction of the currently opened WAD File failed", excp);
+                    }
                 }
             }
         }
 
         private void menuExportSelected_Click(object sender, RoutedEventArgs e)
         {
-            FolderBrowserDialog dialog = new FolderBrowserDialog();
-
-            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
             {
-                try
+                dialog.IsFolderPicker = true;
+
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
-                    ExtractWADEntries(dialog.SelectedPath, this.datagridWadEntries.SelectedItems.Cast<WADEntry>().Where(x => x.Type != EntryType.FileRedirection).ToList());
-                }
-                catch (Exception excp)
-                {
-                    Logging.LogException(Logger, "Extraction of the currently opened WAD File failed", excp);
+                    try
+                    {
+                        ExtractWADEntries(dialog.FileName, this.datagridWadEntries.SelectedItems.Cast<WADEntry>().Where(x => x.Type != EntryType.FileRedirection).ToList());
+                    }
+                    catch (Exception excp)
+                    {
+                        Logging.LogException(Logger, "Extraction of the currently opened WAD File failed", excp);
+                    }
                 }
             }
         }
@@ -368,32 +370,32 @@ namespace Obsidian
 
         private void menuAddFolder_Click(object sender, RoutedEventArgs e)
         {
-            FolderBrowserDialog dialog = new FolderBrowserDialog
+            using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
             {
-                ShowNewFolderButton = false
-            };
+                dialog.IsFolderPicker = true;
 
-            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                DirectoryInfo directory = new DirectoryInfo(dialog.SelectedPath);
-
-                using (XXHash64 xxHash = XXHash64.Create())
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
-                    foreach (FileInfo fileInfo in directory.EnumerateFiles("*", SearchOption.AllDirectories))
+                    DirectoryInfo directory = new DirectoryInfo(dialog.FileName);
+
+                    using (XXHash64 xxHash = XXHash64.Create())
                     {
-                        string path = fileInfo.FullName.Substring(directory.FullName.Length + 1);
-                        ulong hashedPath = BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(path.ToLower())), 0);
-
-                        if (!StringDictionary.ContainsKey(hashedPath))
+                        foreach (FileInfo fileInfo in directory.EnumerateFiles("*", SearchOption.AllDirectories))
                         {
-                            StringDictionary.Add(hashedPath, path);
+                            string path = fileInfo.FullName.Substring(directory.FullName.Length + 1);
+                            ulong hashedPath = BitConverter.ToUInt64(xxHash.ComputeHash(Encoding.ASCII.GetBytes(path.ToLower())), 0);
+
+                            if (!StringDictionary.ContainsKey(hashedPath))
+                            {
+                                StringDictionary.Add(hashedPath, path);
+                            }
+
+                            this.WAD.AddEntry(hashedPath, File.ReadAllBytes(fileInfo.FullName), true);
                         }
-
-                        this.WAD.AddEntry(hashedPath, File.ReadAllBytes(fileInfo.FullName), true);
                     }
-                }
 
-                Logger.Info("Added files from directory: " + dialog.SelectedPath);
+                    Logger.Info("Added files from directory: " + dialog.FileName);
+                }
             }
         }
 
@@ -447,93 +449,93 @@ namespace Obsidian
 
         private void menuCreateFromDirectory_Click(object sender, RoutedEventArgs e)
         {
-            FolderBrowserDialog dialog = new FolderBrowserDialog
+            using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
             {
-                ShowNewFolderButton = false
-            };
+                dialog.IsFolderPicker = true;
 
-            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                DirectoryInfo selectedDirectory = new DirectoryInfo(dialog.SelectedPath);
-                List<FileInfo> files = selectedDirectory.EnumerateFiles("*", SearchOption.AllDirectories).ToList();
-                this.progressBarWadExtraction.Maximum = files.Count;
-                this.IsEnabled = false;
-
-                BackgroundWorker wadCreator = new BackgroundWorker
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
-                    WorkerReportsProgress = true
-                };
+                    DirectoryInfo selectedDirectory = new DirectoryInfo(dialog.FileName);
+                    FileInfo[] files = selectedDirectory.GetFiles("*", SearchOption.AllDirectories);
+                    this.progressBarWadExtraction.Maximum = files.Length;
+                    this.IsEnabled = false;
 
-                wadCreator.ProgressChanged += (sender2, args) =>
-                {
-                    this.progressBarWadExtraction.Value = args.ProgressPercentage;
-                };
-
-                wadCreator.DoWork += (sender2, e2) =>
-                {
-                    this.WAD?.Dispose();
-                    this.WAD = new WADFile((byte)(long)this.Config["WadSaveMajorVersion"], (byte)(long)this.Config["WadSaveMinorVersion"]);
-                    StringDictionary = new Dictionary<ulong, string>();
-                    int progress = 0;
-
-                    foreach (FileInfo fileInfo in files)
+                    BackgroundWorker wadCreator = new BackgroundWorker
                     {
-                        if (fileInfo.Name == "OBSIDIAN_PACKED_MAPPING.txt")
-                        {
-                            continue;
-                        }
+                        WorkerReportsProgress = true
+                    };
 
-                        string path = fileInfo.FullName.Substring(selectedDirectory.FullName.Length + 1).Replace('\\', '/');
-                        string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(path);
-                        bool hasUnknownPath = fileNameWithoutExtension.Length == 16 && fileNameWithoutExtension.All(c => "ABCDEF0123456789".Contains(c));
-
-                        if (hasUnknownPath)
-                        {
-                            ulong hashedPath = Convert.ToUInt64(fileNameWithoutExtension, 16);
-                            AddFile(hashedPath, File.ReadAllBytes(fileInfo.FullName), true, false);
-                        }
-                        else
-                        {
-                            AddFile(path, File.ReadAllBytes(fileInfo.FullName), true, false);
-                        }
-
-                        progress += 1;
-                        wadCreator.ReportProgress(progress);
-                    }
-
-                    if ((bool)this.Config["GenerateWadDictionary"])
+                    wadCreator.ProgressChanged += (sender2, args) =>
                     {
-                        try
+                        this.progressBarWadExtraction.Value = args.ProgressPercentage;
+                    };
+
+                    wadCreator.DoWork += (sender2, e2) =>
+                    {
+                        this.WAD?.Dispose();
+                        this.WAD = new WADFile((byte)(long)this.Config["WadSaveMajorVersion"], (byte)(long)this.Config["WadSaveMinorVersion"]);
+                        StringDictionary = new Dictionary<ulong, string>();
+                        int progress = 0;
+
+                        foreach (FileInfo fileInfo in files)
                         {
-                            WADHashGenerator.GenerateWADStrings(Logger, this.WAD, StringDictionary);
+                            if (fileInfo.Name == "OBSIDIAN_PACKED_MAPPING.txt")
+                            {
+                                continue;
+                            }
+
+                            string path = fileInfo.FullName.Substring(selectedDirectory.FullName.Length + 1).Replace('\\', '/');
+                            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(path);
+                            bool hasUnknownPath = fileNameWithoutExtension.Length == 16 && fileNameWithoutExtension.All(c => "ABCDEF0123456789".Contains(c));
+
+                            if (hasUnknownPath)
+                            {
+                                ulong hashedPath = Convert.ToUInt64(fileNameWithoutExtension, 16);
+                                AddFile(hashedPath, File.ReadAllBytes(fileInfo.FullName), true, false);
+                            }
+                            else
+                            {
+                                AddFile(path, File.ReadAllBytes(fileInfo.FullName), true, false);
+                            }
+
+                            progress += 1;
+                            wadCreator.ReportProgress(progress);
                         }
-                        catch (Exception excp)
+
+                        if ((bool)this.Config["GenerateWadDictionary"])
                         {
-                            Logging.LogException(Logger, "Failed to Generate WAD String Dictionary", excp);
+                            try
+                            {
+                                WADHashGenerator.GenerateWADStrings(Logger, this.WAD, StringDictionary);
+                            }
+                            catch (Exception excp)
+                            {
+                                Logging.LogException(Logger, "Failed to Generate WAD String Dictionary", excp);
+                            }
                         }
-                    }
-                };
+                    };
 
-                wadCreator.RunWorkerCompleted += (sender2, args) =>
-                {
-                    this.menuSave.IsEnabled = true;
-                    this.menuImportHashtable.IsEnabled = true;
-                    this.menuExportHashtable.IsEnabled = true;
-                    this.menuExportAll.IsEnabled = true;
-                    this.menuAddFile.IsEnabled = true;
-                    this.menuAddFileRedirection.IsEnabled = true;
-                    this.menuAddFolder.IsEnabled = true;
-                    this.CurrentlySelectedEntry = null;
-                    this.datagridWadEntries.ItemsSource = this.WAD.Entries;
-                    this.progressBarWadExtraction.Maximum = 100;
-                    this.progressBarWadExtraction.Value = 100;
-                    this.IsEnabled = true;
+                    wadCreator.RunWorkerCompleted += (sender2, args) =>
+                    {
+                        this.menuSave.IsEnabled = true;
+                        this.menuImportHashtable.IsEnabled = true;
+                        this.menuExportHashtable.IsEnabled = true;
+                        this.menuExportAll.IsEnabled = true;
+                        this.menuAddFile.IsEnabled = true;
+                        this.menuAddFileRedirection.IsEnabled = true;
+                        this.menuAddFolder.IsEnabled = true;
+                        this.CurrentlySelectedEntry = null;
+                        this.datagridWadEntries.ItemsSource = this.WAD.Entries;
+                        this.progressBarWadExtraction.Maximum = 100;
+                        this.progressBarWadExtraction.Value = 100;
+                        this.IsEnabled = true;
 
-                    Logger.Info("Created WAD file from directory: " + dialog.SelectedPath);
-                    CollectionViewSource.GetDefaultView(this.datagridWadEntries.ItemsSource).Refresh();
-                };
+                        Logger.Info("Created WAD file from directory: " + selectedDirectory.FullName);
+                        CollectionViewSource.GetDefaultView(this.datagridWadEntries.ItemsSource).Refresh();
+                    };
 
-                wadCreator.RunWorkerAsync();
+                    wadCreator.RunWorkerAsync();
+                }
             }
         }
 
