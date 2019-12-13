@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Fantome.Libraries.League.Helpers;
 using Fantome.Libraries.League.Helpers.Cryptography;
-using Fantome.Libraries.League.Helpers.Utilities;
 using Fantome.Libraries.League.IO.BIN;
 using Fantome.Libraries.League.IO.WAD;
 using log4net;
@@ -65,7 +65,7 @@ namespace Obsidian.Utils
         {
             List<string> strings = new List<string>();
 
-            foreach (BINFileEntry entry in bin.Entries)
+            foreach (BINEntry entry in bin.Entries)
             {
                 strings.AddRange(ProcessBINEntry(entry));
             }
@@ -73,11 +73,11 @@ namespace Obsidian.Utils
             return strings;
         }
 
-        private static IEnumerable<string> ProcessBINEntry(BINFileEntry entry)
+        private static IEnumerable<string> ProcessBINEntry(BINEntry entry)
         {
             List<string> strings = new List<string>();
 
-            foreach (BINFileValue value in entry.Values)
+            foreach (BINValue value in entry.Values)
             {
                 strings.AddRange(ProcessBINValue(value));
             }
@@ -85,11 +85,11 @@ namespace Obsidian.Utils
             return strings;
         }
 
-        private static IEnumerable<string> ProcessBINValue(BINFileValue value)
+        private static IEnumerable<string> ProcessBINValue(BINValue value)
         {
             List<string> strings = new List<string>();
 
-            if (value.Type == BINFileValueType.String)
+            if (value.Type == BINValueType.String)
             {
                 string valueString = value.Value as string;
                 strings.Add(valueString);
@@ -101,31 +101,43 @@ namespace Obsidian.Utils
                     strings.Add(valueString.Insert(index + 1, "4x_"));
                 }
             }
-            else if (value.Type == BINFileValueType.AdditionalOptionalData)
+            else if (value.Type == BINValueType.Optional)
             {
-                strings.AddRange(ProcessBINAdditionalData(value.Value as BINFileAdditionalData));
+                strings.AddRange(ProcessBINAdditionalData(value.Value as BINOptional));
             }
-            else if (value.Type == BINFileValueType.Container)
+            else if (value.Type == BINValueType.Container)
             {
-                strings.AddRange(ProcessBINContainer(value.Value as BINFileContainer));
+                strings.AddRange(ProcessBINContainer(value.Value as BINContainer));
             }
-            else if (value.Type == BINFileValueType.Embedded || value.Type == BINFileValueType.Structure)
+            else if (value.Type == BINValueType.Embedded || value.Type == BINValueType.Structure)
             {
-                strings.AddRange(ProcessBINStructure(value.Value as BINFileStructure));
+                strings.AddRange(ProcessBINStructure(value.Value as BINStructure));
             }
-            else if (value.Type == BINFileValueType.Map)
+            else if (value.Type == BINValueType.Map)
             {
-                strings.AddRange(ProcessBINMap(value.Value as BINFileMap));
+                strings.AddRange(ProcessBINMap(value.Value as BINMap));
             }
 
             return strings;
         }
 
-        private static IEnumerable<string> ProcessBINAdditionalData(BINFileAdditionalData additionalData)
+        private static IEnumerable<string> ProcessBINAdditionalData(BINOptional additionalData)
         {
             List<string> strings = new List<string>();
 
-            foreach (BINFileValue value in additionalData.Entries)
+            if(additionalData.Value != null)
+            {
+                strings.AddRange(ProcessBINValue(additionalData.Value));
+            }
+
+            return strings;
+        }
+
+        private static IEnumerable<string> ProcessBINContainer(BINContainer container)
+        {
+            List<string> strings = new List<string>();
+
+            foreach (BINValue value in container.Values)
             {
                 strings.AddRange(ProcessBINValue(value));
             }
@@ -133,11 +145,11 @@ namespace Obsidian.Utils
             return strings;
         }
 
-        private static IEnumerable<string> ProcessBINContainer(BINFileContainer container)
+        private static IEnumerable<string> ProcessBINStructure(BINStructure structure)
         {
             List<string> strings = new List<string>();
 
-            foreach (BINFileValue value in container.Entries)
+            foreach (BINValue value in structure.Values)
             {
                 strings.AddRange(ProcessBINValue(value));
             }
@@ -145,26 +157,14 @@ namespace Obsidian.Utils
             return strings;
         }
 
-        private static IEnumerable<string> ProcessBINStructure(BINFileStructure structure)
+        private static IEnumerable<string> ProcessBINMap(BINMap map)
         {
             List<string> strings = new List<string>();
 
-            foreach (BINFileValue value in structure.Entries)
+            foreach (KeyValuePair<BINValue, BINValue> valuePair in map.Values)
             {
-                strings.AddRange(ProcessBINValue(value));
-            }
-
-            return strings;
-        }
-
-        private static IEnumerable<string> ProcessBINMap(BINFileMap map)
-        {
-            List<string> strings = new List<string>();
-
-            foreach (BINFileValuePair valuePair in map.Entries)
-            {
-                strings.AddRange(ProcessBINValue(valuePair.Pair.Key));
-                strings.AddRange(ProcessBINValue(valuePair.Pair.Value));
+                strings.AddRange(ProcessBINValue(valuePair.Key));
+                strings.AddRange(ProcessBINValue(valuePair.Value));
             }
 
             return strings;
