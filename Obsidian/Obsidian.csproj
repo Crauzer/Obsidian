@@ -87,6 +87,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Utils\Config.cs" />
     <Compile Include="Utils\ConfigUtilities.cs" />
     <Compile Include="Utils\Logging.cs" />
     <Compile Include="Utils\WADHashGenerator.cs" />

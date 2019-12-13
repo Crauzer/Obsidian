@@ -177,7 +177,20 @@ namespace Obsidian.Utils
             foreach (string fetchedString in linkedFiles)
             {
                 strings.Add(fetchedString);
-                if (fetchedString.Contains("_Skins_") || fetchedString.Contains("_Tiers_"))
+
+                bool containsKeyword = false;
+                string[] packedKeywords = Config.Get("BinPackedKeywords") as string[];
+                for(int i = 0; i < packedKeywords.Length; i++)
+                {
+                    if(fetchedString.Contains("_" + packedKeywords[i] + "_"))
+                    {
+                        containsKeyword = true;
+                        break;
+                    }
+                }
+
+
+                if (containsKeyword)
                 {
                     strings.AddRange(ProcessBINPackedLinkedFile(fetchedString));
                 }
@@ -197,7 +210,7 @@ namespace Obsidian.Utils
             for (int i = 0; i < unpacked.Length; i++)
             {
                 string splitStringComponent = unpacked[i];
-                if (splitStringComponent != "Skins" && splitStringComponent != "Tiers")
+                if (!DetectPackedKeyword(splitStringComponent))
                 {
                     characterName += splitStringComponent + "_";
                 }
@@ -215,6 +228,18 @@ namespace Obsidian.Utils
             }
 
             return strings;
+        }
+
+        private static bool DetectPackedKeyword(string packed)
+        {
+            string[] keywords = Config.Get("BinPackedKeywords") as string[];
+
+            if (keywords.Contains(packed))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

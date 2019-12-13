@@ -26,7 +26,6 @@ namespace Obsidian
     /// </summary>
     public partial class MainWindow
     {
-        public Dictionary<string, object> Config { get; }
         private static readonly ILog Logger = LogManager.GetLogger("MainWindow");
         public WADFile WAD { get; set; }
         public WADEntry CurrentlySelectedEntry { get; set; }
@@ -38,15 +37,15 @@ namespace Obsidian
 
             if (File.Exists("config.json"))
             {
-                this.Config = ConfigUtilities.ReadConfig();
+                Config.SetConfig(ConfigUtilities.ReadConfig());
             }
             else
             {
-                this.Config = ConfigUtilities.DefaultConfig;
+                Config.SetConfig(ConfigUtilities.DefaultConfig);
                 ConfigUtilities.WriteDefaultConfig();
             }
 
-            Logging.InitializeLogger((string)this.Config["LoggingPattern"], this.Config["LogLevel"] as Level);
+            Logging.InitializeLogger((string)Config.Get("LoggingPattern"), Config.Get("LogLevel") as Level);
             Logger.Info("Initialized Logger");
 
             InitializeComponent();
@@ -88,11 +87,14 @@ namespace Obsidian
 
         private void menuOpen_Click(object sender, RoutedEventArgs e)
         {
+            string s = (string)Config.Get("WadOpenDialogStartPath");
+
             OpenFileDialog dialog = new OpenFileDialog
             {
                 Title = "Select the WAD File you want to open",
                 Multiselect = false,
-                Filter = "WAD Files (*.wad;*.wad.client)|*.wad;*.wad.client"
+                Filter = "WAD Files (*.wad;*.wad.client)|*.wad;*.wad.client",
+                InitialDirectory = (string)Config.Get("WadOpenDialogStartPath")
             };
 
             if (dialog.ShowDialog() == true)
@@ -115,7 +117,7 @@ namespace Obsidian
                 try
                 {
                     //this.Wad.Entries.OrderBy(entry => entry.XXHash);
-                    this.WAD.Write(dialog.FileName, (byte)(long)this.Config["WadSaveMajorVersion"], (byte)(long)this.Config["WadSaveMinorVersion"]);
+                    this.WAD.Write(dialog.FileName, (byte)(long)Config.Get("WadSaveMajorVersion"), (byte)(long)Config.Get("WadSaveMinorVersion"));
                 }
                 catch (Exception excp)
                 {
@@ -134,7 +136,8 @@ namespace Obsidian
             {
                 Title = "Select the Hashtable files you want to load",
                 Multiselect = true,
-                Filter = "Text Files (*.txt)|*.txt"
+                Filter = "Text Files (*.txt)|*.txt",
+                InitialDirectory = (string)Config.Get("HashtableOpenDialogStartPath")
             };
 
             if (dialog.ShowDialog() == true)
@@ -204,6 +207,7 @@ namespace Obsidian
             using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
             {
                 dialog.IsFolderPicker = true;
+                dialog.InitialDirectory = (string)Config.Get("WadExtractDialogStartPath");
 
                 if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
@@ -224,6 +228,7 @@ namespace Obsidian
             using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
             {
                 dialog.IsFolderPicker = true;
+                dialog.InitialDirectory = (string)Config.Get("WadExtractDialogStartPath");
 
                 if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
@@ -418,11 +423,11 @@ namespace Obsidian
         private void menuCreateEmpty_Click(object sender, RoutedEventArgs e)
         {
             this.WAD?.Dispose();
-            this.WAD = new WADFile((byte)(long)this.Config["WadSaveMajorVersion"], (byte)(long)this.Config["WadSaveMinorVersion"]);
+            this.WAD = new WADFile((byte)(long)Config.Get("WadSaveMajorVersion"), (byte)(long)Config.Get("WadSaveMinorVersion"));
 
             StringDictionary = new Dictionary<ulong, string>();
 
-            if ((bool)this.Config["GenerateWadDictionary"])
+            if ((bool)Config.Get("GenerateWadDictionary"))
             {
                 try
                 {
@@ -473,7 +478,7 @@ namespace Obsidian
                     wadCreator.DoWork += (sender2, e2) =>
                     {
                         this.WAD?.Dispose();
-                        this.WAD = new WADFile((byte)(long)this.Config["WadSaveMajorVersion"], (byte)(long)this.Config["WadSaveMinorVersion"]);
+                        this.WAD = new WADFile((byte)(long)Config.Get("WadSaveMajorVersion"), (byte)(long)Config.Get("WadSaveMinorVersion"));
                         StringDictionary = new Dictionary<ulong, string>();
                         int progress = 0;
 
@@ -502,7 +507,7 @@ namespace Obsidian
                             wadCreator.ReportProgress(progress);
                         }
 
-                        if ((bool)this.Config["GenerateWadDictionary"])
+                        if ((bool)Config.Get("GenerateWadDictionary"))
                         {
                             try
                             {
@@ -590,7 +595,7 @@ namespace Obsidian
                     {
                         entryName = StringDictionary[entry.XXHash];
 
-                        if (Regex.IsMatch(entryName, @"^DATA/.*_(Skins_Skin|Tiers_Tier|(Skins|Tiers)_Root).*\.bin$"))
+                        if (Regex.IsMatch(entryName, (string)Config.Get("BinLongNameRegex")))
                         {
                             createPackedMappingFile = true;
                             entryName = entry.XXHash.ToString("X16") + ".bin";
@@ -611,7 +616,7 @@ namespace Obsidian
                     wadExtractor.ReportProgress((int)progress);
                 }
 
-                if ((bool)this.Config["ParallelExtraction"])
+                if ((bool)Config.Get("ParallelExtraction"))
                 {
                     Parallel.ForEach(fileEntries, entry =>
                     {
@@ -674,7 +679,7 @@ namespace Obsidian
 
             StringDictionary = new Dictionary<ulong, string>();
 
-            if ((bool)this.Config["GenerateWadDictionary"])
+            if ((bool)Config.Get("GenerateWadDictionary"))
             {
                 try
                 {
