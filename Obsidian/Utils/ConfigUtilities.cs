@@ -14,7 +14,12 @@ namespace Obsidian.Utils
             { "WadSaveMajorVersion", 3L },
             { "WadSaveMinorVersion", 0L },
             { "GenerateWadDictionary", true },
-            { "ParallelExtraction", true }
+            { "ParallelExtraction", true },
+            { "BinLongNameRegex", @"^DATA/.*_(Skins_Skin|Tiers_Tier|(Skins|Tiers)_Root).*\.bin$" },
+            { "BinPackedKeywords", new string[]{"Skins", "Tiers" }},
+            { "WadOpenDialogStartPath", ""},
+            { "WadExtractDialogStartPath", "" },
+            { "HashtableOpenDialogStartPath", "" }
         };
 
         public static Dictionary<string, object> ReadConfig()

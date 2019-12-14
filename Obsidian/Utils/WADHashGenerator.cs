@@ -8,6 +8,7 @@ using Fantome.Libraries.League.Helpers.Cryptography;
 using Fantome.Libraries.League.IO.BIN;
 using Fantome.Libraries.League.IO.WAD;
 using log4net;
+using Newtonsoft.Json.Linq;
 
 namespace Obsidian.Utils
 {
@@ -100,6 +101,12 @@ namespace Obsidian.Utils
                     strings.Add(valueString.Insert(index + 1, "2x_"));
                     strings.Add(valueString.Insert(index + 1, "4x_"));
                 }
+
+                if(value.Property == Cryptography.FNV32Hash("mapPath"))
+                {
+                    strings.Add("DATA/" + valueString + ".materials.bin");
+                    strings.Add("DATA/" + valueString + ".mapgeo");
+                }
             }
             else if (value.Type == BINValueType.Optional)
             {
@@ -177,7 +184,20 @@ namespace Obsidian.Utils
             foreach (string fetchedString in linkedFiles)
             {
                 strings.Add(fetchedString);
-                if (fetchedString.Contains("_Skins_Skin"))
+
+                bool containsKeyword = false;
+                string[] packedKeywords = (Config.Get("BinPackedKeywords") as JArray).ToObject<string[]>();
+                for (int i = 0; i < packedKeywords.Length; i++)
+                {
+                    if(fetchedString.Contains("_" + packedKeywords[i] + "_"))
+                    {
+                        containsKeyword = true;
+                        break;
+                    }
+                }
+
+
+                if (containsKeyword)
                 {
                     strings.AddRange(ProcessBINPackedLinkedFile(fetchedString));
                 }
@@ -197,7 +217,7 @@ namespace Obsidian.Utils
             for (int i = 0; i < unpacked.Length; i++)
             {
                 string splitStringComponent = unpacked[i];
-                if (splitStringComponent != "Skins" && splitStringComponent != "Tiers")
+                if (!DetectPackedKeyword(splitStringComponent))
                 {
                     characterName += splitStringComponent + "_";
                 }
@@ -215,6 +235,18 @@ namespace Obsidian.Utils
             }
 
             return strings;
+        }
+
+        private static bool DetectPackedKeyword(string packed)
+        {
+            string[] keywords = (Config.Get("BinPackedKeywords") as JArray).ToObject<string[]>();
+
+            if (keywords.Contains(packed))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }
