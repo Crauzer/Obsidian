@@ -8,6 +8,7 @@ using Fantome.Libraries.League.Helpers.Cryptography;
 using Fantome.Libraries.League.IO.BIN;
 using Fantome.Libraries.League.IO.WAD;
 using log4net;
+using Newtonsoft.Json.Linq;
 
 namespace Obsidian.Utils
 {
@@ -100,6 +101,12 @@ namespace Obsidian.Utils
                     strings.Add(valueString.Insert(index + 1, "2x_"));
                     strings.Add(valueString.Insert(index + 1, "4x_"));
                 }
+
+                if(value.Property == Cryptography.FNV32Hash("mapPath"))
+                {
+                    strings.Add("DATA/" + valueString + ".materials.bin");
+                    strings.Add("DATA/" + valueString + ".mapgeo");
+                }
             }
             else if (value.Type == BINValueType.Optional)
             {
@@ -179,8 +186,8 @@ namespace Obsidian.Utils
                 strings.Add(fetchedString);
 
                 bool containsKeyword = false;
-                string[] packedKeywords = Config.Get("BinPackedKeywords") as string[];
-                for(int i = 0; i < packedKeywords.Length; i++)
+                string[] packedKeywords = (Config.Get("BinPackedKeywords") as JArray).ToObject<string[]>();
+                for (int i = 0; i < packedKeywords.Length; i++)
                 {
                     if(fetchedString.Contains("_" + packedKeywords[i] + "_"))
                     {
@@ -232,7 +239,7 @@ namespace Obsidian.Utils
 
         private static bool DetectPackedKeyword(string packed)
         {
-            string[] keywords = Config.Get("BinPackedKeywords") as string[];
+            string[] keywords = (Config.Get("BinPackedKeywords") as JArray).ToObject<string[]>();
 
             if (keywords.Contains(packed))
             {
