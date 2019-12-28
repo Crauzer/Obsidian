@@ -277,7 +277,7 @@ namespace Obsidian
             {
                 try
                 {
-                    this.CurrentlySelectedEntry.EditData(data);
+                    this.CurrentlySelectedEntry.EditData(File.ReadAllBytes(dialog.FileName));
                     CollectionViewSource.GetDefaultView(this.datagridWadEntries.ItemsSource).Refresh();
                 }
                 catch (Exception excp)
