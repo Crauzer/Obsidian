@@ -732,10 +732,13 @@ namespace Obsidian
 
         private bool IsWPKFile(byte[] data)
         {
-            if (data[0] == 'r' && data[1] == '3' && data[2] == 'd' && data[3] == '2' &&
-                data[4] == 1 && data[5] == 0 && data[6] == 0 && data[7] == 0)
+            if (data.Length >= 8)
             {
-                return true;
+                if (data[0] == 'r' && data[1] == '3' && data[2] == 'd' && data[3] == '2' &&
+                data[4] == 1 && data[5] == 0 && data[6] == 0 && data[7] == 0)
+                {
+                    return true;
+                }
             }
 
             return false;
