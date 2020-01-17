@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2024
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Obsidian", "Obsidian\Obsidian.csproj", "{7ABEFBE2-A68B-4D8E-A24E-7867C4AD1364}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Obsidian", "Obsidian\Obsidian.csproj", "{D074D570-88A1-445D-9060-662CA6A5B5D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7ABEFBE2-A68B-4D8E-A24E-7867C4AD1364}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7ABEFBE2-A68B-4D8E-A24E-7867C4AD1364}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7ABEFBE2-A68B-4D8E-A24E-7867C4AD1364}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7ABEFBE2-A68B-4D8E-A24E-7867C4AD1364}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D074D570-88A1-445D-9060-662CA6A5B5D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D074D570-88A1-445D-9060-662CA6A5B5D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D074D570-88A1-445D-9060-662CA6A5B5D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D074D570-88A1-445D-9060-662CA6A5B5D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {E5A94C11-3059-4FC4-8AD7-D3219DECA2FA}
+		SolutionGuid = {67B7E7A8-1CF2-4FC5-B97A-4E171B5ABEBC}
 	EndGlobalSection
 EndGlobal
