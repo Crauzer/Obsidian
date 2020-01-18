@@ -4,11 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:MaterialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:ControlzEx="clr-namespace:ControlzEx;assembly=MaterialDesignThemes.Wpf"
+        xmlns:MaterialDesignUtilities="clr-namespace:Obsidian.Utilities.MaterialDesign"
         xmlns:WadViewModel="clr-namespace:Obsidian.MVVM.ViewModels.WAD"
         xmlns:local="clr-namespace:Obsidian"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
-        TextElement.FontSize="13"
+        TextElement.FontSize="15"
         TextOptions.TextFormattingMode="Ideal"
         TextOptions.TextRenderingMode="Auto"
         Background="{DynamicResource MaterialDesignPaper}"
@@ -23,12 +25,18 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <MaterialDesign:PackIcon Grid.Column="0" x:Name="FolderIcon" Kind="Folder"/>
+                    <CheckBox Grid.Column="0" IsChecked="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}"/>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0">
                         <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Width="2" Margin="8,0"/>
                     </StackPanel>
-                    <TextBlock Grid.Column="2" Text="{Binding Name}" ToolTip="{Binding Path}"/>
+                    <MaterialDesign:PackIcon Grid.Column="2" x:Name="FolderIcon" Kind="Folder"/>
+                    <StackPanel Grid.Column="3" Orientation="Horizontal" Margin="10,0">
+                        <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Width="2" Margin="8,0"/>
+                    </StackPanel>
+                    <TextBlock Grid.Column="4" Text="{Binding Name}" ToolTip="{Binding Path}"/>
                 </Grid>
 
                 <DataTemplate.Triggers>
@@ -44,97 +52,122 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    
-                    <MaterialDesign:PackIcon Grid.Column="0" x:Name="FileIcon" Kind="FileOutline"/>
+
+                    <CheckBox Grid.Column="0" IsChecked="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}"/>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0">
                         <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Width="2" Margin="8,0"/>
                     </StackPanel>
-                    <TextBlock Grid.Column="2" Text="{Binding Name}" ToolTip="{Binding Path}"/>
+                    <MaterialDesign:PackIcon Grid.Column="2" x:Name="FileIcon" Kind="FileOutline"/>
+                    <StackPanel Grid.Column="3" Orientation="Horizontal" Margin="10,0">
+                        <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Width="2" Margin="8,0"/>
+                    </StackPanel>
+                    <TextBlock Grid.Column="4" Text="{Binding Name}" ToolTip="{Binding Path}"/>
                 </Grid>
             </DataTemplate>
+            <Style x:Key="MaterialDesignTransparentDialog" TargetType="ControlzEx:PopupEx" BasedOn="{StaticResource MaterialDesignDialogHostPopup}">
+                <Setter Property="AllowsTransparency" Value="True" />
+                <Setter Property="MaterialDesignUtilities:TreeHelpers.Modifiers">
+                    <Setter.Value>
+                        <MaterialDesignUtilities:ModifierCollection>
+                            <MaterialDesignUtilities:Modifier TemplatePartName="PART_PopupContentElement" Property="{x:Static Control.BackgroundProperty}">
+                                <MaterialDesignUtilities:Modifier.Value>
+                                    <SolidColorBrush Color="Transparent" />
+                                </MaterialDesignUtilities:Modifier.Value>
+                            </MaterialDesignUtilities:Modifier>
+                        </MaterialDesignUtilities:ModifierCollection>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
-    <MaterialDesign:DialogHost Identifier="RootDialog">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <MaterialDesign:Card MaterialDesign:ShadowAssist.ShadowDepth="Depth3">
+    <MaterialDesign:DialogHost x:Name="MessageDialog" Identifier="MessageDialog">
+        <MaterialDesign:DialogHost x:Name="OperationDialog" Identifier="OperationDialog">
+            <MaterialDesign:DialogHost x:Name="RootDialog" Identifier="RootDialog">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <DockPanel Grid.Row="0">
+                    <MaterialDesign:Card MaterialDesign:ShadowAssist.ShadowDepth="Depth3">
                         <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <Menu IsMainMenu="True" DockPanel.Dock="Top" Grid.Column="0">
-                                <MenuItem Header="File" Grid.Column="0">
-                                    <MenuItem Header="Open" Click="OnWadOpen" Icon="{MaterialDesign:PackIcon Kind=File}"/>
-                                    <MenuItem Header="Save" Icon="{MaterialDesign:PackIcon Kind=FileExport}" IsEnabled="False"/>
-                                    <Separator/>
-                                    <MenuItem Header="Import Hashtable" Icon="{MaterialDesign:PackIcon Kind=FileDocument}" IsEnabled="False"/>
-                                    <MenuItem Header="Export Hashtable" Icon="{MaterialDesign:PackIcon Kind=FileDocument}" IsEnabled="False"/>
-                                    <Separator/>
-                                    <MenuItem Header="Export All" Icon="{MaterialDesign:PackIcon Kind=ContentSaveAll}" IsEnabled="False"/>
-                                    <MenuItem Header="Export Selected" Icon="{MaterialDesign:PackIcon Kind=ContentSaveAll}" IsEnabled="False"/>
-                                    <Separator/>
-                                    <MenuItem Header="Create Empty">
-                                        <MenuItem.Icon>
-                                            <MaterialDesign:PackIcon Kind="CheckboxBlankOutline"/>
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <MenuItem Header="Create From Directory">
-                                        <MenuItem.Icon>
-                                            <MaterialDesign:PackIcon Kind="FileTree"/>
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                </MenuItem>
-                                <MenuItem Header="Edit" Grid.Column="0">
-                                    <MenuItem Header="Remove" IsEnabled="False">
-                                        <MenuItem.Icon>
-                                            <MaterialDesign:PackIcon Kind="PlaylistRemove"/>
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <Separator/>
-                                    <MenuItem Header="Add File" IsEnabled="False" Command="{x:Static MaterialDesign:DialogHost.OpenDialogCommand}">
-                                        <MenuItem.Icon>
-                                            <MaterialDesign:PackIcon Kind="FileHidden"/>
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <MenuItem Header="Add File Redirection"  IsEnabled="False" Command="{x:Static MaterialDesign:DialogHost.OpenDialogCommand}">
-                                        <MenuItem.Icon>
-                                            <MaterialDesign:PackIcon Kind="FileHidden"/>
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <MenuItem Header="Add Folder" IsEnabled="False">
-                                        <MenuItem.Icon>
-                                            <MaterialDesign:PackIcon Kind="Folder"/>
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <Separator/>
-                                    <MenuItem Header="Modify Data" IsEnabled="False">
-                                        <MenuItem.Icon>
-                                            <MaterialDesign:PackIcon Kind="FileRestore"/>
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                </MenuItem>
-                                <TextBox x:Name="FilterTextBox" MaterialDesign:HintAssist.Hint="Filter"/>
-                            </Menu>
-                            <Image Grid.Column="1" HorizontalAlignment="Right" Source="icon.ico" Width="50"/>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <DockPanel Grid.Row="0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Menu IsMainMenu="True" DockPanel.Dock="Top" Grid.Column="0">
+                                        <MenuItem Header="File" Grid.Column="0">
+                                            <MenuItem Header="Open" Click="OnWadOpen" Icon="{MaterialDesign:PackIcon Kind=File}"/>
+                                            <MenuItem Header="Save" Icon="{MaterialDesign:PackIcon Kind=FileExport}" IsEnabled="False"/>
+                                            <Separator/>
+                                            <MenuItem Header="Import Hashtable" Icon="{MaterialDesign:PackIcon Kind=FileDocument}" IsEnabled="False"/>
+                                            <MenuItem Header="Export Hashtable" Icon="{MaterialDesign:PackIcon Kind=FileDocument}" IsEnabled="False"/>
+                                            <Separator/>
+                                            <MenuItem Header="Export All" Icon="{MaterialDesign:PackIcon Kind=ContentSaveAll}" IsEnabled="False"/>
+                                            <MenuItem Header="Export Selected" Icon="{MaterialDesign:PackIcon Kind=ContentSaveAll}" IsEnabled="False"/>
+                                            <Separator/>
+                                            <MenuItem Header="Create Empty">
+                                                <MenuItem.Icon>
+                                                    <MaterialDesign:PackIcon Kind="CheckboxBlankOutline"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Create From Directory">
+                                                <MenuItem.Icon>
+                                                    <MaterialDesign:PackIcon Kind="FileTree"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </MenuItem>
+                                        <MenuItem Header="Edit" Grid.Column="0">
+                                            <MenuItem Header="Remove" IsEnabled="False">
+                                                <MenuItem.Icon>
+                                                    <MaterialDesign:PackIcon Kind="PlaylistRemove"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <Separator/>
+                                            <MenuItem Header="Add File" IsEnabled="False" Command="{x:Static MaterialDesign:DialogHost.OpenDialogCommand}">
+                                                <MenuItem.Icon>
+                                                    <MaterialDesign:PackIcon Kind="FileHidden"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Add File Redirection"  IsEnabled="False" Command="{x:Static MaterialDesign:DialogHost.OpenDialogCommand}">
+                                                <MenuItem.Icon>
+                                                    <MaterialDesign:PackIcon Kind="FileHidden"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Add Folder" IsEnabled="False">
+                                                <MenuItem.Icon>
+                                                    <MaterialDesign:PackIcon Kind="Folder"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <Separator/>
+                                            <MenuItem Header="Modify Data" IsEnabled="False">
+                                                <MenuItem.Icon>
+                                                    <MaterialDesign:PackIcon Kind="FileRestore"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </MenuItem>
+                                        <TextBox x:Name="FilterTextBox" MaterialDesign:HintAssist.Hint="Filter"/>
+                                    </Menu>
+                                    <Image Grid.Column="1" HorizontalAlignment="Right" Source="icon.ico" Width="50"/>
+                                </Grid>
+                            </DockPanel>
+                            <ProgressBar x:Name="MainProgressBar" Grid.Row="1" Value="100"/>
                         </Grid>
-                    </DockPanel>
-                    <ProgressBar x:Name="MainProgressBar" Grid.Row="1" Value="100"/>
+
+                    </MaterialDesign:Card>
+                    <TreeView x:Name="WadTree" Grid.Row="1" DataContext="{Binding WAD}"
+                              ItemsSource="{Binding Items, UpdateSourceTrigger=PropertyChanged}" Margin="0,8,0,0"
+                              VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling"/>
                 </Grid>
-
-            </MaterialDesign:Card>
-            <TreeView x:Name="WadTree" Grid.Row="1" ItemsSource="{Binding Items, UpdateSourceTrigger=PropertyChanged}" Margin="0,8,0,0"/>
-        </Grid>
+            </MaterialDesign:DialogHost>
+        </MaterialDesign:DialogHost>
     </MaterialDesign:DialogHost>
-
 </Window>

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,6 +17,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Fantome.Libraries.League.IO.WAD;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using Obsidian.MVVM;
 using Obsidian.MVVM.ViewModels.WAD;
 using Obsidian.Utilities;
 using Octokit;
@@ -24,19 +28,29 @@ namespace Obsidian
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        public WadViewModel WAD 
+        {
+            get => this._wad;
+            private set
+            {
+                this._wad = value;
+                NotifyPropertyChanged();   
+            }
+        }
+
+        private WadViewModel _wad;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public MainWindow()
         {
             Config.Load();
             LoadHashtable();
 
             InitializeComponent();
-
-            WadViewModel xd = new WadViewModel();
-            xd.LoadWad(new WADFile("Aatrox.wad.client"));
-
-            this.WadTree.DataContext = xd;
+            BindMVVM();
         }
 
         private async void LoadHashtable()
@@ -92,22 +106,44 @@ namespace Obsidian
                 }
             }
         }
+        private void BindMVVM()
+        {
+            this.DataContext = this;
+
+            DialogHelper.MessageDialog = this.MessageDialog;
+            DialogHelper.OperationDialog = this.OperationDialog;
+            DialogHelper.RootDialog = this.RootDialog;
+        }
 
         private async void OnWadOpen(object sender, RoutedEventArgs e)
         {
-            
+            OpenWad();
         }
 
-        private void OpenWad()
+        private async void OpenWad()
         {
             try
             {
+                using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
+                {
+                    dialog.Multiselect = false;
+                    dialog.Filters.Add(new CommonFileDialogFilter("WAD Files", "*.wad;*.client;*.mobile"));
 
+                    if(dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                    {
+                        this.WAD = await DialogHelper.ShowOpenWadOperartionDialog(dialog.FileName);
+                    }
+                }
             }
             catch(Exception exception)
             {
 
             }
+        }
+
+        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
