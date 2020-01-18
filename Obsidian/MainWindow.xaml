@@ -28,7 +28,7 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <CheckBox Grid.Column="0" IsChecked="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}"/>
+                    <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"/>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0">
                         <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Width="2" Margin="8,0"/>
                     </StackPanel>
@@ -56,7 +56,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <CheckBox Grid.Column="0" IsChecked="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}"/>
+                    <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"/>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0">
                         <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Width="2" Margin="8,0"/>
                     </StackPanel>
@@ -106,24 +106,16 @@
                                     <Menu IsMainMenu="True" DockPanel.Dock="Top" Grid.Column="0">
                                         <MenuItem Header="File" Grid.Column="0">
                                             <MenuItem Header="Open" Click="OnWadOpen" Icon="{MaterialDesign:PackIcon Kind=File}"/>
-                                            <MenuItem Header="Save" Icon="{MaterialDesign:PackIcon Kind=FileExport}" IsEnabled="False"/>
+                                            <MenuItem Header="Save" Icon="{MaterialDesign:PackIcon Kind=FileExport}" 
+                                                      IsEnabled="{Binding IsWadOpened, UpdateSourceTrigger=PropertyChanged}"/>
                                             <Separator/>
-                                            <MenuItem Header="Import Hashtable" Icon="{MaterialDesign:PackIcon Kind=FileDocument}" IsEnabled="False"/>
-                                            <MenuItem Header="Export Hashtable" Icon="{MaterialDesign:PackIcon Kind=FileDocument}" IsEnabled="False"/>
+                                            <MenuItem Header="Export All" Icon="{MaterialDesign:PackIcon Kind=ContentSaveAll}" 
+                                                      IsEnabled="{Binding IsWadOpened, UpdateSourceTrigger=PropertyChanged}"/>
+                                            <MenuItem Header="Export Selected" Icon="{MaterialDesign:PackIcon Kind=ContentSaveAll}"
+                                                      IsEnabled="{Binding WAD.ContainsSelection}"/>
                                             <Separator/>
-                                            <MenuItem Header="Export All" Icon="{MaterialDesign:PackIcon Kind=ContentSaveAll}" IsEnabled="False"/>
-                                            <MenuItem Header="Export Selected" Icon="{MaterialDesign:PackIcon Kind=ContentSaveAll}" IsEnabled="False"/>
-                                            <Separator/>
-                                            <MenuItem Header="Create Empty">
-                                                <MenuItem.Icon>
-                                                    <MaterialDesign:PackIcon Kind="CheckboxBlankOutline"/>
-                                                </MenuItem.Icon>
-                                            </MenuItem>
-                                            <MenuItem Header="Create From Directory">
-                                                <MenuItem.Icon>
-                                                    <MaterialDesign:PackIcon Kind="FileTree"/>
-                                                </MenuItem.Icon>
-                                            </MenuItem>
+                                            <MenuItem Header="Create Empty" Icon="{MaterialDesign:PackIcon Kind=CheckboxBlankOutline}"/>
+                                            <MenuItem Header="Create From Directory" Icon="{MaterialDesign:PackIcon Kind=FileTree}"/>
                                         </MenuItem>
                                         <MenuItem Header="Edit" Grid.Column="0">
                                             <MenuItem Header="Remove" IsEnabled="False">
@@ -133,11 +125,6 @@
                                             </MenuItem>
                                             <Separator/>
                                             <MenuItem Header="Add File" IsEnabled="False" Command="{x:Static MaterialDesign:DialogHost.OpenDialogCommand}">
-                                                <MenuItem.Icon>
-                                                    <MaterialDesign:PackIcon Kind="FileHidden"/>
-                                                </MenuItem.Icon>
-                                            </MenuItem>
-                                            <MenuItem Header="Add File Redirection"  IsEnabled="False" Command="{x:Static MaterialDesign:DialogHost.OpenDialogCommand}">
                                                 <MenuItem.Icon>
                                                     <MaterialDesign:PackIcon Kind="FileHidden"/>
                                                 </MenuItem.Icon>

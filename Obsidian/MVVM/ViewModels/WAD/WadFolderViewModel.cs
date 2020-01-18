@@ -13,7 +13,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
     {
         public ObservableCollection<WadItemViewModel> Items { get; set; } = new ObservableCollection<WadItemViewModel>();
 
-        public WadFolderViewModel(string path) : base(WadItemType.Folder)
+        public WadFolderViewModel(WadViewModel wadViewModel, string path) : base(wadViewModel, WadItemType.Folder)
         {
             this.Path = path;
             this.Name = PathIO.GetFileName(path);
@@ -26,9 +26,9 @@ namespace Obsidian.MVVM.ViewModels.WAD
 
             //If folders length is 1 then we can add the file to this directory
             //if not, then we pass it down the hierarchy
-            if(folders.Length == 1)
+            if (folders.Length == 1)
             {
-                this.Items.Add(new WadFileViewModel(entryPath, folders[0], entry));
+                this.Items.Add(new WadFileViewModel(this._wadViewModel, entryPath, folders[0], entry));
             }
             else
             {
@@ -36,14 +36,14 @@ namespace Obsidian.MVVM.ViewModels.WAD
 
                 //If the folder exists we pass the file to it
                 //if it doesn't then we create it before passing the file
-                if(folder != null)
+                if (folder != null)
                 {
                     folder.AddFile(path.Substring(path.IndexOf(pathSeparator) + 1), entryPath, entry);
                 }
                 else
                 {
                     string newFolderPath = string.Format("{0}/{1}", this.Path, folders[0]);
-                    WadFolderViewModel newFolder = new WadFolderViewModel(newFolderPath);
+                    WadFolderViewModel newFolder = new WadFolderViewModel(this._wadViewModel, newFolderPath);
 
                     newFolder.AddFile(path.Substring(path.IndexOf(pathSeparator) + 1), entryPath, entry);
                     this.Items.Add(newFolder);
@@ -55,7 +55,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
         {
             this.Items.Sort();
 
-            foreach(WadFolderViewModel folder in this.Items.OfType<WadFolderViewModel>())
+            foreach (WadFolderViewModel folder in this.Items.OfType<WadFolderViewModel>())
             {
                 folder.Sort();
             }

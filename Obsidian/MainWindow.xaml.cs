@@ -36,11 +36,22 @@ namespace Obsidian
             private set
             {
                 this._wad = value;
+                this.IsWadOpened = true;
                 NotifyPropertyChanged();   
             }
         }
+        public bool IsWadOpened
+        {
+            get => this._isWadOpened;
+            set
+            {
+                this._isWadOpened = value;
+                NotifyPropertyChanged();
+            }
+        }
 
-        private WadViewModel _wad;
+        private WadViewModel _wad = new WadViewModel();
+        private bool _isWadOpened;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -127,7 +138,7 @@ namespace Obsidian
                 using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
                 {
                     dialog.Multiselect = false;
-                    dialog.Filters.Add(new CommonFileDialogFilter("WAD Files", "*.wad;*.client;*.mobile"));
+                    dialog.Filters.Add(new CommonFileDialogFilter("WAD Files", @"*.wad;*.client;*.mobile"));
 
                     if(dialog.ShowDialog() == CommonFileDialogResult.Ok)
                     {

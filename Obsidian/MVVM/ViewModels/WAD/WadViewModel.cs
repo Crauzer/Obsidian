@@ -10,6 +10,21 @@ namespace Obsidian.MVVM.ViewModels.WAD
 {
     public class WadViewModel : PropertyNotifier
     {
+        public bool ContainsSelection
+        {
+            get
+            {
+                foreach (WadItemViewModel item in this.Items)
+                {
+                    if (item.ContainsSelection)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
         public ObservableCollection<WadItemViewModel> Items { get; set; } = new ObservableCollection<WadItemViewModel>();
 
         public WADFile WAD { get; private set; }
@@ -25,11 +40,8 @@ namespace Obsidian.MVVM.ViewModels.WAD
 
             GenerateWadItems();
         }
-
         private void GenerateWadItems()
         {
-            this.Items.Clear();
-
             foreach (WADEntry entry in this.WAD.Entries)
             {
                 string path = Hashtable.Get(entry.XXHash);
@@ -39,7 +51,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
                 //If folders count is 1 then we can assume the file isn't nested in any directory
                 if (folders.Length == 1)
                 {
-                    this.Items.Add(new WadFileViewModel(path, path, entry));
+                    this.Items.Add(new WadFileViewModel(this, path, path, entry));
                 }
                 else
                 {
@@ -53,7 +65,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
                     }
                     else
                     {
-                        WadFolderViewModel newFolder = new WadFolderViewModel(folders[0]);
+                        WadFolderViewModel newFolder = new WadFolderViewModel(this, folders[0]);
 
                         newFolder.AddFile(path.Substring(path.IndexOf(pathSeparator) + 1), path, entry);
                         this.Items.Add(newFolder);
@@ -61,10 +73,21 @@ namespace Obsidian.MVVM.ViewModels.WAD
                 }
             }
 
-            foreach(WadFolderViewModel folder in this.Items.OfType<WadFolderViewModel>())
+            SortItems();
+        }
+        private void SortItems()
+        {
+            this.Items.Sort();
+
+            foreach (WadFolderViewModel folder in this.Items.OfType<WadFolderViewModel>())
             {
                 folder.Sort();
             }
+        }
+
+        public void NotifySelectionChanged()
+        {
+            NotifyPropertyChanged(nameof(this.ContainsSelection));
         }
     }
 }

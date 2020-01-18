@@ -7,21 +7,44 @@ namespace Obsidian.MVVM.ViewModels.WAD
 {
     public class WadItemViewModel : PropertyNotifier, IComparable<WadItemViewModel>, IEquatable<WadItemViewModel>
     {
-        public bool IsChecked
+        public bool ContainsSelection
+        { 
+            get
+            {
+                if(this.IsSelected)
+                {
+                    return true;
+                }
+                else if(this.Type == WadItemType.Folder)
+                {
+                    foreach(WadItemViewModel item in (this as WadFolderViewModel).Items)
+                    {
+                        if(item.ContainsSelection)
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            }
+        }
+        public bool IsSelected
         {
-            get => this._isChecked;
+            get => this._isSelected;
             set
             {
-                this._isChecked = value;
+                this._isSelected = value;
 
                 if (this.Type == WadItemType.Folder)
                 {
                     foreach (WadItemViewModel item in (this as WadFolderViewModel).Items)
                     {
-                        item.IsChecked = value;
+                        item.IsSelected = value;
                     }
                 }
 
+                this._wadViewModel.NotifySelectionChanged();
                 NotifyPropertyChanged();
             }
         }
@@ -29,10 +52,12 @@ namespace Obsidian.MVVM.ViewModels.WAD
         public string Name { get; set; }
         public WadItemType Type { get; }
 
-        private bool _isChecked;
+        private bool _isSelected;
+        protected WadViewModel _wadViewModel;
 
-        public WadItemViewModel(WadItemType type)
+        public WadItemViewModel(WadViewModel wadViewModel, WadItemType type)
         {
+            this._wadViewModel = wadViewModel;
             this.Type = type;
         }
 
