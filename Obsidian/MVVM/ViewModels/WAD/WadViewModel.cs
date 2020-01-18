@@ -60,6 +60,11 @@ namespace Obsidian.MVVM.ViewModels.WAD
                     }
                 }
             }
+
+            foreach(WadFolderViewModel folder in this.Items.OfType<WadFolderViewModel>())
+            {
+                folder.Sort();
+            }
         }
     }
 }

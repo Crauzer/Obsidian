@@ -18,15 +18,39 @@
         <ResourceDictionary>
             <HierarchicalDataTemplate DataType="{x:Type WadViewModel:WadFolderViewModel}" 
                                       ItemsSource="{Binding Items, UpdateSourceTrigger=PropertyChanged}">
-                <TextBlock Text="{Binding Name}" ToolTip="{Binding Path}"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <MaterialDesign:PackIcon Grid.Column="0" x:Name="FolderIcon" Kind="Folder"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0">
+                        <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Width="2" Margin="8,0"/>
+                    </StackPanel>
+                    <TextBlock Grid.Column="2" Text="{Binding Name}" ToolTip="{Binding Path}"/>
+                </Grid>
+
+                <DataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding IsExpanded, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type TreeViewItem}}}"
+                             Value="True">
+                        <Setter TargetName="FolderIcon" Property="Kind" Value="FolderOpen"/>
+                    </DataTrigger>
+                </DataTemplate.Triggers>
             </HierarchicalDataTemplate>
             <DataTemplate DataType="{x:Type WadViewModel:WadFileViewModel}">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="{Binding Name}" ToolTip="{Binding Path}"/>
+                    
+                    <MaterialDesign:PackIcon Grid.Column="0" x:Name="FileIcon" Kind="FileOutline"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0">
+                        <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Width="2" Margin="8,0"/>
+                    </StackPanel>
+                    <TextBlock Grid.Column="2" Text="{Binding Name}" ToolTip="{Binding Path}"/>
                 </Grid>
             </DataTemplate>
         </ResourceDictionary>
@@ -107,9 +131,9 @@
                     </DockPanel>
                     <ProgressBar x:Name="MainProgressBar" Grid.Row="1" Value="100"/>
                 </Grid>
-                
+
             </MaterialDesign:Card>
-            <TreeView x:Name="WadTree" Grid.Row="1" ItemsSource="{Binding Items, UpdateSourceTrigger=PropertyChanged}"/>
+            <TreeView x:Name="WadTree" Grid.Row="1" ItemsSource="{Binding Items, UpdateSourceTrigger=PropertyChanged}" Margin="0,8,0,0"/>
         </Grid>
     </MaterialDesign:DialogHost>
 

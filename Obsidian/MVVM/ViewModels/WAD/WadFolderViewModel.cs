@@ -50,5 +50,15 @@ namespace Obsidian.MVVM.ViewModels.WAD
                 }
             }
         }
+
+        public void Sort()
+        {
+            this.Items.Sort();
+
+            foreach(WadFolderViewModel folder in this.Items.OfType<WadFolderViewModel>())
+            {
+                folder.Sort();
+            }
+        }
     }
 }
