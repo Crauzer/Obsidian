@@ -22,5 +22,19 @@ namespace Obsidian.Utilities
 
             return await Task.FromResult(dialog.WadViewModel);
         }
+
+        public static async Task ShowSaveWadOperationDialog(string wadLocation, WadViewModel wad)
+        {
+            SaveWadOperationDialog dialog = new SaveWadOperationDialog(wadLocation, wad);
+
+            await DialogHost.Show(dialog, "OperationDialog", dialog.Save, null);
+        }
+
+        public static async Task ShowExtractOperationDialog(string extractLocation, IEnumerable<WadFileViewModel> entries)
+        {
+            ExtractOperationDialog dialog = new ExtractOperationDialog(extractLocation, entries);
+
+            await DialogHost.Show(dialog, "OperationDialog", dialog.StartExtraction, null);
+        }
     }
 }

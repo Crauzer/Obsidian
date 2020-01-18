@@ -51,6 +51,41 @@ namespace Obsidian.MVVM.ViewModels.WAD
             }
         }
 
+        public IEnumerable<WadFileViewModel> GetSelectedEntries()
+        {
+            foreach (WadItemViewModel item in this.Items)
+            {
+                if (item.Type == WadItemType.File && item.IsSelected)
+                {
+                    yield return item as WadFileViewModel;
+                }
+                else if (item.Type == WadItemType.Folder)
+                {
+                    foreach (WadFileViewModel selectedItem in (item as WadFolderViewModel).GetSelectedEntries() ?? Enumerable.Empty<WadFileViewModel>())
+                    {
+                        yield return selectedItem;
+                    }
+                }
+            }
+        }
+        public IEnumerable<WadFileViewModel> GetAllEntries()
+        {
+            foreach (WadItemViewModel item in this.Items)
+            {
+                if (item.Type == WadItemType.File)
+                {
+                    yield return item as WadFileViewModel;
+                }
+                else if(item.Type == WadItemType.Folder)
+                {
+                    foreach (WadFileViewModel childItem in (item as WadFolderViewModel).GetAllEntries() ?? Enumerable.Empty<WadFileViewModel>())
+                    {
+                        yield return childItem;
+                    }
+                }
+            }
+        }
+
         public void Sort()
         {
             this.Items.Sort();

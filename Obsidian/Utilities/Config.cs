@@ -14,7 +14,8 @@ namespace Obsidian.Utilities
         {
             { "LoggingPattern", "{Timestamp:dd-MM-yyyy HH:mm:ss.fff} | [{Level}] |  {Message:lj}{NewLine}{Exception}" },
             { "GameHashtableChecksum", "" },
-            { "LCUHashtableChecksum", "" }
+            { "LCUHashtableChecksum", "" },
+            { "PackedBinRegex", @"^DATA/.*_(Skins_Skin|Tiers_Tier|(Skins|Tiers)_Root).*\.bin$" }
         };
         private static Dictionary<string, object> _config = new Dictionary<string, object>();
 

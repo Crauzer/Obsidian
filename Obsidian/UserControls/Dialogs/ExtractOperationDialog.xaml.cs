@@ -1,0 +1,153 @@
+﻿using Fantome.Libraries.League.IO.WAD;
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using Obsidian.Utilities;
+using Obsidian.MVVM.ViewModels.WAD;
+using System.IO;
+using PathIO = System.IO.Path;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+
+namespace Obsidian.UserControls.Dialogs
+{
+    /// <summary>
+    /// Interaction logic for ExtractOperationDialog.xaml
+    /// </summary>
+    public partial class ExtractOperationDialog : UserControl, INotifyPropertyChanged
+    {
+        public string Message
+        {
+            get => this._message;
+            set
+            {
+                this._message = value;
+                NotifyPropertyChanged();
+            }
+        }
+        public double Progress
+        {
+            get => this._progress;
+            set
+            {
+                this._progress = value;
+                NotifyPropertyChanged();
+            }
+        }
+        public double JobCount
+        {
+            get => this._jobCount;
+            set
+            {
+                this._jobCount = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private string _message;
+        private double _progress;
+        private double _jobCount;
+
+        private string _extractLocation;
+        private IEnumerable<WadFileViewModel> _entries;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public ExtractOperationDialog(string extractLocation, IEnumerable<WadFileViewModel> entries)
+        {
+            this.JobCount = entries.Count();
+            this._extractLocation = extractLocation;
+            this._entries = entries;
+
+            InitializeComponent();
+        }
+
+        public void StartExtraction(object sender, EventArgs e)
+        {
+            using (BackgroundWorker worker = new BackgroundWorker())
+            {
+                worker.WorkerReportsProgress = true;
+                worker.DoWork += Extract;
+                worker.RunWorkerCompleted += CloseDialog;
+                worker.ProgressChanged += ProgressChanged;
+
+                worker.RunWorkerAsync(worker);
+            }
+        }
+
+        private void ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            this.Progress = e.ProgressPercentage;
+        }
+
+        private void CloseDialog(object sender, RunWorkerCompletedEventArgs e)
+        {
+            DialogHelper.OperationDialog.IsOpen = false;
+        }
+
+        private void Extract(object sender, DoWorkEventArgs e)
+        {
+            double progress = 0;
+            HashSet<ulong> packedPaths = new HashSet<ulong>();
+            List<string> packedMappingFile = new List<string>();
+
+            //Collect all info about the entries and create folder structure 
+            foreach (WadFileViewModel entry in this._entries)
+            {
+                //Check if the entry is a packed bin file
+                if (Regex.IsMatch(entry.Path, Config.Get<string>("PackedBinRegex"), RegexOptions.IgnoreCase))
+                {
+                    string line = string.Format("{0} = {1}", entry.Entry.XXHash.ToString("X16") + ".bin", entry.Path);
+                    packedMappingFile.Add(line);
+                    packedPaths.Add(entry.Entry.XXHash);
+                }
+                else
+                {
+                    Directory.CreateDirectory(string.Format(@"{0}\{1}", this._extractLocation, PathIO.GetDirectoryName(entry.Path)));
+                }
+
+                progress += 0.5;
+                (e.Argument as BackgroundWorker).ReportProgress((int)progress);
+            }
+
+            //Write the Packed Mapping file
+            if(packedMappingFile.Count != 0)
+            {
+                File.WriteAllLines(string.Format(@"{0}\OBSIDIAN_PACKED_MAPPING.txt", this._extractLocation), packedMappingFile);
+            }
+
+            //Write the entries
+            foreach (WadFileViewModel entry in this._entries)
+            {
+                string path = string.Format(@"{0}\{1}", this._extractLocation, entry.Path);
+                if (packedPaths.Contains(entry.Entry.XXHash))
+                {
+                    path = string.Format(@"{0}\{1}", this._extractLocation, entry.Entry.XXHash.ToString("X16") + ".bin");
+                }
+
+
+                File.WriteAllBytes(path, entry.Entry.GetContent(true));
+
+                progress += 0.5;
+                (e.Argument as BackgroundWorker).ReportProgress((int)progress);
+            }
+        }
+
+        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+}

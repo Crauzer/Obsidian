@@ -44,7 +44,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
         {
             foreach (WADEntry entry in this.WAD.Entries)
             {
-                string path = Hashtable.Get(entry.XXHash);
+                string path = Hashtable.Get(entry);
                 char pathSeparator = Pathing.GetPathSeparator(path);
                 string[] folders = path.Split(pathSeparator);
 
@@ -82,6 +82,41 @@ namespace Obsidian.MVVM.ViewModels.WAD
             foreach (WadFolderViewModel folder in this.Items.OfType<WadFolderViewModel>())
             {
                 folder.Sort();
+            }
+        }
+
+        public IEnumerable<WadFileViewModel> GetSelectedEntries()
+        {
+            foreach (WadItemViewModel item in this.Items)
+            {
+                if (item.Type == WadItemType.File && item.IsSelected)
+                {
+                    yield return item as WadFileViewModel;
+                }
+                else if (item.Type == WadItemType.Folder)
+                {
+                    foreach (WadFileViewModel selectedItem in (item as WadFolderViewModel).GetSelectedEntries() ?? Enumerable.Empty<WadFileViewModel>())
+                    {
+                        yield return selectedItem;
+                    }
+                }
+            }
+        }
+        public IEnumerable<WadFileViewModel> GetAllEntries()
+        {
+            foreach (WadItemViewModel item in this.Items)
+            {
+                if (item.Type == WadItemType.File)
+                {
+                    yield return item as WadFileViewModel;
+                }
+                else if (item.Type == WadItemType.Folder)
+                {
+                    foreach (WadFileViewModel childItem in (item as WadFolderViewModel).GetAllEntries() ?? Enumerable.Empty<WadFileViewModel>())
+                    {
+                        yield return childItem;
+                    }
+                }
             }
         }
 

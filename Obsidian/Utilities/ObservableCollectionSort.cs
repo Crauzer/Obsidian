@@ -10,9 +10,10 @@ namespace Obsidian.Utilities
         public static void Sort<T>(this ObservableCollection<T> observable) where T : IComparable<T>, IEquatable<T>
         {
             List<T> sorted = observable.OrderBy(x => x).ToList();
-            for (int i = 0; i < sorted.Count(); i++)
+            observable.Clear();
+            for (int i = 0; i < sorted.Count; i++)
             {
-                observable.Move(observable.IndexOf(sorted[i]), i);
+                observable.Add(sorted[i]);
             }
         }
     }

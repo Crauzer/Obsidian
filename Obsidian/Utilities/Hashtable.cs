@@ -5,6 +5,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Globalization;
+using Fantome.Libraries.League.IO.WAD;
+using Fantome.Libraries.League.Helpers;
+
+using LeagueUtilities = Fantome.Libraries.League.Helpers.Utilities;
 
 namespace Obsidian.Utilities
 {
@@ -24,6 +28,20 @@ namespace Obsidian.Utilities
             else 
             {
                 return key.ToString("x16");
+            }
+        }
+        public static string Get(WADEntry entry)
+        {
+            if (_hashtable.ContainsKey(entry.XXHash))
+            {
+                return _hashtable[entry.XXHash];
+            }
+            else
+            {
+                LeagueFileType fileType = LeagueUtilities.GetLeagueFileExtensionType(entry.GetContent(true));
+                string extension = LeagueUtilities.GetEntryExtension(fileType);
+
+                return string.Format("{0}.{1}", entry.XXHash.ToString("x16"), extension);
             }
         }
 

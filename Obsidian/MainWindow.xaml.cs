@@ -22,6 +22,8 @@ using Obsidian.MVVM;
 using Obsidian.MVVM.ViewModels.WAD;
 using Obsidian.Utilities;
 using Octokit;
+using PathIO = System.IO.Path;
+
 
 namespace Obsidian
 {
@@ -30,14 +32,14 @@ namespace Obsidian
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        public WadViewModel WAD 
+        public WadViewModel WAD
         {
             get => this._wad;
             private set
             {
                 this._wad = value;
                 this.IsWadOpened = true;
-                NotifyPropertyChanged();   
+                NotifyPropertyChanged();
             }
         }
         public bool IsWadOpened
@@ -70,17 +72,17 @@ namespace Obsidian
             //Do this in "try" so if there is no internet we don't crash
             try
             {
-                SyncHashtable();
+                await SyncHashtable();
             }
             catch
             {
-                
+
             }
 
             //Load the hashtable after we sync with CDragon
             Hashtable.Load();
 
-            static async void SyncHashtable()
+            static async Task SyncHashtable()
             {
                 GitHubClient githubClient = new GitHubClient(new ProductHeaderValue("Obsidian"));
                 IReadOnlyList<RepositoryContent> content = await githubClient.Repository.Content.GetAllContents("CommunityDragon", "CDTB", "cdragontoolbox");
@@ -93,7 +95,7 @@ namespace Obsidian
 
                 void SyncGameHashtable()
                 {
-                    if(gameHashesContent.Sha != Config.Get<string>("GameHashtableChecksum"))
+                    if (gameHashesContent.Sha != Config.Get<string>("GameHashtableChecksum"))
                     {
                         using (WebClient webClient = new WebClient())
                         {
@@ -126,9 +128,21 @@ namespace Obsidian
             DialogHelper.RootDialog = this.RootDialog;
         }
 
-        private async void OnWadOpen(object sender, RoutedEventArgs e)
+        private void OnWadOpen(object sender, RoutedEventArgs e)
         {
             OpenWad();
+        }
+        private void OnWadSave(object sender, RoutedEventArgs e)
+        {
+            SaveWad();
+        }
+        private void OnExtractAll(object sender, RoutedEventArgs e)
+        {
+            ExtractAll();
+        }
+        private void OnExtractSelected(object sender, RoutedEventArgs e)
+        {
+            ExtractSelected();
         }
 
         private async void OpenWad()
@@ -138,17 +152,66 @@ namespace Obsidian
                 using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
                 {
                     dialog.Multiselect = false;
-                    dialog.Filters.Add(new CommonFileDialogFilter("WAD Files", @"*.wad;*.client;*.mobile"));
+                    dialog.Filters.Add(new CommonFileDialogFilter("WAD Files", "*.wad;*.client;*.mobile"));
 
-                    if(dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                    if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                     {
                         this.WAD = await DialogHelper.ShowOpenWadOperartionDialog(dialog.FileName);
                     }
                 }
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
 
+            }
+        }
+        private async void SaveWad()
+        {
+            using (CommonSaveFileDialog dialog = new CommonSaveFileDialog())
+            {
+                dialog.AlwaysAppendDefaultExtension = true;
+                dialog.DefaultExtension = ".client";
+                dialog.Filters.Add(new CommonFileDialogFilter("wad.client File", "*.client"));
+                dialog.Filters.Add(new CommonFileDialogFilter("wad File", "*.wad"));
+
+                if(dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                {
+                    string wadLocation = dialog.FileName;
+
+                    //We need to change the extension because the dialog is stupid 
+                    //and can't handle extensions with multiple dots
+                    if(PathIO.GetExtension(dialog.FileName) == ".client")
+                    {
+                        wadLocation = PathIO.ChangeExtension(dialog.FileName, ".wad.client");
+                    }
+
+                    await DialogHelper.ShowSaveWadOperationDialog(wadLocation, this.WAD);
+                }
+            }
+        }
+
+        private async void ExtractAll()
+        {
+            using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
+            {
+                dialog.IsFolderPicker = true;
+
+                if(dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                {
+                    await DialogHelper.ShowExtractOperationDialog(dialog.FileName, this.WAD.GetAllEntries());
+                }
+            }
+        }
+        private async void ExtractSelected()
+        {
+            using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
+            {
+                dialog.IsFolderPicker = true;
+
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                {
+                    await DialogHelper.ShowExtractOperationDialog(dialog.FileName, this.WAD.GetSelectedEntries());
+                }
             }
         }
 
@@ -156,5 +219,7 @@ namespace Obsidian
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        
     }
 }

@@ -1,5 +1,4 @@
-﻿using Fantome.Libraries.League.IO.WAD;
-using Obsidian.MVVM.ViewModels.WAD;
+﻿using Obsidian.MVVM.ViewModels.WAD;
 using Obsidian.Utilities;
 using System;
 using System.Collections.Generic;
@@ -18,28 +17,29 @@ using System.Windows.Shapes;
 namespace Obsidian.UserControls.Dialogs
 {
     /// <summary>
-    /// Interaction logic for OpenWadOperationDialog.xaml
+    /// Interaction logic for SaveWadOperationDialog.xaml
     /// </summary>
-    public partial class OpenWadOperationDialog : UserControl
+    public partial class SaveWadOperationDialog : UserControl
     {
         public string Message { get; }
-        public WadViewModel WadViewModel { get; private set; } = new WadViewModel();
 
+        private WadViewModel _wadViewModel;
         private string _wadLocation;
 
-        public OpenWadOperationDialog(string wadLocation)
+        public SaveWadOperationDialog(string wadLocation, WadViewModel wad)
         {
             this._wadLocation = wadLocation;
-            this.Message = "Opening\n" + wadLocation;
+            this._wadViewModel = wad;
+            this.Message = "Saving\n" + wadLocation;
 
             InitializeComponent();
         }
 
-        public void Load(object sender, EventArgs e)
+        public void Save(object sender, EventArgs e)
         {
             using (BackgroundWorker worker = new BackgroundWorker())
             {
-                worker.DoWork += OpenWAD;
+                worker.DoWork += SaveWAD;
                 worker.RunWorkerCompleted += CloseDialog;
                 worker.WorkerSupportsCancellation = true;
 
@@ -52,9 +52,9 @@ namespace Obsidian.UserControls.Dialogs
             DialogHelper.OperationDialog.IsOpen = false;
         }
 
-        private void OpenWAD(object sender, DoWorkEventArgs e)
+        private void SaveWAD(object sender, DoWorkEventArgs e)
         {
-            this.WadViewModel.LoadWad(new WADFile(this._wadLocation));
+            this._wadViewModel.WAD.Write(this._wadLocation);
         }
     }
 }

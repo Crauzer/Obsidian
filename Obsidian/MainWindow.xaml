@@ -37,8 +37,16 @@
                         <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Width="2" Margin="8,0"/>
                     </StackPanel>
                     <TextBlock Grid.Column="4" Text="{Binding Name}" ToolTip="{Binding Path}"/>
-                </Grid>
 
+                    <Grid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Add File" Icon="{MaterialDesign:PackIcon Kind=FileHidden}"/>
+                            <MenuItem Header="Add Folder" Icon="{MaterialDesign:PackIcon Kind=Folder}"/>
+                            <Separator/>
+                            <MenuItem Header="Remove" Icon="{MaterialDesign:PackIcon Kind=PlaylistRemove}"/>
+                        </ContextMenu>
+                    </Grid.ContextMenu>
+                </Grid>
                 <DataTemplate.Triggers>
                     <DataTrigger Binding="{Binding IsExpanded, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type TreeViewItem}}}"
                              Value="True">
@@ -65,6 +73,14 @@
                         <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Width="2" Margin="8,0"/>
                     </StackPanel>
                     <TextBlock Grid.Column="4" Text="{Binding Name}" ToolTip="{Binding Path}"/>
+
+                    <Grid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Modify Data" Icon="{MaterialDesign:PackIcon Kind=FileRestore}"/>
+                            <Separator/>
+                            <MenuItem Header="Remove" Icon="{MaterialDesign:PackIcon Kind=Close}"/>
+                        </ContextMenu>
+                    </Grid.ContextMenu>
                 </Grid>
             </DataTemplate>
             <Style x:Key="MaterialDesignTransparentDialog" TargetType="ControlzEx:PopupEx" BasedOn="{StaticResource MaterialDesignDialogHostPopup}">
@@ -107,39 +123,14 @@
                                         <MenuItem Header="File" Grid.Column="0">
                                             <MenuItem Header="Open" Click="OnWadOpen" Icon="{MaterialDesign:PackIcon Kind=File}"/>
                                             <MenuItem Header="Save" Icon="{MaterialDesign:PackIcon Kind=FileExport}" 
-                                                      IsEnabled="{Binding IsWadOpened, UpdateSourceTrigger=PropertyChanged}"/>
+                                                      IsEnabled="{Binding IsWadOpened, UpdateSourceTrigger=PropertyChanged}" Click="OnWadSave"/>
                                             <Separator/>
-                                            <MenuItem Header="Export All" Icon="{MaterialDesign:PackIcon Kind=ContentSaveAll}" 
-                                                      IsEnabled="{Binding IsWadOpened, UpdateSourceTrigger=PropertyChanged}"/>
-                                            <MenuItem Header="Export Selected" Icon="{MaterialDesign:PackIcon Kind=ContentSaveAll}"
-                                                      IsEnabled="{Binding WAD.ContainsSelection}"/>
+                                            <MenuItem Header="Extract All" Icon="{MaterialDesign:PackIcon Kind=ContentSaveAll}" 
+                                                      IsEnabled="{Binding IsWadOpened, UpdateSourceTrigger=PropertyChanged}" Click="OnExtractAll"/>
+                                            <MenuItem Header="Extract Selected" Icon="{MaterialDesign:PackIcon Kind=ContentSaveAll}"
+                                                      IsEnabled="{Binding WAD.ContainsSelection, UpdateSourceTrigger=PropertyChanged}" Click="OnExtractSelected"/>
                                             <Separator/>
-                                            <MenuItem Header="Create Empty" Icon="{MaterialDesign:PackIcon Kind=CheckboxBlankOutline}"/>
                                             <MenuItem Header="Create From Directory" Icon="{MaterialDesign:PackIcon Kind=FileTree}"/>
-                                        </MenuItem>
-                                        <MenuItem Header="Edit" Grid.Column="0">
-                                            <MenuItem Header="Remove" IsEnabled="False">
-                                                <MenuItem.Icon>
-                                                    <MaterialDesign:PackIcon Kind="PlaylistRemove"/>
-                                                </MenuItem.Icon>
-                                            </MenuItem>
-                                            <Separator/>
-                                            <MenuItem Header="Add File" IsEnabled="False" Command="{x:Static MaterialDesign:DialogHost.OpenDialogCommand}">
-                                                <MenuItem.Icon>
-                                                    <MaterialDesign:PackIcon Kind="FileHidden"/>
-                                                </MenuItem.Icon>
-                                            </MenuItem>
-                                            <MenuItem Header="Add Folder" IsEnabled="False">
-                                                <MenuItem.Icon>
-                                                    <MaterialDesign:PackIcon Kind="Folder"/>
-                                                </MenuItem.Icon>
-                                            </MenuItem>
-                                            <Separator/>
-                                            <MenuItem Header="Modify Data" IsEnabled="False">
-                                                <MenuItem.Icon>
-                                                    <MaterialDesign:PackIcon Kind="FileRestore"/>
-                                                </MenuItem.Icon>
-                                            </MenuItem>
                                         </MenuItem>
                                         <TextBox x:Name="FilterTextBox" MaterialDesign:HintAssist.Hint="Filter"/>
                                     </Menu>
