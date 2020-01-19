@@ -197,7 +197,7 @@ namespace Obsidian
             //Recursively Remove all WAD entries nested in the folder
             foreach (WadFileViewModel entry in wadFolder.GetAllEntries())
             {
-                this.WAD.WAD.RemoveEntry(entry.Entry);
+                this.WAD.WAD.RemoveEntry(entry.Entry.XXHash);
             }
 
             //Remove the folder from View Model
@@ -237,7 +237,7 @@ namespace Obsidian
         {
             WadFileViewModel wadFile = (sender as FrameworkElement).DataContext as WadFileViewModel;
 
-            this.WAD.WAD.RemoveEntry(wadFile.Entry);
+            this.WAD.WAD.RemoveEntry(wadFile.Entry.XXHash);
 
             //Remove the file from View Model
             //If Parent is null then we know it's in root
@@ -327,7 +327,7 @@ namespace Obsidian
             {
                 dialog.IsFolderPicker = true;
 
-                if(dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
                     this.WAD = await DialogHelper.ShowCreateWADOperationDialog(dialog.FileName);
                 }

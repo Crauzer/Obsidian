@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Obsidian.MVVM.ViewModels.WAD
 {
-    public class WadItemViewModel : PropertyNotifier, IComparable<WadItemViewModel>, IEquatable<WadItemViewModel>
+    public class WadItemViewModel : PropertyNotifier, IComparable<WadItemViewModel>, IEquatable<WadItemViewModel>, IEqualityComparer<WadItemViewModel>
     {
         public WadItemViewModel Parent { get; }
         public bool ContainsSelection
@@ -81,6 +81,16 @@ namespace Obsidian.MVVM.ViewModels.WAD
         public bool Equals(WadItemViewModel other)
         {
             return this.Path == other.Path;
+        }
+
+        public bool Equals(WadItemViewModel x, WadItemViewModel y)
+        {
+            return x.Path == y.Path;
+        }
+
+        public int GetHashCode(WadItemViewModel obj)
+        {
+            return this.Path.GetHashCode();
         }
     }
 

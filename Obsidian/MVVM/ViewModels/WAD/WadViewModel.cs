@@ -33,16 +33,16 @@ namespace Obsidian.MVVM.ViewModels.WAD
             {
                 if (this._wad == null)
                 {
-                    this._wad = new WADFile(_wadLocation);
+                    this._wad = new WADFile(this.WADLocation);
                 }
 
                 return this._wad;
             }
             set => this._wad = value;
         }
+        public string WADLocation { get; set; }
 
         private WADFile _wad;
-        private string _wadLocation;
 
         public WadViewModel()
         {
@@ -52,7 +52,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
         public void LoadWad(string wadLocation)
         {
             this.WAD = new WADFile(wadLocation);
-            this._wadLocation = wadLocation;
+            this.WADLocation = wadLocation;
 
             GenerateWadItems();
         }

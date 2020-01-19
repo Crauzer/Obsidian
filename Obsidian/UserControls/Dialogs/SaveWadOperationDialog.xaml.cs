@@ -58,6 +58,7 @@ namespace Obsidian.UserControls.Dialogs
             this._wadViewModel.WAD.Write(this._wadLocation);
             this._wadViewModel.WAD.Dispose();
             this._wadViewModel.WAD = null;
+            this._wadViewModel.WADLocation = this._wadLocation;
         }
     }
 }
