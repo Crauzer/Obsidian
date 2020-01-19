@@ -15,7 +15,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
     {
         public ObservableCollection<WadItemViewModel> Items { get; set; } = new ObservableCollection<WadItemViewModel>();
 
-        public WadFolderViewModel(WadViewModel wadViewModel, string path) : base(wadViewModel, WadItemType.Folder)
+        public WadFolderViewModel(WadViewModel wadViewModel, WadItemViewModel parent, string path) : base(wadViewModel, parent, WadItemType.Folder)
         {
             this.Path = path;
             this.Name = PathIO.GetFileName(path);
@@ -28,7 +28,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
             ulong hash = XXHash.XXH64(Encoding.ASCII.GetBytes(filePath.ToLower()));
             WADEntry entry = new WADEntry(this._wadViewModel.WAD, hash, File.ReadAllBytes(fileLocation), true, PathIO.GetExtension(fileLocation));
 
-            this.Items.Add(new WadFileViewModel(this._wadViewModel, filePath, fileName, entry));
+            this.Items.Add(new WadFileViewModel(this._wadViewModel, this, filePath, fileName, entry));
             this.Items.Sort();
         }
         public void AddFile(string path, string entryPath, WADEntry entry)
@@ -40,7 +40,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
             //if not, then we pass it down the hierarchy
             if (folders.Length == 1)
             {
-                this.Items.Add(new WadFileViewModel(this._wadViewModel, entryPath, folders[0], entry));
+                this.Items.Add(new WadFileViewModel(this._wadViewModel, this, entryPath, folders[0], entry));
             }
             else
             {
@@ -55,7 +55,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
                 else
                 {
                     string newFolderPath = string.Format("{0}/{1}", this.Path, folders[0]);
-                    WadFolderViewModel newFolder = new WadFolderViewModel(this._wadViewModel, newFolderPath);
+                    WadFolderViewModel newFolder = new WadFolderViewModel(this._wadViewModel, this, newFolderPath);
 
                     newFolder.AddFile(path.Substring(path.IndexOf(pathSeparator) + 1), entryPath, entry);
                     this.Items.Add(newFolder);

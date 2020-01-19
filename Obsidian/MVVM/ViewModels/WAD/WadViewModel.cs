@@ -51,7 +51,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
                 //If folders count is 1 then we can assume the file isn't nested in any directory
                 if (folders.Length == 1)
                 {
-                    this.Items.Add(new WadFileViewModel(this, path, path, entry));
+                    this.Items.Add(new WadFileViewModel(this, null, path, path, entry));
                 }
                 else
                 {
@@ -65,7 +65,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
                     }
                     else
                     {
-                        WadFolderViewModel newFolder = new WadFolderViewModel(this, folders[0]);
+                        WadFolderViewModel newFolder = new WadFolderViewModel(this, null, folders[0]);
 
                         newFolder.AddFile(path.Substring(path.IndexOf(pathSeparator) + 1), path, entry);
                         this.Items.Add(newFolder);

@@ -151,12 +151,12 @@ namespace Obsidian
             using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
             {
                 dialog.Multiselect = true;
-                
-                if(dialog.ShowDialog() == CommonFileDialogResult.Ok)
+
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
                     WadFolderViewModel wadFolder = (sender as FrameworkElement).DataContext as WadFolderViewModel;
 
-                    foreach(string fileLocation in dialog.FileNames)
+                    foreach (string fileLocation in dialog.FileNames)
                     {
                         wadFolder.AddFile(fileLocation);
                     }
@@ -169,7 +169,24 @@ namespace Obsidian
         }
         private void OnFolderRemove(object sender, RoutedEventArgs e)
         {
+            WadFolderViewModel wadFolder = (sender as FrameworkElement).DataContext as WadFolderViewModel;
 
+            //Recursively Remove all WAD entries nested in the folder
+            foreach (WadFileViewModel entry in wadFolder.GetAllEntries())
+            {
+                this.WAD.WAD.RemoveEntry(entry.Entry);
+            }
+
+            //Remove the folder from View Model
+            //If Parent is null then we know it's in root
+            if (wadFolder.Parent == null)
+            {
+                this.WAD.Items.Remove(wadFolder);
+            }
+            else
+            {
+                (wadFolder.Parent as WadFolderViewModel).Items.Remove(wadFolder);
+            }
         }
 
         private async void OpenWad()
@@ -201,13 +218,13 @@ namespace Obsidian
                 dialog.Filters.Add(new CommonFileDialogFilter("wad.client File", "*.client"));
                 dialog.Filters.Add(new CommonFileDialogFilter("wad File", "*.wad"));
 
-                if(dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
                     string wadLocation = dialog.FileName;
 
                     //We need to change the extension because the dialog is stupid 
                     //and can't handle extensions with multiple dots
-                    if(PathIO.GetExtension(dialog.FileName) == ".client")
+                    if (PathIO.GetExtension(dialog.FileName) == ".client")
                     {
                         wadLocation = PathIO.ChangeExtension(dialog.FileName, ".wad.client");
                     }
@@ -223,7 +240,7 @@ namespace Obsidian
             {
                 dialog.IsFolderPicker = true;
 
-                if(dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
                     await DialogHelper.ShowExtractOperationDialog(dialog.FileName, this.WAD.GetAllEntries());
                 }

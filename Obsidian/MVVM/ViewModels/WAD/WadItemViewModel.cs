@@ -7,19 +7,20 @@ namespace Obsidian.MVVM.ViewModels.WAD
 {
     public class WadItemViewModel : PropertyNotifier, IComparable<WadItemViewModel>, IEquatable<WadItemViewModel>
     {
+        public WadItemViewModel Parent { get; }
         public bool ContainsSelection
-        { 
+        {
             get
             {
-                if(this.IsSelected)
+                if (this.IsSelected)
                 {
                     return true;
                 }
-                else if(this.Type == WadItemType.Folder)
+                else if (this.Type == WadItemType.Folder)
                 {
-                    foreach(WadItemViewModel item in (this as WadFolderViewModel).Items)
+                    foreach (WadItemViewModel item in (this as WadFolderViewModel).Items)
                     {
-                        if(item.ContainsSelection)
+                        if (item.ContainsSelection)
                         {
                             return true;
                         }
@@ -55,9 +56,10 @@ namespace Obsidian.MVVM.ViewModels.WAD
         private bool _isSelected;
         protected WadViewModel _wadViewModel;
 
-        public WadItemViewModel(WadViewModel wadViewModel, WadItemType type)
+        public WadItemViewModel(WadViewModel wadViewModel, WadItemViewModel parent, WadItemType type)
         {
             this._wadViewModel = wadViewModel;
+            this.Parent = parent;
             this.Type = type;
         }
 
