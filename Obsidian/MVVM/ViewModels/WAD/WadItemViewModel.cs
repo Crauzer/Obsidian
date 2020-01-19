@@ -1,13 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
+using System.Windows.Data;
 
 namespace Obsidian.MVVM.ViewModels.WAD
 {
     public class WadItemViewModel : PropertyNotifier, IComparable<WadItemViewModel>, IEquatable<WadItemViewModel>, IEqualityComparer<WadItemViewModel>
     {
         public WadItemViewModel Parent { get; }
+        public string Filter
+        {
+            get => this._filter;
+            set
+            {
+                this._filter = value;
+                if (this.Type == WadItemType.Folder)
+                {
+                    ICollectionView view = CollectionViewSource.GetDefaultView((this as WadFolderViewModel).Items);
+                    view.Filter = itemObject =>
+                    {
+                        WadItemViewModel item = itemObject as WadItemViewModel;
+
+                        if (item.Type == WadItemType.File)
+                        {
+                            return item.Path.Contains(value);
+                        }
+                        else
+                        {
+                            if ((item as WadFolderViewModel).Find(x => x.Path.Contains(value)) == null)
+                            {
+                                return false;
+                            }
+                            else
+                            {
+                                item.Filter = value;
+                                return true;
+                            }
+                        }
+                    };
+                }
+
+                NotifyPropertyChanged();
+            }
+        }
         public bool ContainsSelection
         {
             get
@@ -54,6 +91,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
         public WadItemType Type { get; }
 
         private bool _isSelected;
+        private string _filter;
         protected WadViewModel _wadViewModel;
 
         public WadItemViewModel(WadViewModel wadViewModel, WadItemViewModel parent, WadItemType type)

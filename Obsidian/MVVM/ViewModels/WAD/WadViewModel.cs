@@ -3,8 +3,10 @@ using Obsidian.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Windows.Data;
 
 namespace Obsidian.MVVM.ViewModels.WAD
 {
@@ -25,6 +27,39 @@ namespace Obsidian.MVVM.ViewModels.WAD
                 return false;
             }
         }
+        public string Filter
+        {
+            get => this._filter;
+            set
+            {
+                this._filter = value;
+
+                ICollectionView view = CollectionViewSource.GetDefaultView(this.Items);
+                view.Filter = itemObject =>
+                {
+                    WadItemViewModel item = itemObject as WadItemViewModel;
+
+                    if (item.Type == WadItemType.File)
+                    {
+                        return item.Path.Contains(value);
+                    }
+                    else
+                    {
+                        if ((item as WadFolderViewModel).Find(x => x.Path.Contains(value)) == null)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            item.Filter = value;
+                            return true;
+                        }
+                    }
+                };
+
+                NotifyPropertyChanged();
+            }
+        }
         public ObservableCollection<WadItemViewModel> Items { get; set; } = new ObservableCollection<WadItemViewModel>();
 
         public WADFile WAD
@@ -42,6 +77,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
         }
         public string WADLocation { get; set; }
 
+        private string _filter;
         private WADFile _wad;
 
         public WadViewModel()

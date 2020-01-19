@@ -32,7 +32,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
 
                 this.Items.Add(new WadFileViewModel(this._wadViewModel, this, entryPath, entryName, entry));
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
 
             }
@@ -122,6 +122,11 @@ namespace Obsidian.MVVM.ViewModels.WAD
                     }
                 }
             }
+        }
+
+        public WadFileViewModel Find(Func<WadFileViewModel, bool> predicate)
+        {
+            return GetAllEntries().FirstOrDefault(predicate);
         }
 
         public void Sort()

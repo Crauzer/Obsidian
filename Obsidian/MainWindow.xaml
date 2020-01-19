@@ -132,7 +132,7 @@
                                             <Separator/>
                                             <MenuItem Header="Create" Icon="{MaterialDesign:PackIcon Kind=FileTree}" Click="OnCreateWAD"/>
                                         </MenuItem>
-                                        <TextBox x:Name="FilterTextBox" MaterialDesign:HintAssist.Hint="Filter"/>
+                                        <TextBox Text="{Binding WAD.Filter, UpdateSourceTrigger=PropertyChanged}" MaterialDesign:HintAssist.Hint="Filter"/>
                                     </Menu>
                                     <Image Grid.Column="1" HorizontalAlignment="Right" Source="icon.ico" Width="50"/>
                                 </Grid>
