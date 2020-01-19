@@ -76,9 +76,9 @@
 
                     <Grid.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Modify Data" Icon="{MaterialDesign:PackIcon Kind=FileRestore}"/>
+                            <MenuItem Header="Modify Data" Icon="{MaterialDesign:PackIcon Kind=FileRestore}" Click="OnFileModifyData"/>
                             <Separator/>
-                            <MenuItem Header="Remove" Icon="{MaterialDesign:PackIcon Kind=Close}"/>
+                            <MenuItem Header="Remove" Icon="{MaterialDesign:PackIcon Kind=Close}" Click="OnFileRemove"/>
                         </ContextMenu>
                     </Grid.ContextMenu>
                 </Grid>

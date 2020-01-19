@@ -281,5 +281,45 @@ namespace Obsidian
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        private void OnFileModifyData(object sender, RoutedEventArgs e)
+        {
+            using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
+            {
+                dialog.Multiselect = false;
+
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                {
+                    WadFileViewModel wadFile = (sender as FrameworkElement).DataContext as WadFileViewModel;
+
+                    try
+                    {
+                        wadFile.Entry.EditData(File.ReadAllBytes(dialog.FileName));
+                    }
+                    catch (Exception exception)
+                    {
+
+                    }
+                }
+            }
+        }
+
+        private void OnFileRemove(object sender, RoutedEventArgs e)
+        {
+            WadFileViewModel wadFile = (sender as FrameworkElement).DataContext as WadFileViewModel;
+
+            this.WAD.WAD.RemoveEntry(wadFile.Entry);
+
+            //Remove the file from View Model
+            //If Parent is null then we know it's in root
+            if (wadFile.Parent == null)
+            {
+                this.WAD.Items.Remove(wadFile);
+            }
+            else
+            {
+                (wadFile.Parent as WadFolderViewModel).Items.Remove(wadFile);
+            }
+        }
     }
 }
