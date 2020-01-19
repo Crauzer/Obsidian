@@ -40,10 +40,10 @@
 
                     <Grid.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Add File" Icon="{MaterialDesign:PackIcon Kind=FileHidden}"/>
-                            <MenuItem Header="Add Folder" Icon="{MaterialDesign:PackIcon Kind=Folder}"/>
+                            <MenuItem Header="Add Files" Icon="{MaterialDesign:PackIcon Kind=FileOutline}" Click="OnFolderAddFiles"/>
+                            <MenuItem Header="Add Folder" Icon="{MaterialDesign:PackIcon Kind=Folder}" Click="OnFolderAddFolder"/>
                             <Separator/>
-                            <MenuItem Header="Remove" Icon="{MaterialDesign:PackIcon Kind=PlaylistRemove}"/>
+                            <MenuItem Header="Remove" Icon="{MaterialDesign:PackIcon Kind=PlaylistRemove}" Click="OnFolderRemove"/>
                         </ContextMenu>
                     </Grid.ContextMenu>
                 </Grid>

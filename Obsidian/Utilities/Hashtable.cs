@@ -21,11 +21,11 @@ namespace Obsidian.Utilities
 
         public static string Get(ulong key)
         {
-            if(_hashtable.ContainsKey(key))
+            if (_hashtable.ContainsKey(key))
             {
                 return _hashtable[key];
             }
-            else 
+            else
             {
                 return key.ToString("x16");
             }
@@ -50,24 +50,28 @@ namespace Obsidian.Utilities
             Load(GAME_HASHTABLE_FILE);
             Load(LCU_HASHTABLE_FILE);
         }
-
         public static void Load(string location)
         {
             //Obsidian will support 2 types of hashtables:
             //{hashHex} {string}
             //{string}
 
-            foreach(string line in File.ReadAllLines(location))
+            foreach (string line in File.ReadAllLines(location))
             {
                 string[] lineSplit = line.Split(' ');
-                
+
                 ulong hash = ulong.Parse(lineSplit[0], NumberStyles.HexNumber);
-                
+
                 //Since names can have spaces in them
                 string name = "";
-                for(int i = 1; i < lineSplit.Length; i++)
+                for (int i = 1; i < lineSplit.Length; i++)
                 {
                     name += lineSplit[i];
+
+                    if (i + 1 != lineSplit.Length)
+                    {
+                        name += ' ';
+                    }
                 }
 
                 _hashtable.Add(hash, name);

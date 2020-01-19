@@ -72,6 +72,8 @@ namespace Obsidian.UserControls.Dialogs
             this._entries = entries;
 
             InitializeComponent();
+
+            this.DataContext = this;
         }
 
         public void StartExtraction(object sender, EventArgs e)
@@ -103,27 +105,11 @@ namespace Obsidian.UserControls.Dialogs
             HashSet<ulong> packedPaths = new HashSet<ulong>();
             List<string> packedMappingFile = new List<string>();
 
-            //Collect all info about the entries and create folder structure 
-            foreach (WadFileViewModel entry in this._entries)
-            {
-                //Check if the entry is a packed bin file
-                if (Regex.IsMatch(entry.Path, Config.Get<string>("PackedBinRegex"), RegexOptions.IgnoreCase))
-                {
-                    string line = string.Format("{0} = {1}", entry.Entry.XXHash.ToString("X16") + ".bin", entry.Path);
-                    packedMappingFile.Add(line);
-                    packedPaths.Add(entry.Entry.XXHash);
-                }
-                else
-                {
-                    Directory.CreateDirectory(string.Format(@"{0}\{1}", this._extractLocation, PathIO.GetDirectoryName(entry.Path)));
-                }
-
-                progress += 0.5;
-                (e.Argument as BackgroundWorker).ReportProgress((int)progress);
-            }
-
+            GeneratePackedMapping();
+            CreateFolders();
+            
             //Write the Packed Mapping file
-            if(packedMappingFile.Count != 0)
+            if (packedMappingFile.Count != 0)
             {
                 File.WriteAllLines(string.Format(@"{0}\OBSIDIAN_PACKED_MAPPING.txt", this._extractLocation), packedMappingFile);
             }
@@ -137,11 +123,36 @@ namespace Obsidian.UserControls.Dialogs
                     path = string.Format(@"{0}\{1}", this._extractLocation, entry.Entry.XXHash.ToString("X16") + ".bin");
                 }
 
-
+                this.Message = path;
                 File.WriteAllBytes(path, entry.Entry.GetContent(true));
 
-                progress += 0.5;
+                progress += 1;
                 (e.Argument as BackgroundWorker).ReportProgress((int)progress);
+            }
+
+            void GeneratePackedMapping()
+            {
+                this.Message = "Creating packed mapping";
+
+                foreach (WadFileViewModel entry in this._entries)
+                {
+                    //Check if the entry is a packed bin file
+                    if (Regex.IsMatch(entry.Path, Config.Get<string>("PackedBinRegex"), RegexOptions.IgnoreCase))
+                    {
+                        string line = string.Format("{0} = {1}", entry.Entry.XXHash.ToString("X16") + ".bin", entry.Path);
+                        packedMappingFile.Add(line);
+                        packedPaths.Add(entry.Entry.XXHash);
+                    }
+                }
+            }
+            void CreateFolders()
+            {
+                this.Message = "Creating Folders";
+
+                foreach(WadFileViewModel entry in this._entries)
+                {
+                    Directory.CreateDirectory(string.Format(@"{0}\{1}", this._extractLocation, PathIO.GetDirectoryName(entry.Path)));
+                }
             }
         }
 

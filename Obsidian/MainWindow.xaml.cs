@@ -136,6 +136,7 @@ namespace Obsidian
         {
             SaveWad();
         }
+
         private void OnExtractAll(object sender, RoutedEventArgs e)
         {
             ExtractAll();
@@ -143,6 +144,32 @@ namespace Obsidian
         private void OnExtractSelected(object sender, RoutedEventArgs e)
         {
             ExtractSelected();
+        }
+
+        private void OnFolderAddFiles(object sender, RoutedEventArgs e)
+        {
+            using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
+            {
+                dialog.Multiselect = true;
+                
+                if(dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                {
+                    WadFolderViewModel wadFolder = (sender as FrameworkElement).DataContext as WadFolderViewModel;
+
+                    foreach(string fileLocation in dialog.FileNames)
+                    {
+                        wadFolder.AddFile(fileLocation);
+                    }
+                }
+            }
+        }
+        private void OnFolderAddFolder(object sender, RoutedEventArgs e)
+        {
+
+        }
+        private void OnFolderRemove(object sender, RoutedEventArgs e)
+        {
+
         }
 
         private async void OpenWad()
@@ -219,7 +246,5 @@ namespace Obsidian
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
-        
     }
 }
