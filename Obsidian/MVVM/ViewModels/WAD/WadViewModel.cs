@@ -27,16 +27,32 @@ namespace Obsidian.MVVM.ViewModels.WAD
         }
         public ObservableCollection<WadItemViewModel> Items { get; set; } = new ObservableCollection<WadItemViewModel>();
 
-        public WADFile WAD { get; private set; }
+        public WADFile WAD
+        {
+            get
+            {
+                if (this._wad == null)
+                {
+                    this._wad = new WADFile(_wadLocation);
+                }
+
+                return this._wad;
+            }
+            set => this._wad = value;
+        }
+
+        private WADFile _wad;
+        private string _wadLocation;
 
         public WadViewModel()
         {
 
         }
 
-        public void LoadWad(WADFile wad)
+        public void LoadWad(string wadLocation)
         {
-            this.WAD = wad;
+            this.WAD = new WADFile(wadLocation);
+            this._wadLocation = wadLocation;
 
             GenerateWadItems();
         }

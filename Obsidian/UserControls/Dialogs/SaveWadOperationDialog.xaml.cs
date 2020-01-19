@@ -1,4 +1,5 @@
-﻿using Obsidian.MVVM.ViewModels.WAD;
+﻿using Fantome.Libraries.League.IO.WAD;
+using Obsidian.MVVM.ViewModels.WAD;
 using Obsidian.Utilities;
 using System;
 using System.Collections.Generic;
@@ -55,6 +56,8 @@ namespace Obsidian.UserControls.Dialogs
         private void SaveWAD(object sender, DoWorkEventArgs e)
         {
             this._wadViewModel.WAD.Write(this._wadLocation);
+            this._wadViewModel.WAD.Dispose();
+            this._wadViewModel.WAD = null;
         }
     }
 }

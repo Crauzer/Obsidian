@@ -54,7 +54,7 @@ namespace Obsidian.UserControls.Dialogs
 
         private void OpenWAD(object sender, DoWorkEventArgs e)
         {
-            this.WadViewModel.LoadWad(new WADFile(this._wadLocation));
+            this.WadViewModel.LoadWad(this._wadLocation);
         }
     }
 }

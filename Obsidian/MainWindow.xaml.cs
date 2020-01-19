@@ -146,6 +146,11 @@ namespace Obsidian
             ExtractSelected();
         }
 
+        private void OnCreateWAD(object sender, RoutedEventArgs e)
+        {
+            CreateWAD();
+        }
+
         private void OnFolderAddFiles(object sender, RoutedEventArgs e)
         {
             using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
@@ -204,6 +209,45 @@ namespace Obsidian
             else
             {
                 (wadFolder.Parent as WadFolderViewModel).Items.Remove(wadFolder);
+            }
+        }
+
+        private void OnFileModifyData(object sender, RoutedEventArgs e)
+        {
+            using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
+            {
+                dialog.Multiselect = false;
+
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                {
+                    WadFileViewModel wadFile = (sender as FrameworkElement).DataContext as WadFileViewModel;
+
+                    try
+                    {
+                        wadFile.Entry.EditData(File.ReadAllBytes(dialog.FileName));
+                    }
+                    catch (Exception exception)
+                    {
+
+                    }
+                }
+            }
+        }
+        private void OnFileRemove(object sender, RoutedEventArgs e)
+        {
+            WadFileViewModel wadFile = (sender as FrameworkElement).DataContext as WadFileViewModel;
+
+            this.WAD.WAD.RemoveEntry(wadFile.Entry);
+
+            //Remove the file from View Model
+            //If Parent is null then we know it's in root
+            if (wadFile.Parent == null)
+            {
+                this.WAD.Items.Remove(wadFile);
+            }
+            else
+            {
+                (wadFile.Parent as WadFolderViewModel).Items.Remove(wadFile);
             }
         }
 
@@ -277,49 +321,22 @@ namespace Obsidian
             }
         }
 
-        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        private void OnFileModifyData(object sender, RoutedEventArgs e)
+        private async void CreateWAD()
         {
             using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
             {
-                dialog.Multiselect = false;
+                dialog.IsFolderPicker = true;
 
-                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                if(dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
-                    WadFileViewModel wadFile = (sender as FrameworkElement).DataContext as WadFileViewModel;
-
-                    try
-                    {
-                        wadFile.Entry.EditData(File.ReadAllBytes(dialog.FileName));
-                    }
-                    catch (Exception exception)
-                    {
-
-                    }
+                    this.WAD = await DialogHelper.ShowCreateWADOperationDialog(dialog.FileName);
                 }
             }
         }
 
-        private void OnFileRemove(object sender, RoutedEventArgs e)
+        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
-            WadFileViewModel wadFile = (sender as FrameworkElement).DataContext as WadFileViewModel;
-
-            this.WAD.WAD.RemoveEntry(wadFile.Entry);
-
-            //Remove the file from View Model
-            //If Parent is null then we know it's in root
-            if (wadFile.Parent == null)
-            {
-                this.WAD.Items.Remove(wadFile);
-            }
-            else
-            {
-                (wadFile.Parent as WadFolderViewModel).Items.Remove(wadFile);
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

@@ -123,7 +123,7 @@ namespace Obsidian.UserControls.Dialogs
                     path = string.Format(@"{0}\{1}", this._extractLocation, entry.Entry.XXHash.ToString("X16") + ".bin");
                 }
 
-                this.Message = path;
+                this.Message = entry.Path;
                 File.WriteAllBytes(path, entry.Entry.GetContent(true));
 
                 progress += 1;
