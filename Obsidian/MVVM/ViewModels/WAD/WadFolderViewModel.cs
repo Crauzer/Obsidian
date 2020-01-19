@@ -23,13 +23,19 @@ namespace Obsidian.MVVM.ViewModels.WAD
 
         public void AddFile(string fileLocation)
         {
-            string fileName = PathIO.GetFileName(fileLocation).ToLower();
-            string filePath = string.Format("{0}/{1}", this.Path, fileName);
-            ulong hash = XXHash.XXH64(Encoding.ASCII.GetBytes(filePath.ToLower()));
-            WADEntry entry = new WADEntry(this._wadViewModel.WAD, hash, File.ReadAllBytes(fileLocation), true, PathIO.GetExtension(fileLocation));
+            try
+            {
+                string entryName = PathIO.GetFileName(fileLocation).ToLower();
+                string entryPath = string.Format("{0}/{1}", this.Path, entryName);
+                ulong hash = XXHash.XXH64(Encoding.ASCII.GetBytes(entryPath.ToLower()));
+                WADEntry entry = new WADEntry(this._wadViewModel.WAD, hash, File.ReadAllBytes(fileLocation), true, PathIO.GetExtension(fileLocation));
 
-            this.Items.Add(new WadFileViewModel(this._wadViewModel, this, filePath, fileName, entry));
-            this.Items.Sort();
+                this.Items.Add(new WadFileViewModel(this._wadViewModel, this, entryPath, entryName, entry));
+            }
+            catch(Exception exception)
+            {
+
+            }
         }
         public void AddFile(string path, string entryPath, WADEntry entry)
         {
@@ -59,6 +65,26 @@ namespace Obsidian.MVVM.ViewModels.WAD
 
                     newFolder.AddFile(path.Substring(path.IndexOf(pathSeparator) + 1), entryPath, entry);
                     this.Items.Add(newFolder);
+                }
+            }
+        }
+        public void AddFolder(string folderLocation)
+        {
+            foreach (string fileLocation in Directory.EnumerateFiles(folderLocation, "*", SearchOption.AllDirectories))
+            {
+                try
+                {
+                    char pathSeparator = Pathing.GetPathSeparator(fileLocation);
+                    string path = fileLocation.Replace(PathIO.GetDirectoryName(folderLocation) + pathSeparator, "").Replace(pathSeparator, '/');
+                    string entryPath = string.Format("{0}/{1}", this.Path, path);
+                    ulong hash = XXHash.XXH64(Encoding.ASCII.GetBytes(entryPath.ToLower()));
+                    WADEntry entry = new WADEntry(this._wadViewModel.WAD, hash, File.ReadAllBytes(fileLocation), true, PathIO.GetExtension(fileLocation));
+
+                    AddFile(path, entryPath, entry);
+                }
+                catch (Exception exception)
+                {
+
                 }
             }
         }

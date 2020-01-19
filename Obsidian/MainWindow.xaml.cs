@@ -160,12 +160,30 @@ namespace Obsidian
                     {
                         wadFolder.AddFile(fileLocation);
                     }
+
+                    wadFolder.Sort();
                 }
             }
         }
-        private void OnFolderAddFolder(object sender, RoutedEventArgs e)
+        private void OnFolderAddFolders(object sender, RoutedEventArgs e)
         {
+            using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
+            {
+                dialog.IsFolderPicker = true;
+                dialog.Multiselect = true;
 
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                {
+                    WadFolderViewModel wadFolder = (sender as FrameworkElement).DataContext as WadFolderViewModel;
+
+                    foreach (string folderLocation in dialog.FileNames)
+                    {
+                        wadFolder.AddFolder(folderLocation);
+                    }
+
+                    wadFolder.Sort();
+                }
+            }
         }
         private void OnFolderRemove(object sender, RoutedEventArgs e)
         {
