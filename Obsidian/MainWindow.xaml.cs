@@ -128,7 +128,7 @@ namespace Obsidian
         private void BindMVVM()
         {
             this.DataContext = this;
-            this.Preview = new PreviewViewModel(this.MainViewport);
+            this.Preview = new PreviewViewModel(this.PreviewViewport);
 
             DialogHelper.MessageDialog = this.MessageDialog;
             DialogHelper.OperationDialog = this.OperationDialog;
@@ -361,8 +361,7 @@ namespace Obsidian
 
             if (extension == ".dds")
             {
-                ImageEngineImage image = new ImageEngineImage(new MemoryStream(selectedEntry.Entry.GetContent(true)));
-                image.GetWPFBitmap(512);
+                this.Preview.Preview(new ImageEngineImage(new MemoryStream(selectedEntry.Entry.GetContent(true))));
             }
             else if (extension == ".skn")
             {
@@ -382,11 +381,5 @@ namespace Obsidian
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-    }
-
-    public enum PreviewType
-    {
-        Viewport,
-        Image
     }
 }

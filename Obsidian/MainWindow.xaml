@@ -7,6 +7,7 @@
         xmlns:ControlzEx="clr-namespace:ControlzEx;assembly=MaterialDesignThemes.Wpf"
         xmlns:MaterialDesignUtilities="clr-namespace:Obsidian.Utilities.MaterialDesign"
         xmlns:Helix="http://helix-toolkit.org/wpf"
+        xmlns:ViewModels="clr-namespace:Obsidian.MVVM.ViewModels"
         xmlns:WadViewModel="clr-namespace:Obsidian.MVVM.ViewModels.WAD"
         xmlns:local="clr-namespace:Obsidian"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -98,6 +99,32 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+            <Style x:Key="ContentPreviewViewport" TargetType="Helix:HelixViewport3D">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Preview.PreviewType, UpdateSourceTrigger=PropertyChanged}" Value="{x:Static ViewModels:PreviewType.None}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Preview.PreviewType, UpdateSourceTrigger=PropertyChanged}" Value="{x:Static ViewModels:PreviewType.Image}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Preview.PreviewType, UpdateSourceTrigger=PropertyChanged}" Value="{x:Static ViewModels:PreviewType.Viewport}">
+                        <Setter Property="Visibility" Value="Visible"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="ContentPreviewImage" TargetType="Image">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Preview.PreviewType, UpdateSourceTrigger=PropertyChanged}" Value="{x:Static ViewModels:PreviewType.None}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Preview.PreviewType, UpdateSourceTrigger=PropertyChanged}" Value="{x:Static ViewModels:PreviewType.Viewport}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Preview.PreviewType, UpdateSourceTrigger=PropertyChanged}" Value="{x:Static ViewModels:PreviewType.Image}">
+                        <Setter Property="Visibility" Value="Visible"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
     <MaterialDesign:DialogHost x:Name="MessageDialog" Identifier="MessageDialog">
@@ -146,7 +173,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition x:Name="PreviewColumn" Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <TreeView x:Name="WadTree" Grid.Column="0" DataContext="{Binding WAD}"
                               ItemsSource="{Binding Items, UpdateSourceTrigger=PropertyChanged}" Margin="0,8,0,0"
@@ -157,12 +184,15 @@
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <Helix:HelixViewport3D x:Name="MainViewport" Grid.Row="0"
-                                               HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="15"
-                                               ItemsSource="{Binding Preview.Viewport.Content}" ShowCoordinateSystem="True" ModelUpDirection="0, 1, 0" CameraRotationMode="Trackball" FixedRotationPointEnabled="True" />
-                            <TextBlock Grid.Row="1" x:Name="ViewportContentType" Text="{Binding Preview.ContentType}" 
+                            <Image x:Name="PreviewImage" Source="{Binding Preview.Image, UpdateSourceTrigger=PropertyChanged}"
+                                   Style="{StaticResource ContentPreviewImage}"
+                                   Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10"/>
+                            <Helix:HelixViewport3D x:Name="PreviewViewport" Grid.Row="0" Style="{StaticResource ContentPreviewViewport}"
+                                               HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                               ItemsSource="{Binding Preview.Viewport.Content}" ShowCoordinateSystem="True" ModelUpDirection="0, 1, 0" CameraRotationMode="Trackball" CoordinateSystemWidth="82" MinWidth="300"/>
+                            <TextBlock Grid.Row="1" x:Name="ViewportContentType" Text="{Binding Preview.ContentType, UpdateSourceTrigger=PropertyChanged}"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"
-                                       FontSize="20" FontWeight="Bold"/>
+                                       FontSize="20" FontWeight="Bold" Margin="10"/>
                         </Grid>
                     </Grid>
                 </Grid>

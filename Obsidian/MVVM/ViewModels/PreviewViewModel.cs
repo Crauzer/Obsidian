@@ -21,6 +21,15 @@ namespace Obsidian.MVVM.ViewModels
                 NotifyPropertyChanged();
             }
         }
+        public string ContentType
+        {
+            get => this._contentType;
+            set
+            {
+                this._contentType = value;
+                NotifyPropertyChanged();
+            }
+        }
         public ViewportViewModel Viewport
         {
             get => this._viewport;
@@ -41,6 +50,7 @@ namespace Obsidian.MVVM.ViewModels
         }
 
         private PreviewType _previewType;
+        private string _contentType;
         private ViewportViewModel _viewport;
         private BitmapSource _image;
 
@@ -54,29 +64,43 @@ namespace Obsidian.MVVM.ViewModels
             this.Viewport.LoadMesh(skn);
 
             this.PreviewType = PreviewType.Viewport;
+            this.ContentType = "Simple Skin Model";
         }
         public void Preview(SCBFile scb)
         {
             this.Viewport.LoadMesh(scb);
 
             this.PreviewType = PreviewType.Viewport;
+            this.ContentType = "Static Object";
         }
         public void Preview(SCOFile sco)
         {
             this.Viewport.LoadMesh(sco);
 
             this.PreviewType = PreviewType.Viewport;
+            this.ContentType = "Static Object";
         }
         public void Preview(ImageEngineImage image)
         {
-            this.Image = image.GetWPFBitmap(512);
+            this.Image = image.GetWPFBitmap();
 
             this.PreviewType = PreviewType.Image;
+            this.ContentType = "Direct Draw Surface";
         }
 
         public void Clear()
         {
             this.Viewport.Clear();
+
+            this.PreviewType = PreviewType.None;
+            this._image = null;
         }
+    }
+
+    public enum PreviewType
+    {
+        None,
+        Viewport,
+        Image
     }
 }

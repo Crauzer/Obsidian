@@ -3,12 +3,8 @@ using Fantome.Libraries.League.IO.SCB;
 using Fantome.Libraries.League.IO.SCO;
 using Fantome.Libraries.League.IO.SimpleSkin;
 using HelixToolkit.Wpf;
-using Obsidian.Utilities;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
-using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 
@@ -60,18 +56,8 @@ namespace Obsidian.MVVM.ViewModels
                 NotifyPropertyChanged();
             }
         }
-        public string ContentType
-        {
-            get => this._contentType;
-            set
-            {
-                this._contentType = value;
-                NotifyPropertyChanged();
-            }
-        }
 
         private ObservableCollection<ModelVisual3D> _content = new ObservableCollection<ModelVisual3D>();
-        private string _contentType;
         private HelixViewport3D _viewport;
 
         public ViewportViewModel(HelixViewport3D viewport)
@@ -126,8 +112,6 @@ namespace Obsidian.MVVM.ViewModels
             }
 
             SetCamera(skn.CalculateCentralPoint());
-            
-            this.ContentType = "Simple Skin Model";
         }
         public void LoadMesh(SCBFile scb)
         {
@@ -177,8 +161,6 @@ namespace Obsidian.MVVM.ViewModels
             }
 
             SetCamera(scb.CalculateCentralPoint());
-
-            this.ContentType = "Static Object";
         }
         public void LoadMesh(SCOFile sco)
         {
@@ -228,8 +210,6 @@ namespace Obsidian.MVVM.ViewModels
             }
 
             SetCamera(sco.CalculateCentralPoint());
-
-            this.ContentType = "Static Object";
         }
 
         private void SetCamera(Vector3 point)
