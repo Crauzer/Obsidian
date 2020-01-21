@@ -16,9 +16,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using CSharpImageLibrary;
+using Fantome.Libraries.League.IO.SCB;
+using Fantome.Libraries.League.IO.SCO;
+using Fantome.Libraries.League.IO.SimpleSkin;
 using Fantome.Libraries.League.IO.WAD;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Obsidian.MVVM;
+using Obsidian.MVVM.ViewModels;
 using Obsidian.MVVM.ViewModels.WAD;
 using Obsidian.Utilities;
 using Octokit;
@@ -32,6 +37,15 @@ namespace Obsidian
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        public bool IsWadOpened
+        {
+            get => this._isWadOpened;
+            set
+            {
+                this._isWadOpened = value;
+                NotifyPropertyChanged();
+            }
+        }
         public WadViewModel WAD
         {
             get => this._wad;
@@ -42,15 +56,7 @@ namespace Obsidian
                 NotifyPropertyChanged();
             }
         }
-        public bool IsWadOpened
-        {
-            get => this._isWadOpened;
-            set
-            {
-                this._isWadOpened = value;
-                NotifyPropertyChanged();
-            }
-        }
+        public PreviewViewModel Preview { get; private set; }
 
         private WadViewModel _wad = new WadViewModel();
         private bool _isWadOpened;
@@ -122,6 +128,7 @@ namespace Obsidian
         private void BindMVVM()
         {
             this.DataContext = this;
+            this.Preview = new PreviewViewModel(this.MainViewport);
 
             DialogHelper.MessageDialog = this.MessageDialog;
             DialogHelper.OperationDialog = this.OperationDialog;
@@ -251,6 +258,18 @@ namespace Obsidian
             }
         }
 
+        private void OnPreviewSelectedEntry(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (e.NewValue is WadFileViewModel selectedEntry)
+            {
+                PreviewSelectedEntry(selectedEntry);
+            }
+            else if (e.NewValue is WadFolderViewModel)
+            {
+
+            }
+        }
+
         private async void OpenWad()
         {
             try
@@ -263,6 +282,7 @@ namespace Obsidian
                     if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                     {
                         this.WAD = await DialogHelper.ShowOpenWadOperartionDialog(dialog.FileName);
+                        this.Preview.Clear();
                     }
                 }
             }
@@ -330,7 +350,31 @@ namespace Obsidian
                 if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
                     this.WAD = await DialogHelper.ShowCreateWADOperationDialog(dialog.FileName);
+                    this.Preview.Clear();
                 }
+            }
+        }
+
+        private void PreviewSelectedEntry(WadFileViewModel selectedEntry)
+        {
+            string extension = PathIO.GetExtension(selectedEntry.Path);
+
+            if (extension == ".dds")
+            {
+                ImageEngineImage image = new ImageEngineImage(new MemoryStream(selectedEntry.Entry.GetContent(true)));
+                image.GetWPFBitmap(512);
+            }
+            else if (extension == ".skn")
+            {
+                this.Preview.Preview(new SKNFile(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+            }
+            else if (extension == ".scb")
+            {
+                this.Preview.Preview(new SCBFile(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+            }
+            else if (extension == ".sco")
+            {
+                this.Preview.Preview(new SCOFile(new MemoryStream(selectedEntry.Entry.GetContent(true))));
             }
         }
 
@@ -338,5 +382,11 @@ namespace Obsidian
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+    }
+
+    public enum PreviewType
+    {
+        Viewport,
+        Image
     }
 }

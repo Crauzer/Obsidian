@@ -6,6 +6,7 @@
         xmlns:MaterialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:ControlzEx="clr-namespace:ControlzEx;assembly=MaterialDesignThemes.Wpf"
         xmlns:MaterialDesignUtilities="clr-namespace:Obsidian.Utilities.MaterialDesign"
+        xmlns:Helix="http://helix-toolkit.org/wpf"
         xmlns:WadViewModel="clr-namespace:Obsidian.MVVM.ViewModels.WAD"
         xmlns:local="clr-namespace:Obsidian"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -141,9 +142,29 @@
                         </Grid>
 
                     </MaterialDesign:Card>
-                    <TreeView x:Name="WadTree" Grid.Row="1" DataContext="{Binding WAD}"
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TreeView x:Name="WadTree" Grid.Column="0" DataContext="{Binding WAD}"
                               ItemsSource="{Binding Items, UpdateSourceTrigger=PropertyChanged}" Margin="0,8,0,0"
-                              VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling"/>
+                              VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" SelectedItemChanged="OnPreviewSelectedEntry"/>
+                        <GridSplitter Grid.Column="1" Width="3" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
+                        <Grid Grid.Column="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Helix:HelixViewport3D x:Name="MainViewport" Grid.Row="0"
+                                               HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="15"
+                                               ItemsSource="{Binding Preview.Viewport.Content}" ShowCoordinateSystem="True" ModelUpDirection="0, 1, 0" CameraRotationMode="Trackball" FixedRotationPointEnabled="True" />
+                            <TextBlock Grid.Row="1" x:Name="ViewportContentType" Text="{Binding Preview.ContentType}" 
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       FontSize="20" FontWeight="Bold"/>
+                        </Grid>
+                    </Grid>
                 </Grid>
             </MaterialDesign:DialogHost>
         </MaterialDesign:DialogHost>

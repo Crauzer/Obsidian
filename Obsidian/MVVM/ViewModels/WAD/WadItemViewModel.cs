@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Windows.Data;
+using PathIO = System.IO.Path;
 
 namespace Obsidian.MVVM.ViewModels.WAD
 {
@@ -113,14 +114,23 @@ namespace Obsidian.MVVM.ViewModels.WAD
             }
             else
             {
-                return this.Name.CompareTo(other.Name);
+                string extensionThis = PathIO.GetExtension(this.Path);
+                string extensionOther = PathIO.GetExtension(other.Path);
+
+                if (extensionThis == extensionOther)
+                {
+                    return this.Name.CompareTo(other.Name);
+                }
+                else
+                {
+                    return extensionThis.CompareTo(extensionOther);
+                }
             }
         }
         public bool Equals(WadItemViewModel other)
         {
             return this.Path == other.Path;
         }
-
         public bool Equals(WadItemViewModel x, WadItemViewModel y)
         {
             return x.Path == y.Path;
