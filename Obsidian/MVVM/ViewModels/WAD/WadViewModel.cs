@@ -1,11 +1,9 @@
 ﻿using Fantome.Libraries.League.IO.WAD;
 using Obsidian.Utilities;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Windows.Data;
 
 namespace Obsidian.MVVM.ViewModels.WAD

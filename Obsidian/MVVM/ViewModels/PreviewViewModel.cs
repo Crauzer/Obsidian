@@ -5,8 +5,6 @@ using Fantome.Libraries.League.IO.SCO;
 using Fantome.Libraries.League.IO.SimpleSkin;
 using HelixToolkit.Wpf;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Media.Imaging;
 
 namespace Obsidian.MVVM.ViewModels

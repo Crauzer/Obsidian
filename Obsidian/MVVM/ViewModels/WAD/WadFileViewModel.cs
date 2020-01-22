@@ -1,8 +1,4 @@
 ﻿using Fantome.Libraries.League.IO.WAD;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
 
 namespace Obsidian.MVVM.ViewModels.WAD
 {

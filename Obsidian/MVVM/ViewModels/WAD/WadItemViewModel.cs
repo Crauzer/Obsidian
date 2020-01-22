@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Text;
 using System.Windows.Data;
 using PathIO = System.IO.Path;
 

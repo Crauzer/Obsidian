@@ -4,7 +4,6 @@ using Fantome.Libraries.League.IO.SCB;
 using Fantome.Libraries.League.IO.SCO;
 using Fantome.Libraries.League.IO.SimpleSkin;
 using HelixToolkit.Wpf;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Media;

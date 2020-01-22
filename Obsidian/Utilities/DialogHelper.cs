@@ -1,9 +1,7 @@
 ﻿using MaterialDesignThemes.Wpf;
 using Obsidian.MVVM.ViewModels.WAD;
 using Obsidian.UserControls.Dialogs;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Obsidian.Utilities

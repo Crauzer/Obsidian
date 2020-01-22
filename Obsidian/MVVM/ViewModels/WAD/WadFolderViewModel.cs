@@ -21,7 +21,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
             this.Name = PathIO.GetFileName(path);
         }
 
-        public void AddFile(string fileLocation)
+        public async void AddFile(string fileLocation)
         {
             try
             {
@@ -32,9 +32,9 @@ namespace Obsidian.MVVM.ViewModels.WAD
 
                 this.Items.Add(new WadFileViewModel(this._wadViewModel, this, entryPath, entryName, entry));
             }
-            catch (Exception exception)
+            catch (Exception)
             {
-
+                await DialogHelper.ShowMessageDialog("Unable to add file:\n" + fileLocation);
             }
         }
         public void AddFile(string path, string entryPath, WADEntry entry)
@@ -68,11 +68,11 @@ namespace Obsidian.MVVM.ViewModels.WAD
                 }
             }
         }
-        public void AddFolder(string folderLocation)
+        public async void AddFolder(string folderLocation)
         {
-            foreach (string fileLocation in Directory.EnumerateFiles(folderLocation, "*", SearchOption.AllDirectories))
+            try
             {
-                try
+                foreach (string fileLocation in Directory.EnumerateFiles(folderLocation, "*", SearchOption.AllDirectories))
                 {
                     char pathSeparator = Pathing.GetPathSeparator(fileLocation);
                     string path = fileLocation.Replace(PathIO.GetDirectoryName(folderLocation) + pathSeparator, "").Replace(pathSeparator, '/');
@@ -82,10 +82,10 @@ namespace Obsidian.MVVM.ViewModels.WAD
 
                     AddFile(path, entryPath, entry);
                 }
-                catch (Exception exception)
-                {
-
-                }
+            }
+            catch (Exception)
+            {
+                await DialogHelper.ShowMessageDialog("Obsidian was unable to properly add all files from the selected directory");
             }
         }
 

@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections;
-using System.Linq;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Globalization;
+﻿using Fantome.Libraries.League.Helpers;
 using Fantome.Libraries.League.IO.WAD;
-using Fantome.Libraries.League.Helpers;
-
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using LeagueUtilities = Fantome.Libraries.League.Helpers.Utilities;
 
 namespace Obsidian.Utilities
