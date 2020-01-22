@@ -51,5 +51,11 @@ namespace Obsidian.Utilities
             await DialogHost.Show(dialog, "MessageDialog");
         }
 
+        public static async Task ShowSyncingHashtableDialog()
+        {
+            SyncingHashtableDialog dialog = new SyncingHashtableDialog();
+
+            await DialogHost.Show(dialog, "OperationDialog", dialog.StartSyncing, null);
+        }
     }
 }

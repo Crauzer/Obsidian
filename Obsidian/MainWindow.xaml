@@ -128,7 +128,7 @@
         </ResourceDictionary>
     </Window.Resources>
     <MaterialDesign:DialogHost x:Name="MessageDialog" Identifier="MessageDialog" CloseOnClickAway="True" DialogTheme="Dark">
-        <MaterialDesign:DialogHost x:Name="OperationDialog" Identifier="OperationDialog" PopupStyle="{StaticResource MaterialDesignTransparentDialog}">
+        <MaterialDesign:DialogHost x:Name="OperationDialog" Identifier="OperationDialog" PopupStyle="{StaticResource MaterialDesignTransparentDialog}" Loaded="OnOperationDialogLoaded">
             <MaterialDesign:DialogHost x:Name="RootDialog" Identifier="RootDialog" DialogTheme="Dark">
                 <Grid>
                     <Grid.RowDefinitions>
