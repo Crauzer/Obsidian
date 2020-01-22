@@ -17,7 +17,7 @@
         TextOptions.TextRenderingMode="Auto"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
-        Title="Obsidian" Height="685" Width="1150" Icon="icon.ico" WindowStartupLocation="CenterScreen">
+        Title="Obsidian" Height="900" Width="1600" Icon="icon.ico" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <ResourceDictionary>
             <HierarchicalDataTemplate DataType="{x:Type WadViewModel:WadFolderViewModel}" 
@@ -38,7 +38,7 @@
                     <StackPanel Grid.Column="3" Orientation="Horizontal" Margin="10,0">
                         <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Width="2" Margin="8,0"/>
                     </StackPanel>
-                    <TextBlock Grid.Column="4" Text="{Binding Name}" ToolTip="{Binding Path}"/>
+                    <TextBlock Grid.Column="4" Text="{Binding Name}" ToolTip="{Binding Tooltip}"/>
 
                     <Grid.ContextMenu>
                         <ContextMenu>
@@ -74,7 +74,7 @@
                     <StackPanel Grid.Column="3" Orientation="Horizontal" Margin="10,0">
                         <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Width="2" Margin="8,0"/>
                     </StackPanel>
-                    <TextBlock Grid.Column="4" Text="{Binding Name}" ToolTip="{Binding Path}"/>
+                    <TextBlock Grid.Column="4" Text="{Binding Name}" ToolTip="{Binding Tooltip}"/>
 
                     <Grid.ContextMenu>
                         <ContextMenu>

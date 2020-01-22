@@ -85,6 +85,20 @@ namespace Obsidian.MVVM.ViewModels.WAD
                 NotifyPropertyChanged();
             }
         }
+        public string Tooltip
+        {
+            get
+            {
+                if (this.Type == WadItemType.File)
+                {
+                    return (this as WadFileViewModel).GetInfo();
+                }
+                else
+                {
+                    return this.Path;
+                }
+            }
+        }
         public string Path { get; set; }
         public string Name { get; set; }
         public WadItemType Type { get; }

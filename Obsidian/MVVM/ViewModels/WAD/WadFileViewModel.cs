@@ -1,4 +1,5 @@
 ﻿using Fantome.Libraries.League.IO.WAD;
+using UtilitiesFantome = Fantome.Libraries.League.Helpers.Utilities;
 
 namespace Obsidian.MVVM.ViewModels.WAD
 {
@@ -12,6 +13,15 @@ namespace Obsidian.MVVM.ViewModels.WAD
             this.Path = path;
             this.Name = name;
             this.Entry = entry;
+        }
+
+        public string GetInfo()
+        {
+            return this.Path + '\n'
+                + "Compression Type: " + this.Entry.Type.ToString() + '\n'
+                + "Compressed Size: " + this.Entry.CompressedSize + '\n'
+                + "Uncompressed Size: " + this.Entry.UncompressedSize + '\n'
+                + "SHA256: " + UtilitiesFantome.ByteArrayToHex(this.Entry.SHA);
         }
     }
 }
