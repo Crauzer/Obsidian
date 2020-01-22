@@ -356,36 +356,44 @@ namespace Obsidian
             }
         }
 
-        private void PreviewSelectedEntry(WadFileViewModel selectedEntry)
+        private async void PreviewSelectedEntry(WadFileViewModel selectedEntry)
         {
             string extension = PathIO.GetExtension(selectedEntry.Path);
 
-            if (extension == ".dds")
+            try
             {
-                try
+                if (extension == ".dds")
                 {
-                    this.Preview.Preview(new ImageEngineImage(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                    try
+                    {
+                        this.Preview.Preview(new ImageEngineImage(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                    }
+                    catch (FileFormatException)
+                    {
+                        await DialogHelper.ShowMessageDialog("Previewing of this DDS Format is not supported\n" +
+                            "File is most likely a cubemap or has a dimension of size 1");
+                    }
                 }
-                catch(FileFormatException)
+                else if (extension == ".skn")
                 {
-
+                    this.Preview.Preview(new SKNFile(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                }
+                else if (extension == ".scb")
+                {
+                    this.Preview.Preview(new SCBFile(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                }
+                else if (extension == ".sco")
+                {
+                    this.Preview.Preview(new SCOFile(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                }
+                else if (extension == ".mapgeo")
+                {
+                    this.Preview.Preview(new MGEOFile(new MemoryStream(selectedEntry.Entry.GetContent(true))));
                 }
             }
-            else if (extension == ".skn")
+            catch (Exception)
             {
-                this.Preview.Preview(new SKNFile(new MemoryStream(selectedEntry.Entry.GetContent(true))));
-            }
-            else if (extension == ".scb")
-            {
-                this.Preview.Preview(new SCBFile(new MemoryStream(selectedEntry.Entry.GetContent(true))));
-            }
-            else if (extension == ".sco")
-            {
-                this.Preview.Preview(new SCOFile(new MemoryStream(selectedEntry.Entry.GetContent(true))));
-            }
-            else if(extension == ".mapgeo")
-            {
-                this.Preview.Preview(new MGEOFile(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                await DialogHelper.ShowMessageDialog("Unable to preview the selected file");
             }
         }
 

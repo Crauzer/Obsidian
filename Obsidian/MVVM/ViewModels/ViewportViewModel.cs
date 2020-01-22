@@ -101,18 +101,7 @@ namespace Obsidian.MVVM.ViewModels
                 submeshIndex++;
             }
 
-            foreach (DirectionalLight light in LIGHTS)
-            {
-                this.Content.Add(new ModelVisual3D() { Content = light });
-            }
-            foreach (GeometryModel3D geometryModel in geometryModels)
-            {
-                this.Content.Add(new ModelVisual3D()
-                {
-                    Content = geometryModel
-                });
-            }
-
+            SetGeometryModels(geometryModels);
             SetCamera(skn.CalculateCentralPoint());
         }
         public void LoadMesh(SCBFile scb)
@@ -150,18 +139,7 @@ namespace Obsidian.MVVM.ViewModels
                 submeshIndex++;
             }
 
-            foreach (DirectionalLight light in LIGHTS)
-            {
-                this.Content.Add(new ModelVisual3D() { Content = light });
-            }
-            foreach (GeometryModel3D geometryModel in geometryModels)
-            {
-                this.Content.Add(new ModelVisual3D()
-                {
-                    Content = geometryModel
-                });
-            }
-
+            SetGeometryModels(geometryModels);
             SetCamera(scb.CalculateCentralPoint());
         }
         public void LoadMesh(SCOFile sco)
@@ -199,18 +177,7 @@ namespace Obsidian.MVVM.ViewModels
                 submeshIndex++;
             }
 
-            foreach (DirectionalLight light in LIGHTS)
-            {
-                this.Content.Add(new ModelVisual3D() { Content = light });
-            }
-            foreach (GeometryModel3D geometryModel in geometryModels)
-            {
-                this.Content.Add(new ModelVisual3D()
-                {
-                    Content = geometryModel
-                });
-            }
-
+            SetGeometryModels(geometryModels);
             SetCamera(sco.CalculateCentralPoint());
         }
         public void LoadMap(MGEOFile mgeo)
@@ -241,6 +208,12 @@ namespace Obsidian.MVVM.ViewModels
                 geometryModels.Add(new GeometryModel3D(geometry, material));
             }
 
+            SetGeometryModels(geometryModels);
+            SetCamera(new Vector3(0, 0, 0));
+        }
+
+        private void SetGeometryModels(List<GeometryModel3D> geometryModels)
+        {
             foreach (DirectionalLight light in LIGHTS)
             {
                 this.Content.Add(new ModelVisual3D() { Content = light });
@@ -252,10 +225,7 @@ namespace Obsidian.MVVM.ViewModels
                     Content = geometryModel
                 });
             }
-
-            SetCamera(new Vector3(0, 0, 0));
         }
-
         private void SetCamera(Vector3 point)
         {
             this._viewport.Camera.Position = new Point3D(point.X, point.Y, point.Z);

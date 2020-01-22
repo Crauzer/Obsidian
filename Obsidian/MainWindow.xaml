@@ -127,9 +127,9 @@
             </Style>
         </ResourceDictionary>
     </Window.Resources>
-    <MaterialDesign:DialogHost x:Name="MessageDialog" Identifier="MessageDialog">
+    <MaterialDesign:DialogHost x:Name="MessageDialog" Identifier="MessageDialog" CloseOnClickAway="True" DialogTheme="Dark">
         <MaterialDesign:DialogHost x:Name="OperationDialog" Identifier="OperationDialog" PopupStyle="{StaticResource MaterialDesignTransparentDialog}">
-            <MaterialDesign:DialogHost x:Name="RootDialog" Identifier="RootDialog">
+            <MaterialDesign:DialogHost x:Name="RootDialog" Identifier="RootDialog" DialogTheme="Dark">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -173,7 +173,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition x:Name="PreviewColumn" Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <TreeView x:Name="WadTree" Grid.Column="0" DataContext="{Binding WAD}"
                               ItemsSource="{Binding Items, UpdateSourceTrigger=PropertyChanged}" Margin="0,8,0,0"
@@ -186,7 +186,7 @@
                             </Grid.RowDefinitions>
                             <Image x:Name="PreviewImage" Source="{Binding Preview.Image, UpdateSourceTrigger=PropertyChanged}"
                                    Style="{StaticResource ContentPreviewImage}"
-                                   Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10"/>
+                                   Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" MaxWidth="512"/>
                             <Helix:HelixViewport3D x:Name="PreviewViewport" Grid.Row="0" Style="{StaticResource ContentPreviewViewport}"
                                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                                ItemsSource="{Binding Preview.Viewport.Content}" ShowCoordinateSystem="True" ModelUpDirection="0, 1, 0" CameraRotationMode="Trackball" CoordinateSystemWidth="82" MinWidth="300"/>
