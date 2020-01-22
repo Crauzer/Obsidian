@@ -50,10 +50,22 @@ namespace Obsidian
 
         public MainWindow()
         {
+            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+
             Config.Load();
 
             InitializeComponent();
             BindMVVM();
+        }
+
+        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            string message = "A Fatal Error has occurred, Obsidian will now terminate.\n";
+            message += ((Exception)e.ExceptionObject).Message + '\n';
+            message += ((Exception)e.ExceptionObject).Source + '\n';
+            message += ((Exception)e.ExceptionObject).StackTrace;
+
+            MessageBox.Show(message, "Obsidian - Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private void BindMVVM()
