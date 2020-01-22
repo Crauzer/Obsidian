@@ -7,13 +7,16 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using Obsidian.MVVM.ViewModels;
 using Obsidian.MVVM.ViewModels.WAD;
 using Obsidian.Utilities;
+using Octokit;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using PathIO = System.IO.Path;
-
 
 namespace Obsidian
 {
@@ -56,6 +59,7 @@ namespace Obsidian
 
             InitializeComponent();
             BindMVVM();
+            CheckForUpdate();
         }
 
         private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -76,6 +80,25 @@ namespace Obsidian
             DialogHelper.MessageDialog = this.MessageDialog;
             DialogHelper.OperationDialog = this.OperationDialog;
             DialogHelper.RootDialog = this.RootDialog;
+        }
+        private async void CheckForUpdate()
+        {
+            //Do it in try so we don't crash if there isn't internet connection
+            try
+            {
+                GitHubClient gitClient = new GitHubClient(new ProductHeaderValue("Obsidian"));
+
+                IReadOnlyList<Release> releases = await gitClient.Repository.Release.GetAll("Crauzer", "Obsidian");
+                Release newestRelease = releases[0];
+                Version newestVersion = new Version(newestRelease.TagName);
+
+                if (newestVersion > Assembly.GetExecutingAssembly().GetName().Version)
+                {
+                    await DialogHelper.ShowMessageDialog("A new version of Obsidian is available." + '\n' + @"Click the ""OK"" button to download it.");
+                    Process.Start("cmd", "/C start https://github.com/Crauzer/Obsidian/releases/tag/" + newestVersion.ToString());
+                }
+            }
+            catch (Exception) { }
         }
 
         private void OnWadOpen(object sender, RoutedEventArgs e)
