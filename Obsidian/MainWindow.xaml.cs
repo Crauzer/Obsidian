@@ -17,6 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using CSharpImageLibrary;
+using Fantome.Libraries.League.IO.MapGeometry;
 using Fantome.Libraries.League.IO.SCB;
 using Fantome.Libraries.League.IO.SCO;
 using Fantome.Libraries.League.IO.SimpleSkin;
@@ -361,7 +362,14 @@ namespace Obsidian
 
             if (extension == ".dds")
             {
-                this.Preview.Preview(new ImageEngineImage(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                try
+                {
+                    this.Preview.Preview(new ImageEngineImage(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                }
+                catch(FileFormatException)
+                {
+
+                }
             }
             else if (extension == ".skn")
             {
@@ -374,6 +382,10 @@ namespace Obsidian
             else if (extension == ".sco")
             {
                 this.Preview.Preview(new SCOFile(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+            }
+            else if(extension == ".mapgeo")
+            {
+                this.Preview.Preview(new MGEOFile(new MemoryStream(selectedEntry.Entry.GetContent(true))));
             }
         }
 

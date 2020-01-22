@@ -1,8 +1,10 @@
 ﻿using Fantome.Libraries.League.Helpers.Structures;
+using Fantome.Libraries.League.IO.MapGeometry;
 using Fantome.Libraries.League.IO.SCB;
 using Fantome.Libraries.League.IO.SCO;
 using Fantome.Libraries.League.IO.SimpleSkin;
 using HelixToolkit.Wpf;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
@@ -210,6 +212,48 @@ namespace Obsidian.MVVM.ViewModels
             }
 
             SetCamera(sco.CalculateCentralPoint());
+        }
+        public void LoadMap(MGEOFile mgeo)
+        {
+            this.Content.Clear();
+
+            List<GeometryModel3D> geometryModels = new List<GeometryModel3D>();
+
+            foreach (MGEOObject mgeoObject in mgeo.Objects)
+            {
+                MeshGeometry3D geometry = new MeshGeometry3D();
+                DiffuseMaterial material = new DiffuseMaterial(Brushes.Gray);
+                Point3DCollection vertices = new Point3DCollection();
+                Int32Collection indices = new Int32Collection();
+
+                foreach(ushort index in mgeoObject.Indices)
+                {
+                    indices.Add(index);
+                }
+                foreach(MGEOVertex vertex in mgeoObject.Vertices)
+                {
+                    vertices.Add(new Point3D(vertex.Position.X, vertex.Position.Y, vertex.Position.Z));
+                }
+
+                geometry.TriangleIndices = indices;
+                geometry.Positions = vertices;
+
+                geometryModels.Add(new GeometryModel3D(geometry, material));
+            }
+
+            foreach (DirectionalLight light in LIGHTS)
+            {
+                this.Content.Add(new ModelVisual3D() { Content = light });
+            }
+            foreach (GeometryModel3D geometryModel in geometryModels)
+            {
+                this.Content.Add(new ModelVisual3D()
+                {
+                    Content = geometryModel
+                });
+            }
+
+            SetCamera(new Vector3(0, 0, 0));
         }
 
         private void SetCamera(Vector3 point)

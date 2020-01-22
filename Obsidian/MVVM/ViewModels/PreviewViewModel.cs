@@ -1,4 +1,5 @@
 ﻿using CSharpImageLibrary;
+using Fantome.Libraries.League.IO.MapGeometry;
 using Fantome.Libraries.League.IO.SCB;
 using Fantome.Libraries.League.IO.SCO;
 using Fantome.Libraries.League.IO.SimpleSkin;
@@ -82,18 +83,33 @@ namespace Obsidian.MVVM.ViewModels
         }
         public void Preview(ImageEngineImage image)
         {
-            this.Image = image.GetWPFBitmap();
+            try
+            {
+
+            }
+            catch(Exception excp)
+            {
+
+            }
+            this.Image = image.GetWPFBitmap(512);
 
             this.PreviewType = PreviewType.Image;
             this.ContentType = "Direct Draw Surface";
+        }
+        public void Preview(MGEOFile mgeo)
+        {
+            this.Viewport.LoadMap(mgeo);
+
+            this.PreviewType = PreviewType.Viewport;
+            this.ContentType = "Map Geometry";
         }
 
         public void Clear()
         {
             this.Viewport.Clear();
-
-            this.PreviewType = PreviewType.None;
             this._image = null;
+            this.PreviewType = PreviewType.None;
+            this.ContentType = string.Empty;
         }
     }
 
