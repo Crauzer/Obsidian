@@ -3,156 +3,200 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:MaterialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:ControlzEx="clr-namespace:ControlzEx;assembly=MaterialDesignThemes.Wpf"
+        xmlns:MaterialDesignUtilities="clr-namespace:Obsidian.Utilities.MaterialDesign"
+        xmlns:Helix="http://helix-toolkit.org/wpf"
+        xmlns:ViewModels="clr-namespace:Obsidian.MVVM.ViewModels"
+        xmlns:WadViewModel="clr-namespace:Obsidian.MVVM.ViewModels.WAD"
         xmlns:local="clr-namespace:Obsidian"
-        xmlns:valueConverters="clr-namespace:Obsidian.ValueConverters"
-        mc:Ignorable="d"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
-        TextElement.FontSize="13"
+        TextElement.FontSize="15"
         TextOptions.TextFormattingMode="Ideal"
         TextOptions.TextRenderingMode="Auto"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
-        Title="Obsidian" Height="685" Width="1150" Icon="icon.ico" WindowStartupLocation="CenterScreen">
+        Title="Obsidian" Height="900" Width="1600" Icon="icon.ico" WindowStartupLocation="CenterScreen">
     <Window.Resources>
-        <valueConverters:SizeValueConverter x:Key="SizeValueConverter"/>
-        <valueConverters:WadNameConverter x:Key="WadNameConverter"/>
-    </Window.Resources>
-    <materialDesign:DialogHost x:Name="dialogHost" DialogClosing="dialogHost_DialogClosing">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="{Binding Width, ElementName=dockPanel}"/>
-                <RowDefinition Height="{Binding Height, ElementName=progressBarWadExtraction}"/>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-
-            <DockPanel x:Name="dockPanel">
-                <Grid x:Name="grid">
+        <ResourceDictionary>
+            <HierarchicalDataTemplate DataType="{x:Type WadViewModel:WadFolderViewModel}" 
+                                      ItemsSource="{Binding Items, UpdateSourceTrigger=PropertyChanged}">
+                <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <Menu IsMainMenu="True" DockPanel.Dock="Top">
-                        <MenuItem Header="File" Grid.Column="0">
-                            <MenuItem x:Name="menuOpen" Header="Open" Click="menuOpen_Click">
-                                <MenuItem.Icon>
-                                    <materialDesign:PackIcon Kind="File"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <MenuItem x:Name="menuSave" Header="Save" Click="menuSave_Click" IsEnabled="False">
-                                <MenuItem.Icon>
-                                    <materialDesign:PackIcon Kind="FileExport"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
+                    <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0">
+                        <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Width="2" Margin="8,0"/>
+                    </StackPanel>
+                    <MaterialDesign:PackIcon Grid.Column="2" x:Name="FolderIcon" Kind="Folder"/>
+                    <StackPanel Grid.Column="3" Orientation="Horizontal" Margin="10,0">
+                        <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Width="2" Margin="8,0"/>
+                    </StackPanel>
+                    <TextBlock Grid.Column="4" Text="{Binding Name}" ToolTip="{Binding Tooltip}"/>
+
+                    <Grid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Add Files" Icon="{MaterialDesign:PackIcon Kind=FileOutline}" Click="OnFolderAddFiles"/>
+                            <MenuItem Header="Add Folders" Icon="{MaterialDesign:PackIcon Kind=Folder}" Click="OnFolderAddFolders"/>
                             <Separator/>
-                            <MenuItem x:Name="menuImportHashtable" Header="Import Hashtable" Click="menuImportHashtable_Click" IsEnabled="False">
-                                <MenuItem.Icon>
-                                    <materialDesign:PackIcon Kind="FileDocument"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <MenuItem x:Name="menuExportHashtable" Header="Export Hashtable" Click="menuExportHashtable_Click" IsEnabled="False">
-                                <MenuItem.Icon>
-                                    <materialDesign:PackIcon Kind="FileDocument"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <Separator/>
-                            <MenuItem x:Name="menuExportAll" Header="Export All" Click="menuExportAll_Click" IsEnabled="False">
-                                <MenuItem.Icon>
-                                    <materialDesign:PackIcon Kind="ContentSaveAll"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <MenuItem x:Name="menuExportSelected" Header="Export Selected" Click="menuExportSelected_Click" IsEnabled="False">
-                                <MenuItem.Icon>
-                                    <materialDesign:PackIcon Kind="ContentSaveAll"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <Separator/>
-                            <MenuItem x:Name="menuCreateEmpty" Header="Create Empty" Click="menuCreateEmpty_Click">
-                                <MenuItem.Icon>
-                                    <materialDesign:PackIcon Kind="CheckboxBlankOutline"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <MenuItem x:Name="menuCreateFromDirectory" Header="Create From Directory" Click="menuCreateFromDirectory_Click">
-                                <MenuItem.Icon>
-                                    <materialDesign:PackIcon Kind="FileTree"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                        </MenuItem>
-                        <MenuItem Header="Edit" Grid.Column="0">
-                            <MenuItem x:Name="menuRemove" Header="Remove" Click="menuRemove_Click" IsEnabled="False">
-                                <MenuItem.Icon>
-                                    <materialDesign:PackIcon Kind="PlaylistRemove"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <Separator/>
-                            <MenuItem x:Name="menuAddFile" Header="Add File" IsEnabled="False" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
-                                <MenuItem.Icon>
-                                    <materialDesign:PackIcon Kind="FileHidden"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <MenuItem x:Name="menuAddFileRedirection" Header="Add File Redirection" Click="menuAddFileRedirection_Click" IsEnabled="False" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
-                                <MenuItem.Icon>
-                                    <materialDesign:PackIcon Kind="FileHidden"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <MenuItem x:Name="menuAddFolder" Header="Add Folder" Click="menuAddFolder_Click" IsEnabled="False">
-                                <MenuItem.Icon>
-                                    <materialDesign:PackIcon Kind="Folder"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <Separator/>
-                            <MenuItem x:Name="menuModifyData" Header="Modify Data" Click="menuModifyData_Click" IsEnabled="False">
-                                <MenuItem.Icon>
-                                    <materialDesign:PackIcon Kind="FileRestore"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                        </MenuItem>
-                        <TextBox x:Name="textBoxFilter" materialDesign:HintAssist.Hint="Filter" TextChanged="textBoxFilter_TextChanged" Grid.Column="0"/>
-                    </Menu>
+                            <MenuItem Header="Remove" Icon="{MaterialDesign:PackIcon Kind=PlaylistRemove}" Click="OnFolderRemove"/>
+                        </ContextMenu>
+                    </Grid.ContextMenu>
                 </Grid>
-            </DockPanel>
+                <DataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding IsExpanded, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type TreeViewItem}}}"
+                             Value="True">
+                        <Setter TargetName="FolderIcon" Property="Kind" Value="FolderOpen"/>
+                    </DataTrigger>
+                </DataTemplate.Triggers>
+            </HierarchicalDataTemplate>
+            <DataTemplate DataType="{x:Type WadViewModel:WadFileViewModel}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-            <ProgressBar Grid.Row="1" x:Name="progressBarWadExtraction" Height="5" Value="100"/>
+                    <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0">
+                        <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Width="2" Margin="8,0"/>
+                    </StackPanel>
+                    <MaterialDesign:PackIcon Grid.Column="2" x:Name="FileIcon" Kind="FileOutline"/>
+                    <StackPanel Grid.Column="3" Orientation="Horizontal" Margin="10,0">
+                        <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Width="2" Margin="8,0"/>
+                    </StackPanel>
+                    <TextBlock Grid.Column="4" Text="{Binding Name}" ToolTip="{Binding Tooltip}"/>
 
-            <DataGrid Grid.Row="2" x:Name="datagridWadEntries" AutoGenerateColumns="False" GridLinesVisibility="Vertical" VerticalGridLinesBrush="#7F000000" SelectedCellsChanged="datagridWadEntries_SelectedCellsChanged" BeginningEdit="datagridWadEntries_BeginningEdit" AllowDrop="True" Drop="datagridWadEntries_Drop">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Name" Binding="{Binding Converter={StaticResource WadNameConverter}}" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Type" Binding="{Binding Type}" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Size" Binding="{Binding UncompressedSize, Converter={StaticResource SizeValueConverter}}" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="File Redirection" Binding="{Binding FileRedirection}"/>
-                </DataGrid.Columns>
-            </DataGrid>
-        </Grid>
-        <materialDesign:DialogHost.DialogContent>
-            <Grid x:Name="gridDrawer" Margin="10">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+                    <Grid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Modify Data" Icon="{MaterialDesign:PackIcon Kind=FileRestore}" Click="OnFileModifyData"/>
+                            <Separator/>
+                            <MenuItem Header="Remove" Icon="{MaterialDesign:PackIcon Kind=Close}" Click="OnFileRemove"/>
+                        </ContextMenu>
+                    </Grid.ContextMenu>
+                </Grid>
+            </DataTemplate>
+            <Style x:Key="MaterialDesignTransparentDialog" TargetType="ControlzEx:PopupEx" BasedOn="{StaticResource MaterialDesignDialogHostPopup}">
+                <Setter Property="AllowsTransparency" Value="True" />
+                <Setter Property="MaterialDesignUtilities:TreeHelpers.Modifiers">
+                    <Setter.Value>
+                        <MaterialDesignUtilities:ModifierCollection>
+                            <MaterialDesignUtilities:Modifier TemplatePartName="PART_PopupContentElement" Property="{x:Static Control.BackgroundProperty}">
+                                <MaterialDesignUtilities:Modifier.Value>
+                                    <SolidColorBrush Color="Transparent" />
+                                </MaterialDesignUtilities:Modifier.Value>
+                            </MaterialDesignUtilities:Modifier>
+                        </MaterialDesignUtilities:ModifierCollection>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="ContentPreviewViewport" TargetType="Helix:HelixViewport3D">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Preview.PreviewType, UpdateSourceTrigger=PropertyChanged}" Value="{x:Static ViewModels:PreviewType.None}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Preview.PreviewType, UpdateSourceTrigger=PropertyChanged}" Value="{x:Static ViewModels:PreviewType.Image}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Preview.PreviewType, UpdateSourceTrigger=PropertyChanged}" Value="{x:Static ViewModels:PreviewType.Viewport}">
+                        <Setter Property="Visibility" Value="Visible"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="ContentPreviewImage" TargetType="Image">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Preview.PreviewType, UpdateSourceTrigger=PropertyChanged}" Value="{x:Static ViewModels:PreviewType.None}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Preview.PreviewType, UpdateSourceTrigger=PropertyChanged}" Value="{x:Static ViewModels:PreviewType.Viewport}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Preview.PreviewType, UpdateSourceTrigger=PropertyChanged}" Value="{x:Static ViewModels:PreviewType.Image}">
+                        <Setter Property="Visibility" Value="Visible"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+    <MaterialDesign:DialogHost x:Name="MessageDialog" Identifier="MessageDialog" CloseOnClickAway="True" DialogTheme="Dark">
+        <MaterialDesign:DialogHost x:Name="OperationDialog" Identifier="OperationDialog" PopupStyle="{StaticResource MaterialDesignTransparentDialog}" Loaded="OnOperationDialogLoaded">
+            <MaterialDesign:DialogHost x:Name="RootDialog" Identifier="RootDialog" DialogTheme="Dark">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <MaterialDesign:Card MaterialDesign:ShadowAssist.ShadowDepth="Depth3">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <DockPanel Grid.Row="0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Menu IsMainMenu="True" DockPanel.Dock="Top" Grid.Column="0">
+                                        <MenuItem Header="File" Grid.Column="0">
+                                            <MenuItem Header="Open" Click="OnWadOpen" Icon="{MaterialDesign:PackIcon Kind=File}"/>
+                                            <MenuItem Header="Save" Icon="{MaterialDesign:PackIcon Kind=FileExport}" 
+                                                      IsEnabled="{Binding IsWadOpened, UpdateSourceTrigger=PropertyChanged}" Click="OnWadSave"/>
+                                            <Separator/>
+                                            <MenuItem Header="Extract All" Icon="{MaterialDesign:PackIcon Kind=ContentSaveAll}" 
+                                                      IsEnabled="{Binding IsWadOpened, UpdateSourceTrigger=PropertyChanged}" Click="OnExtractAll"/>
+                                            <MenuItem Header="Extract Selected" Icon="{MaterialDesign:PackIcon Kind=ContentSaveAll}"
+                                                      IsEnabled="{Binding WAD.ContainsSelection, UpdateSourceTrigger=PropertyChanged}" Click="OnExtractSelected"/>
+                                            <Separator/>
+                                            <MenuItem Header="Create" Icon="{MaterialDesign:PackIcon Kind=FileTree}" Click="OnCreateWAD"/>
+                                        </MenuItem>
+                                        <TextBox Text="{Binding WAD.Filter, UpdateSourceTrigger=PropertyChanged}" MaterialDesign:HintAssist.Hint="Filter"/>
+                                    </Menu>
+                                    <Image Grid.Column="1" HorizontalAlignment="Right" Source="icon.ico" Width="50"/>
+                                </Grid>
+                            </DockPanel>
+                            <ProgressBar Grid.Row="1" Value="100"/>
+                        </Grid>
 
-                <Button x:Name="buttonAddFileClose" Grid.Row="0" Style="{DynamicResource MaterialDesignFloatingActionButton}" Width="25" Height="25" HorizontalAlignment="Right" Command="materialDesign:DialogHost.CloseDialogCommand">
-                    <materialDesign:PackIcon Kind="Close"/> 
-                </Button>
-
-                <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,15,0,0">
-                    <TextBox x:Name="textboxAddFileFilePath" materialDesign:HintAssist.Hint="File Path" materialDesign:HintAssist.IsFloating="True" Width="800" MaxWidth="800"/>
-                    <Button x:Name="buttonAddFileOpen" Margin="15,0,0,0" Style="{DynamicResource MaterialDesignFloatingActionButton}" Width="25" Height="25" Click="buttonAddFileOpen_Click">
-                        <materialDesign:PackIcon Kind="DotsHorizontal"/>
-                    </Button>
-                </StackPanel>
-                <StackPanel Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,5,0,0">
-                    <TextBox x:Name="textboxAddFilePath" materialDesign:HintAssist.Hint="Path" materialDesign:HintAssist.IsFloating="True" Width="800" MaxWidth="800"/>
-                </StackPanel>
-                <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,15,0,0">
-                    <Button x:Name="buttonAddFileAdd" Content="Add" Style="{DynamicResource MaterialDesignRaisedDarkButton}" Click="buttonAddFileAdd_Click" Command="materialDesign:DialogHost.CloseDialogCommand"/>
-                    <CheckBox x:Name="checkboxAddFileCompressed" Content="Compressed" Margin="20,0,0,0" IsChecked="True"/>
-                </StackPanel>
-
-            </Grid>
-        </materialDesign:DialogHost.DialogContent>
-    </materialDesign:DialogHost>
+                    </MaterialDesign:Card>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TreeView x:Name="WadTree" Grid.Column="0" DataContext="{Binding WAD}"
+                              ItemsSource="{Binding Items, UpdateSourceTrigger=PropertyChanged}" Margin="0,8,0,0"
+                              VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" SelectedItemChanged="OnPreviewSelectedEntry"/>
+                        <GridSplitter Grid.Column="1" Width="3" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
+                        <Grid Grid.Column="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Image x:Name="PreviewImage" Source="{Binding Preview.Image, UpdateSourceTrigger=PropertyChanged}"
+                                   Style="{StaticResource ContentPreviewImage}"
+                                   Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" MaxWidth="512"/>
+                            <Helix:HelixViewport3D x:Name="PreviewViewport" Grid.Row="0" Style="{StaticResource ContentPreviewViewport}"
+                                               HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                               ItemsSource="{Binding Preview.Viewport.Content}" ShowCoordinateSystem="True" ModelUpDirection="0, 1, 0" CameraRotationMode="Trackball" CoordinateSystemWidth="82" MinWidth="300"/>
+                            <TextBlock Grid.Row="1" x:Name="ViewportContentType" Text="{Binding Preview.ContentType, UpdateSourceTrigger=PropertyChanged}"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       FontSize="20" FontWeight="Bold" Margin="10"/>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </MaterialDesign:DialogHost>
+        </MaterialDesign:DialogHost>
+    </MaterialDesign:DialogHost>
 </Window>
