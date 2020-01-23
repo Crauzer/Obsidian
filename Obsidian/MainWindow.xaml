@@ -17,7 +17,9 @@
         TextOptions.TextRenderingMode="Auto"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
-        Title="Obsidian" Height="720" Width="1280" Icon="icon.ico" WindowStartupLocation="CenterScreen" KeyDown="OnKeyPressed">
+        Title="Obsidian" Height="720" Width="1280" Icon="icon.ico" WindowStartupLocation="CenterScreen" 
+        AllowDrop="True"
+        KeyDown="OnKeyPressed" Drop="OnWindowDrop">
     <Window.Resources>
         <ResourceDictionary>
             <HierarchicalDataTemplate DataType="{x:Type WadViewModel:WadFolderViewModel}" 

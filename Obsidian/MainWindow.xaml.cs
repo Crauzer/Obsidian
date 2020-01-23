@@ -110,6 +110,23 @@ namespace Obsidian
                 RemoveSelectedItems();
             }
         }
+        private async void OnWindowDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                
+                if(files.Length != 1)
+                {
+                    await DialogHelper.ShowMessageDialog("You cannot drop more than 1 WAD file into Obsidian");
+                }
+                else
+                {
+                    this.WAD = await DialogHelper.ShowOpenWadOperartionDialog(files[0]);
+                    this.Preview.Clear();
+                }
+            }
+        }
 
         private void OnWadOpen(object sender, RoutedEventArgs e)
         {
@@ -238,7 +255,9 @@ namespace Obsidian
             }
             catch (Exception exception)
             {
-
+                await DialogHelper.ShowMessageDialog("Obsidian was unable to open the WAD file you selected\n"
+                    + exception.Message + '\n'
+                    + exception.StackTrace);
             }
         }
         private async void SaveWad()
@@ -368,5 +387,6 @@ namespace Obsidian
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
     }
 }
