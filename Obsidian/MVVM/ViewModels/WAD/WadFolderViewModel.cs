@@ -89,7 +89,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
             }
         }
 
-        public IEnumerable<WadFileViewModel> GetSelectedEntries()
+        public IEnumerable<WadFileViewModel> GetSelectedFiles()
         {
             foreach (WadItemViewModel item in this.Items)
             {
@@ -99,14 +99,32 @@ namespace Obsidian.MVVM.ViewModels.WAD
                 }
                 else if (item.Type == WadItemType.Folder)
                 {
-                    foreach (WadFileViewModel selectedItem in (item as WadFolderViewModel).GetSelectedEntries() ?? Enumerable.Empty<WadFileViewModel>())
+                    foreach (WadFileViewModel selectedItem in (item as WadFolderViewModel).GetSelectedFiles() ?? Enumerable.Empty<WadFileViewModel>())
                     {
                         yield return selectedItem;
                     }
                 }
             }
         }
-        public IEnumerable<WadFileViewModel> GetAllEntries()
+        public IEnumerable<WadFolderViewModel> GetSelectedFolders()
+        {
+            foreach (WadItemViewModel item in this.Items)
+            {
+                if (item.Type == WadItemType.Folder)
+                {
+                    foreach (WadFolderViewModel selectedFolder in (item as WadFolderViewModel).GetSelectedFolders())
+                    {
+                        yield return selectedFolder;
+                    }
+
+                    if(item.IsSelected)
+                    {
+                        yield return item as WadFolderViewModel;
+                    }
+                }
+            }
+        }
+        public IEnumerable<WadFileViewModel> GetAllFiles()
         {
             foreach (WadItemViewModel item in this.Items)
             {
@@ -116,7 +134,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
                 }
                 else if (item.Type == WadItemType.Folder)
                 {
-                    foreach (WadFileViewModel childItem in (item as WadFolderViewModel).GetAllEntries() ?? Enumerable.Empty<WadFileViewModel>())
+                    foreach (WadFileViewModel childItem in (item as WadFolderViewModel).GetAllFiles() ?? Enumerable.Empty<WadFileViewModel>())
                     {
                         yield return childItem;
                     }
@@ -126,7 +144,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
 
         public WadFileViewModel Find(Func<WadFileViewModel, bool> predicate)
         {
-            return GetAllEntries().FirstOrDefault(predicate);
+            return GetAllFiles().FirstOrDefault(predicate);
         }
 
         public void Sort()

@@ -13,9 +13,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Input;
 using PathIO = System.IO.Path;
 
 namespace Obsidian
@@ -101,6 +103,14 @@ namespace Obsidian
             catch (Exception) { }
         }
 
+        private void OnKeyPressed(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Delete)
+            {
+                RemoveSelectedItems();
+            }
+        }
+
         private void OnWadOpen(object sender, RoutedEventArgs e)
         {
             OpenWad();
@@ -167,22 +177,7 @@ namespace Obsidian
         {
             WadFolderViewModel wadFolder = (sender as FrameworkElement).DataContext as WadFolderViewModel;
 
-            //Recursively Remove all WAD entries nested in the folder
-            foreach (WadFileViewModel entry in wadFolder.GetAllEntries())
-            {
-                this.WAD.WAD.RemoveEntry(entry.Entry.XXHash);
-            }
-
-            //Remove the folder from View Model
-            //If Parent is null then we know it's in root
-            if (wadFolder.Parent == null)
-            {
-                this.WAD.Items.Remove(wadFolder);
-            }
-            else
-            {
-                (wadFolder.Parent as WadFolderViewModel).Items.Remove(wadFolder);
-            }
+            wadFolder.Remove();
         }
 
         private void OnFileModifyData(object sender, RoutedEventArgs e)
@@ -210,18 +205,7 @@ namespace Obsidian
         {
             WadFileViewModel wadFile = (sender as FrameworkElement).DataContext as WadFileViewModel;
 
-            this.WAD.WAD.RemoveEntry(wadFile.Entry.XXHash);
-
-            //Remove the file from View Model
-            //If Parent is null then we know it's in root
-            if (wadFile.Parent == null)
-            {
-                this.WAD.Items.Remove(wadFile);
-            }
-            else
-            {
-                (wadFile.Parent as WadFolderViewModel).Items.Remove(wadFile);
-            }
+            wadFile.Remove();
         }
 
         private void OnPreviewSelectedEntry(object sender, RoutedPropertyChangedEventArgs<object> e)
@@ -290,7 +274,7 @@ namespace Obsidian
 
                 if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
-                    await DialogHelper.ShowExtractOperationDialog(dialog.FileName, this.WAD.GetAllEntries());
+                    await DialogHelper.ShowExtractOperationDialog(dialog.FileName, this.WAD.GetAllFiles());
                 }
             }
         }
@@ -302,7 +286,7 @@ namespace Obsidian
 
                 if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
-                    await DialogHelper.ShowExtractOperationDialog(dialog.FileName, this.WAD.GetSelectedEntries());
+                    await DialogHelper.ShowExtractOperationDialog(dialog.FileName, this.WAD.GetSelectedFiles());
                 }
             }
         }
@@ -318,6 +302,19 @@ namespace Obsidian
                     this.WAD = await DialogHelper.ShowCreateWADOperationDialog(dialog.FileName);
                     this.Preview.Clear();
                 }
+            }
+        }
+
+        private void RemoveSelectedItems()
+        {
+            foreach (WadFileViewModel file in this.WAD.GetSelectedFiles().ToList())
+            {
+                file.Remove();
+            }
+
+            foreach (WadFolderViewModel folder in this.WAD.GetSelectedFolders().ToList())
+            {
+                folder.Remove();
             }
         }
 
@@ -362,14 +359,14 @@ namespace Obsidian
             }
         }
 
-        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
         private async void OnOperationDialogLoaded(object sender, RoutedEventArgs e)
         {
             await DialogHelper.ShowSyncingHashtableDialog();
+        }
+
+        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
