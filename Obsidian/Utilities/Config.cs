@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,7 +12,6 @@ namespace Obsidian.Utilities
 
         private static readonly Dictionary<string, object> _defaultConfig = new Dictionary<string, object>
         {
-            { "LoggingPattern", "{Timestamp:dd-MM-yyyy HH:mm:ss.fff} | [{Level}] |  {Message:lj}{NewLine}{Exception}" },
             { "GameHashtableChecksum", "" },
             { "LCUHashtableChecksum", "" },
             { "PackedBinRegex", @"^DATA/.*_(Skins_Skin|Tiers_Tier|(Skins|Tiers)_Root).*\.bin$" },
@@ -34,6 +34,10 @@ namespace Obsidian.Utilities
             if (typeof(T).BaseType == typeof(Enum))
             {
                 return (T)Enum.Parse(typeof(T), _config[key].ToString());
+            }
+            else if(typeof(T).BaseType == typeof(Array))
+            {
+                return (_config[key] as JArray).ToObject<T>();
             }
 
             return (T)Convert.ChangeType(_config[key], typeof(T));

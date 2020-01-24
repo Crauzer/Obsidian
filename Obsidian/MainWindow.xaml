@@ -150,6 +150,11 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <Menu IsMainMenu="True" DockPanel.Dock="Top" Grid.Column="0">
+                                        <Menu.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <DockPanel HorizontalAlignment="Stretch"/>
+                                            </ItemsPanelTemplate>
+                                        </Menu.ItemsPanel>
                                         <MenuItem Header="File">
                                             <MenuItem Header="Open" Click="OnWadOpen" Icon="{MaterialDesign:PackIcon Kind=File}"/>
                                             <MenuItem Header="Save" Icon="{MaterialDesign:PackIcon Kind=FileExport}" 
@@ -168,7 +173,19 @@
                                             <MenuItem Header="Generate Hashtable" Icon="{MaterialDesign:PackIcon Kind=TableEye}" Click="OnGenerateHashtable"/>
                                         </MenuItem>
                                         <TextBox Text="{Binding WAD.Filter, UpdateSourceTrigger=PropertyChanged}" MaterialDesign:HintAssist.Hint="Filter"/>
+                                        <MenuItem HorizontalAlignment="Right">
+                                            <MenuItem.Header>
+                                                <Button Style="{StaticResource MaterialDesignFloatingActionButton}" Width="40" Height="40"
+                                                        x:Name="OpenSettingsButton"
+                                                        Command="{Binding OpenSettingsCommand}">
+                                                    <MaterialDesign:PackIcon Width="25" Height="25" Kind="GearOutline"/>
+                                                </Button>
+                                            </MenuItem.Header>
+                                        </MenuItem>
+
+
                                     </Menu>
+                                    
                                     <Image Grid.Column="1" HorizontalAlignment="Right" Source="icon.ico" Width="50"/>
                                 </Grid>
                             </DockPanel>

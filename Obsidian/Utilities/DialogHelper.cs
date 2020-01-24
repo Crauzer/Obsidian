@@ -1,4 +1,5 @@
 ﻿using MaterialDesignThemes.Wpf;
+using Obsidian.MVVM.ViewModels;
 using Obsidian.MVVM.ViewModels.WAD;
 using Obsidian.UserControls.Dialogs;
 using System.Collections.Generic;
@@ -33,6 +34,16 @@ namespace Obsidian.Utilities
             await DialogHost.Show(dialog, "OperationDialog", dialog.StartCreation, null);
 
             return await Task.FromResult(dialog.WadViewModel);
+        }
+
+        public static async Task ShowSettingsDialog()
+        {
+            SettingsDialog dialog = new SettingsDialog()
+            {
+                DataContext = new SettingsViewModel()
+            };
+
+            await DialogHost.Show(dialog, "RootDialog");
         }
 
         public static async Task ShowExtractOperationDialog(string extractLocation, IEnumerable<WadFileViewModel> entries)

@@ -5,6 +5,7 @@ using Fantome.Libraries.League.IO.SCO;
 using Fantome.Libraries.League.IO.SimpleSkin;
 using Fantome.Libraries.League.IO.WAD;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using Obsidian.MVVM.Commands;
 using Obsidian.MVVM.ViewModels;
 using Obsidian.MVVM.ViewModels.WAD;
 using Obsidian.Utilities;
@@ -51,6 +52,8 @@ namespace Obsidian
 
         private WadViewModel _wad = new WadViewModel();
         private bool _isWadOpened;
+
+        public ICommand OpenSettingsCommand => new RelayCommand(OpenSettings);
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -499,6 +502,11 @@ namespace Obsidian
                     }
                 }
             }
+        }
+
+        private async void OpenSettings(object o)
+        {
+            await DialogHelper.ShowSettingsDialog();
         }
 
         private async void CreateWAD()
