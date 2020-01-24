@@ -179,7 +179,7 @@ namespace Obsidian
                     }
                     else
                     {
-                        //Select/Deselect all items in parent the parent folder in the range
+                        //Select/Deselect all items in the parent folder in the range
                         WadFolderViewModel parent = oldItem.Parent as WadFolderViewModel;
                         int oldItemIndex = parent.Items.IndexOf(oldItem);
                         int newItemIndex = parent.Items.IndexOf(newItem);
