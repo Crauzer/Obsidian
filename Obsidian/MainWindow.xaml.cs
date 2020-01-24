@@ -138,6 +138,62 @@ namespace Obsidian
                 }
             }
         }
+        private void OnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            //Handle preview
+            if (e.NewValue is WadFileViewModel selectedEntry)
+            {
+                PreviewSelectedEntry(selectedEntry);
+            }
+            else if (e.NewValue is WadFolderViewModel)
+            {
+                this.Preview.Clear();
+            }
+
+            //Handle multi-selection
+            if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
+            {
+                (e.NewValue as WadItemViewModel).IsSelected ^= true;
+            }
+            else if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+            {
+                WadItemViewModel oldItem = e.OldValue as WadItemViewModel;
+                WadItemViewModel newItem = e.NewValue as WadItemViewModel;
+
+                //Handle batch selection only if parent of both items is the same
+                if (oldItem.Parent == newItem.Parent)
+                {
+                    //If they are in the root then we access the WadViewModel
+                    if (oldItem.Parent == null)
+                    {
+                        //Select/Deselect all items in the range
+                        int oldItemIndex = this.WAD.Items.IndexOf(oldItem);
+                        int newItemIndex = this.WAD.Items.IndexOf(newItem);
+                        int startingIndex = oldItemIndex < newItemIndex ? oldItemIndex : newItemIndex;
+                        int endingIndex = oldItemIndex < newItemIndex ? newItemIndex : oldItemIndex;
+
+                        for (int i = startingIndex; i <= endingIndex; i++)
+                        {
+                            this.WAD.Items[i].IsSelected ^= true;
+                        }
+                    }
+                    else
+                    {
+                        //Select/Deselect all items in parent the parent folder in the range
+                        WadFolderViewModel parent = oldItem.Parent as WadFolderViewModel;
+                        int oldItemIndex = parent.Items.IndexOf(oldItem);
+                        int newItemIndex = parent.Items.IndexOf(newItem);
+                        int startingIndex = oldItemIndex < newItemIndex ? oldItemIndex : newItemIndex;
+                        int endingIndex = oldItemIndex < newItemIndex ? newItemIndex : oldItemIndex;
+
+                        for (int i = startingIndex; i <= endingIndex; i++)
+                        {
+                            parent.Items[i].IsSelected ^= true;
+                        }
+                    }
+                }
+            }
+        }
         private async void PreviewSelectedEntry(WadFileViewModel selectedEntry)
         {
             string extension = PathIO.GetExtension(selectedEntry.Path);
@@ -297,18 +353,6 @@ namespace Obsidian
             WadFileViewModel wadFile = (sender as FrameworkElement).DataContext as WadFileViewModel;
 
             wadFile.Remove();
-        }
-
-        private void OnPreviewSelectedEntry(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            if (e.NewValue is WadFileViewModel selectedEntry)
-            {
-                PreviewSelectedEntry(selectedEntry);
-            }
-            else if (e.NewValue is WadFolderViewModel)
-            {
-
-            }
         }
 
         //Menu event function implementations

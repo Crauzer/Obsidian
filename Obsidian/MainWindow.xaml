@@ -184,7 +184,7 @@
                         </Grid.ColumnDefinitions>
                         <TreeView x:Name="WadTree" Grid.Column="0" DataContext="{Binding WAD}"
                               ItemsSource="{Binding Items, UpdateSourceTrigger=PropertyChanged}" Margin="0,8,0,0"
-                              VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" SelectedItemChanged="OnPreviewSelectedEntry"/>
+                              VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" SelectedItemChanged="OnSelectedItemChanged"/>
                         <GridSplitter Grid.Column="1" Width="3" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
                         <Grid Grid.Column="2">
                             <Grid.RowDefinitions>
