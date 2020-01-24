@@ -150,7 +150,7 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <Menu IsMainMenu="True" DockPanel.Dock="Top" Grid.Column="0">
-                                        <MenuItem Header="File" Grid.Column="0">
+                                        <MenuItem Header="File">
                                             <MenuItem Header="Open" Click="OnWadOpen" Icon="{MaterialDesign:PackIcon Kind=File}"/>
                                             <MenuItem Header="Save" Icon="{MaterialDesign:PackIcon Kind=FileExport}" 
                                                       IsEnabled="{Binding IsWadOpened, UpdateSourceTrigger=PropertyChanged}" Click="OnWadSave"/>
@@ -160,7 +160,12 @@
                                             <MenuItem Header="Extract Selected" Icon="{MaterialDesign:PackIcon Kind=ContentSaveAll}"
                                                       IsEnabled="{Binding WAD.ContainsSelection, UpdateSourceTrigger=PropertyChanged}" Click="OnExtractSelected"/>
                                             <Separator/>
+                                            <MenuItem Header="Import Hashtable" Icon="{MaterialDesign:PackIcon Kind=TableLargePlus}" Click="OnImportHashtable"/>
+                                            <Separator/>
                                             <MenuItem Header="Create" Icon="{MaterialDesign:PackIcon Kind=FileTree}" Click="OnCreateWAD"/>
+                                        </MenuItem>
+                                        <MenuItem Header="Tools">
+                                            <MenuItem Header="Generate Hashtable" Icon="{MaterialDesign:PackIcon Kind=TableEye}" Click="OnGenerateHashtable"/>
                                         </MenuItem>
                                         <TextBox Text="{Binding WAD.Filter, UpdateSourceTrigger=PropertyChanged}" MaterialDesign:HintAssist.Hint="Filter"/>
                                     </Menu>

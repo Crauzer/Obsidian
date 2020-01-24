@@ -81,14 +81,6 @@ namespace Obsidian.MVVM.ViewModels
         }
         public void Preview(ImageEngineImage image)
         {
-            try
-            {
-
-            }
-            catch(Exception excp)
-            {
-
-            }
             this.Image = image.GetWPFBitmap(512);
 
             this.PreviewType = PreviewType.Image;

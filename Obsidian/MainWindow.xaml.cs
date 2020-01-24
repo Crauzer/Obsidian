@@ -3,6 +3,7 @@ using Fantome.Libraries.League.IO.MapGeometry;
 using Fantome.Libraries.League.IO.SCB;
 using Fantome.Libraries.League.IO.SCO;
 using Fantome.Libraries.League.IO.SimpleSkin;
+using Fantome.Libraries.League.IO.WAD;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Obsidian.MVVM.ViewModels;
 using Obsidian.MVVM.ViewModels.WAD;
@@ -64,6 +65,7 @@ namespace Obsidian
             CheckForUpdate();
         }
 
+        //Global Exception Handler
         private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             string message = "A Fatal Error has occurred, Obsidian will now terminate.\n";
@@ -74,6 +76,7 @@ namespace Obsidian
             MessageBox.Show(message, "Obsidian - Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
+        //Initialization functions
         private void BindMVVM()
         {
             this.DataContext = this;
@@ -102,7 +105,15 @@ namespace Obsidian
             }
             catch (Exception) { }
         }
+        private async void OnOperationDialogLoaded(object sender, RoutedEventArgs e)
+        {
+            if (Config.Get<bool>("SyncHashes"))
+            {
+                await DialogHelper.ShowSyncingHashtableDialog();
+            }
+        }
 
+        //Window Utility functions
         private void OnKeyPressed(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Delete)
@@ -115,8 +126,8 @@ namespace Obsidian
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                
-                if(files.Length != 1)
+
+                if (files.Length != 1)
                 {
                     await DialogHelper.ShowMessageDialog("You cannot drop more than 1 WAD file into Obsidian");
                 }
@@ -127,7 +138,60 @@ namespace Obsidian
                 }
             }
         }
+        private async void PreviewSelectedEntry(WadFileViewModel selectedEntry)
+        {
+            string extension = PathIO.GetExtension(selectedEntry.Path);
 
+            try
+            {
+                if (extension == ".dds")
+                {
+                    try
+                    {
+                        this.Preview.Preview(new ImageEngineImage(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                    }
+                    catch (FileFormatException)
+                    {
+                        await DialogHelper.ShowMessageDialog("Previewing of this DDS Format is not supported\n" +
+                            "File is most likely a cubemap or has a dimension of size 1");
+                    }
+                }
+                else if (extension == ".skn")
+                {
+                    this.Preview.Preview(new SKNFile(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                }
+                else if (extension == ".scb")
+                {
+                    this.Preview.Preview(new SCBFile(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                }
+                else if (extension == ".sco")
+                {
+                    this.Preview.Preview(new SCOFile(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                }
+                else if (extension == ".mapgeo")
+                {
+                    this.Preview.Preview(new MGEOFile(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                }
+            }
+            catch (Exception)
+            {
+                await DialogHelper.ShowMessageDialog("Unable to preview the selected file");
+            }
+        }
+        private void RemoveSelectedItems()
+        {
+            foreach (WadFileViewModel file in this.WAD.GetSelectedFiles().ToList())
+            {
+                file.Remove();
+            }
+
+            foreach (WadFolderViewModel folder in this.WAD.GetSelectedFolders().ToList())
+            {
+                folder.Remove();
+            }
+        }
+
+        //Menu event functions
         private void OnWadOpen(object sender, RoutedEventArgs e)
         {
             OpenWad();
@@ -146,9 +210,19 @@ namespace Obsidian
             ExtractSelected();
         }
 
+        private void OnImportHashtable(object sender, RoutedEventArgs e)
+        {
+            ImportHashtable();
+        }
+
         private void OnCreateWAD(object sender, RoutedEventArgs e)
         {
             CreateWAD();
+        }
+
+        private void OnGenerateHashtable(object sender, RoutedEventArgs e)
+        {
+            GenerateHashtable();
         }
 
         private void OnFolderAddFiles(object sender, RoutedEventArgs e)
@@ -237,6 +311,7 @@ namespace Obsidian
             }
         }
 
+        //Menu event function implementations
         private async void OpenWad()
         {
             try
@@ -244,6 +319,7 @@ namespace Obsidian
                 using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
                 {
                     dialog.Multiselect = false;
+                    dialog.InitialDirectory = Config.Get<string>("OpenWadInitialDirectory");
                     dialog.Filters.Add(new CommonFileDialogFilter("WAD Files", "*.wad;*.client;*.mobile"));
 
                     if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
@@ -264,6 +340,7 @@ namespace Obsidian
         {
             using (CommonSaveFileDialog dialog = new CommonSaveFileDialog())
             {
+                dialog.InitialDirectory = Config.Get<string>("SaveWadInitialDirectory");
                 dialog.AlwaysAppendDefaultExtension = true;
                 dialog.DefaultExtension = ".client";
                 dialog.Filters.Add(new CommonFileDialogFilter("wad.client File", "*.client"));
@@ -290,6 +367,7 @@ namespace Obsidian
             using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
             {
                 dialog.IsFolderPicker = true;
+                dialog.InitialDirectory = Config.Get<string>("ExtractInitialDirectory");
 
                 if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
@@ -302,10 +380,79 @@ namespace Obsidian
             using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
             {
                 dialog.IsFolderPicker = true;
+                dialog.InitialDirectory = Config.Get<string>("ExtractInitialDirectory");
 
                 if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
                     await DialogHelper.ShowExtractOperationDialog(dialog.FileName, this.WAD.GetSelectedFiles());
+                }
+            }
+        }
+
+        private async void ImportHashtable()
+        {
+            try
+            {
+                using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
+                {
+                    dialog.Multiselect = true;
+                    dialog.Filters.Add(new CommonFileDialogFilter("Hashtable Files", "*.txt"));
+
+                    if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                    {
+                        foreach (string hashtableFile in dialog.FileNames)
+                        {
+                            Hashtable.Load(hashtableFile);
+                        }
+
+                        this.WAD.Refresh();
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                await DialogHelper.ShowMessageDialog("Obsidian was unable to open the hashtables you selected\n"
+                    + exception.Message + '\n'
+                    + exception.StackTrace);
+            }
+        }
+        private void GenerateHashtable()
+        {
+            using (CommonOpenFileDialog wadDialog = new CommonOpenFileDialog())
+            {
+                wadDialog.Multiselect = true;
+                wadDialog.InitialDirectory = Config.Get<string>("OpenWadInitialDirectory");
+                wadDialog.Filters.Add(new CommonFileDialogFilter("WAD Files", "*.wad;*.client;*.mobile"));
+
+                if (wadDialog.ShowDialog() == CommonFileDialogResult.Ok)
+                {
+                    using (CommonSaveFileDialog hashtableDialog = new CommonSaveFileDialog())
+                    {
+                        hashtableDialog.Filters.Add(new CommonFileDialogFilter("Hashtable File", "*.txt"));
+                        hashtableDialog.AlwaysAppendDefaultExtension = true;
+                        hashtableDialog.DefaultExtension = ".txt";
+
+                        if (hashtableDialog.ShowDialog() == CommonFileDialogResult.Ok)
+                        {
+                            Dictionary<ulong, string> hashtable = new Dictionary<ulong, string>();
+
+                            foreach (string wadLocation in wadDialog.FileNames)
+                            {
+                                using (WADFile wad = new WADFile(wadLocation))
+                                {
+                                    HashtableGenerator.Generate(wad).ToList().ForEach(x =>
+                                    {
+                                        if (!hashtable.ContainsKey(x.Key))
+                                        {
+                                            hashtable.Add(x.Key, x.Value);
+                                        }
+                                    });
+                                }
+                            }
+
+                            Hashtable.Write(hashtableDialog.FileName, hashtable);
+                        }
+                    }
                 }
             }
         }
@@ -324,69 +471,9 @@ namespace Obsidian
             }
         }
 
-        private void RemoveSelectedItems()
-        {
-            foreach (WadFileViewModel file in this.WAD.GetSelectedFiles().ToList())
-            {
-                file.Remove();
-            }
-
-            foreach (WadFolderViewModel folder in this.WAD.GetSelectedFolders().ToList())
-            {
-                folder.Remove();
-            }
-        }
-
-        private async void PreviewSelectedEntry(WadFileViewModel selectedEntry)
-        {
-            string extension = PathIO.GetExtension(selectedEntry.Path);
-
-            try
-            {
-                if (extension == ".dds")
-                {
-                    try
-                    {
-                        this.Preview.Preview(new ImageEngineImage(new MemoryStream(selectedEntry.Entry.GetContent(true))));
-                    }
-                    catch (FileFormatException)
-                    {
-                        await DialogHelper.ShowMessageDialog("Previewing of this DDS Format is not supported\n" +
-                            "File is most likely a cubemap or has a dimension of size 1");
-                    }
-                }
-                else if (extension == ".skn")
-                {
-                    this.Preview.Preview(new SKNFile(new MemoryStream(selectedEntry.Entry.GetContent(true))));
-                }
-                else if (extension == ".scb")
-                {
-                    this.Preview.Preview(new SCBFile(new MemoryStream(selectedEntry.Entry.GetContent(true))));
-                }
-                else if (extension == ".sco")
-                {
-                    this.Preview.Preview(new SCOFile(new MemoryStream(selectedEntry.Entry.GetContent(true))));
-                }
-                else if (extension == ".mapgeo")
-                {
-                    this.Preview.Preview(new MGEOFile(new MemoryStream(selectedEntry.Entry.GetContent(true))));
-                }
-            }
-            catch (Exception)
-            {
-                await DialogHelper.ShowMessageDialog("Unable to preview the selected file");
-            }
-        }
-
-        private async void OnOperationDialogLoaded(object sender, RoutedEventArgs e)
-        {
-            await DialogHelper.ShowSyncingHashtableDialog();
-        }
-
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
     }
 }

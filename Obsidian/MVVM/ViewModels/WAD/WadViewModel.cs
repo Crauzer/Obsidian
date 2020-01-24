@@ -88,6 +88,11 @@ namespace Obsidian.MVVM.ViewModels.WAD
             this.WAD = new WADFile(wadLocation);
             this.WADLocation = wadLocation;
 
+            if(Config.Get<bool>("GenerateHashesFromBIN"))
+            {
+                Hashtable.Add(HashtableGenerator.Generate(this.WAD));
+            }
+
             GenerateWadItems();
         }
         private void GenerateWadItems()
@@ -133,6 +138,14 @@ namespace Obsidian.MVVM.ViewModels.WAD
             {
                 folder.Sort();
             }
+        }
+
+        public void Refresh()
+        {
+            //Instead of moving stuff around we can just regenerate the whole tree
+            this.Items.Clear();
+
+            GenerateWadItems();
         }
 
         public IEnumerable<WadFileViewModel> GetSelectedFiles()
