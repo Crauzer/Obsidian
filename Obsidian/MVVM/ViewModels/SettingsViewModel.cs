@@ -58,7 +58,7 @@ namespace Obsidian.MVVM.ViewModels
             {
                 dialog.IsFolderPicker = true;
 
-                if(dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
                     this.OpenWadInitialDirectory = dialog.FileName;
                 }

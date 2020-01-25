@@ -5,7 +5,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
     <SignAssembly>false</SignAssembly>
-    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
     <Platforms>AnyCPU;x64</Platforms>
     <AssemblyVersion>3.1.0.0</AssemblyVersion>
     <FileVersion>3.1.0.0</FileVersion>
@@ -38,6 +38,7 @@
 
   <ItemGroup>
     <None Remove="icon.ico" />
+    <None Remove="Resources\idk.wav" />
   </ItemGroup>
 
   <ItemGroup>
@@ -54,9 +55,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="icon.ico">
+    <Resource Include="Resources\icon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+    <EmbeddedResource Include="Resources\idk.wav">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

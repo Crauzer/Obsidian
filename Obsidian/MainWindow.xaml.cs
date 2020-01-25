@@ -16,14 +16,20 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Media;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using PathIO = System.IO.Path;
 
 namespace Obsidian
 {
+#warning When building use the ReleasePortable configuration
+#warning Publish with: "dotnet publish -c ReleasePortable -r win-x64 --self-contained true /p:PublishSingleFile=true"
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -52,6 +58,7 @@ namespace Obsidian
 
         private WadViewModel _wad = new WadViewModel();
         private bool _isWadOpened;
+        private int _clickCounter;
 
         public ICommand OpenSettingsCommand => new RelayCommand(OpenSettings);
 
@@ -117,6 +124,33 @@ namespace Obsidian
         }
 
         //Window Utility functions
+        private async void OnObsidianImageClick(object sender, MouseButtonEventArgs e)
+        {
+            this._clickCounter++;
+
+            if(this._clickCounter == 10)
+            {
+                await DialogHelper.ShowMessageDialog("Hmm, what are you doing ?", false);
+            }
+            else if(this._clickCounter == 20)
+            {
+                await DialogHelper.ShowMessageDialog("You should stop, there's no turning back", false);
+            }
+            else if(this._clickCounter == 30)
+            {
+                using (Stream audioStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Obsidian.Resources.idk.wav"))
+                {
+                    using (SoundPlayer player = new SoundPlayer(audioStream))
+                    {
+                        player.Play();
+
+                        await DialogHelper.ShowMessageDialog("You've just unleashed the Wooxy virus", false);
+                    }
+                }
+
+                this._clickCounter = 0;
+            }
+        }
         private void OnKeyPressed(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Delete)

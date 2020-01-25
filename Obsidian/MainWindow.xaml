@@ -18,7 +18,7 @@
         TextOptions.TextRenderingMode="Auto"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
-        Title="Obsidian" Height="720" Width="1280" Icon="icon.ico" WindowStartupLocation="CenterScreen" 
+        Title="Obsidian" Height="720" Width="1280" Icon="Resources/icon.ico" WindowStartupLocation="CenterScreen" 
         AllowDrop="True"
         KeyDown="OnKeyPressed" Drop="OnWindowDrop">
     <Window.Resources>
@@ -240,7 +240,7 @@
 
                                     </Menu>
                                     
-                                    <Image Grid.Column="1" HorizontalAlignment="Right" Source="icon.ico" Width="50"/>
+                                    <Image Grid.Column="1" HorizontalAlignment="Right" Source="Resources/icon.ico" Width="50" MouseDown="OnObsidianImageClick"/>
                                 </Grid>
                             </DockPanel>
                             <ProgressBar Grid.Row="1" Value="100"/>

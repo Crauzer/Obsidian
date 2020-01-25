@@ -53,11 +53,16 @@ namespace Obsidian.Utilities
             await DialogHost.Show(dialog, "OperationDialog", dialog.StartExtraction, null);
         }
 
-        public static async Task ShowMessageDialog(string message)
+        public static async Task ShowMessageDialog(string message, bool closeOnClickAway = true)
         {
             MessageDialog dialog = new MessageDialog(message);
+            bool defaultCloseOnClickAway = MessageDialog.CloseOnClickAway;
+
+            MessageDialog.CloseOnClickAway = closeOnClickAway;
 
             await DialogHost.Show(dialog, "MessageDialog");
+
+            MessageDialog.CloseOnClickAway = defaultCloseOnClickAway;
         }
 
         public static async Task ShowSyncingHashtableDialog()
