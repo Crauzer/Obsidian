@@ -42,7 +42,7 @@
 
   <ItemGroup>
     <PackageReference Include="CSharpImageLibrary" Version="4.2.0" />
-    <PackageReference Include="Fantome.Libraries.League" Version="1.0.6.1" />
+    <PackageReference Include="Fantome.Libraries.League" Version="1.0.7.1" />
     <PackageReference Include="HelixToolkit.Wpf" Version="2.10.0" />
     <PackageReference Include="MaterialDesignThemes" Version="3.0.1" />
     <PackageReference Include="Microsoft.Packaging.Tools.Trimming" Version="1.1.0-preview1-26619-01" />

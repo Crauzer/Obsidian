@@ -21,7 +21,7 @@ namespace Obsidian.Utilities
             foreach (WADEntry entry in wad.Entries.Where(x => x.Type != EntryType.FileRedirection))
             {
                 byte[] entryContent = entry.GetContent(true);
-                LeagueFileType fileType = LeagueUtilities.GetLeagueFileExtensionType(entryContent);
+                LeagueFileType fileType = LeagueUtilities.GetExtension(entryContent);
 
                 if (fileType == LeagueFileType.BIN)
                 {
@@ -39,6 +39,20 @@ namespace Obsidian.Utilities
                     {
                         strings.AddRange(ProcessBINLinkedFiles(bin.LinkedFiles));
                         strings.AddRange(ProcessBINFile(bin));
+                    }
+                }
+                
+                //This is a file in DATA.wad.client that contains paths of all entries in the WAD
+                if(entry.XXHash == 2155072684501898278)
+                {
+                    using (BinaryReader br = new BinaryReader(new MemoryStream(entry.GetContent(true))))
+                    {
+                        uint pathCount = br.ReadUInt32();
+
+                        for(int i = 0; i < pathCount; i++)
+                        {
+                            strings.Add(Encoding.ASCII.GetString(br.ReadBytes(br.ReadInt32())));
+                        }
                     }
                 }
             }

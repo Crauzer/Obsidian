@@ -6,6 +6,7 @@
         xmlns:MaterialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:ControlzEx="clr-namespace:ControlzEx;assembly=MaterialDesignThemes.Wpf"
         xmlns:MaterialDesignUtilities="clr-namespace:Obsidian.Utilities.MaterialDesign"
+        xmlns:FantomeUtilities="clr-namespace:Fantome.Libraries.League.Helpers;assembly=Fantome.Libraries.League"
         xmlns:Helix="http://helix-toolkit.org/wpf"
         xmlns:ViewModels="clr-namespace:Obsidian.MVVM.ViewModels"
         xmlns:WadViewModel="clr-namespace:Obsidian.MVVM.ViewModels.WAD"
@@ -72,7 +73,7 @@
                     <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0">
                         <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Width="2" Margin="8,0"/>
                     </StackPanel>
-                    <MaterialDesign:PackIcon Grid.Column="2" x:Name="FileIcon" Kind="FileOutline"/>
+                    <MaterialDesign:PackIcon x:Name="WadFileItemIcon" Grid.Column="2"/>
                     <StackPanel Grid.Column="3" Orientation="Horizontal" Margin="10,0">
                         <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Width="2" Margin="8,0"/>
                     </StackPanel>
@@ -86,6 +87,59 @@
                         </ContextMenu>
                     </Grid.ContextMenu>
                 </Grid>
+                <DataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.Unknown}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="FileOutline"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.ANM}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="AnimationPlay"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.BIN}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="FormatListText"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.BNK}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Audiobook"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.DDS}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Image"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.LUAOBJ}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Script"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.MAPGEO}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Map"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.PNG}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Image"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.PRELOAD}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Script"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.SCB}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="CubeOutline"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.SCO}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="CubeOutline"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.SKL}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Bone"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.SKN}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Cube"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.WGEO}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Map"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.WPK}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Audiobook"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.JPG}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Image"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.RST}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Translate"/>
+                    </DataTrigger>
+                </DataTemplate.Triggers>
             </DataTemplate>
             <Style x:Key="MaterialDesignTransparentDialog" TargetType="ControlzEx:PopupEx" BasedOn="{StaticResource MaterialDesignDialogHostPopup}">
                 <Setter Property="AllowsTransparency" Value="True" />
