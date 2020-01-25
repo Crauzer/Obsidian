@@ -37,7 +37,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="icon.ico" />
     <None Remove="Resources\idk.wav" />
   </ItemGroup>
 
