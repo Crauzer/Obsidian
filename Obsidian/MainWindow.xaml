@@ -6,6 +6,7 @@
         xmlns:MaterialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:ControlzEx="clr-namespace:ControlzEx;assembly=MaterialDesignThemes.Wpf"
         xmlns:MaterialDesignUtilities="clr-namespace:Obsidian.Utilities.MaterialDesign"
+        xmlns:FantomeUtilities="clr-namespace:Fantome.Libraries.League.Helpers;assembly=Fantome.Libraries.League"
         xmlns:Helix="http://helix-toolkit.org/wpf"
         xmlns:ViewModels="clr-namespace:Obsidian.MVVM.ViewModels"
         xmlns:WadViewModel="clr-namespace:Obsidian.MVVM.ViewModels.WAD"
@@ -17,7 +18,9 @@
         TextOptions.TextRenderingMode="Auto"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
-        Title="Obsidian" Height="900" Width="1600" Icon="icon.ico" WindowStartupLocation="CenterScreen">
+        Title="Obsidian" Height="720" Width="1280" Icon="Resources/icon.ico" WindowStartupLocation="CenterScreen" 
+        AllowDrop="True"
+        KeyDown="OnKeyPressed" Drop="OnWindowDrop">
     <Window.Resources>
         <ResourceDictionary>
             <HierarchicalDataTemplate DataType="{x:Type WadViewModel:WadFolderViewModel}" 
@@ -70,7 +73,7 @@
                     <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0">
                         <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Width="2" Margin="8,0"/>
                     </StackPanel>
-                    <MaterialDesign:PackIcon Grid.Column="2" x:Name="FileIcon" Kind="FileOutline"/>
+                    <MaterialDesign:PackIcon x:Name="WadFileItemIcon" Grid.Column="2"/>
                     <StackPanel Grid.Column="3" Orientation="Horizontal" Margin="10,0">
                         <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Width="2" Margin="8,0"/>
                     </StackPanel>
@@ -84,6 +87,59 @@
                         </ContextMenu>
                     </Grid.ContextMenu>
                 </Grid>
+                <DataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.Unknown}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="FileOutline"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.ANM}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="AnimationPlay"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.BIN}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="FormatListText"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.BNK}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Audiobook"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.DDS}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Image"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.LUAOBJ}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Script"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.MAPGEO}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Map"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.PNG}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Image"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.PRELOAD}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Script"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.SCB}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="CubeOutline"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.SCO}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="CubeOutline"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.SKL}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Bone"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.SKN}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Cube"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.WGEO}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Map"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.WPK}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Audiobook"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.JPG}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Image"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.RST}">
+                        <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Translate"/>
+                    </DataTrigger>
+                </DataTemplate.Triggers>
             </DataTemplate>
             <Style x:Key="MaterialDesignTransparentDialog" TargetType="ControlzEx:PopupEx" BasedOn="{StaticResource MaterialDesignDialogHostPopup}">
                 <Setter Property="AllowsTransparency" Value="True" />
@@ -148,7 +204,12 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <Menu IsMainMenu="True" DockPanel.Dock="Top" Grid.Column="0">
-                                        <MenuItem Header="File" Grid.Column="0">
+                                        <Menu.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <DockPanel HorizontalAlignment="Stretch"/>
+                                            </ItemsPanelTemplate>
+                                        </Menu.ItemsPanel>
+                                        <MenuItem Header="File">
                                             <MenuItem Header="Open" Click="OnWadOpen" Icon="{MaterialDesign:PackIcon Kind=File}"/>
                                             <MenuItem Header="Save" Icon="{MaterialDesign:PackIcon Kind=FileExport}" 
                                                       IsEnabled="{Binding IsWadOpened, UpdateSourceTrigger=PropertyChanged}" Click="OnWadSave"/>
@@ -158,11 +219,28 @@
                                             <MenuItem Header="Extract Selected" Icon="{MaterialDesign:PackIcon Kind=ContentSaveAll}"
                                                       IsEnabled="{Binding WAD.ContainsSelection, UpdateSourceTrigger=PropertyChanged}" Click="OnExtractSelected"/>
                                             <Separator/>
+                                            <MenuItem Header="Import Hashtable" Icon="{MaterialDesign:PackIcon Kind=TableLargePlus}" Click="OnImportHashtable"/>
+                                            <Separator/>
                                             <MenuItem Header="Create" Icon="{MaterialDesign:PackIcon Kind=FileTree}" Click="OnCreateWAD"/>
                                         </MenuItem>
+                                        <MenuItem Header="Tools">
+                                            <MenuItem Header="Generate Hashtable" Icon="{MaterialDesign:PackIcon Kind=TableEye}" Click="OnGenerateHashtable"/>
+                                        </MenuItem>
                                         <TextBox Text="{Binding WAD.Filter, UpdateSourceTrigger=PropertyChanged}" MaterialDesign:HintAssist.Hint="Filter"/>
+                                        <MenuItem HorizontalAlignment="Right">
+                                            <MenuItem.Header>
+                                                <Button Style="{StaticResource MaterialDesignFloatingActionButton}" Width="40" Height="40"
+                                                        x:Name="OpenSettingsButton"
+                                                        Command="{Binding OpenSettingsCommand}">
+                                                    <MaterialDesign:PackIcon Width="25" Height="25" Kind="GearOutline"/>
+                                                </Button>
+                                            </MenuItem.Header>
+                                        </MenuItem>
+
+
                                     </Menu>
-                                    <Image Grid.Column="1" HorizontalAlignment="Right" Source="icon.ico" Width="50"/>
+                                    
+                                    <Image Grid.Column="1" HorizontalAlignment="Right" Source="Resources/icon.ico" Width="50" MouseDown="OnObsidianImageClick"/>
                                 </Grid>
                             </DockPanel>
                             <ProgressBar Grid.Row="1" Value="100"/>
@@ -177,7 +255,7 @@
                         </Grid.ColumnDefinitions>
                         <TreeView x:Name="WadTree" Grid.Column="0" DataContext="{Binding WAD}"
                               ItemsSource="{Binding Items, UpdateSourceTrigger=PropertyChanged}" Margin="0,8,0,0"
-                              VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" SelectedItemChanged="OnPreviewSelectedEntry"/>
+                              VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" SelectedItemChanged="OnSelectedItemChanged"/>
                         <GridSplitter Grid.Column="1" Width="3" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
                         <Grid Grid.Column="2">
                             <Grid.RowDefinitions>

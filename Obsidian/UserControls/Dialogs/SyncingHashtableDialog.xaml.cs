@@ -35,18 +35,26 @@ namespace Obsidian.UserControls.Dialogs
         private async Task Sync()
         {
             //Check if there is a a new hashtable available
-            //Do this in "try" so if there is no internet we don't crash
+            //Do this in "try" so if there is no internet or GitHub isn't available we don't crash
             try
             {
                 await SyncHashtable();
             }
-            catch
+            catch(Exception)
             {
 
             }
 
             //Load the hashtable after we sync with CDragon
-            Hashtable.Load();
+            //Check that hashtables are present
+            if(File.Exists(Hashtable.GAME_HASHTABLE_FILE))
+            {
+                Hashtable.Load(Hashtable.GAME_HASHTABLE_FILE);
+            }
+            if (File.Exists(Hashtable.LCU_HASHTABLE_FILE))
+            {
+                Hashtable.Load(Hashtable.LCU_HASHTABLE_FILE);
+            }
 
             static async Task SyncHashtable()
             {

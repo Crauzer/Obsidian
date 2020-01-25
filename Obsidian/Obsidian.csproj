@@ -5,10 +5,10 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
     <SignAssembly>false</SignAssembly>
-    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
     <Platforms>AnyCPU;x64</Platforms>
-    <AssemblyVersion>3.0.0.0</AssemblyVersion>
-    <FileVersion>3.0.0.0</FileVersion>
+    <AssemblyVersion>3.1.0.0</AssemblyVersion>
+    <FileVersion>3.1.0.0</FileVersion>
     <Configurations>Debug;Release;ReleasePortable</Configurations>
   </PropertyGroup>
 
@@ -37,12 +37,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="icon.ico" />
+    <None Remove="Resources\idk.wav" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CSharpImageLibrary" Version="4.2.0" />
-    <PackageReference Include="Fantome.Libraries.League" Version="1.0.6.1" />
+    <PackageReference Include="Fantome.Libraries.League" Version="1.0.7.1" />
     <PackageReference Include="HelixToolkit.Wpf" Version="2.10.0" />
     <PackageReference Include="MaterialDesignThemes" Version="3.0.1" />
     <PackageReference Include="Microsoft.Packaging.Tools.Trimming" Version="1.1.0-preview1-26619-01" />
@@ -54,9 +54,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="icon.ico">
+    <Resource Include="Resources\icon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+    <EmbeddedResource Include="Resources\idk.wav">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

@@ -33,10 +33,21 @@ namespace Obsidian.Utilities
             }
             else
             {
-                LeagueFileType fileType = LeagueUtilities.GetLeagueFileExtensionType(entry.GetContent(true));
-                string extension = LeagueUtilities.GetEntryExtension(fileType);
+                LeagueFileType fileType = LeagueUtilities.GetExtension(entry.GetContent(true));
+                string extension = LeagueUtilities.GetExtension(fileType);
 
                 return string.Format("{0}.{1}", entry.XXHash.ToString("x16"), extension);
+            }
+        }
+
+        public static void Add(Dictionary<ulong, string> hashtable)
+        {
+            foreach (KeyValuePair<ulong, string> hashPair in hashtable)
+            {
+                if (!_hashtable.ContainsKey(hashPair.Key))
+                {
+                    _hashtable.Add(hashPair.Key, hashPair.Value);
+                }
             }
         }
 
@@ -69,7 +80,21 @@ namespace Obsidian.Utilities
                     }
                 }
 
-                _hashtable.Add(hash, name);
+                if (!_hashtable.ContainsKey(hash))
+                {
+                    _hashtable.Add(hash, name);
+                }
+            }
+        }
+
+        public static void Write(string location, Dictionary<ulong, string> hashtable)
+        {
+            using (StreamWriter sw = new StreamWriter(File.Create(location)))
+            {
+                foreach(KeyValuePair<ulong, string> hashPair in hashtable)
+                {
+                    sw.WriteLine(string.Format("{0} {1}", hashPair.Key.ToString("X16"), hashPair.Value));
+                }
             }
         }
     }

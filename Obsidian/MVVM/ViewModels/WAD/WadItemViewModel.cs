@@ -114,6 +114,35 @@ namespace Obsidian.MVVM.ViewModels.WAD
             this.Type = type;
         }
 
+        public void Remove()
+        {
+            if(this.Type == WadItemType.File)
+            {
+                this._wadViewModel.WAD.RemoveEntry((this as WadFileViewModel).Entry.XXHash);
+            }
+            else
+            {
+                WadFolderViewModel wadFolder = this as WadFolderViewModel;
+
+                //Recursively Remove all WAD entries nested in the folder
+                foreach (WadFileViewModel entry in wadFolder.GetAllFiles())
+                {
+                    this._wadViewModel.WAD.RemoveEntry(entry.Entry.XXHash);
+                }
+            }
+
+            //Remove the item from View Model
+            //If Parent is null then we know it's in root
+            if (this.Parent == null)
+            {
+                this._wadViewModel.Items.Remove(this);
+            }
+            else
+            {
+                (this.Parent as WadFolderViewModel).Items.Remove(this);
+            }
+        }
+
         public int CompareTo(WadItemViewModel other)
         {
             if (this.Type == WadItemType.Folder && other.Type == WadItemType.File)
