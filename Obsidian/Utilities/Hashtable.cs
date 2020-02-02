@@ -1,8 +1,10 @@
 ﻿using Fantome.Libraries.League.Helpers;
+using Fantome.Libraries.League.Helpers.Cryptography;
 using Fantome.Libraries.League.IO.WAD;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using LeagueUtilities = Fantome.Libraries.League.Helpers.Utilities;
 
 namespace Obsidian.Utilities
@@ -65,19 +67,27 @@ namespace Obsidian.Utilities
             foreach (string line in File.ReadAllLines(location))
             {
                 string[] lineSplit = line.Split(' ');
+                ulong hash;
+                string name = string.Empty;
 
-                ulong hash = ulong.Parse(lineSplit[0], NumberStyles.HexNumber);
-
-                //Since names can have spaces in them
-                string name = "";
-                for (int i = 1; i < lineSplit.Length; i++)
+                if(lineSplit.Length == 1)
                 {
-                    name += lineSplit[i];
-
-                    if (i + 1 != lineSplit.Length)
+                    hash = XXHash.XXH64(Encoding.ASCII.GetBytes(lineSplit[0].ToLower()));
+                    name = lineSplit[0];
+                }
+                else
+                {
+                    for (int i = 1; i < lineSplit.Length; i++)
                     {
-                        name += ' ';
+                        name += lineSplit[i];
+
+                        if (i + 1 != lineSplit.Length)
+                        {
+                            name += ' ';
+                        }
                     }
+
+                    hash = ulong.Parse(lineSplit[0], NumberStyles.HexNumber);
                 }
 
                 if (!_hashtable.ContainsKey(hash))
@@ -91,7 +101,7 @@ namespace Obsidian.Utilities
         {
             using (StreamWriter sw = new StreamWriter(File.Create(location)))
             {
-                foreach(KeyValuePair<ulong, string> hashPair in hashtable)
+                foreach (KeyValuePair<ulong, string> hashPair in hashtable)
                 {
                     sw.WriteLine(string.Format("{0} {1}", hashPair.Key.ToString("X16"), hashPair.Value));
                 }
