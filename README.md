@@ -2,7 +2,7 @@
 
 * **Obsidian is a WAD Archive editor for League of Legends.**
 
-* **It allows you to open, edit and create WAD files reliably.**
+* **It allows you to open, edit and create WAD files.**
 
 * **You can also preview certain assets such as maps, champion models and particle meshes.**
 
