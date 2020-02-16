@@ -422,23 +422,13 @@ namespace Obsidian
             using (CommonSaveFileDialog dialog = new CommonSaveFileDialog())
             {
                 dialog.InitialDirectory = Config.Get<string>("SaveWadInitialDirectory");
-                dialog.AlwaysAppendDefaultExtension = true;
-                dialog.DefaultExtension = ".client";
-                dialog.Filters.Add(new CommonFileDialogFilter("wad.client File", "*.client"));
-                dialog.Filters.Add(new CommonFileDialogFilter("wad File", "*.wad"));
+                dialog.Filters.Add(new CommonFileDialogFilter("WAD Client File", "*.wad.client"));
+                dialog.Filters.Add(new CommonFileDialogFilter("WAD Mobile File", "*.wad.mobile"));
+                dialog.Filters.Add(new CommonFileDialogFilter("WAD File", "*.wad"));
 
                 if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
-                    string wadLocation = dialog.FileName;
-
-                    //We need to change the extension because the dialog is stupid 
-                    //and can't handle extensions with multiple dots
-                    if (PathIO.GetExtension(dialog.FileName) == ".client")
-                    {
-                        wadLocation = PathIO.ChangeExtension(dialog.FileName, ".wad.client");
-                    }
-
-                    await DialogHelper.ShowSaveWadOperationDialog(wadLocation, this.WAD);
+                    await DialogHelper.ShowSaveWadOperationDialog(dialog.FileName, this.WAD);
                 }
             }
         }

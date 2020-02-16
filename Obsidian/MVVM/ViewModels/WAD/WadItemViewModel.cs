@@ -83,6 +83,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
 
                 this._wadViewModel.NotifySelectionChanged();
                 NotifyPropertyChanged();
+                NotifySelectionChanged();
             }
         }
         public string Tooltip
@@ -141,6 +142,29 @@ namespace Obsidian.MVVM.ViewModels.WAD
             {
                 (this.Parent as WadFolderViewModel).Items.Remove(this);
             }
+        }
+
+        public void NotifySelectionChanged()
+        {
+            if (this.Type == WadItemType.Folder)
+            {
+                bool are = (this as WadFolderViewModel).AreAllItemsSelected();
+                if (are)
+                {
+                    this._isSelected = true;
+                }
+                else
+                {
+                    this._isSelected = false;
+                }
+            }
+
+            if (this.Parent != null)
+            {
+                (this.Parent as WadFolderViewModel).NotifySelectionChanged();
+            }
+
+            NotifyPropertyChanged(nameof(this.IsSelected));
         }
 
         public int CompareTo(WadItemViewModel other)

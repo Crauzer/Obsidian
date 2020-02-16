@@ -146,6 +146,26 @@ namespace Obsidian.MVVM.ViewModels.WAD
         {
             return GetAllFiles().FirstOrDefault(predicate);
         }
+        
+        public bool AreAllItemsSelected()
+        {
+            bool areAllItemsSelected = true;
+
+            foreach(WadItemViewModel child in this.Items)
+            {
+                if(child is WadFolderViewModel childFolder && !childFolder.AreAllItemsSelected())
+                {
+                    return false;
+                }
+
+                if(!child.IsSelected)
+                {
+                    return false;
+                }
+            }
+
+            return areAllItemsSelected;
+        }
 
         public void Sort()
         {
