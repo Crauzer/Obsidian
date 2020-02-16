@@ -1,18 +1,10 @@
-<table>
-  <tbody>
-    <tr>
-      <td><img width=128 height=128 src="https://i.imgur.com/mRQhyZR.png"></td>
-      <td><h1>Obsidian</h1></td>
-    </tr>
-  </tbody>
-</table>
+![Obsidian](https://github.com/Crauzer/Obsidian/blob/master/Images/obsidian-banner.png)
 
-Obsidian is a WAD file editor for League of Legends
-
+## Donation
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://paypal.me/FilipQuitko?locale.x=en_US)
 
 ## Discord
-If you want to talk to me, other developers or people in the community, join my discord server:
-
+If you want to talk to the developers or other people in the community, join our discord server:
 <table>
   <tbody>
     <tr>
@@ -21,5 +13,3 @@ If you want to talk to me, other developers or people in the community, join my 
     </tr>
   </tbody>
 </table> 
-
-If you like this program, consider supporting me by donating: [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SSQD35B9ZJZXJ)
