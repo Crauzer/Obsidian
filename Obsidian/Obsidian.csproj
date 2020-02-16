@@ -7,9 +7,10 @@
     <SignAssembly>false</SignAssembly>
     <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
     <Platforms>AnyCPU;x64</Platforms>
-    <AssemblyVersion>3.1.1.0</AssemblyVersion>
+    <AssemblyVersion>3.1.2.0</AssemblyVersion>
     <FileVersion>3.1.2.0</FileVersion>
     <Configurations>Debug;Release;ReleasePortable</Configurations>
+    <Version>3.1.2</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
