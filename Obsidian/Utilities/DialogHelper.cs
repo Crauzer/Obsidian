@@ -1,7 +1,7 @@
 ﻿using MaterialDesignThemes.Wpf;
 using Obsidian.MVVM.ViewModels;
 using Obsidian.MVVM.ViewModels.WAD;
-using Obsidian.UserControls.Dialogs;
+using Obsidian.MVVM.ModelViews.Dialogs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

@@ -11,7 +11,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Obsidian.UserControls.Dialogs
+namespace Obsidian.MVVM.ModelViews.Dialogs
 {
     /// <summary>
     /// Interaction logic for SettingsDialog.xaml

@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Controls;
 using PathIO = System.IO.Path;
 
-namespace Obsidian.UserControls.Dialogs
+namespace Obsidian.MVVM.ModelViews.Dialogs
 {
     /// <summary>
     /// Interaction logic for ExtractOperationDialog.xaml

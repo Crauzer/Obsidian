@@ -8,7 +8,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace Obsidian.UserControls.Dialogs
+namespace Obsidian.MVVM.ModelViews.Dialogs
 {
     /// <summary>
     /// Interaction logic for SyncingHashtableDialog.xaml

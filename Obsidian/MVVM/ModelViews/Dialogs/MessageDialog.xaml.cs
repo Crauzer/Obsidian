@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace Obsidian.UserControls.Dialogs
+namespace Obsidian.MVVM.ModelViews.Dialogs
 {
     /// <summary>
     /// Interaction logic for MessageDialog.xaml

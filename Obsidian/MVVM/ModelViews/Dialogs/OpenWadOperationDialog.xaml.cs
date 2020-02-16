@@ -4,32 +4,31 @@ using System;
 using System.ComponentModel;
 using System.Windows.Controls;
 
-namespace Obsidian.UserControls.Dialogs
+namespace Obsidian.MVVM.ModelViews.Dialogs
 {
     /// <summary>
-    /// Interaction logic for SaveWadOperationDialog.xaml
+    /// Interaction logic for OpenWadOperationDialog.xaml
     /// </summary>
-    public partial class SaveWadOperationDialog : UserControl
+    public partial class OpenWadOperationDialog : UserControl
     {
         public string Message { get; }
+        public WadViewModel WadViewModel { get; private set; } = new WadViewModel();
 
-        private WadViewModel _wadViewModel;
         private string _wadLocation;
 
-        public SaveWadOperationDialog(string wadLocation, WadViewModel wad)
+        public OpenWadOperationDialog(string wadLocation)
         {
             this._wadLocation = wadLocation;
-            this._wadViewModel = wad;
-            this.Message = "Saving\n" + wadLocation;
+            this.Message = "Opening\n" + wadLocation;
 
             InitializeComponent();
         }
 
-        public void Save(object sender, EventArgs e)
+        public void Load(object sender, EventArgs e)
         {
             using (BackgroundWorker worker = new BackgroundWorker())
             {
-                worker.DoWork += SaveWAD;
+                worker.DoWork += OpenWAD;
                 worker.RunWorkerCompleted += CloseDialog;
                 worker.WorkerSupportsCancellation = true;
 
@@ -42,12 +41,9 @@ namespace Obsidian.UserControls.Dialogs
             DialogHelper.OperationDialog.IsOpen = false;
         }
 
-        private void SaveWAD(object sender, DoWorkEventArgs e)
+        private void OpenWAD(object sender, DoWorkEventArgs e)
         {
-            this._wadViewModel.WAD.Write(this._wadLocation);
-            this._wadViewModel.WAD.Dispose();
-            this._wadViewModel.WAD = null;
-            this._wadViewModel.WADLocation = this._wadLocation;
+            this.WadViewModel.LoadWad(this._wadLocation);
         }
     }
 }
