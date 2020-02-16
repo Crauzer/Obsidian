@@ -1,5 +1,7 @@
 ![Obsidian](https://github.com/Crauzer/Obsidian/blob/master/Images/obsidian-banner.png)
 
+<a href="https://github.com/Crauzer/Obsidian/releases" rel="some text">![Foo](https://github.com/Crauzer/Obsidian/blob/master/Images/obsidiandownload.png)</a>
+
 ## Donation
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://paypal.me/FilipQuitko?locale.x=en_US)
 
