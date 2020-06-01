@@ -16,7 +16,7 @@ namespace Obsidian.MVVM.ModelViews.Dialogs
     /// </summary>
     public partial class CreateWadOperationDialog : UserControl, INotifyPropertyChanged
     {
-        public WadViewModel WadViewModel { get; private set; } = new WadViewModel();
+        public WadViewModel WadViewModel { get; private set; }
         public string Message
         {
             get => this._message;
@@ -32,8 +32,9 @@ namespace Obsidian.MVVM.ModelViews.Dialogs
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public CreateWadOperationDialog(string folderLocation)
+        public CreateWadOperationDialog(MainWindow window, string folderLocation)
         {
+            this.WadViewModel = new WadViewModel(window);
             this._folderLocation = folderLocation;
 
             InitializeComponent();

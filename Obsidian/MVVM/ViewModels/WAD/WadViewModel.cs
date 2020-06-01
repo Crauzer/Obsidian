@@ -4,12 +4,15 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Data;
 
 namespace Obsidian.MVVM.ViewModels.WAD
 {
     public class WadViewModel : PropertyNotifier
     {
+        public MainWindow Window { get; }
+
         public bool ContainsSelection
         {
             get
@@ -78,9 +81,9 @@ namespace Obsidian.MVVM.ViewModels.WAD
         private string _filter;
         private WADFile _wad;
 
-        public WadViewModel()
+        public WadViewModel(MainWindow window)
         {
-
+            this.Window = window;
         }
 
         public void LoadWad(string wadLocation)

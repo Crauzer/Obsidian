@@ -12,14 +12,15 @@ namespace Obsidian.MVVM.ModelViews.Dialogs
     public partial class OpenWadOperationDialog : UserControl
     {
         public string Message { get; }
-        public WadViewModel WadViewModel { get; private set; } = new WadViewModel();
+        public WadViewModel WadViewModel { get; private set; }
 
         private string _wadLocation;
 
-        public OpenWadOperationDialog(string wadLocation)
+        public OpenWadOperationDialog(MainWindow window, string wadLocation)
         {
+            this.WadViewModel = new WadViewModel(window);
             this._wadLocation = wadLocation;
-            this.Message = "Opening\n" + wadLocation;
+            this.Message = Localization.Get("DialogOpeningWadMessage") + '\n' + wadLocation;
 
             InitializeComponent();
         }

@@ -23,6 +23,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using PathIO = System.IO.Path;
+using Localization = Obsidian.Utilities.Localization;
+using MaterialDesignThemes.Wpf;
+using System.Windows.Controls;
 
 namespace Obsidian
 {
@@ -54,8 +57,18 @@ namespace Obsidian
             }
         }
         public PreviewViewModel Preview { get; private set; }
+        public Dictionary<string, string> LocalizationMap
+        {
+            get => this._localizationMap;
+            set
+            {
+                this._localizationMap = value;
+                NotifyPropertyChanged();
+            }
+        }
 
-        private WadViewModel _wad = new WadViewModel();
+        private Dictionary<string, string> _localizationMap;
+        private WadViewModel _wad;
         private bool _isWadOpened;
         private int _clickCounter;
 
@@ -71,6 +84,7 @@ namespace Obsidian
 
             InitializeComponent();
             BindMVVM();
+            LoadLocalization();
             CheckForUpdate();
         }
 
@@ -91,9 +105,16 @@ namespace Obsidian
             this.DataContext = this;
             this.Preview = new PreviewViewModel(this.PreviewViewport);
 
+            DialogHelper.Initialize(this);
             DialogHelper.MessageDialog = this.MessageDialog;
             DialogHelper.OperationDialog = this.OperationDialog;
             DialogHelper.RootDialog = this.RootDialog;
+
+            this._wad = new WadViewModel(this);
+        }
+        private void LoadLocalization()
+        {
+            this.LocalizationMap = Localization.Load();
         }
         private async void CheckForUpdate()
         {
@@ -108,7 +129,7 @@ namespace Obsidian
 
                 if (newestVersion > Assembly.GetExecutingAssembly().GetName().Version)
                 {
-                    await DialogHelper.ShowMessageDialog("A new version of Obsidian is available." + '\n' + @"Click the ""OK"" button to download it.");
+                    await DialogHelper.ShowMessageDialog(Localization.Get("UpdateMessage"));
                     Process.Start("cmd", "/C start https://github.com/Crauzer/Obsidian/releases/tag/" + newestVersion.ToString());
                 }
             }
@@ -165,7 +186,7 @@ namespace Obsidian
 
                 if (files.Length != 1)
                 {
-                    await DialogHelper.ShowMessageDialog("You cannot drop more than 1 WAD file into Obsidian");
+                    await DialogHelper.ShowMessageDialog(Localization.Get("DragAndDropFileCountError"));
                 }
                 else
                 {
@@ -244,8 +265,7 @@ namespace Obsidian
                     }
                     catch (FileFormatException)
                     {
-                        await DialogHelper.ShowMessageDialog("Previewing of this DDS Format is not supported\n" +
-                            "File is most likely a cubemap or has a dimension of size 1");
+                        await DialogHelper.ShowMessageDialog(Localization.Get("PreviewErrorDDS"));
                     }
                 }
                 else if (extension == ".skn")
@@ -267,7 +287,7 @@ namespace Obsidian
             }
             catch (Exception)
             {
-                await DialogHelper.ShowMessageDialog("Unable to preview the selected file");
+                await DialogHelper.ShowMessageDialog(Localization.Get("PreviewErrorGeneric"));
             }
         }
         private void RemoveSelectedItems()
@@ -411,7 +431,7 @@ namespace Obsidian
             }
             catch (Exception exception)
             {
-                await DialogHelper.ShowMessageDialog("Obsidian was unable to open the WAD file you selected\n"
+                await DialogHelper.ShowMessageDialog(Localization.Get("OpeningWadError") + '\n'
                     + exception.Message + '\n'
                     + exception.StackTrace);
             }
@@ -481,7 +501,7 @@ namespace Obsidian
             }
             catch (Exception exception)
             {
-                await DialogHelper.ShowMessageDialog("Obsidian was unable to open the hashtables you selected\n"
+                await DialogHelper.ShowMessageDialog(Localization.Get("OpeningHashtablesError") + '\n'
                     + exception.Message + '\n'
                     + exception.StackTrace);
             }

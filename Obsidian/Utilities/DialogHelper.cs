@@ -13,9 +13,16 @@ namespace Obsidian.Utilities
         public static DialogHost OperationDialog { get; set; }
         public static DialogHost RootDialog { get; set; }
 
+        private static MainWindow _mainWindow;
+
+        public static void Initialize(MainWindow mainWindow)
+        {
+            _mainWindow = mainWindow;
+        }
+
         public static async Task<WadViewModel> ShowOpenWadOperartionDialog(string wadLocation)
         {
-            OpenWadOperationDialog dialog = new OpenWadOperationDialog(wadLocation);
+            OpenWadOperationDialog dialog = new OpenWadOperationDialog(_mainWindow, wadLocation);
 
             await DialogHost.Show(dialog, "OperationDialog", dialog.Load, null);
 
@@ -29,7 +36,7 @@ namespace Obsidian.Utilities
         }
         public static async Task<WadViewModel> ShowCreateWADOperationDialog(string folderLocation)
         {
-            CreateWadOperationDialog dialog = new CreateWadOperationDialog(folderLocation);
+            CreateWadOperationDialog dialog = new CreateWadOperationDialog(_mainWindow, folderLocation);
 
             await DialogHost.Show(dialog, "OperationDialog", dialog.StartCreation, null);
 
@@ -40,7 +47,7 @@ namespace Obsidian.Utilities
         {
             SettingsDialog dialog = new SettingsDialog()
             {
-                DataContext = new SettingsViewModel()
+                DataContext = new SettingsViewModel(_mainWindow)
             };
 
             await DialogHost.Show(dialog, "RootDialog");

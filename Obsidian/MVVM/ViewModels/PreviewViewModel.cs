@@ -2,10 +2,10 @@
 using Fantome.Libraries.League.IO.MapGeometry;
 using Fantome.Libraries.League.IO.StaticObject;
 using Fantome.Libraries.League.IO.SimpleSkin;
-using Fantome.Libraries.League.IO.StaticObject;
 using HelixToolkit.Wpf;
 using System;
 using System.Windows.Media.Imaging;
+using Obsidian.Utilities;
 
 namespace Obsidian.MVVM.ViewModels
 {
@@ -63,28 +63,28 @@ namespace Obsidian.MVVM.ViewModels
             this.Viewport.LoadMesh(skn);
 
             this.PreviewType = PreviewType.Viewport;
-            this.ContentType = "Simple Skin Model";
+            this.ContentType = Localization.Get("PreviewDescriptionSKN");
         }
         public void Preview(StaticObject staticObject)
         {
             this.Viewport.LoadMesh(staticObject);
 
             this.PreviewType = PreviewType.Viewport;
-            this.ContentType = "Static Object";
+            this.ContentType = Localization.Get("PreviewDescriptionStaticObject");
         }
         public void Preview(ImageEngineImage image)
         {
             this.Image = image.GetWPFBitmap(512);
 
             this.PreviewType = PreviewType.Image;
-            this.ContentType = "Direct Draw Surface";
+            this.ContentType = Localization.Get("PreviewDescriptionDDS");
         }
         public void Preview(MapGeometry mgeo)
         {
             this.Viewport.LoadMap(mgeo);
 
             this.PreviewType = PreviewType.Viewport;
-            this.ContentType = "Map Geometry";
+            this.ContentType = Localization.Get("PreviewDescriptionMapGeometry");
         }
 
         public void Clear()

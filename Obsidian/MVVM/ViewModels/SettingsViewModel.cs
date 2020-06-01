@@ -10,6 +10,8 @@ namespace Obsidian.MVVM.ViewModels
 {
     public class SettingsViewModel : PropertyNotifier
     {
+        public MainWindow MainWindow { get; }
+
         public bool GenerateHashesFromBIN
         {
             get => Config.Get<bool>("GenerateHashesFromBIN");
@@ -47,10 +49,26 @@ namespace Obsidian.MVVM.ViewModels
                 NotifyPropertyChanged();
             }
         }
+        public List<string> Locales => Localization.GetAvailableLocalizations(true);
+        public string SelectedLocale
+        {
+            get => Config.Get<string>("Localization");
+            set
+            {
+                Config.Set("Localization", value);
+                this.MainWindow.LocalizationMap = Localization.Load();
+                NotifyPropertyChanged();
+            }
+        }
 
         public ICommand SelectOpenWadInitialDirectoryCommand => new RelayCommand(SelectOpenWadInitialDirectory);
         public ICommand SelectSaveWadInitialDirectoryCommand => new RelayCommand(SelectSaveWadInitialDirectory);
         public ICommand SelectExtractInitialDirectoryCommand => new RelayCommand(SelectExtractInitialDirectory);
+
+        public SettingsViewModel(MainWindow mainWindow)
+        {
+            this.MainWindow = mainWindow;
+        }
 
         private void SelectOpenWadInitialDirectory(object o)
         {

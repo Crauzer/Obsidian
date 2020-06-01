@@ -19,7 +19,7 @@ namespace Obsidian.MVVM.ModelViews.Dialogs
 
         public SyncingHashtableDialog()
         {
-            this.Message = "Syncing hashtables...";
+            this.Message = Localization.Get("DialogSyncHashesMessage");
 
             InitializeComponent();
 

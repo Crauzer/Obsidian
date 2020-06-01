@@ -20,7 +20,8 @@ namespace Obsidian.Utilities
             { "SyncHashes", true },
             { "OpenWadInitialDirectory", "" },
             { "SaveWadInitialDirectory", "" },
-            { "ExtractInitialDirectory", "" }
+            { "ExtractInitialDirectory", "" },
+            { "Localization", "en_US" }
         };
         private static Dictionary<string, object> _config = new Dictionary<string, object>();
 

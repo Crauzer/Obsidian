@@ -20,7 +20,7 @@ namespace Obsidian.MVVM.ModelViews.Dialogs
         {
             this._wadLocation = wadLocation;
             this._wadViewModel = wad;
-            this.Message = "Saving\n" + wadLocation;
+            this.Message = Localization.Get("DialogSavingWadMessage") + '\n' + wadLocation;
 
             InitializeComponent();
         }

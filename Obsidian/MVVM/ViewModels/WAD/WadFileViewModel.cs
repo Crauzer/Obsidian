@@ -11,7 +11,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
         public WADEntry Entry { get; private set; }
 
         public WadFileViewModel(WadViewModel wadViewModel, WadItemViewModel parent, string path, string name, WADEntry entry)
-            : base(wadViewModel, parent, WadItemType.File)
+            : base(wadViewModel.Window, wadViewModel, parent, WadItemType.File)
         {
             this.Path = path;
             this.Name = name;

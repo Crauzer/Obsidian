@@ -121,7 +121,7 @@ namespace Obsidian.MVVM.ModelViews.Dialogs
 
             void GeneratePackedMapping()
             {
-                this.Message = "Creating packed mapping";
+                this.Message = Localization.Get("DialogExtractWadPackedMappingMessage");
 
                 foreach (WadFileViewModel entry in this._entries)
                 {
@@ -136,7 +136,7 @@ namespace Obsidian.MVVM.ModelViews.Dialogs
             }
             void CreateFolders()
             {
-                this.Message = "Creating Folders";
+                this.Message = Localization.Get("DialogExtractWadCreatingFoldersMessage");
 
                 foreach(WadFileViewModel entry in this._entries)
                 {

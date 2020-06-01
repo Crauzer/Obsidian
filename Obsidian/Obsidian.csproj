@@ -7,10 +7,10 @@
     <SignAssembly>false</SignAssembly>
     <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
     <Platforms>AnyCPU;x64</Platforms>
-    <AssemblyVersion>3.2.0.0</AssemblyVersion>
-    <FileVersion>3.2.0.0</FileVersion>
+    <AssemblyVersion>3.3.0.0</AssemblyVersion>
+    <FileVersion>3.0.0.0</FileVersion>
     <Configurations>Debug;Release;ReleasePortable</Configurations>
-    <Version>3.2.0</Version>
+    <Version>3.3.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -38,6 +38,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\English.locale.json" />
     <None Remove="Resources\idk.wav" />
   </ItemGroup>
 
@@ -57,6 +58,7 @@
     <Resource Include="Resources\icon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+    <EmbeddedResource Include="Resources\English.locale.json" />
     <EmbeddedResource Include="Resources\idk.wav">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>

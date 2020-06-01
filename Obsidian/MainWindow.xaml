@@ -20,7 +20,7 @@
         FontFamily="{DynamicResource MaterialDesignFont}"
         Title="Obsidian" Height="720" Width="1280" Icon="Resources/icon.ico" WindowStartupLocation="CenterScreen" 
         AllowDrop="True"
-        KeyDown="OnKeyPressed" Drop="OnWindowDrop">
+        KeyDown="OnKeyPressed" Drop="OnWindowDrop" Name="ObsidianWindow">
     <Window.Resources>
         <ResourceDictionary>
             <HierarchicalDataTemplate DataType="{x:Type WadViewModel:WadFolderViewModel}" 
@@ -45,10 +45,13 @@
 
                     <Grid.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Add Files" Icon="{MaterialDesign:PackIcon Kind=FileOutline}" Click="OnFolderAddFiles"/>
-                            <MenuItem Header="Add Folders" Icon="{MaterialDesign:PackIcon Kind=Folder}" Click="OnFolderAddFolders"/>
+                            <MenuItem Header="{Binding Path=Window.LocalizationMap[WadContextMenuAddFiles]}"
+                                      Icon="{MaterialDesign:PackIcon Kind=FileOutline}" Click="OnFolderAddFiles"/>
+                            <MenuItem Header="{Binding Path=Window.LocalizationMap[WadContextMenuAddFolders]}"
+                                      Icon="{MaterialDesign:PackIcon Kind=Folder}" Click="OnFolderAddFolders"/>
                             <Separator/>
-                            <MenuItem Header="Remove" Icon="{MaterialDesign:PackIcon Kind=PlaylistRemove}" Click="OnFolderRemove"/>
+                            <MenuItem Header="{Binding Path=Window.LocalizationMap[WadContextMenuRemove]}"
+                                      Icon="{MaterialDesign:PackIcon Kind=PlaylistRemove}" Click="OnFolderRemove"/>
                         </ContextMenu>
                     </Grid.ContextMenu>
                 </Grid>
@@ -81,9 +84,11 @@
 
                     <Grid.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Modify Data" Icon="{MaterialDesign:PackIcon Kind=FileRestore}" Click="OnFileModifyData"/>
+                            <MenuItem Header="{Binding Path=Window.LocalizationMap[WadContextMenuModifyData]}"
+                                      Icon="{MaterialDesign:PackIcon Kind=FileRestore}" Click="OnFileModifyData"/>
                             <Separator/>
-                            <MenuItem Header="Remove" Icon="{MaterialDesign:PackIcon Kind=Close}" Click="OnFileRemove"/>
+                            <MenuItem Header="{Binding Path=Window.LocalizationMap[WadContextMenuRemove]}"
+                                      Icon="{MaterialDesign:PackIcon Kind=Close}" Click="OnFileRemove"/>
                         </ContextMenu>
                     </Grid.ContextMenu>
                 </Grid>
@@ -209,24 +214,32 @@
                                                 <DockPanel HorizontalAlignment="Stretch"/>
                                             </ItemsPanelTemplate>
                                         </Menu.ItemsPanel>
-                                        <MenuItem Header="File">
-                                            <MenuItem Header="Open" Click="OnWadOpen" Icon="{MaterialDesign:PackIcon Kind=File}"/>
-                                            <MenuItem Header="Save" Icon="{MaterialDesign:PackIcon Kind=FileExport}" 
+                                        <MenuItem x:Name="MenuFile" Header="{Binding Path=LocalizationMap[MenuFile]}">
+                                            <MenuItem x:Name="MenuFileOpen" Header="{Binding Path=LocalizationMap[MenuFileOpen]}"
+                                                      Click="OnWadOpen" Icon="{MaterialDesign:PackIcon Kind=File}"/>
+                                            <MenuItem x:Name="MenuFileSave" Header="{Binding Path=LocalizationMap[MenuFileSave]}"
+                                                      Icon="{MaterialDesign:PackIcon Kind=FileExport}" 
                                                       IsEnabled="{Binding IsWadOpened, UpdateSourceTrigger=PropertyChanged}" Click="OnWadSave"/>
                                             <Separator/>
-                                            <MenuItem Header="Extract All" Icon="{MaterialDesign:PackIcon Kind=ContentSaveAll}" 
+                                            <MenuItem x:Name="MenuFileExtractAll" Header="{Binding Path=LocalizationMap[MenuFileExtractAll]}" 
+                                                      Icon="{MaterialDesign:PackIcon Kind=ContentSaveAll}" 
                                                       IsEnabled="{Binding IsWadOpened, UpdateSourceTrigger=PropertyChanged}" Click="OnExtractAll"/>
-                                            <MenuItem Header="Extract Selected" Icon="{MaterialDesign:PackIcon Kind=ContentSaveAll}"
+                                            <MenuItem x:Name="MenuFileExtractSelected" Header="{Binding Path=LocalizationMap[MenuFileExtractSelected]}" 
+                                                      Icon="{MaterialDesign:PackIcon Kind=ContentSaveAll}"
                                                       IsEnabled="{Binding WAD.ContainsSelection, UpdateSourceTrigger=PropertyChanged}" Click="OnExtractSelected"/>
                                             <Separator/>
-                                            <MenuItem Header="Import Hashtable" Icon="{MaterialDesign:PackIcon Kind=TableLargePlus}" Click="OnImportHashtable"/>
+                                            <MenuItem x:Name="MenuImportHashtable" Header="{Binding Path=LocalizationMap[MenuFileImportHashtable]}" 
+                                                      Icon="{MaterialDesign:PackIcon Kind=TableLargePlus}" Click="OnImportHashtable"/>
                                             <Separator/>
-                                            <MenuItem Header="Create" Icon="{MaterialDesign:PackIcon Kind=FileTree}" Click="OnCreateWAD"/>
+                                            <MenuItem x:Name="MenuFileCreate" Header="{Binding Path=LocalizationMap[MenuFileCreate]}" 
+                                                      Icon="{MaterialDesign:PackIcon Kind=FileTree}" Click="OnCreateWAD"/>
                                         </MenuItem>
-                                        <MenuItem Header="Tools">
-                                            <MenuItem Header="Generate Hashtable" Icon="{MaterialDesign:PackIcon Kind=TableEye}" Click="OnGenerateHashtable"/>
+                                        <MenuItem x:Name="MenuTools" Header="{Binding Path=LocalizationMap[MenuTools]}">
+                                            <MenuItem x:Name="MenuToolsGenerateHashtable" Header="{Binding Path=LocalizationMap[MenuToolsGenerateHashtable]}"
+                                                      Icon="{MaterialDesign:PackIcon Kind=TableEye}" Click="OnGenerateHashtable"/>
                                         </MenuItem>
-                                        <TextBox Text="{Binding WAD.Filter, UpdateSourceTrigger=PropertyChanged}" MaterialDesign:HintAssist.Hint="Filter"/>
+                                        <TextBox x:Name="MenuFilter" Text="{Binding WAD.Filter, UpdateSourceTrigger=PropertyChanged}"
+                                                 MaterialDesign:HintAssist.Hint="{Binding Path=LocalizationMap[MenuFilter]}"/>
                                         <MenuItem HorizontalAlignment="Right">
                                             <MenuItem.Header>
                                                 <Button Style="{StaticResource MaterialDesignFloatingActionButton}" Width="40" Height="40"

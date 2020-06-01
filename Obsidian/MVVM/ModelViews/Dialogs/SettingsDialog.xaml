@@ -21,16 +21,18 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <MaterialDesign:ColorZone Grid.Row="0" Mode="PrimaryDark" Padding="16" MaterialDesign:ShadowAssist.ShadowDepth="Depth4">
-            <TextBlock Text="Settings" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="40"/>
+            <TextBlock Text="{Binding MainWindow.LocalizationMap[DialogSettings]}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="40"/>
         </MaterialDesign:ColorZone>
         <Grid Grid.Row="1" Margin="32">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            
-            <GroupBox Grid.Row="0" Header="Initial Dialog Paths" Style="{DynamicResource MaterialDesignGroupBox}" MaterialDesign:ShadowAssist.ShadowDepth="Depth3" BorderThickness="1">
+
+            <GroupBox Grid.Row="0" Header="{Binding MainWindow.LocalizationMap[SettingsInitialDialogPaths]}"
+                      Style="{DynamicResource MaterialDesignGroupBox}" MaterialDesign:ShadowAssist.ShadowDepth="Depth3" BorderThickness="1">
                 <Grid Margin="0,0,0,15">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -43,7 +45,8 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBox Grid.Column="0" Text="{Binding OpenWadInitialDirectory, UpdateSourceTrigger=PropertyChanged}" 
-                                 MaterialDesign:HintAssist.Hint="Open WAD Dialog Initial Directory" MaterialDesign:HintAssist.HelperText="Select the folder in which the dialog will start"/>
+                                 MaterialDesign:HintAssist.Hint="{Binding MainWindow.LocalizationMap[SettingOpenWadDialogInitialDirectory]}"
+                                 MaterialDesign:HintAssist.HelperText="{Binding MainWindow.LocalizationMap[SettingOpenWadDialogInitialDirectoryDescription]}"/>
                         <Button Grid.Column="1" Grid.Row="1" Width="25" Height="25" Margin="15 0 0 0"
                                 Command="{Binding SelectOpenWadInitialDirectoryCommand}"
                                 Content="{MaterialDesign:PackIcon Kind=Folder}" Style="{StaticResource MaterialDesignFloatingActionAccentButton}"/>
@@ -54,7 +57,8 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBox Grid.Column="0" Text="{Binding SaveWadInitialDirectory, UpdateSourceTrigger=PropertyChanged}" 
-                                 MaterialDesign:HintAssist.Hint="Save WAD Dialog Initial Directory" MaterialDesign:HintAssist.HelperText="Select the folder in which the dialog will start"/>
+                                 MaterialDesign:HintAssist.Hint="{Binding MainWindow.LocalizationMap[SettingSaveWadDialogInitialDirectory]}"
+                                 MaterialDesign:HintAssist.HelperText="{Binding MainWindow.LocalizationMap[SettingSaveWadDialogInitialDirectoryDescription]}"/>
                         <Button Grid.Column="1" Grid.Row="1" Width="25" Height="25" Margin="15 0 0 0"
                                 Command="{Binding SelectSaveWadInitialDirectoryCommand}"
                                 Content="{MaterialDesign:PackIcon Kind=Folder}" Style="{StaticResource MaterialDesignFloatingActionAccentButton}"/>
@@ -65,7 +69,8 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBox Grid.Column="0" Text="{Binding ExtractInitialDirectory, UpdateSourceTrigger=PropertyChanged}" 
-                                 MaterialDesign:HintAssist.Hint="Extract Dialog Initial Directory" MaterialDesign:HintAssist.HelperText="Select the folder in which the dialog will start"/>
+                                 MaterialDesign:HintAssist.Hint="{Binding MainWindow.LocalizationMap[SettingExtractWadDialogInitialDirectory]}"
+                                 MaterialDesign:HintAssist.HelperText="{Binding MainWindow.LocalizationMap[SettingExtractWadDialogInitialDirectoryDescription]}"/>
                         <Button Grid.Column="1" Grid.Row="1" Width="25" Height="25" Margin="15 0 0 0"
                                 Command="{Binding SelectExtractInitialDirectoryCommand}"
                                 Content="{MaterialDesign:PackIcon Kind=Folder}" Style="{StaticResource MaterialDesignFloatingActionAccentButton}"/>
@@ -73,16 +78,22 @@
                 </Grid>
             </GroupBox>
             <CheckBox Style="{StaticResource MaterialDesignAccentCheckBox}" IsChecked="{Binding GenerateHashesFromBIN, UpdateSourceTrigger=PropertyChanged}" 
-                      Content="Generate Hashtables from BIN files" Grid.Row="1" Margin="0,35,0,0"/>
+                      Content="{Binding MainWindow.LocalizationMap[SettingBINHashtableGeneration]}" Grid.Row="1" Margin="0,35,0,0"/>
             <CheckBox Style="{StaticResource MaterialDesignAccentCheckBox}" IsChecked="{Binding SyncHashes, UpdateSourceTrigger=PropertyChanged}" 
-                      Content="Sync Hashes with CDragon" Grid.Row="2" Margin="0,10,0,0"/>
+                      Content="{Binding MainWindow.LocalizationMap[SettingCDragonHashSync]}" Grid.Row="2" Margin="0,10,0,0"/>
+            <StackPanel Grid.Row="3" Margin="0,10,0,0" Orientation="Horizontal">
+                <Label Content="{Binding MainWindow.LocalizationMap[SettingLocalization]}"/>
+                <ComboBox Style="{StaticResource MaterialDesignComboBox}" IsSynchronizedWithCurrentItem="True"
+                          ItemsSource="{Binding Locales}" SelectedItem="{Binding SelectedLocale}"
+                           Width="100" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+            </StackPanel>
         </Grid>
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" Content="OK" IsDefault="True" Command="{x:Static MaterialDesign:DialogHost.CloseDialogCommand}" Style="{StaticResource MaterialDesignFlatButton}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,10,0,10" Height="50" Width="150">
+            <Button Grid.Column="0" Content="{Binding MainWindow.LocalizationMap[DialogOK]}" IsDefault="True" Command="{x:Static MaterialDesign:DialogHost.CloseDialogCommand}" Style="{StaticResource MaterialDesignFlatButton}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,10,0,10" Height="50" Width="150">
                 <Button.CommandParameter>
                     <system:Boolean>True</system:Boolean>
                 </Button.CommandParameter>
