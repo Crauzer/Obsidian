@@ -4,6 +4,7 @@ using Obsidian.MVVM.ViewModels.WAD;
 using Obsidian.MVVM.ModelViews.Dialogs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
 
 namespace Obsidian.Utilities
 {
@@ -75,6 +76,13 @@ namespace Obsidian.Utilities
         public static async Task ShowSyncingHashtableDialog()
         {
             SyncingHashtableDialog dialog = new SyncingHashtableDialog();
+
+            await DialogHost.Show(dialog, "OperationDialog", dialog.StartSyncing, null);
+        }
+
+        public static async Task ShowSyncingLocalizationsDialog()
+        {
+            SyncingLocalizationsDialog dialog = new SyncingLocalizationsDialog();
 
             await DialogHost.Show(dialog, "OperationDialog", dialog.StartSyncing, null);
         }

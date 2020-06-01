@@ -141,6 +141,8 @@ namespace Obsidian
             {
                 await DialogHelper.ShowSyncingHashtableDialog();
             }
+
+            await DialogHelper.ShowSyncingLocalizationsDialog();
         }
 
         //Window Utility functions

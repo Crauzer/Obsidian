@@ -41,5 +41,6 @@
   "OpeningWadError": "Obsidian was unable to open the WAD file you selected",
   "PreviewErrorDDS": "Previewing of this DDS Format is not supported\nFile is most likely a cubemap or has a dimension of size 1",
   "PreviewErrorGeneric": "Unable to preview the selected file",
-  "DragAndDropFileCountError": "You cannot drop more than 1 WAD file into Obsidian"
+  "DragAndDropFileCountError": "You cannot drop more than 1 WAD file into Obsidian",
+  "DialogDownloadingLocalizations": "Downloading localizations..."
 }

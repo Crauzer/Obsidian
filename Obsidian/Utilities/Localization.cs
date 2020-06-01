@@ -11,7 +11,7 @@ namespace Obsidian.Utilities
 {
     public static class Localization
     {
-        private const string LOCALIZATION_FOLDER = "Localization";
+        public const string LOCALIZATION_FOLDER = "Localization";
         private const string DEFAULT_LOCALIZATION = "English";
 
         private static Dictionary<string, string> _localization;
