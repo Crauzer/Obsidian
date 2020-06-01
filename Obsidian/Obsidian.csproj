@@ -2,15 +2,15 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <SignAssembly>false</SignAssembly>
     <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
     <Platforms>AnyCPU;x64</Platforms>
-    <AssemblyVersion>3.1.2.0</AssemblyVersion>
-    <FileVersion>3.1.2.0</FileVersion>
+    <AssemblyVersion>3.2.0.0</AssemblyVersion>
+    <FileVersion>3.2.0.0</FileVersion>
     <Configurations>Debug;Release;ReleasePortable</Configurations>
-    <Version>3.1.2</Version>
+    <Version>3.2.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -43,7 +43,7 @@
 
   <ItemGroup>
     <PackageReference Include="CSharpImageLibrary" Version="4.2.0" />
-    <PackageReference Include="Fantome.Libraries.League" Version="1.0.7.1" />
+    <PackageReference Include="Fantome.Libraries.League" Version="1.2.1" />
     <PackageReference Include="HelixToolkit.Wpf" Version="2.10.0" />
     <PackageReference Include="MaterialDesignThemes" Version="3.0.1" />
     <PackageReference Include="Microsoft.Packaging.Tools.Trimming" Version="1.1.0-preview1-26619-01" />

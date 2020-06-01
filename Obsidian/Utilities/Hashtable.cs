@@ -35,8 +35,7 @@ namespace Obsidian.Utilities
             }
             else
             {
-                LeagueFileType fileType = LeagueUtilities.GetExtension(entry.GetContent(true));
-                string extension = LeagueUtilities.GetExtension(fileType);
+                string extension = LeagueUtilities.GetExtension(entry.GetContent(true));
 
                 return string.Format("{0}.{1}", entry.XXHash.ToString("x16"), extension);
             }

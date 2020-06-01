@@ -1,8 +1,8 @@
 ﻿using Fantome.Libraries.League.Helpers.Structures;
 using Fantome.Libraries.League.IO.MapGeometry;
-using Fantome.Libraries.League.IO.SCB;
-using Fantome.Libraries.League.IO.SCO;
+using Fantome.Libraries.League.IO.StaticObject;
 using Fantome.Libraries.League.IO.SimpleSkin;
+using Fantome.Libraries.League.IO.StaticObject;
 using HelixToolkit.Wpf;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -66,14 +66,14 @@ namespace Obsidian.MVVM.ViewModels
             this._viewport = viewport;
         }
 
-        public void LoadMesh(SKNFile skn)
+        public void LoadMesh(SimpleSkin skn)
         {
             this.Content.Clear();
 
             List<GeometryModel3D> geometryModels = new List<GeometryModel3D>();
 
             int submeshIndex = 0;
-            foreach (SKNSubmesh submesh in skn.Submeshes)
+            foreach (SimpleSkinSubmesh submesh in skn.Submeshes)
             {
                 MeshGeometry3D geometry = new MeshGeometry3D();
                 DiffuseMaterial material = new DiffuseMaterial(submeshIndex < BRUSHES.Count ? BRUSHES[submeshIndex] : Brushes.Gray);
@@ -81,11 +81,11 @@ namespace Obsidian.MVVM.ViewModels
                 Int32Collection indices = new Int32Collection(submesh.Indices.Count);
                 Point3DCollection vertices = new Point3DCollection(submesh.Vertices.Count);
                 Vector3DCollection normals = new Vector3DCollection(submesh.Vertices.Count);
-                foreach (ushort index in submesh.GetNormalizedIndices())
+                foreach (ushort index in submesh.Indices)
                 {
                     indices.Add(index);
                 }
-                foreach (SKNVertex vertex in submesh.Vertices)
+                foreach (SimpleSkinVertex vertex in submesh.Vertices)
                 {
                     vertices.Add(new Point3D(vertex.Position.X, vertex.Position.Y, vertex.Position.Z));
                     normals.Add(new Vector3D(vertex.Normal.X, vertex.Normal.Y, vertex.Normal.Z));
@@ -101,37 +101,35 @@ namespace Obsidian.MVVM.ViewModels
             }
 
             SetGeometryModels(geometryModels);
-            SetCamera(skn.CalculateCentralPoint());
+            SetCamera(skn.GetBoundingBox().GetCentralPoint());
         }
-        public void LoadMesh(SCBFile scb)
+        public void LoadMesh(StaticObject staticObject)
         {
             this.Content.Clear();
 
             List<GeometryModel3D> geometryModels = new List<GeometryModel3D>();
 
-            Point3DCollection vertices = new Point3DCollection(scb.Vertices.Count);
-            foreach (Vector3 vertex in scb.Vertices)
-            {
-                vertices.Add(new Point3D(vertex.X, vertex.Y, vertex.Z));
-            }
-
-
             int submeshIndex = 0;
-            foreach (KeyValuePair<string, List<SCBFace>> submesh in scb.Materials)
+            foreach (StaticObjectSubmesh submesh in staticObject.Submeshes)
             {
                 MeshGeometry3D geometry = new MeshGeometry3D();
                 DiffuseMaterial material = new DiffuseMaterial(submeshIndex < BRUSHES.Count ? BRUSHES[submeshIndex] : Brushes.Gray);
 
-                Int32Collection indices = new Int32Collection(submesh.Value.Count * 3);
-                foreach (SCBFace face in submesh.Value)
+                Int32Collection indices = new Int32Collection(submesh.Indices.Count);
+                Point3DCollection vertices = new Point3DCollection(submesh.Vertices.Count);
+                Vector3DCollection normals = new Vector3DCollection(submesh.Vertices.Count);
+                foreach (ushort index in submesh.Indices)
                 {
-                    indices.Add((int)face.Indices[0]);
-                    indices.Add((int)face.Indices[1]);
-                    indices.Add((int)face.Indices[2]);
+                    indices.Add(index);
+                }
+                foreach (StaticObjectVertex vertex in submesh.Vertices)
+                {
+                    vertices.Add(new Point3D(vertex.Position.X, vertex.Position.Y, vertex.Position.Z));
                 }
 
                 geometry.Positions = vertices;
                 geometry.TriangleIndices = indices;
+                geometry.Normals = normals;
 
                 geometryModels.Add(new GeometryModel3D(geometry, material));
 
@@ -139,53 +137,15 @@ namespace Obsidian.MVVM.ViewModels
             }
 
             SetGeometryModels(geometryModels);
-            SetCamera(scb.CalculateCentralPoint());
+            SetCamera(staticObject.GetBoundingBox().GetCentralPoint());
         }
-        public void LoadMesh(SCOFile sco)
+        public void LoadMap(MapGeometry mgeo)
         {
             this.Content.Clear();
 
             List<GeometryModel3D> geometryModels = new List<GeometryModel3D>();
 
-            Point3DCollection vertices = new Point3DCollection(sco.Vertices.Count);
-            foreach (Vector3 vertex in sco.Vertices)
-            {
-                vertices.Add(new Point3D(vertex.X, vertex.Y, vertex.Z));
-            }
-
-
-            int submeshIndex = 0;
-            foreach (KeyValuePair<string, List<SCOFace>> submesh in sco.Materials)
-            {
-                MeshGeometry3D geometry = new MeshGeometry3D();
-                DiffuseMaterial material = new DiffuseMaterial(submeshIndex < BRUSHES.Count ? BRUSHES[submeshIndex] : Brushes.Gray);
-
-                Int32Collection indices = new Int32Collection(submesh.Value.Count * 3);
-                foreach (SCOFace face in submesh.Value)
-                {
-                    indices.Add((int)face.Indices[0]);
-                    indices.Add((int)face.Indices[1]);
-                    indices.Add((int)face.Indices[2]);
-                }
-
-                geometry.Positions = vertices;
-                geometry.TriangleIndices = indices;
-
-                geometryModels.Add(new GeometryModel3D(geometry, material));
-
-                submeshIndex++;
-            }
-
-            SetGeometryModels(geometryModels);
-            SetCamera(sco.CalculateCentralPoint());
-        }
-        public void LoadMap(MGEOFile mgeo)
-        {
-            this.Content.Clear();
-
-            List<GeometryModel3D> geometryModels = new List<GeometryModel3D>();
-
-            foreach (MGEOObject mgeoObject in mgeo.Objects)
+            foreach (MapGeometryModel mgeoObject in mgeo.Models)
             {
                 MeshGeometry3D geometry = new MeshGeometry3D();
                 DiffuseMaterial material = new DiffuseMaterial(Brushes.Gray);
@@ -196,7 +156,7 @@ namespace Obsidian.MVVM.ViewModels
                 {
                     indices.Add(index);
                 }
-                foreach(MGEOVertex vertex in mgeoObject.Vertices)
+                foreach(MapGeometryVertex vertex in mgeoObject.Vertices)
                 {
                     vertices.Add(new Point3D(vertex.Position.X, vertex.Position.Y, vertex.Position.Z));
                 }

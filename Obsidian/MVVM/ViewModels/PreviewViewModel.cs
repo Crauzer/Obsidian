@@ -1,8 +1,8 @@
 ﻿using CSharpImageLibrary;
 using Fantome.Libraries.League.IO.MapGeometry;
-using Fantome.Libraries.League.IO.SCB;
-using Fantome.Libraries.League.IO.SCO;
+using Fantome.Libraries.League.IO.StaticObject;
 using Fantome.Libraries.League.IO.SimpleSkin;
+using Fantome.Libraries.League.IO.StaticObject;
 using HelixToolkit.Wpf;
 using System;
 using System.Windows.Media.Imaging;
@@ -58,23 +58,16 @@ namespace Obsidian.MVVM.ViewModels
             this._viewport = new ViewportViewModel(viewport);
         }
 
-        public void Preview(SKNFile skn)
+        public void Preview(SimpleSkin skn)
         {
             this.Viewport.LoadMesh(skn);
 
             this.PreviewType = PreviewType.Viewport;
             this.ContentType = "Simple Skin Model";
         }
-        public void Preview(SCBFile scb)
+        public void Preview(StaticObject staticObject)
         {
-            this.Viewport.LoadMesh(scb);
-
-            this.PreviewType = PreviewType.Viewport;
-            this.ContentType = "Static Object";
-        }
-        public void Preview(SCOFile sco)
-        {
-            this.Viewport.LoadMesh(sco);
+            this.Viewport.LoadMesh(staticObject);
 
             this.PreviewType = PreviewType.Viewport;
             this.ContentType = "Static Object";
@@ -86,7 +79,7 @@ namespace Obsidian.MVVM.ViewModels
             this.PreviewType = PreviewType.Image;
             this.ContentType = "Direct Draw Surface";
         }
-        public void Preview(MGEOFile mgeo)
+        public void Preview(MapGeometry mgeo)
         {
             this.Viewport.LoadMap(mgeo);
 

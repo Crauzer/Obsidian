@@ -1,7 +1,6 @@
 ﻿using CSharpImageLibrary;
 using Fantome.Libraries.League.IO.MapGeometry;
-using Fantome.Libraries.League.IO.SCB;
-using Fantome.Libraries.League.IO.SCO;
+using Fantome.Libraries.League.IO.StaticObject;
 using Fantome.Libraries.League.IO.SimpleSkin;
 using Fantome.Libraries.League.IO.WAD;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -251,19 +250,19 @@ namespace Obsidian
                 }
                 else if (extension == ".skn")
                 {
-                    this.Preview.Preview(new SKNFile(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                    this.Preview.Preview(new SimpleSkin(new MemoryStream(selectedEntry.Entry.GetContent(true))));
                 }
                 else if (extension == ".scb")
                 {
-                    this.Preview.Preview(new SCBFile(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                    this.Preview.Preview(StaticObject.ReadSCB(new MemoryStream(selectedEntry.Entry.GetContent(true))));
                 }
                 else if (extension == ".sco")
                 {
-                    this.Preview.Preview(new SCOFile(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                    this.Preview.Preview(StaticObject.ReadSCO(new MemoryStream(selectedEntry.Entry.GetContent(true))));
                 }
                 else if (extension == ".mapgeo")
                 {
-                    this.Preview.Preview(new MGEOFile(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                    this.Preview.Preview(new MapGeometry(new MemoryStream(selectedEntry.Entry.GetContent(true))));
                 }
             }
             catch (Exception)

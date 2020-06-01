@@ -33,7 +33,7 @@ namespace Obsidian.Utilities
             foreach (WADEntry entry in wad.Entries.Where(x => x.Type != EntryType.FileRedirection))
             {
                 byte[] entryContent = entry.GetContent(true);
-                LeagueFileType fileType = LeagueUtilities.GetExtension(entryContent);
+                LeagueFileType fileType = LeagueUtilities.GetExtensionType(entryContent);
 
                 if (fileType == LeagueFileType.BIN)
                 {
