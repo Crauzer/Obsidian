@@ -19,7 +19,7 @@
     "SettingExtractWadDialogInitialDirectoryDescription": "Diyalogun açılacağı klasörü seçin",
     "SettingBINHashtableGeneration": "BIN Dosyalarından Hashtable Oluştur",
     "SettingCDragonHashSync": "Hash'leri CDragon İle Eşle",
-  	"SettingLocalization": "Yerelleştirme:",
+	"SettingLocalization": "Yerelleştirme:",
     "DialogOK": "TAMAM",
     "PreviewDescriptionDDS": "Direct Draw Surface",
     "PreviewDescriptionSKN": "Simple Skin Model",
