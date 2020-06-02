@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using System.Text.Json;
+using Newtonsoft.Json;
 
 namespace Obsidian.Utilities
 {
@@ -55,7 +55,7 @@ namespace Obsidian.Utilities
             byte[] defaultLocalizationBuffer = new byte[localizationStream.Length];
             localizationStream.Read(defaultLocalizationBuffer, 0, defaultLocalizationBuffer.Length);
 
-            return JsonSerializer.Deserialize<Dictionary<string, string>>(defaultLocalizationBuffer);
+            return JsonConvert.DeserializeObject<Dictionary<string, string>>(Encoding.UTF8.GetString(defaultLocalizationBuffer));
         }
         private static Dictionary<string, string> ReadDefaultLocalization()
         {

@@ -36,10 +36,10 @@
   "WadContextMenuAddFolders": "Agregar carpetas",
   "WadContextMenuRemove": "Eliminar",
   "WadContextMenuModifyData": "Modificar datos",
-  "UpdateMessage": "Una nueva versión de Obsidian está disponible. Haga clic en el botón Aceptar para descargarla",
+  "UpdateMessage": "Una nueva versión de Obsidian está disponible.\nHaga clic en el botón Aceptar para descargarla",
   "OpeningHashtablesError": "Obsidian no pudo abrir las tablas hash que seleccionó",
   "OpeningWadError": "Obsidian no pudo abrir el archivo WAD que seleccionó",
-  "PreviewErrorDDS": "La vista previa de este formato DDS no es compatible. El archivo es probablemente un mapa de cubos o tiene una dimensión de tamaño 1",
+  "PreviewErrorDDS": "La vista previa de este formato DDS no es compatible.\nEl archivo es probablemente un mapa de cubos o tiene una dimensión de tamaño 1",
   "PreviewErrorGeneric": "No se puede obtener una vista previa del archivo seleccionado",
   "DragAndDropFileCountError": "No puede colocar más de 1 archivo WAD en Obsidian",
   "DialogDownloadingLocalizations": "Descargando localizaciones..."
