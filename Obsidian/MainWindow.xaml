@@ -267,7 +267,9 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <TextBlock Text="{Binding WadName}"/>
-                                    <Button Style="{StaticResource MaterialDesignFloatingActionButton}" Width="16" Height="16" Margin="14,0,0,0" Click="OnCloseWadTab"/>
+                                    <Button Style="{StaticResource MaterialDesignRaisedDarkButton}" Width="16" Height="16" 
+                                            MaterialDesign:ButtonAssist.CornerRadius="5"
+                                            Margin="14,0,0,0" Click="OnCloseWadTab"/>
                                 </StackPanel>
                             </DataTemplate>
                         </TabControl.ItemTemplate>
@@ -299,7 +301,11 @@
                                         <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Grid.Row="1" x:Name="ViewportContentType" 
                                                    Text="{Binding Preview.ContentType, UpdateSourceTrigger=PropertyChanged}"
                                                    HorizontalAlignment="Center" VerticalAlignment="Center"
-                                                   FontSize="20" FontWeight="Bold" Margin="10" FontFamily="{DynamicResource MaterialDesignFont}"/>
+                                                   FontSize="20" FontWeight="Bold" Margin="10" FontFamily="{DynamicResource MaterialDesignFont}">
+                                            <TextBlock.Foreground>
+                                                <SolidColorBrush Color="{DynamicResource Primary400Foreground}"/>
+                                            </TextBlock.Foreground>
+                                        </TextBlock>
                                     </Grid>
                                 </Grid>
                             </DataTemplate>

@@ -51,6 +51,7 @@ namespace Obsidian
             set
             {
                 this._selectedWad = value;
+                NotifyPropertyChanged(nameof(this.IsWadOpened));
                 NotifyPropertyChanged();
             }
         }
@@ -100,6 +101,8 @@ namespace Obsidian
         private void BindMVVM()
         {
             this.DataContext = this;
+
+            this.SelectedWad = new WadViewModel(this);
 
             DialogHelper.Initialize(this);
             DialogHelper.MessageDialog = this.MessageDialog;
@@ -586,7 +589,11 @@ namespace Obsidian
             HelixViewport3D viewport = sender as HelixViewport3D;
             WadViewModel wad = viewport.DataContext as WadViewModel;
 
-            wad.Preview.SetViewport(viewport);
+            //wad == null if we're closing the tab
+            if(wad != null)
+            {
+                wad.Preview.SetViewport(viewport);
+            }
         }
     }
 }
