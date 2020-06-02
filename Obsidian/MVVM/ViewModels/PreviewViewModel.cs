@@ -53,9 +53,9 @@ namespace Obsidian.MVVM.ViewModels
         private ViewportViewModel _viewport;
         private BitmapSource _image;
 
-        public PreviewViewModel(HelixViewport3D viewport)
+        public PreviewViewModel()
         {
-            this._viewport = new ViewportViewModel(viewport);
+            this._viewport = new ViewportViewModel();
         }
 
         public void Preview(SimpleSkin skn)

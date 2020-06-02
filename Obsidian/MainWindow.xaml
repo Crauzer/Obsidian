@@ -7,6 +7,7 @@
         xmlns:ControlzEx="clr-namespace:ControlzEx;assembly=MaterialDesignThemes.Wpf"
         xmlns:MaterialDesignUtilities="clr-namespace:Obsidian.Utilities.MaterialDesign"
         xmlns:FantomeUtilities="clr-namespace:Fantome.Libraries.League.Helpers;assembly=Fantome.Libraries.League"
+        xmlns:MaterialDesignExtensions="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
         xmlns:Helix="http://helix-toolkit.org/wpf"
         xmlns:ViewModels="clr-namespace:Obsidian.MVVM.ViewModels"
         xmlns:WadViewModel="clr-namespace:Obsidian.MVVM.ViewModels.WAD"
@@ -226,7 +227,7 @@
                                                       IsEnabled="{Binding IsWadOpened, UpdateSourceTrigger=PropertyChanged}" Click="OnExtractAll"/>
                                             <MenuItem x:Name="MenuFileExtractSelected" Header="{Binding Path=LocalizationMap[MenuFileExtractSelected]}" 
                                                       Icon="{MaterialDesign:PackIcon Kind=ContentSaveAll}"
-                                                      IsEnabled="{Binding WAD.ContainsSelection, UpdateSourceTrigger=PropertyChanged}" Click="OnExtractSelected"/>
+                                                      IsEnabled="{Binding SelectedWad.ContainsSelection, UpdateSourceTrigger=PropertyChanged}" Click="OnExtractSelected"/>
                                             <Separator/>
                                             <MenuItem x:Name="MenuImportHashtable" Header="{Binding Path=LocalizationMap[MenuFileImportHashtable]}" 
                                                       Icon="{MaterialDesign:PackIcon Kind=TableLargePlus}" Click="OnImportHashtable"/>
@@ -238,7 +239,7 @@
                                             <MenuItem x:Name="MenuToolsGenerateHashtable" Header="{Binding Path=LocalizationMap[MenuToolsGenerateHashtable]}"
                                                       Icon="{MaterialDesign:PackIcon Kind=TableEye}" Click="OnGenerateHashtable"/>
                                         </MenuItem>
-                                        <TextBox x:Name="MenuFilter" Text="{Binding WAD.Filter, UpdateSourceTrigger=PropertyChanged}"
+                                        <TextBox x:Name="MenuFilter" Text="{Binding SelectedWad.Filter, UpdateSourceTrigger=PropertyChanged}"
                                                  MaterialDesign:HintAssist.Hint="{Binding Path=LocalizationMap[MenuFilter]}"/>
                                         <MenuItem HorizontalAlignment="Right">
                                             <MenuItem.Header>
@@ -252,7 +253,7 @@
 
 
                                     </Menu>
-                                    
+
                                     <Image Grid.Column="1" HorizontalAlignment="Right" Source="Resources/icon.ico" Width="50" MouseDown="OnObsidianImageClick"/>
                                 </Grid>
                             </DockPanel>
@@ -260,32 +261,49 @@
                         </Grid>
 
                     </MaterialDesign:Card>
-                    <Grid Grid.Row="1">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TreeView x:Name="WadTree" Grid.Column="0" DataContext="{Binding WAD}"
+                    <TabControl Grid.Row="1" Style="{StaticResource MaterialDesignTabControl}" 
+                                ItemsSource="{Binding WadViewModels}" SelectedItem="{Binding SelectedWad, UpdateSourceTrigger=PropertyChanged}">
+                        <TabControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding WadName}"/>
+                                    <Button Style="{StaticResource MaterialDesignFloatingActionButton}" Width="16" Height="16" Margin="14,0,0,0" Click="OnCloseWadTab"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </TabControl.ItemTemplate>
+                        <TabControl.ContentTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TreeView x:Name="WadTree" Grid.Column="0"
                               ItemsSource="{Binding Items, UpdateSourceTrigger=PropertyChanged}" Margin="0,8,0,0"
                               VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" SelectedItemChanged="OnSelectedItemChanged"/>
-                        <GridSplitter Grid.Column="1" Width="3" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
-                        <Grid Grid.Column="2">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <Image x:Name="PreviewImage" Source="{Binding Preview.Image, UpdateSourceTrigger=PropertyChanged}"
+                                    <GridSplitter Grid.Column="1" Width="3" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
+                                    <Grid Grid.Column="2">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Image Source="{Binding Preview.Image, UpdateSourceTrigger=PropertyChanged}"
                                    Style="{StaticResource ContentPreviewImage}"
                                    Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" MaxWidth="512"/>
-                            <Helix:HelixViewport3D x:Name="PreviewViewport" Grid.Row="0" Style="{StaticResource ContentPreviewViewport}"
+                                        <Helix:HelixViewport3D DataContext="{Binding Preview.Viewport, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Style="{StaticResource ContentPreviewViewport}"
                                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                               ItemsSource="{Binding Preview.Viewport.Content}" ShowCoordinateSystem="True" ModelUpDirection="0, 1, 0" CameraRotationMode="Trackball" CoordinateSystemWidth="82" MinWidth="300"/>
-                            <TextBlock Grid.Row="1" x:Name="ViewportContentType" Text="{Binding Preview.ContentType, UpdateSourceTrigger=PropertyChanged}"
+                                               ItemsSource="{Binding Content}" ShowCoordinateSystem="True" ModelUpDirection="0, 1, 0" 
+                                               CameraRotationMode="Trackball" CoordinateSystemWidth="82" MinWidth="300" RotateAroundMouseDownPoint="True" ShowTriangleCountInfo="True"/>
+                                        <TextBlock Grid.Row="1" x:Name="ViewportContentType" Text="{Binding Preview.ContentType, UpdateSourceTrigger=PropertyChanged}"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"
                                        FontSize="20" FontWeight="Bold" Margin="10"/>
-                        </Grid>
-                    </Grid>
+                                    </Grid>
+                                </Grid>
+                            </DataTemplate>
+                        </TabControl.ContentTemplate>
+
+                    </TabControl>
                 </Grid>
             </MaterialDesign:DialogHost>
         </MaterialDesign:DialogHost>

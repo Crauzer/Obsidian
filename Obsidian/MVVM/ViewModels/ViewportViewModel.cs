@@ -2,7 +2,6 @@
 using Fantome.Libraries.League.IO.MapGeometry;
 using Fantome.Libraries.League.IO.StaticObject;
 using Fantome.Libraries.League.IO.SimpleSkin;
-using Fantome.Libraries.League.IO.StaticObject;
 using HelixToolkit.Wpf;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -47,7 +46,6 @@ namespace Obsidian.MVVM.ViewModels
             }
         };
 
-        public PerspectiveCamera Camera { get; }
         public ObservableCollection<ModelVisual3D> Content
         {
             get => this._content;
@@ -59,11 +57,10 @@ namespace Obsidian.MVVM.ViewModels
         }
 
         private ObservableCollection<ModelVisual3D> _content = new ObservableCollection<ModelVisual3D>();
-        private HelixViewport3D _viewport;
 
-        public ViewportViewModel(HelixViewport3D viewport)
+        public ViewportViewModel()
         {
-            this._viewport = viewport;
+
         }
 
         public void LoadMesh(SimpleSkin skn)
@@ -187,8 +184,8 @@ namespace Obsidian.MVVM.ViewModels
         }
         private void SetCamera(Vector3 point)
         {
-            this._viewport.Camera.Position = new Point3D(point.X, point.Y, point.Z);
-            this._viewport.Camera.FitView(this._viewport.Viewport, new Vector3D(0, 0, -1), new Vector3D(0, 1, 0), 500);
+            //this.Camera.Position = new Point3D(point.X, point.Y, point.Z);
+            //this.Camera.FitView(this._camera., new Vector3D(0, 0, -1), new Vector3D(0, 1, 0), 500);
         }
 
         public void Clear()

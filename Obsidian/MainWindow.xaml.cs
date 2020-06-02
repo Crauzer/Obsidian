@@ -26,6 +26,7 @@ using PathIO = System.IO.Path;
 using Localization = Obsidian.Utilities.Localization;
 using MaterialDesignThemes.Wpf;
 using System.Windows.Controls;
+using System.Collections.ObjectModel;
 
 namespace Obsidian
 {
@@ -39,24 +40,20 @@ namespace Obsidian
     {
         public bool IsWadOpened
         {
-            get => this._isWadOpened;
+            get => this.WadViewModels.Count != 0;
+        }
+
+        public ObservableCollection<WadViewModel> WadViewModels { get; set; } = new ObservableCollection<WadViewModel>();
+        public WadViewModel SelectedWad
+        {
+            get => this._selectedWad;
             set
             {
-                this._isWadOpened = value;
+                this._selectedWad = value;
                 NotifyPropertyChanged();
             }
         }
-        public WadViewModel WAD
-        {
-            get => this._wad;
-            private set
-            {
-                this._wad = value;
-                this.IsWadOpened = true;
-                NotifyPropertyChanged();
-            }
-        }
-        public PreviewViewModel Preview { get; private set; }
+
         public Dictionary<string, string> LocalizationMap
         {
             get => this._localizationMap;
@@ -67,9 +64,8 @@ namespace Obsidian
             }
         }
 
+        private WadViewModel _selectedWad;
         private Dictionary<string, string> _localizationMap;
-        private WadViewModel _wad;
-        private bool _isWadOpened;
         private int _clickCounter;
 
         public ICommand OpenSettingsCommand => new RelayCommand(OpenSettings);
@@ -103,14 +99,11 @@ namespace Obsidian
         private void BindMVVM()
         {
             this.DataContext = this;
-            this.Preview = new PreviewViewModel(this.PreviewViewport);
 
             DialogHelper.Initialize(this);
             DialogHelper.MessageDialog = this.MessageDialog;
             DialogHelper.OperationDialog = this.OperationDialog;
             DialogHelper.RootDialog = this.RootDialog;
-
-            this._wad = new WadViewModel(this);
         }
         private void LoadLocalization()
         {
@@ -185,15 +178,13 @@ namespace Obsidian
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                foreach(string file in files)
+                {
+                    WadViewModel wad = await DialogHelper.ShowOpenWadOperartionDialog(file);
 
-                if (files.Length != 1)
-                {
-                    await DialogHelper.ShowMessageDialog(Localization.Get("DragAndDropFileCountError"));
-                }
-                else
-                {
-                    this.WAD = await DialogHelper.ShowOpenWadOperartionDialog(files[0]);
-                    this.Preview.Clear();
+                    this.WadViewModels.Add(wad);
+
+                    this.SelectedWad = wad;
                 }
             }
         }
@@ -206,7 +197,7 @@ namespace Obsidian
             }
             else if (e.NewValue is WadFolderViewModel)
             {
-                this.Preview.Clear();
+                this.SelectedWad.Preview.Clear();
             }
 
             //Handle multi-selection
@@ -226,14 +217,14 @@ namespace Obsidian
                     if (oldItem.Parent == null)
                     {
                         //Select/Deselect all items in the range
-                        int oldItemIndex = this.WAD.Items.IndexOf(oldItem);
-                        int newItemIndex = this.WAD.Items.IndexOf(newItem);
+                        int oldItemIndex = this.SelectedWad.Items.IndexOf(oldItem);
+                        int newItemIndex = this.SelectedWad.Items.IndexOf(newItem);
                         int startingIndex = oldItemIndex < newItemIndex ? oldItemIndex : newItemIndex;
                         int endingIndex = oldItemIndex < newItemIndex ? newItemIndex : oldItemIndex;
 
                         for (int i = startingIndex; i <= endingIndex; i++)
                         {
-                            this.WAD.Items[i].IsSelected ^= true;
+                            this.SelectedWad.Items[i].IsSelected ^= true;
                         }
                     }
                     else
@@ -263,7 +254,7 @@ namespace Obsidian
                 {
                     try
                     {
-                        this.Preview.Preview(new ImageEngineImage(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                        this.SelectedWad.Preview.Preview(new ImageEngineImage(new MemoryStream(selectedEntry.Entry.GetContent(true))));
                     }
                     catch (FileFormatException)
                     {
@@ -272,19 +263,19 @@ namespace Obsidian
                 }
                 else if (extension == ".skn")
                 {
-                    this.Preview.Preview(new SimpleSkin(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                    this.SelectedWad.Preview.Preview(new SimpleSkin(new MemoryStream(selectedEntry.Entry.GetContent(true))));
                 }
                 else if (extension == ".scb")
                 {
-                    this.Preview.Preview(StaticObject.ReadSCB(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                    this.SelectedWad.Preview.Preview(StaticObject.ReadSCB(new MemoryStream(selectedEntry.Entry.GetContent(true))));
                 }
                 else if (extension == ".sco")
                 {
-                    this.Preview.Preview(StaticObject.ReadSCO(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                    this.SelectedWad.Preview.Preview(StaticObject.ReadSCO(new MemoryStream(selectedEntry.Entry.GetContent(true))));
                 }
                 else if (extension == ".mapgeo")
                 {
-                    this.Preview.Preview(new MapGeometry(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                    this.SelectedWad.Preview.Preview(new MapGeometry(new MemoryStream(selectedEntry.Entry.GetContent(true))));
                 }
             }
             catch (Exception)
@@ -294,15 +285,22 @@ namespace Obsidian
         }
         private void RemoveSelectedItems()
         {
-            foreach (WadFileViewModel file in this.WAD.GetSelectedFiles().ToList())
+            foreach (WadFileViewModel file in this.SelectedWad.GetSelectedFiles().ToList())
             {
                 file.Remove();
             }
 
-            foreach (WadFolderViewModel folder in this.WAD.GetSelectedFolders().ToList())
+            foreach (WadFolderViewModel folder in this.SelectedWad.GetSelectedFolders().ToList())
             {
                 folder.Remove();
             }
+        }
+        
+        private void OnCloseWadTab(object sender, RoutedEventArgs e)
+        {
+            WadViewModel wad = (e.Source as Button).DataContext as WadViewModel;
+
+            this.WadViewModels.Remove(wad);
         }
 
         //Menu event functions
@@ -426,8 +424,11 @@ namespace Obsidian
 
                     if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                     {
-                        this.WAD = await DialogHelper.ShowOpenWadOperartionDialog(dialog.FileName);
-                        this.Preview.Clear();
+                        WadViewModel wad = await DialogHelper.ShowOpenWadOperartionDialog(dialog.FileName);
+
+                        this.WadViewModels.Add(wad);
+
+                        this.SelectedWad = wad;
                     }
                 }
             }
@@ -449,7 +450,7 @@ namespace Obsidian
 
                 if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
-                    await DialogHelper.ShowSaveWadOperationDialog(dialog.FileName, this.WAD);
+                    await DialogHelper.ShowSaveWadOperationDialog(dialog.FileName, this.SelectedWad);
                 }
             }
         }
@@ -463,7 +464,7 @@ namespace Obsidian
 
                 if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
-                    await DialogHelper.ShowExtractOperationDialog(dialog.FileName, this.WAD.GetAllFiles());
+                    await DialogHelper.ShowExtractOperationDialog(dialog.FileName, this.SelectedWad.GetAllFiles());
                 }
             }
         }
@@ -476,7 +477,7 @@ namespace Obsidian
 
                 if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
-                    await DialogHelper.ShowExtractOperationDialog(dialog.FileName, this.WAD.GetSelectedFiles());
+                    await DialogHelper.ShowExtractOperationDialog(dialog.FileName, this.SelectedWad.GetSelectedFiles());
                 }
             }
         }
@@ -497,7 +498,7 @@ namespace Obsidian
                             Hashtable.Load(hashtableFile);
                         }
 
-                        this.WAD.Refresh();
+                        this.SelectedWad.Refresh();
                     }
                 }
             }
@@ -562,8 +563,11 @@ namespace Obsidian
 
                 if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
-                    this.WAD = await DialogHelper.ShowCreateWADOperationDialog(dialog.FileName);
-                    this.Preview.Clear();
+                    WadViewModel wad = await DialogHelper.ShowCreateWADOperationDialog(dialog.FileName);
+
+                    this.WadViewModels.Add(wad);
+
+                    this.SelectedWad = wad;
                 }
             }
         }

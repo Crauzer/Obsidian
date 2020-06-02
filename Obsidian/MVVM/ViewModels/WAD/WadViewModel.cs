@@ -1,10 +1,12 @@
 ﻿using Fantome.Libraries.League.IO.WAD;
+using HelixToolkit.Wpf;
 using Obsidian.Utilities;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
-using System.Windows;
+using System.Runtime.CompilerServices;
 using System.Windows.Data;
 
 namespace Obsidian.MVVM.ViewModels.WAD
@@ -76,14 +78,37 @@ namespace Obsidian.MVVM.ViewModels.WAD
             }
             set => this._wad = value;
         }
-        public string WADLocation { get; set; }
+        public string WADLocation
+        {
+            get => this._wadLocation;
+            set
+            {
+                this._wadLocation = value;
+                this.WadName = Path.GetFileName(value);
+                NotifyPropertyChanged();
+            }
+        }
+        public string WadName 
+        {
+            get => this._wadName;
+            set
+            {
+                this._wadName = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public PreviewViewModel Preview { get; private set; }
 
         private string _filter;
         private WADFile _wad;
+        private string _wadLocation;
+        private string _wadName;
 
         public WadViewModel(MainWindow window)
         {
             this.Window = window;
+            this.Preview = new PreviewViewModel();
         }
 
         public void LoadWad(string wadLocation)
