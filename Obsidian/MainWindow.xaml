@@ -261,7 +261,7 @@
                         </Grid>
 
                     </MaterialDesign:Card>
-                    <TabControl Grid.Row="1" Style="{StaticResource MaterialDesignTabControl}" 
+                    <TabControl Name="WadTabControl" Grid.Row="1" Style="{StaticResource MaterialDesignTabControl}" 
                                 ItemsSource="{Binding WadViewModels}" SelectedItem="{Binding SelectedWad, UpdateSourceTrigger=PropertyChanged}">
                         <TabControl.ItemTemplate>
                             <DataTemplate>
@@ -291,13 +291,15 @@
                                         <Image Source="{Binding Preview.Image, UpdateSourceTrigger=PropertyChanged}"
                                    Style="{StaticResource ContentPreviewImage}"
                                    Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" MaxWidth="512"/>
-                                        <Helix:HelixViewport3D DataContext="{Binding Preview.Viewport, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Style="{StaticResource ContentPreviewViewport}"
-                                               HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                               ItemsSource="{Binding Content}" ShowCoordinateSystem="True" ModelUpDirection="0, 1, 0" 
-                                               CameraRotationMode="Trackball" CoordinateSystemWidth="82" MinWidth="300" RotateAroundMouseDownPoint="True" ShowTriangleCountInfo="True"/>
-                                        <TextBlock Grid.Row="1" x:Name="ViewportContentType" Text="{Binding Preview.ContentType, UpdateSourceTrigger=PropertyChanged}"
-                                       HorizontalAlignment="Center" VerticalAlignment="Center"
-                                       FontSize="20" FontWeight="Bold" Margin="10"/>
+                                        <Helix:HelixViewport3D Grid.Row="0" Style="{StaticResource ContentPreviewViewport}"
+                                                               HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                                               ItemsSource="{Binding Preview.Viewport.Content}" ShowCoordinateSystem="True" ModelUpDirection="0, 1, 0" 
+                                                               CameraRotationMode="Trackball" CoordinateSystemWidth="82" MinWidth="300" 
+                                                               ShowTriangleCountInfo="True" DataContextChanged="OnWadTabViewportDataContextChanged"/>
+                                        <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Grid.Row="1" x:Name="ViewportContentType" 
+                                                   Text="{Binding Preview.ContentType, UpdateSourceTrigger=PropertyChanged}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                   FontSize="20" FontWeight="Bold" Margin="10" FontFamily="{DynamicResource MaterialDesignFont}"/>
                                     </Grid>
                                 </Grid>
                             </DataTemplate>

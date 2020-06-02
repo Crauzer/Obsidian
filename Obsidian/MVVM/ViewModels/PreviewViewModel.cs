@@ -94,6 +94,11 @@ namespace Obsidian.MVVM.ViewModels
             this.PreviewType = PreviewType.None;
             this.ContentType = string.Empty;
         }
+
+        public void SetViewport(HelixViewport3D viewport)
+        {
+            this.Viewport.SetViewport(viewport);
+        }
     }
 
     public enum PreviewType

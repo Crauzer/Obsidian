@@ -27,6 +27,7 @@ using Localization = Obsidian.Utilities.Localization;
 using MaterialDesignThemes.Wpf;
 using System.Windows.Controls;
 using System.Collections.ObjectModel;
+using HelixToolkit.Wpf;
 
 namespace Obsidian
 {
@@ -426,9 +427,7 @@ namespace Obsidian
                     {
                         WadViewModel wad = await DialogHelper.ShowOpenWadOperartionDialog(dialog.FileName);
 
-                        this.WadViewModels.Add(wad);
-
-                        this.SelectedWad = wad;
+                        AddWadToTabControl(wad);
                     }
                 }
             }
@@ -565,16 +564,29 @@ namespace Obsidian
                 {
                     WadViewModel wad = await DialogHelper.ShowCreateWADOperationDialog(dialog.FileName);
 
-                    this.WadViewModels.Add(wad);
-
-                    this.SelectedWad = wad;
+                    AddWadToTabControl(wad);
                 }
             }
+        }
+
+        private void AddWadToTabControl(WadViewModel wad)
+        {
+            this.WadViewModels.Add(wad);
+
+            this.SelectedWad = wad;
         }
 
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void OnWadTabViewportDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            HelixViewport3D viewport = sender as HelixViewport3D;
+            WadViewModel wad = viewport.DataContext as WadViewModel;
+
+            wad.Preview.SetViewport(viewport);
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
+using System;
 
 namespace Obsidian.MVVM.ViewModels
 {
@@ -57,6 +58,7 @@ namespace Obsidian.MVVM.ViewModels
         }
 
         private ObservableCollection<ModelVisual3D> _content = new ObservableCollection<ModelVisual3D>();
+        private HelixViewport3D _viewport;
 
         public ViewportViewModel()
         {
@@ -100,6 +102,7 @@ namespace Obsidian.MVVM.ViewModels
             SetGeometryModels(geometryModels);
             SetCamera(skn.GetBoundingBox().GetCentralPoint());
         }
+
         public void LoadMesh(StaticObject staticObject)
         {
             this.Content.Clear();
@@ -184,8 +187,13 @@ namespace Obsidian.MVVM.ViewModels
         }
         private void SetCamera(Vector3 point)
         {
-            //this.Camera.Position = new Point3D(point.X, point.Y, point.Z);
-            //this.Camera.FitView(this._camera., new Vector3D(0, 0, -1), new Vector3D(0, 1, 0), 500);
+            this._viewport.Camera.Position = new Point3D(point.X, point.Y, point.Z);
+            this._viewport.Camera.FitView(this._viewport.Viewport, new Vector3D(0, 0, -1), new Vector3D(0, 1, 0), 500);
+        }
+
+        public void SetViewport(HelixViewport3D viewport)
+        {
+            this._viewport = viewport;
         }
 
         public void Clear()
