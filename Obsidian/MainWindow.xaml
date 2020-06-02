@@ -7,7 +7,6 @@
         xmlns:ControlzEx="clr-namespace:ControlzEx;assembly=MaterialDesignThemes.Wpf"
         xmlns:MaterialDesignUtilities="clr-namespace:Obsidian.Utilities.MaterialDesign"
         xmlns:FantomeUtilities="clr-namespace:Fantome.Libraries.League.Helpers;assembly=Fantome.Libraries.League"
-        xmlns:MaterialDesignExtensions="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
         xmlns:Helix="http://helix-toolkit.org/wpf"
         xmlns:ViewModels="clr-namespace:Obsidian.MVVM.ViewModels"
         xmlns:WadViewModel="clr-namespace:Obsidian.MVVM.ViewModels.WAD"
