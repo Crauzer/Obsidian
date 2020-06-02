@@ -265,12 +265,15 @@
                                 ItemsSource="{Binding WadViewModels}" SelectedItem="{Binding SelectedWad, UpdateSourceTrigger=PropertyChanged}">
                         <TabControl.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding WadName}"/>
-                                    <Button Style="{StaticResource MaterialDesignRaisedDarkButton}" Width="16" Height="16" 
-                                            MaterialDesign:ButtonAssist.CornerRadius="5"
-                                            Margin="14,0,0,0" Click="OnCloseWadTab"/>
-                                </StackPanel>
+                                <Grid VerticalAlignment="Center">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="26"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding WadName}"/>
+                                    <Button Grid.Column="1" Style="{StaticResource MaterialDesignRaisedDarkButton}" Width="16" Height="16" 
+                                            MaterialDesign:ButtonAssist.CornerRadius="5" Click="OnCloseWadTab" Margin="10,0,0,0"/>
+                                </Grid>
                             </DataTemplate>
                         </TabControl.ItemTemplate>
                         <TabControl.ContentTemplate>

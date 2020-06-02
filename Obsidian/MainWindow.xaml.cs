@@ -422,15 +422,18 @@ namespace Obsidian
             {
                 using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
                 {
-                    dialog.Multiselect = false;
+                    dialog.Multiselect = true;
                     dialog.InitialDirectory = Config.Get<string>("OpenWadInitialDirectory");
                     dialog.Filters.Add(new CommonFileDialogFilter("WAD Files", "*.wad;*.client;*.mobile"));
 
                     if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                     {
-                        WadViewModel wad = await DialogHelper.ShowOpenWadOperartionDialog(dialog.FileName);
+                        foreach(string file in dialog.FileNames)
+                        {
+                            WadViewModel wad = await DialogHelper.ShowOpenWadOperartionDialog(file);
 
-                        AddWadToTabControl(wad);
+                            AddWadToTabControl(wad);
+                        }
                     }
                 }
             }
