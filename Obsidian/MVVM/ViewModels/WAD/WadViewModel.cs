@@ -1,6 +1,7 @@
 ﻿using Fantome.Libraries.League.IO.WAD;
 using HelixToolkit.Wpf;
 using Obsidian.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -43,21 +44,29 @@ namespace Obsidian.MVVM.ViewModels.WAD
                 {
                     WadItemViewModel item = itemObject as WadItemViewModel;
 
-                    if (item.Type == WadItemType.File)
+                    //Do this in try-catch because Regex can throw an exception if pattern is wrong
+                    try
                     {
-                        return Regex.IsMatch(item.Path, value);
-                    }
-                    else
-                    {
-                        if ((item as WadFolderViewModel).Find(x => Regex.IsMatch(x.Path, value)) == null)
+                        if (item.Type == WadItemType.File)
                         {
-                            return false;
+                            return Regex.IsMatch(item.Path, value);
                         }
                         else
                         {
-                            item.Filter = value;
-                            return true;
+                            if ((item as WadFolderViewModel).Find(x => Regex.IsMatch(x.Path, value)) == null)
+                            {
+                                return false;
+                            }
+                            else
+                            {
+                                item.Filter = value;
+                                return true;
+                            }
                         }
+                    }
+                    catch(Exception)
+                    {
+                        return false;
                     }
                 };
 

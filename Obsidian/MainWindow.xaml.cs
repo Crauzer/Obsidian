@@ -205,7 +205,7 @@ namespace Obsidian
             }
 
             //Handle multi-selection
-            if((sender as UserControl).IsKeyboardFocusWithin)
+            if((sender as TreeView).IsKeyboardFocusWithin)
             {
                 if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
                 {
