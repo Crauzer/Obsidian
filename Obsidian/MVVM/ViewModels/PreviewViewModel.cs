@@ -72,9 +72,9 @@ namespace Obsidian.MVVM.ViewModels
             this.PreviewType = PreviewType.Viewport;
             this.ContentType = Localization.Get("PreviewDescriptionStaticObject");
         }
-        public void Preview(ImageEngineImage image)
+        public void Preview(ImageEngineImage ddsImage)
         {
-            this.Image = image.GetWPFBitmap(512);
+            this.Image = ddsImage.GetWPFBitmap(512);
 
             this.PreviewType = PreviewType.Image;
             this.ContentType = Localization.Get("PreviewDescriptionDDS");
@@ -85,6 +85,13 @@ namespace Obsidian.MVVM.ViewModels
 
             this.PreviewType = PreviewType.Viewport;
             this.ContentType = Localization.Get("PreviewDescriptionMapGeometry");
+        }
+        public void Preview(BitmapImage bitmap)
+        {
+            this.Image = bitmap;
+
+            this.PreviewType = PreviewType.Image;
+            this.ContentType = "";
         }
 
         public void Clear()

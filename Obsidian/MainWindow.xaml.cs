@@ -265,6 +265,7 @@ namespace Obsidian
                     }
                     catch (FileFormatException)
                     {
+                        this.SelectedWad.Preview.Clear();
                         await DialogHelper.ShowMessageDialog(Localization.Get("PreviewErrorDDS"));
                     }
                 }
@@ -284,9 +285,25 @@ namespace Obsidian
                 {
                     this.SelectedWad.Preview.Preview(new MapGeometry(new MemoryStream(selectedEntry.Entry.GetContent(true))));
                 }
+                else if(extension == ".png" || extension == ".jpg" || extension == ".jpeg")
+                {
+                    using (MemoryStream stream = new MemoryStream(selectedEntry.Entry.GetContent(true)))
+                    {
+                        BitmapImage bitmap = new BitmapImage();
+
+                        bitmap.BeginInit();
+                        bitmap.StreamSource = stream;
+                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmap.EndInit();
+                        bitmap.Freeze();
+
+                        this.SelectedWad.Preview.Preview(bitmap);
+                    }
+                }
             }
             catch (Exception)
             {
+                this.SelectedWad.Preview.Clear();
                 await DialogHelper.ShowMessageDialog(Localization.Get("PreviewErrorGeneric"));
             }
         }
