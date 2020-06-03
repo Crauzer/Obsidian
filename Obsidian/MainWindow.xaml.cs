@@ -28,6 +28,7 @@ using MaterialDesignThemes.Wpf;
 using System.Windows.Controls;
 using System.Collections.ObjectModel;
 using HelixToolkit.Wpf;
+using System.Text;
 
 namespace Obsidian
 {
@@ -299,6 +300,11 @@ namespace Obsidian
 
                         this.SelectedWad.Preview.Preview(bitmap);
                     }
+                }
+                else if(extension == ".json" || extension == ".js" || extension == ".xml")
+                {
+                    using MemoryStream entryStream = new MemoryStream(selectedEntry.Entry.GetContent(true));
+                    this.SelectedWad.Preview.PreviewText(entryStream, extension);
                 }
             }
             catch (Exception)

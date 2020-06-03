@@ -43,6 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AvalonEdit" Version="6.0.1" />
     <PackageReference Include="CSharpImageLibrary" Version="4.2.0" />
     <PackageReference Include="Fantome.Libraries.League" Version="1.2.1" />
     <PackageReference Include="HelixToolkit.Wpf" Version="2.10.0" />

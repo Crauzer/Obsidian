@@ -6,6 +6,12 @@ using HelixToolkit.Wpf;
 using System;
 using System.Windows.Media.Imaging;
 using Obsidian.Utilities;
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Highlighting;
+using System.IO;
+using ICSharpCode.AvalonEdit.Utils;
+using Octokit;
+using Newtonsoft.Json.Linq;
 
 namespace Obsidian.MVVM.ViewModels
 {
@@ -47,11 +53,21 @@ namespace Obsidian.MVVM.ViewModels
                 NotifyPropertyChanged();
             }
         }
+        public TextDocument Document
+        {
+            get => this._document;
+            set
+            {
+                this._document = value;
+                NotifyPropertyChanged();
+            }
+        }
 
         private PreviewType _previewType;
         private string _contentType;
         private ViewportViewModel _viewport;
         private BitmapSource _image;
+        private TextDocument _document;
 
         public PreviewViewModel()
         {
@@ -93,6 +109,23 @@ namespace Obsidian.MVVM.ViewModels
             this.PreviewType = PreviewType.Image;
             this.ContentType = "";
         }
+        public void PreviewText(Stream stream, string extension)
+        {
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                string text = reader.ReadToEnd();
+
+                if(extension == ".json")
+                {
+                    text = JToken.Parse(text).ToString(Newtonsoft.Json.Formatting.Indented);
+                }
+
+                this.Document = new TextDocument(text);
+            }
+
+            this.PreviewType = PreviewType.Text;
+            this.ContentType = "";
+        }
 
         public void Clear()
         {
@@ -112,6 +145,7 @@ namespace Obsidian.MVVM.ViewModels
     {
         None,
         Viewport,
-        Image
+        Image,
+        Text
     }
 }

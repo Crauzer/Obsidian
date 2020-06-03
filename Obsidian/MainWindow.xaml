@@ -7,6 +7,7 @@
         xmlns:ControlzEx="clr-namespace:ControlzEx;assembly=MaterialDesignThemes.Wpf"
         xmlns:MaterialDesignUtilities="clr-namespace:Obsidian.Utilities.MaterialDesign"
         xmlns:FantomeUtilities="clr-namespace:Fantome.Libraries.League.Helpers;assembly=Fantome.Libraries.League"
+        xmlns:AvalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
         xmlns:MaterialDesignExtensions="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
         xmlns:Helix="http://helix-toolkit.org/wpf"
         xmlns:ViewModels="clr-namespace:Obsidian.MVVM.ViewModels"
@@ -172,6 +173,9 @@
                     <DataTrigger Binding="{Binding Preview.PreviewType, UpdateSourceTrigger=PropertyChanged}" Value="{x:Static ViewModels:PreviewType.Viewport}">
                         <Setter Property="Visibility" Value="Visible"/>
                     </DataTrigger>
+                    <DataTrigger Binding="{Binding Preview.PreviewType, UpdateSourceTrigger=PropertyChanged}" Value="{x:Static ViewModels:PreviewType.Text}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </DataTrigger>
                 </Style.Triggers>
             </Style>
             <Style x:Key="ContentPreviewImage" TargetType="Image">
@@ -183,6 +187,25 @@
                         <Setter Property="Visibility" Value="Collapsed"/>
                     </DataTrigger>
                     <DataTrigger Binding="{Binding Preview.PreviewType, UpdateSourceTrigger=PropertyChanged}" Value="{x:Static ViewModels:PreviewType.Image}">
+                        <Setter Property="Visibility" Value="Visible"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Preview.PreviewType, UpdateSourceTrigger=PropertyChanged}" Value="{x:Static ViewModels:PreviewType.Text}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="ContentPreviewTextDocument" TargetType="AvalonEdit:TextEditor">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Preview.PreviewType, UpdateSourceTrigger=PropertyChanged}" Value="{x:Static ViewModels:PreviewType.None}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Preview.PreviewType, UpdateSourceTrigger=PropertyChanged}" Value="{x:Static ViewModels:PreviewType.Viewport}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Preview.PreviewType, UpdateSourceTrigger=PropertyChanged}" Value="{x:Static ViewModels:PreviewType.Image}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Preview.PreviewType, UpdateSourceTrigger=PropertyChanged}" Value="{x:Static ViewModels:PreviewType.Text}">
                         <Setter Property="Visibility" Value="Visible"/>
                     </DataTrigger>
                 </Style.Triggers>
@@ -301,6 +324,14 @@
                                                                ItemsSource="{Binding Preview.Viewport.Content}" ShowCoordinateSystem="True" ModelUpDirection="0, 1, 0" 
                                                                CameraRotationMode="Trackball" CoordinateSystemWidth="82" MinWidth="300" 
                                                                ShowTriangleCountInfo="True" DataContextChanged="OnWadTabViewportDataContextChanged"/>
+                                        <AvalonEdit:TextEditor Document="{Binding Preview.Document, UpdateSourceTrigger=PropertyChanged}"
+                                                               Style="{StaticResource ContentPreviewTextDocument}"
+                                                               Background="{DynamicResource MaterialDesignPaper}"
+                                                               IsReadOnly="True">
+                                            <AvalonEdit:TextEditor.Foreground>
+                                                <SolidColorBrush Color="{DynamicResource Primary400Foreground}"/>
+                                            </AvalonEdit:TextEditor.Foreground>
+                                        </AvalonEdit:TextEditor>
                                         <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Grid.Row="1" x:Name="ViewportContentType" 
                                                    Text="{Binding Preview.ContentType, UpdateSourceTrigger=PropertyChanged}"
                                                    HorizontalAlignment="Center" VerticalAlignment="Center"
