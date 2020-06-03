@@ -309,6 +309,17 @@ namespace Obsidian
 
             this.WadViewModels.Remove(wad);
         }
+        private void OnWadTabViewportDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            HelixViewport3D viewport = sender as HelixViewport3D;
+            WadViewModel wad = viewport.DataContext as WadViewModel;
+
+            //wad == null if we're closing the tab
+            if (wad != null)
+            {
+                wad.Preview.SetViewport(viewport);
+            }
+        }
 
         //Menu event functions
         private void OnWadOpen(object sender, RoutedEventArgs e)
@@ -588,18 +599,6 @@ namespace Obsidian
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        private void OnWadTabViewportDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            HelixViewport3D viewport = sender as HelixViewport3D;
-            WadViewModel wad = viewport.DataContext as WadViewModel;
-
-            //wad == null if we're closing the tab
-            if(wad != null)
-            {
-                wad.Preview.SetViewport(viewport);
-            }
         }
     }
 }
