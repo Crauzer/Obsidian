@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using System.Windows.Data;
 
 namespace Obsidian.MVVM.ViewModels.WAD
@@ -44,11 +45,11 @@ namespace Obsidian.MVVM.ViewModels.WAD
 
                     if (item.Type == WadItemType.File)
                     {
-                        return item.Path.Contains(value);
+                        return Regex.IsMatch(item.Path, value);
                     }
                     else
                     {
-                        if ((item as WadFolderViewModel).Find(x => x.Path.Contains(value)) == null)
+                        if ((item as WadFolderViewModel).Find(x => Regex.IsMatch(x.Path, value)) == null)
                         {
                             return false;
                         }

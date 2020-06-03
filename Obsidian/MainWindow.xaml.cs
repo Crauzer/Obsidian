@@ -205,44 +205,47 @@ namespace Obsidian
             }
 
             //Handle multi-selection
-            if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
+            if((sender as UserControl).IsKeyboardFocusWithin)
             {
-                (e.NewValue as WadItemViewModel).IsSelected ^= true;
-            }
-            else if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-            {
-                WadItemViewModel oldItem = e.OldValue as WadItemViewModel;
-                WadItemViewModel newItem = e.NewValue as WadItemViewModel;
-
-                //Handle batch selection only if parent of both items is the same
-                if (oldItem.Parent == newItem.Parent)
+                if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
                 {
-                    //If they are in the root then we access the WadViewModel
-                    if (oldItem.Parent == null)
-                    {
-                        //Select/Deselect all items in the range
-                        int oldItemIndex = this.SelectedWad.Items.IndexOf(oldItem);
-                        int newItemIndex = this.SelectedWad.Items.IndexOf(newItem);
-                        int startingIndex = oldItemIndex < newItemIndex ? oldItemIndex : newItemIndex;
-                        int endingIndex = oldItemIndex < newItemIndex ? newItemIndex : oldItemIndex;
+                    (e.NewValue as WadItemViewModel).IsSelected ^= true;
+                }
+                else if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+                {
+                    WadItemViewModel oldItem = e.OldValue as WadItemViewModel;
+                    WadItemViewModel newItem = e.NewValue as WadItemViewModel;
 
-                        for (int i = startingIndex; i <= endingIndex; i++)
+                    //Handle batch selection only if parent of both items is the same
+                    if (oldItem.Parent == newItem.Parent)
+                    {
+                        //If they are in the root then we access the WadViewModel
+                        if (oldItem.Parent == null)
                         {
-                            this.SelectedWad.Items[i].IsSelected ^= true;
+                            //Select/Deselect all items in the range
+                            int oldItemIndex = this.SelectedWad.Items.IndexOf(oldItem);
+                            int newItemIndex = this.SelectedWad.Items.IndexOf(newItem);
+                            int startingIndex = oldItemIndex < newItemIndex ? oldItemIndex : newItemIndex;
+                            int endingIndex = oldItemIndex < newItemIndex ? newItemIndex : oldItemIndex;
+
+                            for (int i = startingIndex; i <= endingIndex; i++)
+                            {
+                                this.SelectedWad.Items[i].IsSelected ^= true;
+                            }
                         }
-                    }
-                    else
-                    {
-                        //Select/Deselect all items in the parent folder in the range
-                        WadFolderViewModel parent = oldItem.Parent as WadFolderViewModel;
-                        int oldItemIndex = parent.Items.IndexOf(oldItem);
-                        int newItemIndex = parent.Items.IndexOf(newItem);
-                        int startingIndex = oldItemIndex < newItemIndex ? oldItemIndex : newItemIndex;
-                        int endingIndex = oldItemIndex < newItemIndex ? newItemIndex : oldItemIndex;
-
-                        for (int i = startingIndex; i <= endingIndex; i++)
+                        else
                         {
-                            parent.Items[i].IsSelected ^= true;
+                            //Select/Deselect all items in the parent folder in the range
+                            WadFolderViewModel parent = oldItem.Parent as WadFolderViewModel;
+                            int oldItemIndex = parent.Items.IndexOf(oldItem);
+                            int newItemIndex = parent.Items.IndexOf(newItem);
+                            int startingIndex = oldItemIndex < newItemIndex ? oldItemIndex : newItemIndex;
+                            int endingIndex = oldItemIndex < newItemIndex ? newItemIndex : oldItemIndex;
+
+                            for (int i = startingIndex; i <= endingIndex; i++)
+                            {
+                                parent.Items[i].IsSelected ^= true;
+                            }
                         }
                     }
                 }
