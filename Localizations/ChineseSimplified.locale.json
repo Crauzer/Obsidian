@@ -36,10 +36,10 @@
   "WadContextMenuAddFolders": "添加文件夹",
   "WadContextMenuRemove": "删除文件",
   "WadContextMenuModifyData": "替换文件",
-  "UpdateMessage": "发现新版本\按下确认键下载",
+  "UpdateMessage": "发现新版本\n按下确认键下载",
   "OpeningHashtablesError": "编辑器无法打开你所选择的哈希表",
   "OpeningWadError": "编辑器无法打开你所选择的WAD文件",
-  "PreviewErrorDDS": "不支持预览的DDS格式\文件的尺寸可能为1",
+  "PreviewErrorDDS": "不支持预览的DDS格式\n文件的尺寸可能为1",
   "PreviewErrorGeneric": "无法预览选中的文件",
   "DragAndDropFileCountError": "你不能拖放多个WAD文件到编辑器",
   "DialogDownloadingLocalizations": "正在下载语言包..."
