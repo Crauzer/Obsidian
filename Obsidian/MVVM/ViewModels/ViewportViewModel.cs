@@ -158,7 +158,7 @@ namespace Obsidian.MVVM.ViewModels
                 }
                 foreach(MapGeometryVertex vertex in mgeoObject.Vertices)
                 {
-                    vertices.Add(new Point3D(vertex.Position.X, vertex.Position.Y, vertex.Position.Z));
+                    vertices.Add(new Point3D(vertex.Position.Value.X, vertex.Position.Value.Y, vertex.Position.Value.Z));
                 }
 
                 geometry.TriangleIndices = indices;
