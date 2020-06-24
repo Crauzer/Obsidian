@@ -15,26 +15,28 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <WarningsAsErrors />
-    <SelfContained>true</SelfContained>
+    <SelfContained>false</SelfContained>
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+    <PublishSingleFile>true</PublishSingleFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <WarningsAsErrors />
+    <SelfContained>false</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishSingleFile>true</PublishSingleFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleasePortable|AnyCPU'">
+    <WarningsAsErrors />
     <RuntimeIdentifier>win-x86</RuntimeIdentifier>
     <PublishSingleFile>true</PublishSingleFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleasePortable|x64'">
     <WarningsAsErrors />
-    <SelfContained>true</SelfContained>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PublishSingleFile>true</PublishSingleFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleasePortable|AnyCPU'">
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <WarningsAsErrors />
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <WarningsAsErrors />
   </PropertyGroup>
 
   <ItemGroup>
@@ -48,7 +50,6 @@
     <PackageReference Include="Fantome.Libraries.League" Version="1.2.1" />
     <PackageReference Include="HelixToolkit.Wpf" Version="2.10.0" />
     <PackageReference Include="MaterialDesignExtensions" Version="3.1.0" />
-    <PackageReference Include="MaterialDesignThemes" Version="3.0.1" />
     <PackageReference Include="Microsoft.Packaging.Tools.Trimming" Version="1.1.0-preview1-26619-01" />
     <PackageReference Include="Octokit" Version="0.36.0" />
     <PackageReference Include="Serilog" Version="2.9.0" />
