@@ -323,7 +323,7 @@
                                                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                                                ItemsSource="{Binding Preview.Viewport.Content}" ShowCoordinateSystem="True" ModelUpDirection="0, 1, 0" 
                                                                CameraRotationMode="Trackball" CoordinateSystemWidth="82" MinWidth="300" 
-                                                               ShowTriangleCountInfo="True" DataContextChanged="OnWadTabViewportDataContextChanged"/>
+                                                               ShowTriangleCountInfo="True" Loaded="OnWadTabViewportLoaded"/>
                                         <AvalonEdit:TextEditor Document="{Binding Preview.Document, UpdateSourceTrigger=PropertyChanged}"
                                                                Style="{StaticResource ContentPreviewTextDocument}"
                                                                Background="{DynamicResource MaterialDesignPaper}"

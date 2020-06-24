@@ -332,7 +332,7 @@ namespace Obsidian
 
             this.WadViewModels.Remove(wad);
         }
-        private void OnWadTabViewportDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private void OnWadTabViewportLoaded(object sender, RoutedEventArgs e)
         {
             HelixViewport3D viewport = sender as HelixViewport3D;
             WadViewModel wad = viewport.DataContext as WadViewModel;
