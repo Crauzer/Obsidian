@@ -18,6 +18,7 @@
     <SelfContained>false</SelfContained>
     <RuntimeIdentifier>win-x86</RuntimeIdentifier>
     <PublishSingleFile>true</PublishSingleFile>
+    <SatelliteResourceLanguages> en </SatelliteResourceLanguages>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -25,18 +26,21 @@
     <SelfContained>false</SelfContained>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PublishSingleFile>true</PublishSingleFile>
+    <SatelliteResourceLanguages> en </SatelliteResourceLanguages>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleasePortable|AnyCPU'">
     <WarningsAsErrors />
     <RuntimeIdentifier>win-x86</RuntimeIdentifier>
     <PublishSingleFile>true</PublishSingleFile>
+    <SatelliteResourceLanguages> en </SatelliteResourceLanguages>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleasePortable|x64'">
     <WarningsAsErrors />
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PublishSingleFile>true</PublishSingleFile>
+    <SatelliteResourceLanguages> en </SatelliteResourceLanguages>
   </PropertyGroup>
 
   <ItemGroup>
