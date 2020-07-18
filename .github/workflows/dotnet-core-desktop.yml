@@ -1,0 +1,34 @@
+name: .NET Core
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build:
+    runs-on: windows-latest
+
+    env:
+      Solution_Name: Obsidian.sln
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    # Install the .NET Core workload
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.100-preview.6.20318.15
+    
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Build Release
+      run: dotnet build --configuration Release --no-restore
+    - name: Build ReleasePortable
+      run: dotnet build --configuration ReleasePortable --no-restore
