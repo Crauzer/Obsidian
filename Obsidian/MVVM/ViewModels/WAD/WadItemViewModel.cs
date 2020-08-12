@@ -128,18 +128,21 @@ namespace Obsidian.MVVM.ViewModels.WAD
 
         public void Remove()
         {
-            if(this.Type == WadItemType.File)
+            switch(this)
             {
-                this._wadViewModel.WAD.RemoveEntry((this as WadFileViewModel).Entry.XXHash);
-            }
-            else
-            {
-                WadFolderViewModel wadFolder = this as WadFolderViewModel;
-
-                //Recursively Remove all WAD entries nested in the folder
-                foreach (WadFileViewModel entry in wadFolder.GetAllFiles())
+                case WadFileViewModel file:
                 {
-                    this._wadViewModel.WAD.RemoveEntry(entry.Entry.XXHash);
+                    this._wadViewModel.WAD.RemoveEntry(file.Entry.XXHash);
+                    break;
+                }
+                case WadFolderViewModel folder:
+                {
+                    //Recursively Remove all WAD entries nested in the folder
+                    foreach (WadFileViewModel entry in folder.GetAllFiles())
+                    {
+                        this._wadViewModel.WAD.RemoveEntry(entry.Entry.XXHash);
+                    }
+                    break;
                 }
             }
 
@@ -159,8 +162,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
         {
             if (this.Type == WadItemType.Folder)
             {
-                bool are = (this as WadFolderViewModel).AreAllItemsSelected();
-                if (are)
+                if ((this as WadFolderViewModel).AreAllItemsSelected())
                 {
                     this._isSelected = true;
                 }
