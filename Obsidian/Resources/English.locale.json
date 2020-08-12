@@ -43,5 +43,7 @@
   "PreviewErrorGeneric": "Unable to preview the selected file",
   "DragAndDropFileCountError": "You cannot drop more than 1 WAD file into Obsidian",
   "DialogDownloadingLocalizations": "Downloading localizations...",
-  "WadEntryModifyDataError": "Failed to modify data"
+  "WadEntryModifyDataError": "Failed to modify data",
+  "WadFolderAddFolderError": "Obsidian was unable to properly add all files from the selected directory",
+
 }
