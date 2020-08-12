@@ -416,7 +416,7 @@ namespace Obsidian
             wadFolder.Remove();
         }
 
-        private void OnFileModifyData(object sender, RoutedEventArgs e)
+        private async void OnFileModifyData(object sender, RoutedEventArgs e)
         {
             using CommonOpenFileDialog dialog = new CommonOpenFileDialog
             {
@@ -433,7 +433,8 @@ namespace Obsidian
                 }
                 catch (Exception exception)
                 {
-
+                    string message = string.Format("{0} \n {1}", Localization.Get("WadEntryModifyDataError"), exception);
+                    await DialogHelper.ShowMessageDialog(message);
                 }
             }
         }
