@@ -40,10 +40,7 @@ namespace Obsidian
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        public bool IsWadOpened
-        {
-            get => this.WadViewModels.Count != 0;
-        }
+        public bool IsWadOpened => this.WadViewModels.Count != 0;
 
         public ObservableCollection<WadViewModel> WadViewModels { get; set; } = new ObservableCollection<WadViewModel>();
         public WadViewModel SelectedWad
