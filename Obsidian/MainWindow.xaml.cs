@@ -540,7 +540,10 @@ namespace Obsidian
                             Hashtable.Load(hashtableFile);
                         }
 
-                        this.SelectedWad.Refresh();
+                        foreach (WadViewModel wad in this.WadViewModels)
+                        {
+                            wad.Refresh();
+                        }
                     }
                 }
             }
