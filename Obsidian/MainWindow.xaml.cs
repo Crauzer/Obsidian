@@ -66,7 +66,7 @@ namespace Obsidian
 
         private WadViewModel _selectedWad;
         private Dictionary<string, string> _localizationMap;
-        private int _clickCounter;
+        private int _easterEggClickCounter;
 
         public ICommand OpenSettingsCommand => new RelayCommand(OpenSettings);
 
@@ -143,17 +143,17 @@ namespace Obsidian
         //Window Utility functions
         private async void OnObsidianImageClickEasterEgg(object sender, MouseButtonEventArgs e)
         {
-            this._clickCounter++;
+            this._easterEggClickCounter++;
 
-            if (this._clickCounter == 10)
+            if (this._easterEggClickCounter == 10)
             {
                 await DialogHelper.ShowMessageDialog("Hmm, what are you doing ?");
             }
-            else if (this._clickCounter == 20)
+            else if (this._easterEggClickCounter == 20)
             {
                 await DialogHelper.ShowMessageDialog("You should stop, there's no turning back");
             }
-            else if (this._clickCounter == 30)
+            else if (this._easterEggClickCounter == 30)
             {
                 using Stream audioStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Obsidian.Resources.idk.wav");
                 using SoundPlayer player = new SoundPlayer(audioStream);
@@ -161,7 +161,7 @@ namespace Obsidian
                 player.Play();
                 await DialogHelper.ShowMessageDialog("You've just unleashed the Wooxy virus");
 
-                this._clickCounter = 0;
+                this._easterEggClickCounter = 0;
             }
         }
         private void OnKeyPressed(object sender, KeyEventArgs e)
