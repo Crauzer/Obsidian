@@ -61,7 +61,7 @@ namespace Obsidian.Utilities
             await DialogHost.Show(dialog, "OperationDialog", dialog.StartExtraction, null);
         }
 
-        public static async Task ShowMessageDialog(string message, bool closeOnClickAway = true)
+        public static async Task ShowMessageDialog(string message, bool closeOnClickAway = false)
         {
             MessageDialog dialog = new MessageDialog(message);
             bool defaultCloseOnClickAway = MessageDialog.CloseOnClickAway;
