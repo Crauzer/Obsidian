@@ -82,8 +82,6 @@ namespace Obsidian
             BindMVVM();
             LoadLocalization();
             CheckForUpdate();
-
-            Config.Get<string[]>("BINPackedKeywords");
         }
 
         //Global Exception Handler
