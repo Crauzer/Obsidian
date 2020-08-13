@@ -87,12 +87,12 @@ namespace Obsidian
         //Global Exception Handler
         private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            string message = "A Fatal Error has occurred, Obsidian will now terminate.\n";
+            string message = Localization.Get("FatalErrorMessage") + '\n';
             message += ((Exception)e.ExceptionObject).Message + '\n';
             message += ((Exception)e.ExceptionObject).Source + '\n';
             message += ((Exception)e.ExceptionObject).StackTrace;
 
-            MessageBox.Show(message, "Obsidian - Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(message, Localization.Get("FatalError"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         //Initialization functions
