@@ -39,9 +39,9 @@ namespace Obsidian.Utilities
             else if (typeof(T).BaseType == typeof(Array))
             {
                 // C# array
-                if (_config[key] is T csharpArrray)
+                if (_config[key] is T csharpArray)
                 {
-                    return csharpArrray;
+                    return csharpArray;
                 }
                 // JSON array
                 else if (_config[key] is JArray jsonArray)
