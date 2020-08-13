@@ -153,11 +153,9 @@ namespace Obsidian.MVVM.ViewModels.WAD
                 }
                 else
                 {
-                    WadFolderViewModel folder = this.Items.FirstOrDefault(x => x.Name == folders[0]) as WadFolderViewModel;
-
                     //If folder exists then we pass the file to it
                     //if it doesn't then we create it before passing the file
-                    if (folder != null)
+                    if (this.Items.FirstOrDefault(x => x.Name == folders[0]) is WadFolderViewModel folder)
                     {
                         folder.AddFile(path.Substring(path.IndexOf(pathSeparator) + 1), path, entry);
                     }
