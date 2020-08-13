@@ -21,7 +21,7 @@ namespace Obsidian.Utilities
             { "OpenWadInitialDirectory", "" },
             { "SaveWadInitialDirectory", "" },
             { "ExtractInitialDirectory", "" },
-            { "Localization", "en_US" }
+            { "Localization", "English" }
         };
         private static Dictionary<string, object> _config = new Dictionary<string, object>();
 
