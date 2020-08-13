@@ -66,7 +66,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
                                 }
                             }
                             default:
-                                throw new Exception("this should not happen :^)");
+                                return false;
                         }
                     }
                     catch(Exception)
