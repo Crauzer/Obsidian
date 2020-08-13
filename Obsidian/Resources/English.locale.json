@@ -45,5 +45,5 @@
   "DialogDownloadingLocalizations": "Downloading localizations...",
   "WadEntryModifyDataError": "Failed to modify data",
   "WadFolderAddFolderError": "Obsidian was unable to properly add all files from the selected directory",
-
+  "WadFolderAddFileError": "Unable to add file"
 }

@@ -33,9 +33,9 @@ namespace Obsidian.MVVM.ViewModels.WAD
 
                 this.Items.Add(new WadFileViewModel(this._wadViewModel, this, entryPath, entryName, entry));
             }
-            catch (Exception)
+            catch (Exception exception)
             {
-                await DialogHelper.ShowMessageDialog("Unable to add file:\n" + fileLocation);
+                await DialogHelper.ShowMessageDialog(string.Format("{0}\n{1}\n{2}", Localization.Get("WadFolderAddFileError"), fileLocation, exception));
             }
         }
         public void AddFile(string path, string entryPath, WADEntry entry)
