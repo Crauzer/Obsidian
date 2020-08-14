@@ -283,25 +283,38 @@ namespace Obsidian
                 {
                     this.SelectedWad.Preview.Preview(new MapGeometry(new MemoryStream(selectedEntry.Entry.GetContent(true))));
                 }
-                else if (extension == ".png" || extension == ".jpg" || extension == ".jpeg")
+                else
                 {
-                    using (MemoryStream stream = new MemoryStream(selectedEntry.Entry.GetContent(true)))
+                    // Use switch cuz it looks cooler than the shitty formatting for a big if statement
+                    switch(extension)
                     {
-                        BitmapImage bitmap = new BitmapImage();
+                        case ".png":
+                        case ".jpg":
+                        case ".jpeg":
+                        {
+                            using MemoryStream stream = new MemoryStream(selectedEntry.Entry.GetContent(true));
+                            BitmapImage bitmap = new BitmapImage();
 
-                        bitmap.BeginInit();
-                        bitmap.StreamSource = stream;
-                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                        bitmap.EndInit();
-                        bitmap.Freeze();
+                            bitmap.BeginInit();
+                            bitmap.StreamSource = stream;
+                            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                            bitmap.EndInit();
+                            bitmap.Freeze();
 
-                        this.SelectedWad.Preview.Preview(bitmap);
+                            this.SelectedWad.Preview.Preview(bitmap);
+                            break;
+                        }
+                        case ".json":
+                        case ".js":
+                        case ".xml":
+                        case ".ini":
+                        case ".cfg":
+                        {
+                            using MemoryStream entryStream = new MemoryStream(selectedEntry.Entry.GetContent(true));
+                            this.SelectedWad.Preview.PreviewText(entryStream, extension);
+                            break;
+                        }
                     }
-                }
-                else if (extension == ".json" || extension == ".js" || extension == ".xml")
-                {
-                    using MemoryStream entryStream = new MemoryStream(selectedEntry.Entry.GetContent(true));
-                    this.SelectedWad.Preview.PreviewText(entryStream, extension);
                 }
             }
             catch (Exception)
