@@ -323,18 +323,26 @@ namespace Obsidian
             }
         }
 
+        // ---------------- WAD TAB EVENTS -------------------- \\
         private void OnCloseWadTab(object sender, RoutedEventArgs e)
         {
             WadViewModel wad = (e.Source as Button).DataContext as WadViewModel;
 
             this.WadViewModels.Remove(wad);
         }
+        // DO NOT CHANGE THE FOLLOWING 2 FUNCTIONS PLEASE, THEY ARE A DIRTY WAY
+        // OF ENSURING THAT THE VIEWPORT GETS ASSIGNED TO THE WAD PREVIEW
         private void OnWadTabViewportLoaded(object sender, RoutedEventArgs e)
         {
-            HelixViewport3D viewport = sender as HelixViewport3D;
-
             //wad == null if we're closing the tab
-            if (viewport.DataContext is WadViewModel wad)
+            if (sender is HelixViewport3D viewport && viewport.DataContext is WadViewModel wad)
+            {
+                wad.Preview.SetViewport(viewport);
+            }
+        }
+        private void OnWadTabViewportDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (sender is HelixViewport3D viewport && viewport.DataContext is WadViewModel wad)
             {
                 wad.Preview.SetViewport(viewport);
             }
