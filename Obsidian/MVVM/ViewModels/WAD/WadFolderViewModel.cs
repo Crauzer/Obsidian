@@ -159,7 +159,10 @@ namespace Obsidian.MVVM.ViewModels.WAD
         
         public bool AreAllItemsSelected()
         {
-            bool areAllItemsSelected = true;
+            if(this.Items.Count == 0)
+            {
+                return false;
+            }
 
             foreach(WadItemViewModel child in this.Items)
             {
@@ -174,7 +177,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
                 }
             }
 
-            return areAllItemsSelected;
+            return true;
         }
 
         public void Sort()
