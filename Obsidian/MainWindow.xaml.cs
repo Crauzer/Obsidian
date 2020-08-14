@@ -117,15 +117,19 @@ namespace Obsidian
             try
             {
                 GitHubClient gitClient = new GitHubClient(new ProductHeaderValue("Obsidian"));
-
                 IReadOnlyList<Release> releases = await gitClient.Repository.Release.GetAll("Crauzer", "Obsidian");
                 Release newestRelease = releases[0];
-                Version newestVersion = new Version(newestRelease.TagName);
 
-                if (newestVersion > Assembly.GetExecutingAssembly().GetName().Version)
+                // Tags can contain other characters but Version accepts only {x.x.x.x} format
+                // this way we can avoid showing the update message for beta versions
+                if(Version.TryParse(newestRelease.TagName, out Version newestVersion))
                 {
-                    await DialogHelper.ShowMessageDialog(Localization.Get("UpdateMessage"));
-                    Process.Start("cmd", "/C start https://github.com/Crauzer/Obsidian/releases/tag/" + newestVersion.ToString());
+                    // Show update message only if the release version is higher than the one currently executing
+                    if (newestVersion > Assembly.GetExecutingAssembly().GetName().Version)
+                    {
+                        await DialogHelper.ShowMessageDialog(Localization.Get("UpdateMessage"));
+                        Process.Start("cmd", "/C start https://github.com/Crauzer/Obsidian/releases/tag/" + newestVersion.ToString());
+                    }
                 }
             }
             catch (Exception) { }
