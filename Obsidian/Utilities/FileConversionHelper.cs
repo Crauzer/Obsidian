@@ -1,6 +1,8 @@
 ﻿using Fantome.Libraries.League.Helpers;
+using Fantome.Libraries.League.IO.OBJ;
 using Fantome.Libraries.League.IO.SimpleSkin;
 using Fantome.Libraries.League.IO.SkeletonFile;
+using Fantome.Libraries.League.IO.StaticObject;
 using Fantome.Libraries.League.IO.WAD;
 using Obsidian.MVVM.ViewModels.WAD;
 using SharpGLTF.Schema2;
@@ -26,14 +28,22 @@ namespace Obsidian.Utilities
                     new FileConversion("glTF (with Skeleton)", ".glb", ConstructSimpleSkinWithSkeletonParameter, ConvertSimpleSkinWithSkeletonToGltf)
                 });
             }
-            //else if(fileType == LeagueFileType.SCB)
-            //{
-            //
-            //}
-            //else if(fileType == LeagueFileType.SCO)
-            //{
-            //
-            //}
+            else if(fileType == LeagueFileType.SCB)
+            {
+                return new FileConversionOptions(new List<FileConversion>()
+                {
+                    new FileConversion("glTF", ".glb", null, ConvertScbToGltf),
+                    new FileConversion("OBJ", ".obj", null, ConvertScbToObj)
+                });
+            }
+            else if(fileType == LeagueFileType.SCO)
+            {
+                return new FileConversionOptions(new List<FileConversion>()
+                {
+                    new FileConversion("glTF", ".glb", null, ConvertScoToGltf),
+                    new FileConversion("OBJ", ".obj", null, ConvertScoToObj)
+                });
+            }
             //else if(fileType == LeagueFileType.MAPGEO)
             //{
             //
@@ -67,6 +77,54 @@ namespace Obsidian.Utilities
             ModelRoot gltf = simpleSkin.ToGLTF(skeleton);
 
             gltf.SaveGLB(Path.ChangeExtension(parameter.OutputPath, "glb"));
+        }
+
+        private static void ConvertScbToGltf(FileConversionParameter parameter)
+        {
+            WADEntry staticObjectWadEntry = parameter.Parameter;
+            using MemoryStream stream = new MemoryStream(staticObjectWadEntry.GetContent(true));
+            StaticObject staticObject = StaticObject.ReadSCB(stream);
+            ModelRoot gltf = staticObject.ToGltf();
+
+            gltf.SaveGLB(Path.ChangeExtension(parameter.OutputPath, "glb"));
+        }
+        private static void ConvertScbToObj(FileConversionParameter parameter)
+        {
+            WADEntry staticObjectWadEntry = parameter.Parameter;
+            using MemoryStream stream = new MemoryStream(staticObjectWadEntry.GetContent(true));
+            StaticObject staticObject = StaticObject.ReadSCB(stream);
+            var objs = staticObject.ToObj();
+
+            string baseName = Path.GetFileNameWithoutExtension(parameter.OutputPath);
+            foreach((string material, OBJFile obj) in objs)
+            {
+                string objPath = parameter.OutputPath.Replace(baseName, baseName + '_' + material);
+                obj.Write(objPath);
+            }
+        }
+
+        private static void ConvertScoToGltf(FileConversionParameter parameter)
+        {
+            WADEntry staticObjectWadEntry = parameter.Parameter;
+            using MemoryStream stream = new MemoryStream(staticObjectWadEntry.GetContent(true));
+            StaticObject staticObject = StaticObject.ReadSCO(stream);
+            ModelRoot gltf = staticObject.ToGltf();
+
+            gltf.SaveGLB(Path.ChangeExtension(parameter.OutputPath, "glb"));
+        }
+        private static void ConvertScoToObj(FileConversionParameter parameter)
+        {
+            WADEntry staticObjectWadEntry = parameter.Parameter;
+            using MemoryStream stream = new MemoryStream(staticObjectWadEntry.GetContent(true));
+            StaticObject staticObject = StaticObject.ReadSCO(stream);
+            var objs = staticObject.ToObj();
+
+            string baseName = Path.GetFileNameWithoutExtension(parameter.OutputPath);
+            foreach ((string material, OBJFile obj) in objs)
+            {
+                string objPath = parameter.OutputPath.Replace(baseName, baseName + '_' + material);
+                obj.Write(objPath);
+            }
         }
 
         private static FileConversionParameter ConstructSimpleSkinWithSkeletonParameter(string outputPath, WadFileViewModel parameter, WadViewModel wad)
