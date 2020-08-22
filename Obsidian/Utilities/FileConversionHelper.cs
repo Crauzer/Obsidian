@@ -1,4 +1,5 @@
 ﻿using Fantome.Libraries.League.Helpers;
+using Fantome.Libraries.League.IO.MapGeometry;
 using Fantome.Libraries.League.IO.OBJ;
 using Fantome.Libraries.League.IO.SimpleSkin;
 using Fantome.Libraries.League.IO.SkeletonFile;
@@ -44,10 +45,13 @@ namespace Obsidian.Utilities
                     new FileConversion("OBJ", ".obj", null, ConvertScoToObj)
                 });
             }
-            //else if(fileType == LeagueFileType.MAPGEO)
-            //{
-            //
-            //}
+            else if(fileType == LeagueFileType.MAPGEO)
+            {
+                return new FileConversionOptions(new List<FileConversion>()
+                {
+                    new FileConversion("glTF", ".glb", null, ConvertMapGeometryToGltf)
+                });
+            }
             else
             {
                 return new FileConversionOptions(new List<FileConversion>());
@@ -74,7 +78,7 @@ namespace Obsidian.Utilities
             SimpleSkin simpleSkin = new SimpleSkin(simpleSkinStream);
             Skeleton skeleton = new Skeleton(skeletonStream);
 
-            ModelRoot gltf = simpleSkin.ToGLTF(skeleton);
+            ModelRoot gltf = simpleSkin.ToGltf(skeleton);
 
             gltf.SaveGLB(Path.ChangeExtension(parameter.OutputPath, "glb"));
         }
@@ -125,6 +129,16 @@ namespace Obsidian.Utilities
                 string objPath = parameter.OutputPath.Replace(baseName, baseName + '_' + material);
                 obj.Write(objPath);
             }
+        }
+
+        private static void ConvertMapGeometryToGltf(FileConversionParameter parameter)
+        {
+            WADEntry mapGeometryWadEntry = parameter.Parameter;
+            using MemoryStream stream = new MemoryStream(mapGeometryWadEntry.GetContent(true));
+            MapGeometry mapGeometry = new MapGeometry(stream);
+            ModelRoot gltf = mapGeometry.ToGLTF();
+
+            gltf.SaveGLB(Path.ChangeExtension(parameter.OutputPath, "glb"));
         }
 
         private static FileConversionParameter ConstructSimpleSkinWithSkeletonParameter(string outputPath, WadFileViewModel parameter, WadViewModel wad)
