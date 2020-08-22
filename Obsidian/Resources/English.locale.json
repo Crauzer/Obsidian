@@ -36,6 +36,7 @@
   "WadContextMenuAddFolders": "Add Folders",
   "WadContextMenuRemove": "Remove",
   "WadContextMenuModifyData": "Modify Data",
+  "WadContextMenuSaveAs": "Save as",
   "UpdateMessage": "A new version of Obsidian is available\nClick the OK button to download it",
   "OpeningHashtablesError": "Obsidian was unable to open the hashtables you selected",
   "OpeningWadError": "Obsidian was unable to open the WAD file you selected",
@@ -45,5 +46,7 @@
   "DialogDownloadingLocalizations": "Downloading localizations...",
   "WadEntryModifyDataError": "Failed to modify data",
   "WadFolderAddFolderError": "Obsidian was unable to properly add all files from the selected directory",
-  "WadFolderAddFileError": "Unable to add file"
+  "WadFolderAddFileError": "Unable to add file",
+  "WadFileConversionError": "Failed to convert the selected file",
+  "ConversionSimpleSkinWithSkeletonSkeletonNotFound": "Failed to find skeleton"
 }

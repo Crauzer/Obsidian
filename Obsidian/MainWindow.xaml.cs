@@ -122,7 +122,7 @@ namespace Obsidian
 
                 // Tags can contain other characters but Version accepts only {x.x.x.x} format
                 // this way we can avoid showing the update message for beta versions
-                if(Version.TryParse(newestRelease.TagName, out Version newestVersion))
+                if (Version.TryParse(newestRelease.TagName, out Version newestVersion))
                 {
                     // Show update message only if the release version is higher than the one currently executing
                     if (newestVersion > Assembly.GetExecutingAssembly().GetName().Version)
@@ -286,7 +286,7 @@ namespace Obsidian
                 else
                 {
                     // Use switch cuz it looks cooler than the shitty formatting for a big if statement
-                    switch(extension)
+                    switch (extension)
                     {
                         case ".png":
                         case ".jpg":
@@ -468,6 +468,33 @@ namespace Obsidian
             WadFileViewModel wadFile = (sender as FrameworkElement).DataContext as WadFileViewModel;
 
             wadFile.Remove();
+        }
+        private async void OnFileSaveAs(object sender, RoutedEventArgs e)
+        {
+            // Check if user actually clicked the menu item
+            if (e.OriginalSource is MenuItem menuItem && menuItem.Items.Count == 0)
+            {
+                string conversionName = menuItem.Header as string;
+                WadFileViewModel wadFile = (e.Source as MenuItem).DataContext as WadFileViewModel;
+                FileConversion conversion = wadFile.ConversionOptions.GetConversion(conversionName);
+
+                using CommonSaveFileDialog dialog = new CommonSaveFileDialog();
+                dialog.Filters.Add(new CommonFileDialogFilter("Converted File", "*" + conversion.OutputExtension));
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                {
+                    try
+                    {
+                        FileConversionParameter conversionParameter = conversion.ConstructParameter(dialog.FileName, wadFile, this.SelectedWad);
+                        conversion.Conversion.Invoke(conversionParameter);
+                    }
+                    catch (Exception exception) 
+                    {
+                        string message = $"{Localization.Get("WadFileConversionError")}\n{exception}";
+                        await DialogHelper.ShowMessageDialog(message);
+                        return;
+                    }
+                }
+            }
         }
 
         //Menu event function implementations
