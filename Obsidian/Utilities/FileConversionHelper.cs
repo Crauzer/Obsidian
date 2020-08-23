@@ -12,8 +12,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Obsidian.Utilities
 {
@@ -29,7 +27,7 @@ namespace Obsidian.Utilities
                     new FileConversion("glTF (with Skeleton)", ".glb", ConstructSimpleSkinWithSkeletonParameter, ConvertSimpleSkinWithSkeletonToGltf)
                 });
             }
-            else if(fileType == LeagueFileType.SCB)
+            else if (fileType == LeagueFileType.SCB)
             {
                 return new FileConversionOptions(new List<FileConversion>()
                 {
@@ -37,7 +35,7 @@ namespace Obsidian.Utilities
                     new FileConversion("OBJ", ".obj", null, ConvertScbToObj)
                 });
             }
-            else if(fileType == LeagueFileType.SCO)
+            else if (fileType == LeagueFileType.SCO)
             {
                 return new FileConversionOptions(new List<FileConversion>()
                 {
@@ -45,7 +43,7 @@ namespace Obsidian.Utilities
                     new FileConversion("OBJ", ".obj", null, ConvertScoToObj)
                 });
             }
-            else if(fileType == LeagueFileType.MAPGEO)
+            else if (fileType == LeagueFileType.MAPGEO)
             {
                 return new FileConversionOptions(new List<FileConversion>()
                 {
@@ -100,7 +98,7 @@ namespace Obsidian.Utilities
             var objs = staticObject.ToObj();
 
             string baseName = Path.GetFileNameWithoutExtension(parameter.OutputPath);
-            foreach((string material, OBJFile obj) in objs)
+            foreach ((string material, OBJFile obj) in objs)
             {
                 string objPath = parameter.OutputPath.Replace(baseName, baseName + '_' + material);
                 obj.Write(objPath);
@@ -185,8 +183,9 @@ namespace Obsidian.Utilities
     {
         public string Name { get; }
         public string OutputExtension { get; }
-        public Func<string, WadFileViewModel, WadViewModel, FileConversionParameter> ParameterConstructor { get; }
-        public Action<FileConversionParameter> Conversion { get; }
+
+        private Func<string, WadFileViewModel, WadViewModel, FileConversionParameter> _parameterConstructor { get; }
+        private Action<FileConversionParameter> _conversion { get; }
 
         public FileConversion(
             string name,
@@ -196,15 +195,15 @@ namespace Obsidian.Utilities
         {
             this.Name = name;
             this.OutputExtension = outputExtension;
-            this.ParameterConstructor = parameterConstructor;
-            this.Conversion = conversion;
+            this._parameterConstructor = parameterConstructor;
+            this._conversion = conversion;
         }
 
         public FileConversionParameter ConstructParameter(string outputPath, WadFileViewModel parameter, WadViewModel wad)
         {
-            if(this.ParameterConstructor != null)
+            if (this._parameterConstructor != null)
             {
-                return this.ParameterConstructor.Invoke(outputPath, parameter, wad);
+                return this._parameterConstructor.Invoke(outputPath, parameter, wad);
             }
             else
             {
@@ -214,7 +213,7 @@ namespace Obsidian.Utilities
 
         public void Convert(FileConversionParameter parameter)
         {
-            this.Conversion.Invoke(parameter);
+            this._conversion.Invoke(parameter);
         }
     }
 

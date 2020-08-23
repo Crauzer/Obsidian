@@ -485,7 +485,7 @@ namespace Obsidian
                     try
                     {
                         FileConversionParameter conversionParameter = conversion.ConstructParameter(dialog.FileName, wadFile, this.SelectedWad);
-                        conversion.Conversion.Invoke(conversionParameter);
+                        conversion.Convert(conversionParameter);
                     }
                     catch (Exception exception) 
                     {
