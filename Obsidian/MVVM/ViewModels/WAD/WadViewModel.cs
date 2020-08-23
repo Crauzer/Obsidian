@@ -47,21 +47,26 @@ namespace Obsidian.MVVM.ViewModels.WAD
                     //Do this in try-catch because Regex can throw an exception if pattern is wrong
                     try
                     {
-                        if (item.Type == WadItemType.File)
+                        switch (item)
                         {
-                            return Regex.IsMatch(item.Path, value);
-                        }
-                        else
-                        {
-                            if ((item as WadFolderViewModel).Find(x => Regex.IsMatch(x.Path, value)) == null)
+                            case WadFileViewModel file:
                             {
+                                return Regex.IsMatch(file.Path, value);
+                            }
+                            case WadFolderViewModel folder:
+                            {
+                                if (folder.Find(x => Regex.IsMatch(x.Path, value)) == null)
+                                {
+                                    return false;
+                                }
+                                else
+                                {
+                                    folder.Filter = value;
+                                    return true;
+                                }
+                            }
+                            default:
                                 return false;
-                            }
-                            else
-                            {
-                                item.Filter = value;
-                                return true;
-                            }
                         }
                     }
                     catch(Exception)
@@ -148,11 +153,9 @@ namespace Obsidian.MVVM.ViewModels.WAD
                 }
                 else
                 {
-                    WadFolderViewModel folder = this.Items.FirstOrDefault(x => x.Name == folders[0]) as WadFolderViewModel;
-
                     //If folder exists then we pass the file to it
                     //if it doesn't then we create it before passing the file
-                    if (folder != null)
+                    if (this.Items.FirstOrDefault(x => x.Name == folders[0]) is WadFolderViewModel folder)
                     {
                         folder.AddFile(path.Substring(path.IndexOf(pathSeparator) + 1), path, entry);
                     }
@@ -190,16 +193,22 @@ namespace Obsidian.MVVM.ViewModels.WAD
         {
             foreach (WadItemViewModel item in this.Items)
             {
-                if (item.Type == WadItemType.File && item.IsSelected)
+                switch (item)
                 {
-                    yield return item as WadFileViewModel;
-                }
-                else if (item.Type == WadItemType.Folder)
-                {
-                    foreach (WadFileViewModel selectedItem in (item as WadFolderViewModel).GetSelectedFiles() ?? Enumerable.Empty<WadFileViewModel>())
+                    case WadFileViewModel file when file.IsSelected:
                     {
-                        yield return selectedItem;
+                        yield return file;
+                        break;
                     }
+                    case WadFolderViewModel folder:
+                    {
+                        foreach (WadFileViewModel selectedItem in folder.GetSelectedFiles() ?? Enumerable.Empty<WadFileViewModel>())
+                        {
+                            yield return selectedItem;
+                        }
+                        break;
+                    }
+
                 }
             }
         }
@@ -207,16 +216,16 @@ namespace Obsidian.MVVM.ViewModels.WAD
         {
             foreach (WadItemViewModel item in this.Items)
             {
-                if (item.Type == WadItemType.Folder)
+                if (item is WadFolderViewModel folderItem)
                 {
-                    foreach(WadFolderViewModel selectedFolder in (item as WadFolderViewModel).GetSelectedFolders())
+                    foreach(WadFolderViewModel selectedFolder in folderItem.GetSelectedFolders())
                     {
                         yield return selectedFolder;
                     }
 
-                    if(item.IsSelected)
+                    if(folderItem.IsSelected)
                     {
-                        yield return item as WadFolderViewModel;
+                        yield return folderItem;
                     }
                 }
             }
@@ -225,15 +234,20 @@ namespace Obsidian.MVVM.ViewModels.WAD
         {
             foreach (WadItemViewModel item in this.Items)
             {
-                if (item.Type == WadItemType.File)
+                switch(item)
                 {
-                    yield return item as WadFileViewModel;
-                }
-                else if (item.Type == WadItemType.Folder)
-                {
-                    foreach (WadFileViewModel childItem in (item as WadFolderViewModel).GetAllFiles() ?? Enumerable.Empty<WadFileViewModel>())
+                    case WadFileViewModel file:
                     {
-                        yield return childItem;
+                        yield return file;
+                        break;
+                    }
+                    case WadFolderViewModel folder:
+                    {
+                        foreach (WadFileViewModel childItem in folder.GetAllFiles() ?? Enumerable.Empty<WadFileViewModel>())
+                        {
+                            yield return childItem;
+                        }
+                        break;
                     }
                 }
             }

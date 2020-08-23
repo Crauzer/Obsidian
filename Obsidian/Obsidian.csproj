@@ -7,10 +7,10 @@
     <SignAssembly>false</SignAssembly>
     <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
     <Platforms>AnyCPU;x64</Platforms>
-    <AssemblyVersion>3.3.1.0</AssemblyVersion>
-    <FileVersion>3.3.1.0</FileVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+    <FileVersion>4.0.0.0</FileVersion>
     <Configurations>Debug;Release;ReleasePortable</Configurations>
-    <Version>3.3.1</Version>
+    <Version>4.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -51,14 +51,14 @@
   <ItemGroup>
     <PackageReference Include="AvalonEdit" Version="6.0.1" />
     <PackageReference Include="CSharpImageLibrary" Version="4.2.0" />
-    <PackageReference Include="Fantome.Libraries.League" Version="1.2.2" />
+    <PackageReference Include="Fantome.Libraries.League" Version="1.3.2" />
     <PackageReference Include="HelixToolkit.Wpf" Version="2.10.0" />
     <PackageReference Include="MaterialDesignExtensions" Version="3.1.0" />
     <PackageReference Include="Microsoft.Packaging.Tools.Trimming" Version="1.1.0-preview1-26619-01" />
     <PackageReference Include="Octokit" Version="0.36.0" />
     <PackageReference Include="Serilog" Version="2.9.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
-    <PackageReference Include="ZstdNet" Version="1.3.3" />
+    <PackageReference Include="ZstdSharp" Version="0.4.0" />
   </ItemGroup>
 
   <ItemGroup>

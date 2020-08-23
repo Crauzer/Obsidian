@@ -2,12 +2,14 @@
 using Fantome.Libraries.League.IO.WAD;
 using UtilitiesFantome = Fantome.Libraries.League.Helpers.Utilities;
 using PathIO = System.IO.Path;
+using Obsidian.Utilities;
 
 namespace Obsidian.MVVM.ViewModels.WAD
 {
     public class WadFileViewModel : WadItemViewModel
     {
         public LeagueFileType FileType => UtilitiesFantome.GetExtensionType(PathIO.GetExtension(this.Path));
+        public FileConversionOptions ConversionOptions => FileConversionHelper.GetFileConversionOptions(this.FileType);
         public WADEntry Entry { get; private set; }
 
         public WadFileViewModel(WadViewModel wadViewModel, WadItemViewModel parent, string path, string name, WADEntry entry)

@@ -102,7 +102,6 @@ namespace Obsidian.MVVM.ViewModels
             SetGeometryModels(geometryModels);
             SetCamera(skn.GetBoundingBox().GetCentralPoint());
         }
-
         public void LoadMesh(StaticObject staticObject)
         {
             this.Content.Clear();

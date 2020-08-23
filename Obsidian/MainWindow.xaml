@@ -91,6 +91,12 @@
                             <Separator/>
                             <MenuItem Header="{Binding Path=Window.LocalizationMap[WadContextMenuRemove]}"
                                       Icon="{MaterialDesign:PackIcon Kind=Close}" Click="OnFileRemove"/>
+                            <MenuItem Header="{Binding Path=Window.LocalizationMap[WadContextMenuSaveAs]}"
+                                      Icon="{MaterialDesign:PackIcon Kind=FileExport}"
+                                      IsEnabled="{Binding ConversionOptions.IsConversionAvailable}"
+                                      ItemsSource="{Binding ConversionOptions.AvailableConversions}"
+                                      Click="OnFileSaveAs">
+                            </MenuItem>
                         </ContextMenu>
                     </Grid.ContextMenu>
                 </Grid>
@@ -277,7 +283,7 @@
 
                                     </Menu>
 
-                                    <Image Grid.Column="1" HorizontalAlignment="Right" Source="Resources/icon.ico" Width="50" MouseDown="OnObsidianImageClick"/>
+                                    <Image Grid.Column="1" HorizontalAlignment="Right" Source="Resources/icon.ico" Width="50" MouseDown="OnObsidianImageClickEasterEgg"/>
                                 </Grid>
                             </DockPanel>
                             <ProgressBar Grid.Row="1" Value="100"/>
@@ -323,7 +329,7 @@
                                                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                                                ItemsSource="{Binding Preview.Viewport.Content}" ShowCoordinateSystem="True" ModelUpDirection="0, 1, 0" 
                                                                CameraRotationMode="Trackball" CoordinateSystemWidth="82" MinWidth="300" 
-                                                               ShowTriangleCountInfo="True" Loaded="OnWadTabViewportLoaded"/>
+                                                               ShowTriangleCountInfo="True" Loaded="OnWadTabViewportLoaded" DataContextChanged="OnWadTabViewportDataContextChanged"/>
                                         <AvalonEdit:TextEditor Document="{Binding Preview.Document, UpdateSourceTrigger=PropertyChanged}"
                                                                Style="{StaticResource ContentPreviewTextDocument}"
                                                                Background="{DynamicResource MaterialDesignPaper}"
