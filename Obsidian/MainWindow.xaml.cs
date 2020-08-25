@@ -29,6 +29,7 @@ using System.Windows.Controls;
 using System.Collections.ObjectModel;
 using HelixToolkit.Wpf;
 using System.Text;
+using DiscordRPC;
 
 namespace Obsidian
 {
@@ -68,6 +69,8 @@ namespace Obsidian
         private Dictionary<string, string> _localizationMap;
         private int _easterEggClickCounter;
 
+        private DiscordRpcContext _rpcContext;
+
         public ICommand OpenSettingsCommand => new RelayCommand(OpenSettings);
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -77,11 +80,12 @@ namespace Obsidian
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
             Config.Load();
+            LoadLocalization();
 
             InitializeComponent();
             BindMVVM();
-            LoadLocalization();
             CheckForUpdate();
+            InitializeDiscordRPC();
         }
 
         //Global Exception Handler
@@ -100,9 +104,9 @@ namespace Obsidian
         {
             this.DataContext = this;
 
-            this.SelectedWad = new WadViewModel(this);
+            this.SelectedWad = new WadViewModel();
 
-            DialogHelper.Initialize(this);
+            DialogHelper.Initialize(this.LocalizationMap);
             DialogHelper.MessageDialog = this.MessageDialog;
             DialogHelper.OperationDialog = this.OperationDialog;
             DialogHelper.RootDialog = this.RootDialog;
@@ -113,26 +117,41 @@ namespace Obsidian
         }
         private async void CheckForUpdate()
         {
-            //Do it in try so we don't crash if there isn't internet connection
-            try
+            if(Config.Get<bool>("CheckForUpdates"))
             {
-                GitHubClient gitClient = new GitHubClient(new ProductHeaderValue("Obsidian"));
-                IReadOnlyList<Release> releases = await gitClient.Repository.Release.GetAll("Crauzer", "Obsidian");
-                Release newestRelease = releases[0];
-
-                // Tags can contain other characters but Version accepts only {x.x.x.x} format
-                // this way we can avoid showing the update message for beta versions
-                if (Version.TryParse(newestRelease.TagName, out Version newestVersion))
+                //Do it in try so we don't crash if there isn't internet connection
+                try
                 {
-                    // Show update message only if the release version is higher than the one currently executing
-                    if (newestVersion > Assembly.GetExecutingAssembly().GetName().Version)
+                    GitHubClient gitClient = new GitHubClient(new ProductHeaderValue("Obsidian"));
+                    IReadOnlyList<Release> releases = await gitClient.Repository.Release.GetAll("Crauzer", "Obsidian");
+                    Release newestRelease = releases[0];
+
+                    // Tags can contain other characters but Version accepts only {x.x.x.x} format
+                    // this way we can avoid showing the update message for beta versions
+                    if (Version.TryParse(newestRelease.TagName, out Version newestVersion))
                     {
-                        await DialogHelper.ShowMessageDialog(Localization.Get("UpdateMessage"));
-                        Process.Start("cmd", "/C start https://github.com/Crauzer/Obsidian/releases/tag/" + newestVersion.ToString());
+                        // Show update message only if the release version is higher than the one currently executing
+                        if (newestVersion > Assembly.GetExecutingAssembly().GetName().Version)
+                        {
+                            await DialogHelper.ShowMessageDialog(Localization.Get("UpdateMessage"));
+                            Process.Start("cmd", "/C start https://github.com/Crauzer/Obsidian/releases/tag/" + newestVersion.ToString());
+                        }
                     }
                 }
+                catch (Exception) { }
             }
-            catch (Exception) { }
+        }
+        private void InitializeDiscordRPC()
+        {
+            this._rpcContext = new DiscordRpcContext();
+
+            this._rpcContext.TimestampMode = Config.Get<DiscordRpcTimestampMode>("DiscordRpcTimestampMode");
+
+            if (Config.Get<bool>("EnableDiscordRpc"))
+            {
+                this._rpcContext.Initialize();
+                this._rpcContext.SetIdlePresence();
+            }
         }
         private async void OnOperationDialogLoaded(object sender, RoutedEventArgs e)
         {
@@ -190,7 +209,7 @@ namespace Obsidian
                 }
             }
         }
-        private void OnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private void OnWadSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             //Handle preview
             if (e.NewValue is WadFileViewModel selectedEntry)
@@ -360,6 +379,22 @@ namespace Obsidian
                 wad.Preview.SetViewport(viewport);
             }
         }
+        private void OnWadTabSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Change RPC presence to currently selected WAD
+            if (e.AddedItems.Count == 1 && e.AddedItems[0] is WadViewModel selectedWad)
+            {
+                this._rpcContext.SetViewingWadPresence(selectedWad.WadName);
+            }
+            else
+            {
+                // Check if there are any open WADs, if not then we are idling
+                if (this.WadViewModels.Count == 0)
+                {
+                    this._rpcContext.SetIdlePresence();
+                }
+            }
+        }
 
         //Menu event functions
         private void OnWadOpen(object sender, RoutedEventArgs e)
@@ -487,7 +522,7 @@ namespace Obsidian
                         FileConversionParameter conversionParameter = conversion.ConstructParameter(dialog.FileName, wadFile, this.SelectedWad);
                         conversion.Convert(conversionParameter);
                     }
-                    catch (Exception exception) 
+                    catch (Exception exception)
                     {
                         string message = $"{Localization.Get("WadFileConversionError")}\n{exception}";
                         await DialogHelper.ShowMessageDialog(message);

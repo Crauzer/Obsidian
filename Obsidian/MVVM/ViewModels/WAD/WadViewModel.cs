@@ -120,9 +120,8 @@ namespace Obsidian.MVVM.ViewModels.WAD
         private string _wadLocation;
         private string _wadName;
 
-        public WadViewModel(MainWindow window)
+        public WadViewModel()
         {
-            this.Window = window;
             this.Preview = new PreviewViewModel();
         }
 

@@ -291,7 +291,7 @@
 
                     </MaterialDesign:Card>
                     <TabControl Name="WadTabControl" Grid.Row="1" Style="{StaticResource MaterialDesignTabControl}" 
-                                ItemsSource="{Binding WadViewModels}" SelectedItem="{Binding SelectedWad, UpdateSourceTrigger=PropertyChanged}">
+                                ItemsSource="{Binding WadViewModels}" SelectedItem="{Binding SelectedWad, UpdateSourceTrigger=PropertyChanged}" SelectionChanged="OnWadTabSelectionChanged">
                         <TabControl.ItemTemplate>
                             <DataTemplate>
                                 <Grid VerticalAlignment="Center">
@@ -315,7 +315,7 @@
                                     </Grid.ColumnDefinitions>
                                     <TreeView x:Name="WadTree" Grid.Column="0"
                               ItemsSource="{Binding Items, UpdateSourceTrigger=PropertyChanged}" Margin="0,8,0,0"
-                              VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" SelectedItemChanged="OnSelectedItemChanged"/>
+                              VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" SelectedItemChanged="OnWadSelectedItemChanged"/>
                                     <GridSplitter Grid.Column="1" Width="3" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
                                     <Grid Grid.Column="2">
                                         <Grid.RowDefinitions>

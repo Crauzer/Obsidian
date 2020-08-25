@@ -21,79 +21,94 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <MaterialDesign:ColorZone Grid.Row="0" Mode="PrimaryDark" Padding="16" MaterialDesign:ShadowAssist.ShadowDepth="Depth4">
-            <TextBlock Text="{Binding MainWindow.LocalizationMap[DialogSettings]}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="40"/>
+            <TextBlock Text="{Binding LocalizationMap[DialogSettings]}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="40"/>
         </MaterialDesign:ColorZone>
-        <Grid Grid.Row="1" Margin="32">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+        <ScrollViewer Grid.Row="1">
+            <Grid Margin="32">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-            <GroupBox Grid.Row="0" Header="{Binding MainWindow.LocalizationMap[SettingsInitialDialogPaths]}"
+                <GroupBox Grid.Row="0" Header="{Binding LocalizationMap[SettingsInitialDialogPaths]}"
                       Style="{DynamicResource MaterialDesignGroupBox}" MaterialDesign:ShadowAssist.ShadowDepth="Depth3" BorderThickness="1">
-                <Grid Margin="0,0,0,15">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <Grid Grid.Row="0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBox Grid.Column="0" Text="{Binding OpenWadInitialDirectory, UpdateSourceTrigger=PropertyChanged}" 
-                                 MaterialDesign:HintAssist.Hint="{Binding MainWindow.LocalizationMap[SettingOpenWadDialogInitialDirectory]}"
-                                 MaterialDesign:HintAssist.HelperText="{Binding MainWindow.LocalizationMap[SettingOpenWadDialogInitialDirectoryDescription]}"/>
-                        <Button Grid.Column="1" Grid.Row="1" Width="25" Height="25" Margin="15 0 0 0"
+                    <Grid Margin="0,0,0,15">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" Text="{Binding OpenWadInitialDirectory, UpdateSourceTrigger=PropertyChanged}" 
+                                 MaterialDesign:HintAssist.Hint="{Binding LocalizationMap[SettingOpenWadDialogInitialDirectory]}"
+                                 MaterialDesign:HintAssist.HelperText="{Binding LocalizationMap[SettingOpenWadDialogInitialDirectoryDescription]}"/>
+                            <Button Grid.Column="1" Grid.Row="1" Width="25" Height="25" Margin="15 0 0 0"
                                 Command="{Binding SelectOpenWadInitialDirectoryCommand}"
                                 Content="{MaterialDesign:PackIcon Kind=Folder}" Style="{StaticResource MaterialDesignFloatingActionAccentButton}"/>
-                    </Grid>
-                    <Grid Grid.Row="1" Margin="0,30,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBox Grid.Column="0" Text="{Binding SaveWadInitialDirectory, UpdateSourceTrigger=PropertyChanged}" 
-                                 MaterialDesign:HintAssist.Hint="{Binding MainWindow.LocalizationMap[SettingSaveWadDialogInitialDirectory]}"
-                                 MaterialDesign:HintAssist.HelperText="{Binding MainWindow.LocalizationMap[SettingSaveWadDialogInitialDirectoryDescription]}"/>
-                        <Button Grid.Column="1" Grid.Row="1" Width="25" Height="25" Margin="15 0 0 0"
+                        </Grid>
+                        <Grid Grid.Row="1" Margin="0,30,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" Text="{Binding SaveWadInitialDirectory, UpdateSourceTrigger=PropertyChanged}" 
+                                 MaterialDesign:HintAssist.Hint="{Binding LocalizationMap[SettingSaveWadDialogInitialDirectory]}"
+                                 MaterialDesign:HintAssist.HelperText="{Binding LocalizationMap[SettingSaveWadDialogInitialDirectoryDescription]}"/>
+                            <Button Grid.Column="1" Grid.Row="1" Width="25" Height="25" Margin="15 0 0 0"
                                 Command="{Binding SelectSaveWadInitialDirectoryCommand}"
                                 Content="{MaterialDesign:PackIcon Kind=Folder}" Style="{StaticResource MaterialDesignFloatingActionAccentButton}"/>
-                    </Grid>
-                    <Grid Grid.Row="2" Margin="0,30,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBox Grid.Column="0" Text="{Binding ExtractInitialDirectory, UpdateSourceTrigger=PropertyChanged}" 
-                                 MaterialDesign:HintAssist.Hint="{Binding MainWindow.LocalizationMap[SettingExtractWadDialogInitialDirectory]}"
-                                 MaterialDesign:HintAssist.HelperText="{Binding MainWindow.LocalizationMap[SettingExtractWadDialogInitialDirectoryDescription]}"/>
-                        <Button Grid.Column="1" Grid.Row="1" Width="25" Height="25" Margin="15 0 0 0"
+                        </Grid>
+                        <Grid Grid.Row="2" Margin="0,30,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" Text="{Binding ExtractInitialDirectory, UpdateSourceTrigger=PropertyChanged}" 
+                                 MaterialDesign:HintAssist.Hint="{Binding LocalizationMap[SettingExtractWadDialogInitialDirectory]}"
+                                 MaterialDesign:HintAssist.HelperText="{Binding LocalizationMap[SettingExtractWadDialogInitialDirectoryDescription]}"/>
+                            <Button Grid.Column="1" Grid.Row="1" Width="25" Height="25" Margin="15 0 0 0"
                                 Command="{Binding SelectExtractInitialDirectoryCommand}"
                                 Content="{MaterialDesign:PackIcon Kind=Folder}" Style="{StaticResource MaterialDesignFloatingActionAccentButton}"/>
+                        </Grid>
                     </Grid>
-                </Grid>
-            </GroupBox>
-            <CheckBox Style="{StaticResource MaterialDesignAccentCheckBox}" IsChecked="{Binding GenerateHashesFromBIN, UpdateSourceTrigger=PropertyChanged}" 
-                      Content="{Binding MainWindow.LocalizationMap[SettingBINHashtableGeneration]}" Grid.Row="1" Margin="0,35,0,0"/>
-            <CheckBox Style="{StaticResource MaterialDesignAccentCheckBox}" IsChecked="{Binding SyncHashes, UpdateSourceTrigger=PropertyChanged}" 
-                      Content="{Binding MainWindow.LocalizationMap[SettingCDragonHashSync]}" Grid.Row="2" Margin="0,10,0,0"/>
-            <StackPanel Grid.Row="3" Margin="0,10,0,0" Orientation="Horizontal">
-                <Label Content="{Binding MainWindow.LocalizationMap[SettingLocalization]}"/>
-                <ComboBox Style="{StaticResource MaterialDesignComboBox}" IsSynchronizedWithCurrentItem="True"
+                </GroupBox>
+                <CheckBox Style="{StaticResource MaterialDesignAccentCheckBox}" IsChecked="{Binding GenerateHashesFromBIN, UpdateSourceTrigger=PropertyChanged}" 
+                      Content="{Binding LocalizationMap[SettingBINHashtableGeneration]}" Grid.Row="1" Margin="0,35,0,0"/>
+                <CheckBox Style="{StaticResource MaterialDesignAccentCheckBox}" IsChecked="{Binding SyncHashes, UpdateSourceTrigger=PropertyChanged}" 
+                      Content="{Binding LocalizationMap[SettingCDragonHashSync]}" Grid.Row="2" Margin="0,10,0,0"/>
+                <CheckBox Style="{StaticResource MaterialDesignAccentCheckBox}" IsChecked="{Binding CheckForUpdates, UpdateSourceTrigger=PropertyChanged}" 
+                      Content="{Binding LocalizationMap[SettingCheckForUpdates]}" Grid.Row="3" Margin="0,10,0,0"/>
+                <CheckBox Style="{StaticResource MaterialDesignAccentCheckBox}" IsChecked="{Binding EnableDiscordRPC, UpdateSourceTrigger=PropertyChanged}" 
+                      Content="{Binding LocalizationMap[SettingEnableDiscordRPC]}" Grid.Row="4" Margin="0,10,0,0"/>
+                <StackPanel Grid.Row="5" Margin="0,10,0,0" Orientation="Horizontal">
+                    <Label Content="{Binding LocalizationMap[SettingDiscordRPCTimestampMode]}"/>
+                    <ComboBox Style="{StaticResource MaterialDesignComboBox}" IsSynchronizedWithCurrentItem="True"
+                          ItemsSource="{Binding DiscordRPCTimestampModes}" SelectedItem="{Binding SelectedDiscordRPCTimestampMode}"
+                           Width="150" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                </StackPanel>
+                <StackPanel Grid.Row="6" Margin="0,10,0,0" Orientation="Horizontal">
+                    <Label Content="{Binding LocalizationMap[SettingLocalization]}"/>
+                    <ComboBox Style="{StaticResource MaterialDesignComboBox}" IsSynchronizedWithCurrentItem="True"
                           ItemsSource="{Binding Locales}" SelectedItem="{Binding SelectedLocale}"
                            Width="100" HorizontalAlignment="Left" Margin="10,0,0,0"/>
-            </StackPanel>
-        </Grid>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" Content="{Binding MainWindow.LocalizationMap[DialogOK]}" IsDefault="True" Command="{x:Static MaterialDesign:DialogHost.CloseDialogCommand}" Style="{StaticResource MaterialDesignFlatButton}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,10,0,10" Height="50" Width="150">
+            <Button Grid.Column="0" Content="{Binding LocalizationMap[DialogOK]}" IsDefault="True" Command="{x:Static MaterialDesign:DialogHost.CloseDialogCommand}" Style="{StaticResource MaterialDesignFlatButton}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,10,0,10" Height="50" Width="150">
                 <Button.CommandParameter>
                     <system:Boolean>True</system:Boolean>
                 </Button.CommandParameter>

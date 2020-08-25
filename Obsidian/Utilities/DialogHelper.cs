@@ -14,16 +14,16 @@ namespace Obsidian.Utilities
         public static DialogHost OperationDialog { get; set; }
         public static DialogHost RootDialog { get; set; }
 
-        private static MainWindow _mainWindow;
+        private static Dictionary<string, string> _localizationMap;
 
-        public static void Initialize(MainWindow mainWindow)
+        public static void Initialize(Dictionary<string, string> localizationMap)
         {
-            _mainWindow = mainWindow;
+            _localizationMap = localizationMap;
         }
 
         public static async Task<WadViewModel> ShowOpenWadOperartionDialog(string wadLocation)
         {
-            OpenWadOperationDialog dialog = new OpenWadOperationDialog(_mainWindow, wadLocation);
+            OpenWadOperationDialog dialog = new OpenWadOperationDialog(wadLocation);
 
             await DialogHost.Show(dialog, "OperationDialog", dialog.Load, null);
 
@@ -37,7 +37,7 @@ namespace Obsidian.Utilities
         }
         public static async Task<WadViewModel> ShowCreateWADOperationDialog(string folderLocation)
         {
-            CreateWadOperationDialog dialog = new CreateWadOperationDialog(_mainWindow, folderLocation);
+            CreateWadOperationDialog dialog = new CreateWadOperationDialog(folderLocation);
 
             await DialogHost.Show(dialog, "OperationDialog", dialog.StartCreation, null);
 
@@ -48,7 +48,7 @@ namespace Obsidian.Utilities
         {
             SettingsDialog dialog = new SettingsDialog()
             {
-                DataContext = new SettingsViewModel(_mainWindow)
+                DataContext = new SettingsViewModel(_localizationMap)
             };
 
             await DialogHost.Show(dialog, "RootDialog");

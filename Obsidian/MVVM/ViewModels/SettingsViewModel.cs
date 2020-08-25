@@ -3,14 +3,15 @@ using Obsidian.MVVM.Commands;
 using Obsidian.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows.Input;
 
 namespace Obsidian.MVVM.ViewModels
 {
-    public class SettingsViewModel : PropertyNotifier
+    public class SettingsViewModel : PropertyNotifier, ILocalizable
     {
-        public MainWindow MainWindow { get; }
+        public Dictionary<string, string> LocalizationMap { get; set; }
 
         public bool GenerateHashesFromBIN
         {
@@ -22,6 +23,17 @@ namespace Obsidian.MVVM.ViewModels
             get => Config.Get<bool>("SyncHashes");
             set => Config.Set("SyncHashes", value);
         }
+        public bool EnableDiscordRPC
+        {
+            get => Config.Get<bool>("EnableDiscordRpc");
+            set => Config.Set("EnableDiscordRpc", value);
+        }
+        public bool CheckForUpdates
+        {
+            get => Config.Get<bool>("CheckForUpdates");
+            set => Config.Set("CheckForUpdates", value);
+        }
+
         public string OpenWadInitialDirectory
         {
             get => Config.Get<string>("OpenWadInitialDirectory");
@@ -49,6 +61,7 @@ namespace Obsidian.MVVM.ViewModels
                 NotifyPropertyChanged();
             }
         }
+
         public List<string> Locales => Localization.GetAvailableLocalizations(true);
         public string SelectedLocale
         {
@@ -56,7 +69,18 @@ namespace Obsidian.MVVM.ViewModels
             set
             {
                 Config.Set("Localization", value);
-                this.MainWindow.LocalizationMap = Localization.Load();
+                this.LocalizationMap = Localization.Load();
+                NotifyPropertyChanged();
+            }
+        }
+
+        public List<string> DiscordRPCTimestampModes => Enum.GetNames(typeof(DiscordRpcTimestampMode)).ToList();
+        public string SelectedDiscordRPCTimestampMode
+        {
+            get => Config.Get<DiscordRpcTimestampMode>("DiscordRpcTimestampMode").ToString();
+            set
+            {
+                Config.Set("DiscordRpcTimestampMode", Enum.Parse(typeof(DiscordRpcTimestampMode), value));
                 NotifyPropertyChanged();
             }
         }
@@ -65,9 +89,9 @@ namespace Obsidian.MVVM.ViewModels
         public ICommand SelectSaveWadInitialDirectoryCommand => new RelayCommand(SelectSaveWadInitialDirectory);
         public ICommand SelectExtractInitialDirectoryCommand => new RelayCommand(SelectExtractInitialDirectory);
 
-        public SettingsViewModel(MainWindow mainWindow)
+        public SettingsViewModel(Dictionary<string, string> localizationMap)
         {
-            this.MainWindow = mainWindow;
+            this.LocalizationMap = localizationMap;
         }
 
         private void SelectOpenWadInitialDirectory(object o)

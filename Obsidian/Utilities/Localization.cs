@@ -94,6 +94,16 @@ namespace Obsidian.Utilities
             }
         }
 
-        public static string Get(string entry) => _localization[entry];
+        public static string Get(string entry)
+        {
+            if(_localization is null || !_localization.ContainsKey(entry))
+            {
+                return entry;
+            }
+            else
+            {
+                return _localization[entry];
+            }
+        }
     }
 }

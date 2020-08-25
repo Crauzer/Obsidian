@@ -32,9 +32,9 @@ namespace Obsidian.MVVM.ModelViews.Dialogs
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public CreateWadOperationDialog(MainWindow window, string folderLocation)
+        public CreateWadOperationDialog(string folderLocation)
         {
-            this.WadViewModel = new WadViewModel(window);
+            this.WadViewModel = new WadViewModel();
             this._folderLocation = folderLocation;
 
             InitializeComponent();

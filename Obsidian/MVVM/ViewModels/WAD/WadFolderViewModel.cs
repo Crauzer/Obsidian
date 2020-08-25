@@ -16,7 +16,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
         public ObservableCollection<WadItemViewModel> Items { get; set; } = new ObservableCollection<WadItemViewModel>();
 
         public WadFolderViewModel(WadViewModel wadViewModel, WadItemViewModel parent, string path) :
-            base(wadViewModel.Window, wadViewModel, parent, WadItemType.Folder)
+            base(wadViewModel, parent, WadItemType.Folder)
         {
             this.Path = path;
             this.Name = PathIO.GetFileName(path);

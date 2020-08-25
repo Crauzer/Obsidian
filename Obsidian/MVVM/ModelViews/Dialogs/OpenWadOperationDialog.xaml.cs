@@ -16,9 +16,9 @@ namespace Obsidian.MVVM.ModelViews.Dialogs
 
         private string _wadLocation;
 
-        public OpenWadOperationDialog(MainWindow window, string wadLocation)
+        public OpenWadOperationDialog(string wadLocation)
         {
-            this.WadViewModel = new WadViewModel(window);
+            this.WadViewModel = new WadViewModel();
             this._wadLocation = wadLocation;
             this.Message = Localization.Get("DialogOpeningWadMessage") + '\n' + wadLocation;
 

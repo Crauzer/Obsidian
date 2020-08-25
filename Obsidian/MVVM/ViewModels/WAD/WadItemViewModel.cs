@@ -9,7 +9,6 @@ namespace Obsidian.MVVM.ViewModels.WAD
 {
     public class WadItemViewModel : PropertyNotifier, IComparable<WadItemViewModel>, IEquatable<WadItemViewModel>, IEqualityComparer<WadItemViewModel>
     {
-        public MainWindow Window { get; }
         public WadItemViewModel Parent { get; }
         public string Filter
         {
@@ -118,9 +117,8 @@ namespace Obsidian.MVVM.ViewModels.WAD
         private string _filter;
         protected WadViewModel _wadViewModel;
 
-        public WadItemViewModel(MainWindow window, WadViewModel wadViewModel, WadItemViewModel parent, WadItemType type)
+        public WadItemViewModel(WadViewModel wadViewModel, WadItemViewModel parent, WadItemType type)
         {
-            this.Window = window;
             this._wadViewModel = wadViewModel;
             this.Parent = parent;
             this.Type = type;

@@ -21,7 +21,10 @@ namespace Obsidian.Utilities
             { "OpenWadInitialDirectory", "" },
             { "SaveWadInitialDirectory", "" },
             { "ExtractInitialDirectory", "" },
-            { "Localization", "English" }
+            { "Localization", "English" },
+            { "EnableDiscordRpc", true },
+            { "DiscordRpcTimestampMode", DiscordRpcTimestampMode.LaunchTime },
+            { "CheckForUpdates", true }
         };
         private static Dictionary<string, object> _config = new Dictionary<string, object>();
 
