@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -16,7 +17,7 @@ namespace Obsidian.Utilities
 
         private static Dictionary<string, string> _localization;
 
-        public static Dictionary<string, string> Load()
+        public static void Load()
         {
             string localization = Config.Get<string>("Localization");
             List<string> availableLocalizations = GetAvailableLocalizations();
@@ -46,8 +47,6 @@ namespace Obsidian.Utilities
                     }
                 }
             }
-
-            return _localization;
         }
 
         private static Dictionary<string, string> ReadLocalization(Stream localizationStream)
@@ -104,6 +103,11 @@ namespace Obsidian.Utilities
             {
                 return _localization[entry];
             }
+        }
+
+        public static ReadOnlyDictionary<string, string> GetDictionary()
+        {
+            return new ReadOnlyDictionary<string, string>(_localization);
         }
     }
 }

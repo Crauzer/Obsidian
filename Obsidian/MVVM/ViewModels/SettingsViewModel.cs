@@ -3,6 +3,7 @@ using Obsidian.MVVM.Commands;
 using Obsidian.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Windows.Input;
@@ -11,7 +12,7 @@ namespace Obsidian.MVVM.ViewModels
 {
     public class SettingsViewModel : PropertyNotifier, ILocalizable
     {
-        public Dictionary<string, string> LocalizationMap { get; set; }
+        public ReadOnlyDictionary<string, string> LocalizationMap => Localization.GetDictionary();
 
         public bool GenerateHashesFromBIN
         {
@@ -69,7 +70,6 @@ namespace Obsidian.MVVM.ViewModels
             set
             {
                 Config.Set("Localization", value);
-                this.LocalizationMap = Localization.Load();
                 NotifyPropertyChanged();
             }
         }
@@ -88,11 +88,6 @@ namespace Obsidian.MVVM.ViewModels
         public ICommand SelectOpenWadInitialDirectoryCommand => new RelayCommand(SelectOpenWadInitialDirectory);
         public ICommand SelectSaveWadInitialDirectoryCommand => new RelayCommand(SelectSaveWadInitialDirectory);
         public ICommand SelectExtractInitialDirectoryCommand => new RelayCommand(SelectExtractInitialDirectory);
-
-        public SettingsViewModel(Dictionary<string, string> localizationMap)
-        {
-            this.LocalizationMap = localizationMap;
-        }
 
         private void SelectOpenWadInitialDirectory(object o)
         {

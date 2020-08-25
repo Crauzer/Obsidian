@@ -47,12 +47,12 @@
 
                     <Grid.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="{Binding Path=Window.LocalizationMap[WadContextMenuAddFiles]}"
+                            <MenuItem Header="{Binding Path=LocalizationMap[WadContextMenuAddFiles]}"
                                       Icon="{MaterialDesign:PackIcon Kind=FileOutline}" Click="OnFolderAddFiles"/>
-                            <MenuItem Header="{Binding Path=Window.LocalizationMap[WadContextMenuAddFolders]}"
+                            <MenuItem Header="{Binding Path=LocalizationMap[WadContextMenuAddFolders]}"
                                       Icon="{MaterialDesign:PackIcon Kind=Folder}" Click="OnFolderAddFolders"/>
                             <Separator/>
-                            <MenuItem Header="{Binding Path=Window.LocalizationMap[WadContextMenuRemove]}"
+                            <MenuItem Header="{Binding Path=LocalizationMap[WadContextMenuRemove]}"
                                       Icon="{MaterialDesign:PackIcon Kind=PlaylistRemove}" Click="OnFolderRemove"/>
                         </ContextMenu>
                     </Grid.ContextMenu>
@@ -86,12 +86,12 @@
 
                     <Grid.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="{Binding Path=Window.LocalizationMap[WadContextMenuModifyData]}"
+                            <MenuItem Header="{Binding Path=LocalizationMap[WadContextMenuModifyData]}"
                                       Icon="{MaterialDesign:PackIcon Kind=FileRestore}" Click="OnFileModifyData"/>
                             <Separator/>
-                            <MenuItem Header="{Binding Path=Window.LocalizationMap[WadContextMenuRemove]}"
+                            <MenuItem Header="{Binding Path=LocalizationMap[WadContextMenuRemove]}"
                                       Icon="{MaterialDesign:PackIcon Kind=Close}" Click="OnFileRemove"/>
-                            <MenuItem Header="{Binding Path=Window.LocalizationMap[WadContextMenuSaveAs]}"
+                            <MenuItem Header="{Binding Path=LocalizationMap[WadContextMenuSaveAs]}"
                                       Icon="{MaterialDesign:PackIcon Kind=FileExport}"
                                       IsEnabled="{Binding ConversionOptions.IsConversionAvailable}"
                                       ItemsSource="{Binding ConversionOptions.AvailableConversions}"

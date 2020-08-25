@@ -5,6 +5,7 @@ using Obsidian.MVVM.ModelViews.Dialogs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
+using System.Collections.ObjectModel;
 
 namespace Obsidian.Utilities
 {
@@ -13,13 +14,6 @@ namespace Obsidian.Utilities
         public static DialogHost MessageDialog { get; set; }
         public static DialogHost OperationDialog { get; set; }
         public static DialogHost RootDialog { get; set; }
-
-        private static Dictionary<string, string> _localizationMap;
-
-        public static void Initialize(Dictionary<string, string> localizationMap)
-        {
-            _localizationMap = localizationMap;
-        }
 
         public static async Task<WadViewModel> ShowOpenWadOperartionDialog(string wadLocation)
         {
@@ -48,7 +42,7 @@ namespace Obsidian.Utilities
         {
             SettingsDialog dialog = new SettingsDialog()
             {
-                DataContext = new SettingsViewModel(_localizationMap)
+                DataContext = new SettingsViewModel()
             };
 
             await DialogHost.Show(dialog, "RootDialog");

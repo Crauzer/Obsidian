@@ -55,7 +55,7 @@ namespace Obsidian
             }
         }
 
-        public Dictionary<string, string> LocalizationMap
+        public ReadOnlyDictionary<string, string> LocalizationMap
         {
             get => this._localizationMap;
             set
@@ -66,7 +66,7 @@ namespace Obsidian
         }
 
         private WadViewModel _selectedWad;
-        private Dictionary<string, string> _localizationMap;
+        private ReadOnlyDictionary<string, string> _localizationMap;
         private int _easterEggClickCounter;
 
         private DiscordRpcContext _rpcContext;
@@ -106,14 +106,15 @@ namespace Obsidian
 
             this.SelectedWad = new WadViewModel();
 
-            DialogHelper.Initialize(this.LocalizationMap);
             DialogHelper.MessageDialog = this.MessageDialog;
             DialogHelper.OperationDialog = this.OperationDialog;
             DialogHelper.RootDialog = this.RootDialog;
         }
         private void LoadLocalization()
         {
-            this.LocalizationMap = Localization.Load();
+            Localization.Load();
+
+            this.LocalizationMap = Localization.GetDictionary(); 
         }
         private async void CheckForUpdate()
         {

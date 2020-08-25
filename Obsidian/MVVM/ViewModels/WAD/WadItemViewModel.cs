@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Obsidian.Utilities;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
 using System.Windows.Data;
@@ -7,8 +9,10 @@ using PathIO = System.IO.Path;
 
 namespace Obsidian.MVVM.ViewModels.WAD
 {
-    public class WadItemViewModel : PropertyNotifier, IComparable<WadItemViewModel>, IEquatable<WadItemViewModel>, IEqualityComparer<WadItemViewModel>
+    public class WadItemViewModel : PropertyNotifier, ILocalizable, IComparable<WadItemViewModel>, IEquatable<WadItemViewModel>, IEqualityComparer<WadItemViewModel>
     {
+        public ReadOnlyDictionary<string, string> LocalizationMap => Localization.GetDictionary();
+
         public WadItemViewModel Parent { get; }
         public string Filter
         {

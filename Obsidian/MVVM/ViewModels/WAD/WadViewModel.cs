@@ -15,8 +15,6 @@ namespace Obsidian.MVVM.ViewModels.WAD
 {
     public class WadViewModel : PropertyNotifier
     {
-        public MainWindow Window { get; }
-
         public bool ContainsSelection
         {
             get
