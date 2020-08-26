@@ -22,6 +22,7 @@
   "SettingLocalization": "Localization:",
   "SettingEnableDiscordRPC": "Discord Rich Presence",
   "SettingDiscordRPCTimestampMode": "Discord RPC Timestamp Mode:",
+  "SettingCheckForUpdates": "Check for updates",
   "DialogOK": "OK",
   "PreviewDescriptionDDS": "Direct Draw Surface",
   "PreviewDescriptionSKN": "Simple Skin Model",
