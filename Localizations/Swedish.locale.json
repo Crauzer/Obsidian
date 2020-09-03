@@ -46,7 +46,7 @@
   "PreviewErrorDDS": "Förhandsgranskning av det här DDS-formatet stöds ej\nFilen är troligen en kubavbildning eller har en dimention med storlek 1",
   "PreviewErrorGeneric": "Kan ej förhandsgranska den valda filen",
   "DragAndDropFileCountError": "Du kan inte släppa mer än 1 WAD-fil in i Obsidian",
-  "DialogDownloadingLocalizations": "Laddar ned översättningar..."
+  "DialogDownloadingLocalizations": "Laddar ned översättningar...",
   "WadEntryModifyDataError": "Kunde inte modifiera data",
   "WadFolderAddFolderError": "Obsidian kunde inte lägga till alla filer från den valda mappen",
   "WadFolderAddFileError": "Kan inte lägga till fil",
