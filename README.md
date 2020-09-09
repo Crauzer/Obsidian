@@ -1,5 +1,10 @@
 ![Obsidian](https://github.com/Crauzer/Obsidian/blob/master/Images/obsidian-banner.png)
 
+<a href="">
+  <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/Crauzer/Obsidian?color=red&style=for-the-badge">
+  <img alt="GitHub All Releases" src="https://img.shields.io/github/downloads/Crauzer/Obsidian/total?color=red&style=for-the-badge">
+</a>
+
 * **Obsidian is a WAD Archive editor for League of Legends.**
 
 * **It allows you to open, edit and create WAD files.**
