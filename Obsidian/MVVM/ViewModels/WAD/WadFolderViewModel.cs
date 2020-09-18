@@ -1,5 +1,5 @@
 ﻿using Fantome.Libraries.League.Helpers.Cryptography;
-using Fantome.Libraries.League.IO.WAD;
+using Fantome.Libraries.League.IO.WadFile;
 using Obsidian.Utilities;
 using System;
 using System.Collections.Generic;
@@ -22,23 +22,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
             this.Name = PathIO.GetFileName(path);
         }
 
-        public async void AddFile(string fileLocation)
-        {
-            try
-            {
-                string entryName = PathIO.GetFileName(fileLocation).ToLower();
-                string entryPath = string.Format("{0}/{1}", this.Path, entryName);
-                ulong hash = XXHash.XXH64(Encoding.ASCII.GetBytes(entryPath.ToLower()));
-                WADEntry entry = new WADEntry(this._wadViewModel.WAD, hash, File.ReadAllBytes(fileLocation), true, PathIO.GetExtension(fileLocation));
-
-                this.Items.Add(new WadFileViewModel(this._wadViewModel, this, entryPath, entryName, entry));
-            }
-            catch (Exception exception)
-            {
-                await DialogHelper.ShowMessageDialog(string.Format("{0}\n{1}\n{2}", Localization.Get("WadFolderAddFileError"), fileLocation, exception));
-            }
-        }
-        public void AddFile(string path, string entryPath, WADEntry entry)
+        public void AddFile(string path, string entryPath, WadEntry entry)
         {
             char pathSeparator = Pathing.GetPathSeparator(path);
             string[] folders = path.Split(pathSeparator);
@@ -65,26 +49,6 @@ namespace Obsidian.MVVM.ViewModels.WAD
                     newFolder.AddFile(path.Substring(path.IndexOf(pathSeparator) + 1), entryPath, entry);
                     this.Items.Add(newFolder);
                 }
-            }
-        }
-        public async void AddFolder(string folderLocation)
-        {
-            try
-            {
-                foreach (string fileLocation in Directory.EnumerateFiles(folderLocation, "*", SearchOption.AllDirectories))
-                {
-                    char pathSeparator = Pathing.GetPathSeparator(fileLocation);
-                    string path = fileLocation.Replace(PathIO.GetDirectoryName(folderLocation) + pathSeparator, "").Replace(pathSeparator, '/');
-                    string entryPath = string.Format("{0}/{1}", this.Path, path);
-                    ulong hash = XXHash.XXH64(Encoding.ASCII.GetBytes(entryPath.ToLower()));
-                    WADEntry entry = new WADEntry(this._wadViewModel.WAD, hash, File.ReadAllBytes(fileLocation), true, PathIO.GetExtension(fileLocation));
-
-                    AddFile(path, entryPath, entry);
-                }
-            }
-            catch (Exception exception)
-            {
-                await DialogHelper.ShowMessageDialog(string.Format("{0}\n{1}", Localization.Get("WadFolderAddFolderError"), exception));
             }
         }
 

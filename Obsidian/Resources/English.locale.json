@@ -51,5 +51,7 @@
   "WadFolderAddFolderError": "Obsidian was unable to properly add all files from the selected directory",
   "WadFolderAddFileError": "Unable to add file",
   "WadFileConversionError": "Failed to convert the selected file",
-  "ConversionSimpleSkinWithSkeletonSkeletonNotFound": "Failed to find skeleton"
+  "ConversionSimpleSkinWithSkeletonSkeletonNotFound": "Failed to find skeleton",
+  "WadCreationFolderDialogTitle": "Select the folder from which you would like to create a WAD file",
+  "WadCreationWadSaveDialog": "Save created WAD file"
 }

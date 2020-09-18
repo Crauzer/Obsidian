@@ -29,9 +29,9 @@ namespace Obsidian.Utilities
 
             await DialogHost.Show(dialog, "OperationDialog", dialog.Save, null);
         }
-        public static async Task<WadViewModel> ShowCreateWADOperationDialog(string folderLocation)
+        public static async Task<WadViewModel> ShowCreateWADOperationDialog(string folderLocation, string wadLocation)
         {
-            CreateWadOperationDialog dialog = new CreateWadOperationDialog(folderLocation);
+            CreateWadOperationDialog dialog = new CreateWadOperationDialog(folderLocation, wadLocation);
 
             await DialogHost.Show(dialog, "OperationDialog", dialog.StartCreation, null);
 

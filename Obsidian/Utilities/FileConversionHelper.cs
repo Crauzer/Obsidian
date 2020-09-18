@@ -1,10 +1,10 @@
 ﻿using Fantome.Libraries.League.Helpers;
 using Fantome.Libraries.League.IO.MapGeometry;
 using Fantome.Libraries.League.IO.OBJ;
-using Fantome.Libraries.League.IO.SimpleSkin;
+using Fantome.Libraries.League.IO.SimpleSkinFile;
 using Fantome.Libraries.League.IO.SkeletonFile;
-using Fantome.Libraries.League.IO.StaticObject;
-using Fantome.Libraries.League.IO.WAD;
+using Fantome.Libraries.League.IO.StaticObjectFile;
+using Fantome.Libraries.League.IO.WadFile;
 using Obsidian.MVVM.ViewModels.WAD;
 using SharpGLTF.Schema2;
 using System;
@@ -58,23 +58,19 @@ namespace Obsidian.Utilities
 
         private static void ConvertSimpleSkinToGltf(FileConversionParameter parameter)
         {
-            WADEntry simpleSkinWadEntry = parameter.Parameter;
-            using MemoryStream stream = new MemoryStream(simpleSkinWadEntry.GetContent(true));
-            SimpleSkin simpleSkin = new SimpleSkin(stream);
+            WadEntry simpleSkinWadEntry = parameter.Parameter;
+            SimpleSkin simpleSkin = new SimpleSkin(simpleSkinWadEntry.GetDataHandle().GetDecompressedStream());
             ModelRoot gltf = simpleSkin.ToGltf();
 
             gltf.SaveGLB(Path.ChangeExtension(parameter.OutputPath, "glb"));
         }
         private static void ConvertSimpleSkinWithSkeletonToGltf(FileConversionParameter parameter)
         {
-            WADEntry simpleSkinWadEntry = parameter.Parameter;
-            WADEntry skeletonWadEntry = parameter.AdditionalParameters.FirstOrDefault(x => x.Item1 == FileConversionAdditionalParameterType.Skeleton).Item2;
+            WadEntry simpleSkinWadEntry = parameter.Parameter;
+            WadEntry skeletonWadEntry = parameter.AdditionalParameters.FirstOrDefault(x => x.Item1 == FileConversionAdditionalParameterType.Skeleton).Item2;
 
-            using MemoryStream simpleSkinStream = new MemoryStream(simpleSkinWadEntry.GetContent(true));
-            using MemoryStream skeletonStream = new MemoryStream(skeletonWadEntry.GetContent(true));
-
-            SimpleSkin simpleSkin = new SimpleSkin(simpleSkinStream);
-            Skeleton skeleton = new Skeleton(skeletonStream);
+            SimpleSkin simpleSkin = new SimpleSkin(simpleSkinWadEntry.GetDataHandle().GetDecompressedStream());
+            Skeleton skeleton = new Skeleton(skeletonWadEntry.GetDataHandle().GetDecompressedStream());
 
             ModelRoot gltf = simpleSkin.ToGltf(skeleton);
 
@@ -83,18 +79,16 @@ namespace Obsidian.Utilities
 
         private static void ConvertScbToGltf(FileConversionParameter parameter)
         {
-            WADEntry staticObjectWadEntry = parameter.Parameter;
-            using MemoryStream stream = new MemoryStream(staticObjectWadEntry.GetContent(true));
-            StaticObject staticObject = StaticObject.ReadSCB(stream);
+            WadEntry staticObjectWadEntry = parameter.Parameter;
+            StaticObject staticObject = StaticObject.ReadSCB(staticObjectWadEntry.GetDataHandle().GetDecompressedStream());
             ModelRoot gltf = staticObject.ToGltf();
 
             gltf.SaveGLB(Path.ChangeExtension(parameter.OutputPath, "glb"));
         }
         private static void ConvertScbToObj(FileConversionParameter parameter)
         {
-            WADEntry staticObjectWadEntry = parameter.Parameter;
-            using MemoryStream stream = new MemoryStream(staticObjectWadEntry.GetContent(true));
-            StaticObject staticObject = StaticObject.ReadSCB(stream);
+            WadEntry staticObjectWadEntry = parameter.Parameter;
+            StaticObject staticObject = StaticObject.ReadSCB(staticObjectWadEntry.GetDataHandle().GetDecompressedStream());
             var objs = staticObject.ToObj();
 
             string baseName = Path.GetFileNameWithoutExtension(parameter.OutputPath);
@@ -107,18 +101,16 @@ namespace Obsidian.Utilities
 
         private static void ConvertScoToGltf(FileConversionParameter parameter)
         {
-            WADEntry staticObjectWadEntry = parameter.Parameter;
-            using MemoryStream stream = new MemoryStream(staticObjectWadEntry.GetContent(true));
-            StaticObject staticObject = StaticObject.ReadSCO(stream);
+            WadEntry staticObjectWadEntry = parameter.Parameter;
+            StaticObject staticObject = StaticObject.ReadSCO(staticObjectWadEntry.GetDataHandle().GetDecompressedStream());
             ModelRoot gltf = staticObject.ToGltf();
 
             gltf.SaveGLB(Path.ChangeExtension(parameter.OutputPath, "glb"));
         }
         private static void ConvertScoToObj(FileConversionParameter parameter)
         {
-            WADEntry staticObjectWadEntry = parameter.Parameter;
-            using MemoryStream stream = new MemoryStream(staticObjectWadEntry.GetContent(true));
-            StaticObject staticObject = StaticObject.ReadSCO(stream);
+            WadEntry staticObjectWadEntry = parameter.Parameter;
+            StaticObject staticObject = StaticObject.ReadSCO(staticObjectWadEntry.GetDataHandle().GetDecompressedStream());
             var objs = staticObject.ToObj();
 
             string baseName = Path.GetFileNameWithoutExtension(parameter.OutputPath);
@@ -131,9 +123,8 @@ namespace Obsidian.Utilities
 
         private static void ConvertMapGeometryToGltf(FileConversionParameter parameter)
         {
-            WADEntry mapGeometryWadEntry = parameter.Parameter;
-            using MemoryStream stream = new MemoryStream(mapGeometryWadEntry.GetContent(true));
-            MapGeometry mapGeometry = new MapGeometry(stream);
+            WadEntry mapGeometryWadEntry = parameter.Parameter;
+            MapGeometry mapGeometry = new MapGeometry(mapGeometryWadEntry.GetDataHandle().GetDecompressedStream());
             ModelRoot gltf = mapGeometry.ToGLTF();
 
             gltf.SaveGLB(Path.ChangeExtension(parameter.OutputPath, "glb"));
@@ -143,14 +134,14 @@ namespace Obsidian.Utilities
         {
             // We need to find a skeleton file with the same filename as the Simple Skin
             string skeletonPath = Path.ChangeExtension(parameter.Path, "skl");
-            WADEntry skeletonWadEntry = wad.GetAllFiles().FirstOrDefault(x => x.Path == skeletonPath).Entry;
+            WadEntry skeletonWadEntry = wad.GetAllFiles().FirstOrDefault(x => x.Path == skeletonPath).Entry;
             if (skeletonWadEntry is null)
             {
                 throw new Exception(Localization.Get("ConversionSimpleSkinWithSkeletonSkeletonNotFound"));
             }
             else
             {
-                return new FileConversionParameter(outputPath, parameter.Entry, new List<(FileConversionAdditionalParameterType, WADEntry)>()
+                return new FileConversionParameter(outputPath, parameter.Entry, new List<(FileConversionAdditionalParameterType, WadEntry)>()
                 {
                     (FileConversionAdditionalParameterType.Skeleton, skeletonWadEntry)
                 });
@@ -220,18 +211,18 @@ namespace Obsidian.Utilities
     public class FileConversionParameter
     {
         public string OutputPath { get; }
-        public WADEntry Parameter { get; }
-        public List<(FileConversionAdditionalParameterType, WADEntry)> AdditionalParameters { get; set; }
+        public WadEntry Parameter { get; }
+        public List<(FileConversionAdditionalParameterType, WadEntry)> AdditionalParameters { get; set; }
 
-        public FileConversionParameter(string outputPath, WADEntry parameter)
-            : this(outputPath, parameter, new List<(FileConversionAdditionalParameterType, WADEntry)>())
+        public FileConversionParameter(string outputPath, WadEntry parameter)
+            : this(outputPath, parameter, new List<(FileConversionAdditionalParameterType, WadEntry)>())
         {
 
         }
         public FileConversionParameter(
             string outputPath,
-            WADEntry parameter,
-            List<(FileConversionAdditionalParameterType, WADEntry)> additionalParameters)
+            WadEntry parameter,
+            List<(FileConversionAdditionalParameterType, WadEntry)> additionalParameters)
         {
             this.OutputPath = outputPath;
             this.Parameter = parameter;

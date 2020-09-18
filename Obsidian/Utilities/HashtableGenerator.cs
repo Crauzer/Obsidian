@@ -1,7 +1,7 @@
 ﻿using Fantome.Libraries.League.Helpers;
 using Fantome.Libraries.League.Helpers.Cryptography;
 using Fantome.Libraries.League.IO.BIN;
-using Fantome.Libraries.League.IO.WAD;
+using Fantome.Libraries.League.IO.WadFile;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,22 +25,22 @@ namespace Obsidian.Utilities
             }
         }
 
-        public static Dictionary<ulong, string> Generate(WADFile wad)
+        public static Dictionary<ulong, string> Generate(Wad wad)
         {
             Dictionary<ulong, string> hashtable = new Dictionary<ulong, string>();
             List<string> strings = new List<string>();
 
-            foreach (WADEntry entry in wad.Entries.Where(x => x.Type != EntryType.FileRedirection))
+            foreach (WadEntry entry in wad.Entries.Values.Where(x => x.Type != WadEntryType.FileRedirection))
             {
-                byte[] entryContent = entry.GetContent(true);
-                LeagueFileType fileType = LeagueUtilities.GetExtensionType(entryContent);
+                using Stream entryStream = entry.GetDataHandle().GetDecompressedStream();
+                LeagueFileType fileType = LeagueUtilities.GetExtensionType(entryStream);
 
                 if (fileType == LeagueFileType.BIN)
                 {
                     BINFile bin = null;
                     try
                     {
-                        bin = new BINFile(new MemoryStream(entryContent));
+                        bin = new BINFile(entryStream);
                     }
                     catch (Exception)
                     {
@@ -49,7 +49,7 @@ namespace Obsidian.Utilities
 
                     if (bin != null)
                     {
-                        strings.AddRange(ProcessBINLinkedFiles(bin.LinkedFiles));
+                        strings.AddRange(ProcessBINDependencies(bin.Dependencies));
                         strings.AddRange(ProcessBINFile(bin));
                     }
                 }
@@ -186,7 +186,7 @@ namespace Obsidian.Utilities
 
             return strings;
         }
-        private static IEnumerable<string> ProcessBINLinkedFiles(IEnumerable<string> linkedFiles)
+        private static IEnumerable<string> ProcessBINDependencies(IEnumerable<string> linkedFiles)
         {
             List<string> strings = new List<string>();
 
@@ -244,9 +244,10 @@ namespace Obsidian.Utilities
 
             return strings;
         }
-        private static IEnumerable<string> ProcessLegacyDirList(WADEntry entry)
+        private static IEnumerable<string> ProcessLegacyDirList(WadEntry entry)
         {
-            using (BinaryReader br = new BinaryReader(new MemoryStream(entry.GetContent(true))))
+            using Stream entryStream = entry.GetDataHandle().GetDecompressedStream();
+            using (BinaryReader br = new BinaryReader(entryStream))
             {
                 uint pathCount = br.ReadUInt32();
 

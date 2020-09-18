@@ -1,4 +1,4 @@
-﻿using Fantome.Libraries.League.IO.WAD;
+﻿using Fantome.Libraries.League.IO.WadFile;
 using HelixToolkit.Wpf;
 using Obsidian.Utilities;
 using System;
@@ -78,13 +78,13 @@ namespace Obsidian.MVVM.ViewModels.WAD
         }
         public ObservableCollection<WadItemViewModel> Items { get; set; } = new ObservableCollection<WadItemViewModel>();
 
-        public WADFile WAD
+        public Wad WAD
         {
             get
             {
                 if (this._wad == null)
                 {
-                    this._wad = new WADFile(this.WADLocation);
+                    this._wad = Wad.Mount(this.WADLocation, false);
                 }
 
                 return this._wad;
@@ -114,7 +114,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
         public PreviewViewModel Preview { get; private set; }
 
         private string _filter;
-        private WADFile _wad;
+        private Wad _wad;
         private string _wadLocation;
         private string _wadName;
 
@@ -125,7 +125,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
 
         public void LoadWad(string wadLocation)
         {
-            this.WAD = new WADFile(wadLocation);
+            this.WAD = Wad.Mount(wadLocation, false);
             this.WADLocation = wadLocation;
 
             if(Config.Get<bool>("GenerateHashesFromBIN"))
@@ -137,9 +137,9 @@ namespace Obsidian.MVVM.ViewModels.WAD
         }
         private void GenerateWadItems()
         {
-            foreach (WADEntry entry in this.WAD.Entries)
+            foreach (WadEntry entry in this.WAD.Entries.Values)
             {
-                string path = Hashtable.Get(entry);
+                string path = Hashtable.Get(entry.XXHash);
                 char pathSeparator = Pathing.GetPathSeparator(path);
                 string[] folders = path.Split(pathSeparator);
 

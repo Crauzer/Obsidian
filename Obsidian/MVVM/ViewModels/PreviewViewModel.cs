@@ -1,17 +1,13 @@
 ﻿using CSharpImageLibrary;
 using Fantome.Libraries.League.IO.MapGeometry;
-using Fantome.Libraries.League.IO.StaticObject;
-using Fantome.Libraries.League.IO.SimpleSkin;
+using Fantome.Libraries.League.IO.SimpleSkinFile;
+using Fantome.Libraries.League.IO.StaticObjectFile;
 using HelixToolkit.Wpf;
-using System;
-using System.Windows.Media.Imaging;
-using Obsidian.Utilities;
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Highlighting;
-using System.IO;
-using ICSharpCode.AvalonEdit.Utils;
-using Octokit;
 using Newtonsoft.Json.Linq;
+using Obsidian.Utilities;
+using System.IO;
+using System.Windows.Media.Imaging;
 
 namespace Obsidian.MVVM.ViewModels
 {
@@ -115,7 +111,7 @@ namespace Obsidian.MVVM.ViewModels
             {
                 string text = reader.ReadToEnd();
 
-                if(extension == ".json")
+                if (extension == ".json")
                 {
                     text = JToken.Parse(text).ToString(Newtonsoft.Json.Formatting.Indented);
                 }

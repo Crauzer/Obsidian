@@ -6,7 +6,7 @@
     <UseWPF>true</UseWPF>
     <SignAssembly>false</SignAssembly>
     <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
-    <Platforms>AnyCPU;x64</Platforms>
+    <Platforms>x64</Platforms>
     <AssemblyVersion>4.1.0.0</AssemblyVersion>
     <FileVersion>4.1.0.0</FileVersion>
     <Configurations>Debug;Release;ReleasePortable</Configurations>
@@ -16,25 +16,10 @@
     <RepositoryUrl>https://github.com/Crauzer/Obsidian</RepositoryUrl>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <WarningsAsErrors />
-    <SelfContained>false</SelfContained>
-    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
-    <PublishSingleFile>true</PublishSingleFile>
-    <SatelliteResourceLanguages> en </SatelliteResourceLanguages>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <WarningsAsErrors />
     <SelfContained>false</SelfContained>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <PublishSingleFile>true</PublishSingleFile>
-    <SatelliteResourceLanguages> en </SatelliteResourceLanguages>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleasePortable|AnyCPU'">
-    <WarningsAsErrors />
-    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
     <PublishSingleFile>true</PublishSingleFile>
     <SatelliteResourceLanguages> en </SatelliteResourceLanguages>
   </PropertyGroup>
@@ -55,12 +40,12 @@
     <PackageReference Include="AvalonEdit" Version="6.0.1" />
     <PackageReference Include="CSharpImageLibrary" Version="4.2.0" />
     <PackageReference Include="DiscordRichPresence" Version="1.0.150" />
-    <PackageReference Include="Fantome.Libraries.League" Version="1.3.3" />
+    <PackageReference Include="Fantome.Libraries.League" Version="1.6.0-beta-6" />
     <PackageReference Include="HelixToolkit.Wpf" Version="2.12.0" />
     <PackageReference Include="MaterialDesignExtensions" Version="3.2.0" />
     <PackageReference Include="Microsoft.Packaging.Tools.Trimming" Version="1.1.0-preview1-26619-01" />
     <PackageReference Include="Octokit" Version="0.48.0" />
-    <PackageReference Include="ZstdSharp" Version="0.4.0" />
+    <PackageReference Include="ZstdSharp" Version="0.7.1" />
   </ItemGroup>
 
   <ItemGroup>
