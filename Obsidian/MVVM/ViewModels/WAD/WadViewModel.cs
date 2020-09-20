@@ -84,7 +84,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
             {
                 if (this._wad == null)
                 {
-                    this._wad = Wad.Mount(this.WADLocation, true);
+                    this._wad = Wad.Mount(this.WADLocation, false);
                 }
 
                 return this._wad;
@@ -123,9 +123,14 @@ namespace Obsidian.MVVM.ViewModels.WAD
             this.Preview = new PreviewViewModel();
         }
 
+        ~WadViewModel()
+        {
+            CloseWad();
+        }
+
         public void LoadWad(string wadLocation)
         {
-            this.WAD = Wad.Mount(wadLocation, true);
+            this.WAD = Wad.Mount(wadLocation, false);
             this.WADLocation = wadLocation;
 
             if(Config.Get<bool>("GenerateHashesFromBIN"))
@@ -184,6 +189,12 @@ namespace Obsidian.MVVM.ViewModels.WAD
             this.Items.Clear();
 
             GenerateWadItems();
+        }
+
+        public void CloseWad()
+        {
+            this._wad?.Dispose();
+            this._wad = null;
         }
 
         public IEnumerable<WadFileViewModel> GetSelectedFiles()

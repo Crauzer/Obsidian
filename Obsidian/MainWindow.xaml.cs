@@ -345,6 +345,7 @@ namespace Obsidian
         {
             WadViewModel wad = (e.Source as Button).DataContext as WadViewModel;
 
+            wad.CloseWad();
             this.WadViewModels.Remove(wad);
         }
         // DO NOT CHANGE THE FOLLOWING 2 FUNCTIONS PLEASE, THEY ARE A DIRTY WAY
