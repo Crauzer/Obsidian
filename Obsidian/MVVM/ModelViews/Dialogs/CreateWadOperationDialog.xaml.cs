@@ -1,11 +1,14 @@
-﻿using Fantome.Libraries.League.IO.WadFile;
+﻿using Fantome.Libraries.League.Helpers.Cryptography;
+using Fantome.Libraries.League.IO.WadFile;
 using Obsidian.MVVM.ViewModels.WAD;
 using Obsidian.Utilities;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Windows.Controls;
 using PathIO = System.IO.Path;
 
@@ -65,6 +68,7 @@ namespace Obsidian.MVVM.ModelViews.Dialogs
         private void Create(object sender, DoWorkEventArgs e)
         {
             WadBuilder wadBuilder = new WadBuilder();
+            var newPathHashes = new Dictionary<ulong, string>();
 
             foreach (string fileLocation in Directory.EnumerateFiles(this._folderLocation, "*", SearchOption.AllDirectories))
             {
@@ -95,10 +99,19 @@ namespace Obsidian.MVVM.ModelViews.Dialogs
                     entryBuilder
                         .WithPath(entryPath)
                         .WithFileDataStream(fileLocation);
+
+                    // Add the entry path in case the user is adding new files
+                    ulong hash = XXHash.XXH64(Encoding.UTF8.GetBytes(entryPath.ToLower()));
+                    if(!newPathHashes.ContainsKey(hash))
+                    {
+                        newPathHashes.Add(hash, entryPath.ToLower());
+                    }
                 }
 
                 wadBuilder.WithEntry(entryBuilder);
             }
+
+            Hashtable.Add(newPathHashes);
 
             wadBuilder.Build(this._wadLocation);
             this.WadViewModel.LoadWad(this._wadLocation);
