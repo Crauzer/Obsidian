@@ -96,6 +96,8 @@ namespace Obsidian.MVVM.ModelViews.Dialogs
                         .WithPath(entryPath)
                         .WithFileDataStream(fileLocation);
                 }
+
+                wadBuilder.WithEntry(entryBuilder);
             }
 
             wadBuilder.Build(this._wadLocation);

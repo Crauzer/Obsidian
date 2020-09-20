@@ -84,7 +84,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
             {
                 if (this._wad == null)
                 {
-                    this._wad = Wad.Mount(this.WADLocation, false);
+                    this._wad = Wad.Mount(this.WADLocation, true);
                 }
 
                 return this._wad;
@@ -125,7 +125,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
 
         public void LoadWad(string wadLocation)
         {
-            this.WAD = Wad.Mount(wadLocation, false);
+            this.WAD = Wad.Mount(wadLocation, true);
             this.WADLocation = wadLocation;
 
             if(Config.Get<bool>("GenerateHashesFromBIN"))
