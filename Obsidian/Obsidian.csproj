@@ -7,10 +7,10 @@
     <SignAssembly>false</SignAssembly>
     <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
     <Platforms>x64</Platforms>
-    <AssemblyVersion>4.2.0.0</AssemblyVersion>
-    <FileVersion>4.1.0.0</FileVersion>
+    <AssemblyVersion>4.2.1.0</AssemblyVersion>
+    <FileVersion>4.2.1.0</FileVersion>
     <Configurations>Debug;Release;ReleasePortable</Configurations>
-    <Version>4.2</Version>
+    <Version>4.2.1</Version>
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Crauzer/Obsidian</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Crauzer/Obsidian</RepositoryUrl>
