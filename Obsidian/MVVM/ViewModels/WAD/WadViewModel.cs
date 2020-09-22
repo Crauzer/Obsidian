@@ -144,7 +144,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
         {
             foreach (WadEntry entry in this.WAD.Entries.Values)
             {
-                string path = Hashtable.Get(entry.XXHash);
+                string path = Hashtable.Get(entry);
                 char pathSeparator = Pathing.GetPathSeparator(path);
                 string[] folders = path.Split(pathSeparator);
 

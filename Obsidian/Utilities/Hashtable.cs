@@ -35,9 +35,10 @@ namespace Obsidian.Utilities
             }
             else
             {
-                //string extension = LeagueUtilities.GetExtension(entry.GetContent(true));
+                Stream decompressedStream = entry.GetDataHandle().GetDecompressedStream();
+                string extension = LeagueUtilities.GetExtension(LeagueUtilities.GetExtensionType(decompressedStream));
 
-                return string.Format("{0}", entry.XXHash.ToString("x16"));
+                return string.Format("{0}.{1}", entry.XXHash.ToString("x16"), extension);
             }
         }
 
