@@ -269,7 +269,7 @@ namespace Obsidian
                 var selectedEntryDataHandle = selectedEntry.Entry.GetDataHandle();
                 using Stream selectedEntryStream = selectedEntryDataHandle.GetDecompressedStream();
 
-                if (extension == ".dds")
+                if (extension == ".dds" || extension == ".tga")
                 {
                     try
                     {
