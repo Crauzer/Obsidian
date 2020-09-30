@@ -11,7 +11,7 @@
 
 * **You can also preview certain assets such as maps, champion models and particle meshes.**
 
-# [How to use](https://github.com/Crauzer/Obsidian/wiki/Introduction)
+# [How to use](https://github.com/Crauzer/Obsidian/wiki/Introduction) | [How to use - Video Tutorial](https://www.youtube.com/watch?v=XxSGk6SAcAM)
 
 <a href="https://github.com/Crauzer/Obsidian/releases" rel="some text">![Foo](https://github.com/Crauzer/Obsidian/blob/main/Images/obsidiandownload.png)</a>
 
