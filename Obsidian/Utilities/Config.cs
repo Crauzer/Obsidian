@@ -21,7 +21,10 @@ namespace Obsidian.Utilities
             { "OpenWadInitialDirectory", "" },
             { "SaveWadInitialDirectory", "" },
             { "ExtractInitialDirectory", "" },
-            { "Localization", "en_US" }
+            { "Localization", "English" },
+            { "EnableDiscordRpc", true },
+            { "DiscordRpcTimestampMode", DiscordRpcTimestampMode.LaunchTime },
+            { "CheckForUpdates", true }
         };
         private static Dictionary<string, object> _config = new Dictionary<string, object>();
 
@@ -36,9 +39,18 @@ namespace Obsidian.Utilities
             {
                 return (T)Enum.Parse(typeof(T), _config[key].ToString());
             }
-            else if(typeof(T).BaseType == typeof(Array))
+            else if (typeof(T).BaseType == typeof(Array))
             {
-                return (_config[key] as JArray).ToObject<T>();
+                // C# array
+                if (_config[key] is T csharpArray)
+                {
+                    return csharpArray;
+                }
+                // JSON array
+                else if (_config[key] is JArray jsonArray)
+                {
+                    return jsonArray.ToObject<T>();
+                }
             }
 
             return (T)Convert.ChangeType(_config[key], typeof(T));

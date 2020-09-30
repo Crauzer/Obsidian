@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Obsidian.Utilities;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
 using System.Windows.Data;
@@ -7,9 +9,10 @@ using PathIO = System.IO.Path;
 
 namespace Obsidian.MVVM.ViewModels.WAD
 {
-    public class WadItemViewModel : PropertyNotifier, IComparable<WadItemViewModel>, IEquatable<WadItemViewModel>, IEqualityComparer<WadItemViewModel>
+    public class WadItemViewModel : PropertyNotifier, ILocalizable, IComparable<WadItemViewModel>, IEquatable<WadItemViewModel>, IEqualityComparer<WadItemViewModel>
     {
-        public MainWindow Window { get; }
+        public ReadOnlyDictionary<string, string> LocalizationMap => Localization.GetDictionary();
+
         public WadItemViewModel Parent { get; }
         public string Filter
         {
@@ -118,49 +121,18 @@ namespace Obsidian.MVVM.ViewModels.WAD
         private string _filter;
         protected WadViewModel _wadViewModel;
 
-        public WadItemViewModel(MainWindow window, WadViewModel wadViewModel, WadItemViewModel parent, WadItemType type)
+        public WadItemViewModel(WadViewModel wadViewModel, WadItemViewModel parent, WadItemType type)
         {
-            this.Window = window;
             this._wadViewModel = wadViewModel;
             this.Parent = parent;
             this.Type = type;
-        }
-
-        public void Remove()
-        {
-            if(this.Type == WadItemType.File)
-            {
-                this._wadViewModel.WAD.RemoveEntry((this as WadFileViewModel).Entry.XXHash);
-            }
-            else
-            {
-                WadFolderViewModel wadFolder = this as WadFolderViewModel;
-
-                //Recursively Remove all WAD entries nested in the folder
-                foreach (WadFileViewModel entry in wadFolder.GetAllFiles())
-                {
-                    this._wadViewModel.WAD.RemoveEntry(entry.Entry.XXHash);
-                }
-            }
-
-            //Remove the item from View Model
-            //If Parent is null then we know it's in root
-            if (this.Parent == null)
-            {
-                this._wadViewModel.Items.Remove(this);
-            }
-            else
-            {
-                (this.Parent as WadFolderViewModel).Items.Remove(this);
-            }
         }
 
         public void NotifySelectionChanged()
         {
             if (this.Type == WadItemType.Folder)
             {
-                bool are = (this as WadFolderViewModel).AreAllItemsSelected();
-                if (are)
+                if ((this as WadFolderViewModel).AreAllItemsSelected())
                 {
                     this._isSelected = true;
                 }

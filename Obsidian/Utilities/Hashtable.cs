@@ -1,6 +1,6 @@
 ﻿using Fantome.Libraries.League.Helpers;
 using Fantome.Libraries.League.Helpers.Cryptography;
-using Fantome.Libraries.League.IO.WAD;
+using Fantome.Libraries.League.IO.WadFile;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -27,7 +27,7 @@ namespace Obsidian.Utilities
                 return key.ToString("x16");
             }
         }
-        public static string Get(WADEntry entry)
+        public static string Get(WadEntry entry)
         {
             if (_hashtable.ContainsKey(entry.XXHash))
             {
@@ -35,7 +35,8 @@ namespace Obsidian.Utilities
             }
             else
             {
-                string extension = LeagueUtilities.GetExtension(entry.GetContent(true));
+                Stream decompressedStream = entry.GetDataHandle().GetDecompressedStream();
+                string extension = LeagueUtilities.GetExtension(LeagueUtilities.GetExtensionType(decompressedStream));
 
                 return string.Format("{0}.{1}", entry.XXHash.ToString("x16"), extension);
             }

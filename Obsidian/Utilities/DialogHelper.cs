@@ -5,6 +5,7 @@ using Obsidian.MVVM.ModelViews.Dialogs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
+using System.Collections.ObjectModel;
 
 namespace Obsidian.Utilities
 {
@@ -14,16 +15,9 @@ namespace Obsidian.Utilities
         public static DialogHost OperationDialog { get; set; }
         public static DialogHost RootDialog { get; set; }
 
-        private static MainWindow _mainWindow;
-
-        public static void Initialize(MainWindow mainWindow)
-        {
-            _mainWindow = mainWindow;
-        }
-
         public static async Task<WadViewModel> ShowOpenWadOperartionDialog(string wadLocation)
         {
-            OpenWadOperationDialog dialog = new OpenWadOperationDialog(_mainWindow, wadLocation);
+            OpenWadOperationDialog dialog = new OpenWadOperationDialog(wadLocation);
 
             await DialogHost.Show(dialog, "OperationDialog", dialog.Load, null);
 
@@ -35,9 +29,9 @@ namespace Obsidian.Utilities
 
             await DialogHost.Show(dialog, "OperationDialog", dialog.Save, null);
         }
-        public static async Task<WadViewModel> ShowCreateWADOperationDialog(string folderLocation)
+        public static async Task<WadViewModel> ShowCreateWADOperationDialog(string folderLocation, string wadLocation)
         {
-            CreateWadOperationDialog dialog = new CreateWadOperationDialog(_mainWindow, folderLocation);
+            CreateWadOperationDialog dialog = new CreateWadOperationDialog(folderLocation, wadLocation);
 
             await DialogHost.Show(dialog, "OperationDialog", dialog.StartCreation, null);
 
@@ -48,7 +42,7 @@ namespace Obsidian.Utilities
         {
             SettingsDialog dialog = new SettingsDialog()
             {
-                DataContext = new SettingsViewModel(_mainWindow)
+                DataContext = new SettingsViewModel()
             };
 
             await DialogHost.Show(dialog, "RootDialog");
@@ -61,7 +55,7 @@ namespace Obsidian.Utilities
             await DialogHost.Show(dialog, "OperationDialog", dialog.StartExtraction, null);
         }
 
-        public static async Task ShowMessageDialog(string message, bool closeOnClickAway = true)
+        public static async Task ShowMessageDialog(string message, bool closeOnClickAway = false)
         {
             MessageDialog dialog = new MessageDialog(message);
             bool defaultCloseOnClickAway = MessageDialog.CloseOnClickAway;

@@ -1,11 +1,14 @@
-﻿using Fantome.Libraries.League.IO.WAD;
+﻿using Fantome.Libraries.League.Helpers.Cryptography;
+using Fantome.Libraries.League.IO.WadFile;
 using Obsidian.MVVM.ViewModels.WAD;
 using Obsidian.Utilities;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Windows.Controls;
 using PathIO = System.IO.Path;
 
@@ -28,14 +31,17 @@ namespace Obsidian.MVVM.ModelViews.Dialogs
         }
 
         private string _folderLocation;
+        private string _wadLocation;
+
         private string _message;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public CreateWadOperationDialog(MainWindow window, string folderLocation)
+        public CreateWadOperationDialog(string folderLocation, string wadLocation)
         {
-            this.WadViewModel = new WadViewModel(window);
+            this.WadViewModel = new WadViewModel();
             this._folderLocation = folderLocation;
+            this._wadLocation = wadLocation;
 
             InitializeComponent();
 
@@ -61,38 +67,54 @@ namespace Obsidian.MVVM.ModelViews.Dialogs
 
         private void Create(object sender, DoWorkEventArgs e)
         {
-            string temporaryWad = PathIO.GetTempFileName();
-            using (WADFile wad = new WADFile(3, 0))
+            WadBuilder wadBuilder = new WadBuilder();
+            var newPathHashes = new Dictionary<ulong, string>();
+
+            foreach (string fileLocation in Directory.EnumerateFiles(this._folderLocation, "*", SearchOption.AllDirectories))
             {
-                foreach (string fileLocation in Directory.EnumerateFiles(this._folderLocation, "*", SearchOption.AllDirectories))
+                //Ignore packed mapping 
+                if (PathIO.GetFileName(fileLocation) == "OBSIDIAN_PACKED_MAPPING.txt")
                 {
-                    //Ignore packed mapping 
-                    if (PathIO.GetFileName(fileLocation) == "OBSIDIAN_PACKED_MAPPING.txt")
-                    {
-                        continue;
-                    }
+                    continue;
+                }
 
-                    char separator = Pathing.GetPathSeparator(fileLocation);
-                    string entryPath = fileLocation.Replace(this._folderLocation + separator, "").Replace(separator, '/');
-                    string fileNameWithoutExtension = PathIO.GetFileNameWithoutExtension(fileLocation);
-                    this.Message = entryPath;
+                char separator = Pathing.GetPathSeparator(fileLocation);
+                string entryPath = fileLocation.Replace(this._folderLocation + separator, "").Replace(separator, '/');
+                string fileNameWithoutExtension = PathIO.GetFileNameWithoutExtension(fileLocation);
+                this.Message = entryPath;
 
-                    bool hasUnknownPath = fileNameWithoutExtension.Length == 16 && fileNameWithoutExtension.All(c => "ABCDEF0123456789".Contains(c));
-                    if (hasUnknownPath)
+                WadEntryBuilder entryBuilder = new WadEntryBuilder();
+
+                bool hasUnknownPath = fileNameWithoutExtension.Length == 16 && fileNameWithoutExtension.All(c => "ABCDEF0123456789".Contains(c));
+                if (hasUnknownPath)
+                {
+                    ulong hash = Convert.ToUInt64(fileNameWithoutExtension, 16);
+
+                    entryBuilder
+                        .WithPathXXHash(hash)
+                        .WithFileDataStream(fileLocation);
+                }
+                else
+                {
+                    entryBuilder
+                        .WithPath(entryPath)
+                        .WithFileDataStream(fileLocation);
+
+                    // Add the entry path in case the user is adding new files
+                    ulong hash = XXHash.XXH64(Encoding.UTF8.GetBytes(entryPath.ToLower()));
+                    if(!newPathHashes.ContainsKey(hash))
                     {
-                        ulong hash = Convert.ToUInt64(fileNameWithoutExtension, 16);
-                        wad.AddEntryAutomatic(hash, File.ReadAllBytes(fileLocation), PathIO.GetExtension(fileLocation));
-                    }
-                    else
-                    {
-                        wad.AddEntryAutomatic(entryPath, File.ReadAllBytes(fileLocation), PathIO.GetExtension(fileLocation));
+                        newPathHashes.Add(hash, entryPath.ToLower());
                     }
                 }
 
-                wad.Write(temporaryWad);
+                wadBuilder.WithEntry(entryBuilder);
             }
 
-            this.WadViewModel.LoadWad(temporaryWad);
+            Hashtable.Add(newPathHashes);
+
+            wadBuilder.Build(this._wadLocation);
+            this.WadViewModel.LoadWad(this._wadLocation);
         }
 
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")

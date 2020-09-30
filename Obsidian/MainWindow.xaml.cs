@@ -1,8 +1,6 @@
 ﻿using CSharpImageLibrary;
 using Fantome.Libraries.League.IO.MapGeometry;
-using Fantome.Libraries.League.IO.StaticObject;
-using Fantome.Libraries.League.IO.SimpleSkin;
-using Fantome.Libraries.League.IO.WAD;
+using Fantome.Libraries.League.IO.WadFile;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Obsidian.MVVM.Commands;
 using Obsidian.MVVM.ViewModels;
@@ -29,21 +27,19 @@ using System.Windows.Controls;
 using System.Collections.ObjectModel;
 using HelixToolkit.Wpf;
 using System.Text;
+using DiscordRPC;
+using Fantome.Libraries.League.IO.StaticObjectFile;
+using Fantome.Libraries.League.IO.SimpleSkinFile;
+using ImageMagick;
 
 namespace Obsidian
 {
-#warning When building use the ReleasePortable configuration
-#warning Publish with: "dotnet publish -c ReleasePortable -r win-x64 --self-contained true /p:PublishSingleFile=true"
-
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        public bool IsWadOpened
-        {
-            get => this.WadViewModels.Count != 0;
-        }
+        public bool IsWadOpened => this.WadViewModels.Count != 0;
 
         public ObservableCollection<WadViewModel> WadViewModels { get; set; } = new ObservableCollection<WadViewModel>();
         public WadViewModel SelectedWad
@@ -57,7 +53,7 @@ namespace Obsidian
             }
         }
 
-        public Dictionary<string, string> LocalizationMap
+        public ReadOnlyDictionary<string, string> LocalizationMap
         {
             get => this._localizationMap;
             set
@@ -68,8 +64,10 @@ namespace Obsidian
         }
 
         private WadViewModel _selectedWad;
-        private Dictionary<string, string> _localizationMap;
-        private int _clickCounter;
+        private ReadOnlyDictionary<string, string> _localizationMap;
+        private int _easterEggClickCounter;
+
+        private DiscordRpcContext _rpcContext;
 
         public ICommand OpenSettingsCommand => new RelayCommand(OpenSettings);
 
@@ -80,22 +78,23 @@ namespace Obsidian
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
             Config.Load();
+            LoadLocalization();
 
             InitializeComponent();
             BindMVVM();
-            LoadLocalization();
             CheckForUpdate();
+            InitializeDiscordRPC();
         }
 
         //Global Exception Handler
         private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            string message = "A Fatal Error has occurred, Obsidian will now terminate.\n";
+            string message = Localization.Get("FatalErrorMessage") + '\n';
             message += ((Exception)e.ExceptionObject).Message + '\n';
             message += ((Exception)e.ExceptionObject).Source + '\n';
             message += ((Exception)e.ExceptionObject).StackTrace;
 
-            MessageBox.Show(message, "Obsidian - Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(message, Localization.Get("FatalError"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         //Initialization functions
@@ -103,35 +102,55 @@ namespace Obsidian
         {
             this.DataContext = this;
 
-            this.SelectedWad = new WadViewModel(this);
+            this.SelectedWad = new WadViewModel();
 
-            DialogHelper.Initialize(this);
             DialogHelper.MessageDialog = this.MessageDialog;
             DialogHelper.OperationDialog = this.OperationDialog;
             DialogHelper.RootDialog = this.RootDialog;
         }
         private void LoadLocalization()
         {
-            this.LocalizationMap = Localization.Load();
+            Localization.Load();
+
+            this.LocalizationMap = Localization.GetDictionary();
         }
         private async void CheckForUpdate()
         {
-            //Do it in try so we don't crash if there isn't internet connection
-            try
+            if (Config.Get<bool>("CheckForUpdates"))
             {
-                GitHubClient gitClient = new GitHubClient(new ProductHeaderValue("Obsidian"));
-
-                IReadOnlyList<Release> releases = await gitClient.Repository.Release.GetAll("Crauzer", "Obsidian");
-                Release newestRelease = releases[0];
-                Version newestVersion = new Version(newestRelease.TagName);
-
-                if (newestVersion > Assembly.GetExecutingAssembly().GetName().Version)
+                //Do it in try so we don't crash if there isn't internet connection
+                try
                 {
-                    await DialogHelper.ShowMessageDialog(Localization.Get("UpdateMessage"));
-                    Process.Start("cmd", "/C start https://github.com/Crauzer/Obsidian/releases/tag/" + newestVersion.ToString());
+                    GitHubClient gitClient = new GitHubClient(new ProductHeaderValue("Obsidian"));
+                    IReadOnlyList<Release> releases = await gitClient.Repository.Release.GetAll("Crauzer", "Obsidian");
+                    Release newestRelease = releases[0];
+
+                    // Tags can contain other characters but Version accepts only {x.x.x.x} format
+                    // this way we can avoid showing the update message for beta versions
+                    if (Version.TryParse(newestRelease.TagName, out Version newestVersion))
+                    {
+                        // Show update message only if the release version is higher than the one currently executing
+                        if (newestVersion > Assembly.GetExecutingAssembly().GetName().Version)
+                        {
+                            await DialogHelper.ShowMessageDialog(Localization.Get("UpdateMessage"));
+                            Process.Start("cmd", "/C start https://github.com/Crauzer/Obsidian/releases/tag/" + newestVersion.ToString());
+                        }
+                    }
                 }
+                catch (Exception) { }
             }
-            catch (Exception) { }
+        }
+        private void InitializeDiscordRPC()
+        {
+            this._rpcContext = new DiscordRpcContext();
+
+            this._rpcContext.TimestampMode = Config.Get<DiscordRpcTimestampMode>("DiscordRpcTimestampMode");
+
+            if (Config.Get<bool>("EnableDiscordRpc"))
+            {
+                this._rpcContext.Initialize();
+                this._rpcContext.SetIdlePresence();
+            }
         }
         private async void OnOperationDialogLoaded(object sender, RoutedEventArgs e)
         {
@@ -144,38 +163,27 @@ namespace Obsidian
         }
 
         //Window Utility functions
-        private async void OnObsidianImageClick(object sender, MouseButtonEventArgs e)
+        private async void OnObsidianImageClickEasterEgg(object sender, MouseButtonEventArgs e)
         {
-            this._clickCounter++;
+            this._easterEggClickCounter++;
 
-            if(this._clickCounter == 10)
+            if (this._easterEggClickCounter == 10)
             {
-                await DialogHelper.ShowMessageDialog("Hmm, what are you doing ?", false);
+                await DialogHelper.ShowMessageDialog("Hmm, what are you doing ?");
             }
-            else if(this._clickCounter == 20)
+            else if (this._easterEggClickCounter == 20)
             {
-                await DialogHelper.ShowMessageDialog("You should stop, there's no turning back", false);
+                await DialogHelper.ShowMessageDialog("You should stop, there's no turning back");
             }
-            else if(this._clickCounter == 30)
+            else if (this._easterEggClickCounter == 30)
             {
-                using (Stream audioStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Obsidian.Resources.idk.wav"))
-                {
-                    using (SoundPlayer player = new SoundPlayer(audioStream))
-                    {
-                        player.Play();
+                using Stream audioStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Obsidian.Resources.idk.wav");
+                using SoundPlayer player = new SoundPlayer(audioStream);
 
-                        await DialogHelper.ShowMessageDialog("You've just unleashed the Wooxy virus", false);
-                    }
-                }
+                player.Play();
+                await DialogHelper.ShowMessageDialog("You've just unleashed the Wooxy virus");
 
-                this._clickCounter = 0;
-            }
-        }
-        private void OnKeyPressed(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Delete)
-            {
-                RemoveSelectedItems();
+                this._easterEggClickCounter = 0;
             }
         }
         private async void OnWindowDrop(object sender, DragEventArgs e)
@@ -183,7 +191,7 @@ namespace Obsidian
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                foreach(string file in files)
+                foreach (string file in files)
                 {
                     WadViewModel wad = await DialogHelper.ShowOpenWadOperartionDialog(file);
 
@@ -193,7 +201,7 @@ namespace Obsidian
                 }
             }
         }
-        private void OnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private void OnWadSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             //Handle preview
             if (e.NewValue is WadFileViewModel selectedEntry)
@@ -206,7 +214,7 @@ namespace Obsidian
             }
 
             //Handle multi-selection
-            if((sender as TreeView).IsKeyboardFocusWithin)
+            if ((sender as TreeView).IsKeyboardFocusWithin)
             {
                 if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
                 {
@@ -258,11 +266,18 @@ namespace Obsidian
 
             try
             {
-                if (extension == ".dds")
+                var selectedEntryDataHandle = selectedEntry.Entry.GetDataHandle();
+                using Stream selectedEntryStream = selectedEntryDataHandle.GetDecompressedStream();
+
+                if (extension == ".dds" || extension == ".tga")
                 {
                     try
                     {
-                        this.SelectedWad.Preview.Preview(new ImageEngineImage(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                        // Create a new stream for the ImageEngineImage
+                        MemoryStream imageStream = new MemoryStream();
+                        selectedEntryStream.CopyTo(imageStream);
+
+                        this.SelectedWad.Preview.Preview(new ImageEngineImage(imageStream));
                     }
                     catch (FileFormatException)
                     {
@@ -272,75 +287,98 @@ namespace Obsidian
                 }
                 else if (extension == ".skn")
                 {
-                    this.SelectedWad.Preview.Preview(new SimpleSkin(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                    this.SelectedWad.Preview.Preview(new SimpleSkin(selectedEntryStream));
                 }
                 else if (extension == ".scb")
                 {
-                    this.SelectedWad.Preview.Preview(StaticObject.ReadSCB(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                    this.SelectedWad.Preview.Preview(StaticObject.ReadSCB(selectedEntryStream));
                 }
                 else if (extension == ".sco")
                 {
-                    this.SelectedWad.Preview.Preview(StaticObject.ReadSCO(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                    this.SelectedWad.Preview.Preview(StaticObject.ReadSCO(selectedEntryStream));
                 }
                 else if (extension == ".mapgeo")
                 {
-                    this.SelectedWad.Preview.Preview(new MapGeometry(new MemoryStream(selectedEntry.Entry.GetContent(true))));
+                    this.SelectedWad.Preview.Preview(new MapGeometry(selectedEntryStream));
                 }
-                else if(extension == ".png" || extension == ".jpg" || extension == ".jpeg")
+                else
                 {
-                    using (MemoryStream stream = new MemoryStream(selectedEntry.Entry.GetContent(true)))
+                    // Use switch cuz it looks cooler than the shitty formatting for a big if statement
+                    switch (extension)
                     {
-                        BitmapImage bitmap = new BitmapImage();
+                        case ".png":
+                        case ".jpg":
+                        case ".jpeg":
+                        {
+                            BitmapImage bitmap = new BitmapImage();
 
-                        bitmap.BeginInit();
-                        bitmap.StreamSource = stream;
-                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                        bitmap.EndInit();
-                        bitmap.Freeze();
+                            bitmap.BeginInit();
+                            bitmap.StreamSource = selectedEntryStream;
+                            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                            bitmap.EndInit();
+                            bitmap.Freeze();
 
-                        this.SelectedWad.Preview.Preview(bitmap);
+                            this.SelectedWad.Preview.Preview(bitmap);
+                            break;
+                        }
+                        case ".json":
+                        case ".js":
+                        case ".xml":
+                        case ".ini":
+                        case ".cfg":
+                        {
+                            this.SelectedWad.Preview.PreviewText(selectedEntryStream, extension);
+                            break;
+                        }
                     }
                 }
-                else if(extension == ".json" || extension == ".js" || extension == ".xml")
-                {
-                    using MemoryStream entryStream = new MemoryStream(selectedEntry.Entry.GetContent(true));
-                    this.SelectedWad.Preview.PreviewText(entryStream, extension);
-                }
             }
-            catch (Exception)
+            catch (Exception exception)
             {
                 this.SelectedWad.Preview.Clear();
-                await DialogHelper.ShowMessageDialog(Localization.Get("PreviewErrorGeneric"));
+                await DialogHelper.ShowMessageDialog(Localization.Get("PreviewErrorGeneric") + '\n' + exception);
             }
         }
-        private void RemoveSelectedItems()
-        {
-            foreach (WadFileViewModel file in this.SelectedWad.GetSelectedFiles().ToList())
-            {
-                file.Remove();
-            }
 
-            foreach (WadFolderViewModel folder in this.SelectedWad.GetSelectedFolders().ToList())
-            {
-                folder.Remove();
-            }
-        }
-        
+        // ---------------- WAD TAB EVENTS -------------------- \\
         private void OnCloseWadTab(object sender, RoutedEventArgs e)
         {
             WadViewModel wad = (e.Source as Button).DataContext as WadViewModel;
 
+            wad.CloseWad();
             this.WadViewModels.Remove(wad);
         }
+        // DO NOT CHANGE THE FOLLOWING 2 FUNCTIONS PLEASE, THEY ARE A DIRTY WAY
+        // OF ENSURING THAT THE VIEWPORT GETS ASSIGNED TO THE WAD PREVIEW
         private void OnWadTabViewportLoaded(object sender, RoutedEventArgs e)
         {
-            HelixViewport3D viewport = sender as HelixViewport3D;
-            WadViewModel wad = viewport.DataContext as WadViewModel;
-
             //wad == null if we're closing the tab
-            if (wad != null)
+            if (sender is HelixViewport3D viewport && viewport.DataContext is WadViewModel wad)
             {
                 wad.Preview.SetViewport(viewport);
+            }
+        }
+        private void OnWadTabViewportDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (sender is HelixViewport3D viewport && viewport.DataContext is WadViewModel wad)
+            {
+                wad.Preview.SetViewport(viewport);
+            }
+        }
+        private void OnWadTabSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Change RPC presence to currently selected WAD
+            if (e.AddedItems.Count == 1 && e.AddedItems[0] is WadViewModel selectedWad)
+            {
+                this._rpcContext.SetViewingWadPresence(selectedWad.WadName);
+            }
+            else
+            {
+                // Check if there are any open WADs, if not then we are idling
+                if (this.WadViewModels.Count == 0)
+                {
+                    this._rpcContext.SetIdlePresence();
+                }
             }
         }
 
@@ -348,10 +386,6 @@ namespace Obsidian
         private void OnWadOpen(object sender, RoutedEventArgs e)
         {
             OpenWad();
-        }
-        private void OnWadSave(object sender, RoutedEventArgs e)
-        {
-            SaveWad();
         }
 
         private void OnExtractAll(object sender, RoutedEventArgs e)
@@ -378,78 +412,32 @@ namespace Obsidian
             GenerateHashtable();
         }
 
-        private void OnFolderAddFiles(object sender, RoutedEventArgs e)
+        private async void OnFileSaveAs(object sender, RoutedEventArgs e)
         {
-            using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
+            // Check if user actually clicked the menu item
+            if (e.OriginalSource is MenuItem menuItem && menuItem.Items.Count == 0)
             {
-                dialog.Multiselect = true;
+                string conversionName = menuItem.Header as string;
+                WadFileViewModel wadFile = (e.Source as MenuItem).DataContext as WadFileViewModel;
+                FileConversion conversion = wadFile.ConversionOptions.GetConversion(conversionName);
 
+                using CommonSaveFileDialog dialog = new CommonSaveFileDialog();
+                dialog.Filters.Add(new CommonFileDialogFilter("Converted File", "*" + conversion.OutputExtension));
                 if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
-                    WadFolderViewModel wadFolder = (sender as FrameworkElement).DataContext as WadFolderViewModel;
-
-                    foreach (string fileLocation in dialog.FileNames)
-                    {
-                        wadFolder.AddFile(fileLocation);
-                    }
-
-                    wadFolder.Sort();
-                }
-            }
-        }
-        private void OnFolderAddFolders(object sender, RoutedEventArgs e)
-        {
-            using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
-            {
-                dialog.IsFolderPicker = true;
-                dialog.Multiselect = true;
-
-                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
-                {
-                    WadFolderViewModel wadFolder = (sender as FrameworkElement).DataContext as WadFolderViewModel;
-
-                    foreach (string folderLocation in dialog.FileNames)
-                    {
-                        wadFolder.AddFolder(folderLocation);
-                    }
-
-                    wadFolder.Sort();
-                }
-            }
-        }
-        private void OnFolderRemove(object sender, RoutedEventArgs e)
-        {
-            WadFolderViewModel wadFolder = (sender as FrameworkElement).DataContext as WadFolderViewModel;
-
-            wadFolder.Remove();
-        }
-
-        private void OnFileModifyData(object sender, RoutedEventArgs e)
-        {
-            using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
-            {
-                dialog.Multiselect = false;
-
-                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
-                {
-                    WadFileViewModel wadFile = (sender as FrameworkElement).DataContext as WadFileViewModel;
-
                     try
                     {
-                        wadFile.Entry.EditData(File.ReadAllBytes(dialog.FileName));
+                        FileConversionParameter conversionParameter = conversion.ConstructParameter(dialog.FileName, wadFile, this.SelectedWad);
+                        conversion.Convert(conversionParameter);
                     }
                     catch (Exception exception)
                     {
-
+                        string message = $"{Localization.Get("WadFileConversionError")}\n{exception}";
+                        await DialogHelper.ShowMessageDialog(message);
+                        return;
                     }
                 }
             }
-        }
-        private void OnFileRemove(object sender, RoutedEventArgs e)
-        {
-            WadFileViewModel wadFile = (sender as FrameworkElement).DataContext as WadFileViewModel;
-
-            wadFile.Remove();
         }
 
         //Menu event function implementations
@@ -457,20 +445,18 @@ namespace Obsidian
         {
             try
             {
-                using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
+                using CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+                dialog.Multiselect = true;
+                dialog.InitialDirectory = Config.Get<string>("OpenWadInitialDirectory");
+                dialog.Filters.Add(new CommonFileDialogFilter("WAD Files", "*.wad;*.client;*.mobile"));
+
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
-                    dialog.Multiselect = true;
-                    dialog.InitialDirectory = Config.Get<string>("OpenWadInitialDirectory");
-                    dialog.Filters.Add(new CommonFileDialogFilter("WAD Files", "*.wad;*.client;*.mobile"));
-
-                    if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                    foreach (string file in dialog.FileNames)
                     {
-                        foreach(string file in dialog.FileNames)
-                        {
-                            WadViewModel wad = await DialogHelper.ShowOpenWadOperartionDialog(file);
+                        WadViewModel wad = await DialogHelper.ShowOpenWadOperartionDialog(file);
 
-                            AddWadToTabControl(wad);
-                        }
+                        AddWadToTabControl(wad);
                     }
                 }
             }
@@ -481,46 +467,31 @@ namespace Obsidian
                     + exception.StackTrace);
             }
         }
-        private async void SaveWad()
-        {
-            using (CommonSaveFileDialog dialog = new CommonSaveFileDialog())
-            {
-                dialog.InitialDirectory = Config.Get<string>("SaveWadInitialDirectory");
-                dialog.Filters.Add(new CommonFileDialogFilter("WAD Client File", "*.wad.client"));
-                dialog.Filters.Add(new CommonFileDialogFilter("WAD Mobile File", "*.wad.mobile"));
-                dialog.Filters.Add(new CommonFileDialogFilter("WAD File", "*.wad"));
-
-                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
-                {
-                    await DialogHelper.ShowSaveWadOperationDialog(dialog.FileName, this.SelectedWad);
-                }
-            }
-        }
 
         private async void ExtractAll()
         {
-            using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
+            using CommonOpenFileDialog dialog = new CommonOpenFileDialog
             {
-                dialog.IsFolderPicker = true;
-                dialog.InitialDirectory = Config.Get<string>("ExtractInitialDirectory");
+                IsFolderPicker = true,
+                InitialDirectory = Config.Get<string>("ExtractInitialDirectory")
+            };
 
-                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
-                {
-                    await DialogHelper.ShowExtractOperationDialog(dialog.FileName, this.SelectedWad.GetAllFiles());
-                }
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                await DialogHelper.ShowExtractOperationDialog(dialog.FileName, this.SelectedWad.GetAllFiles());
             }
         }
         private async void ExtractSelected()
         {
-            using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
+            using CommonOpenFileDialog dialog = new CommonOpenFileDialog
             {
-                dialog.IsFolderPicker = true;
-                dialog.InitialDirectory = Config.Get<string>("ExtractInitialDirectory");
+                IsFolderPicker = true,
+                InitialDirectory = Config.Get<string>("ExtractInitialDirectory")
+            };
 
-                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
-                {
-                    await DialogHelper.ShowExtractOperationDialog(dialog.FileName, this.SelectedWad.GetSelectedFiles());
-                }
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                await DialogHelper.ShowExtractOperationDialog(dialog.FileName, this.SelectedWad.GetSelectedFiles());
             }
         }
 
@@ -528,19 +499,20 @@ namespace Obsidian
         {
             try
             {
-                using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
+                using CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+                dialog.Multiselect = true;
+                dialog.Filters.Add(new CommonFileDialogFilter("Hashtable Files", "*.txt"));
+
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
-                    dialog.Multiselect = true;
-                    dialog.Filters.Add(new CommonFileDialogFilter("Hashtable Files", "*.txt"));
-
-                    if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                    foreach (string hashtableFile in dialog.FileNames)
                     {
-                        foreach (string hashtableFile in dialog.FileNames)
-                        {
-                            Hashtable.Load(hashtableFile);
-                        }
+                        Hashtable.Load(hashtableFile);
+                    }
 
-                        this.SelectedWad.Refresh();
+                    foreach (WadViewModel wad in this.WadViewModels)
+                    {
+                        wad.Refresh();
                     }
                 }
             }
@@ -553,41 +525,35 @@ namespace Obsidian
         }
         private void GenerateHashtable()
         {
-            using (CommonOpenFileDialog wadDialog = new CommonOpenFileDialog())
+            using CommonOpenFileDialog wadDialog = new CommonOpenFileDialog();
+            wadDialog.Multiselect = true;
+            wadDialog.InitialDirectory = Config.Get<string>("OpenWadInitialDirectory");
+            wadDialog.Filters.Add(new CommonFileDialogFilter("WAD Files", "*.wad;*.client;*.mobile"));
+
+            if (wadDialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                wadDialog.Multiselect = true;
-                wadDialog.InitialDirectory = Config.Get<string>("OpenWadInitialDirectory");
-                wadDialog.Filters.Add(new CommonFileDialogFilter("WAD Files", "*.wad;*.client;*.mobile"));
+                using CommonSaveFileDialog hashtableDialog = new CommonSaveFileDialog();
+                hashtableDialog.Filters.Add(new CommonFileDialogFilter("Hashtable File", "*.txt"));
+                hashtableDialog.AlwaysAppendDefaultExtension = true;
+                hashtableDialog.DefaultExtension = ".txt";
 
-                if (wadDialog.ShowDialog() == CommonFileDialogResult.Ok)
+                if (hashtableDialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
-                    using (CommonSaveFileDialog hashtableDialog = new CommonSaveFileDialog())
+                    Dictionary<ulong, string> hashtable = new Dictionary<ulong, string>();
+
+                    foreach (string wadLocation in wadDialog.FileNames)
                     {
-                        hashtableDialog.Filters.Add(new CommonFileDialogFilter("Hashtable File", "*.txt"));
-                        hashtableDialog.AlwaysAppendDefaultExtension = true;
-                        hashtableDialog.DefaultExtension = ".txt";
-
-                        if (hashtableDialog.ShowDialog() == CommonFileDialogResult.Ok)
+                        using Wad wad = Wad.Mount(wadLocation, false);
+                        HashtableGenerator.Generate(wad).ToList().ForEach(x =>
                         {
-                            Dictionary<ulong, string> hashtable = new Dictionary<ulong, string>();
-
-                            foreach (string wadLocation in wadDialog.FileNames)
+                            if (!hashtable.ContainsKey(x.Key))
                             {
-                                using (WADFile wad = new WADFile(wadLocation))
-                                {
-                                    HashtableGenerator.Generate(wad).ToList().ForEach(x =>
-                                    {
-                                        if (!hashtable.ContainsKey(x.Key))
-                                        {
-                                            hashtable.Add(x.Key, x.Value);
-                                        }
-                                    });
-                                }
+                                hashtable.Add(x.Key, x.Value);
                             }
-
-                            Hashtable.Write(hashtableDialog.FileName, hashtable);
-                        }
+                        });
                     }
+
+                    Hashtable.Write(hashtableDialog.FileName, hashtable);
                 }
             }
         }
@@ -599,17 +565,29 @@ namespace Obsidian
 
         private async void CreateWAD()
         {
-            using (CommonOpenFileDialog dialog = new CommonOpenFileDialog())
+            using CommonOpenFileDialog creationFolderDialog = new CommonOpenFileDialog
             {
-                dialog.IsFolderPicker = true;
+                IsFolderPicker = true,
+                Title = Localization.Get("WadCreationFolderDialogTitle")
+            };
 
-                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            using CommonSaveFileDialog createdWadDialog = new CommonSaveFileDialog();
+            createdWadDialog.Title = Localization.Get("WadCreationWadSaveDialog");
+            createdWadDialog.InitialDirectory = Config.Get<string>("SaveWadInitialDirectory");
+            createdWadDialog.Filters.Add(new CommonFileDialogFilter("WAD Client File", "*.wad.client"));
+            createdWadDialog.Filters.Add(new CommonFileDialogFilter("WAD Mobile File", "*.wad.mobile"));
+            createdWadDialog.Filters.Add(new CommonFileDialogFilter("WAD File", "*.wad"));
+
+            if (creationFolderDialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                if (createdWadDialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
-                    WadViewModel wad = await DialogHelper.ShowCreateWADOperationDialog(dialog.FileName);
+                    WadViewModel wad = await DialogHelper.ShowCreateWADOperationDialog(creationFolderDialog.FileName, createdWadDialog.FileName);
 
                     AddWadToTabControl(wad);
                 }
             }
+
         }
 
         private void AddWadToTabControl(WadViewModel wad)

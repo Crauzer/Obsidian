@@ -21,8 +21,7 @@
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
         Title="Obsidian" Height="720" Width="1280" Icon="Resources/icon.ico" WindowStartupLocation="CenterScreen" 
-        AllowDrop="True"
-        KeyDown="OnKeyPressed" Drop="OnWindowDrop" Name="ObsidianWindow">
+        AllowDrop="True" Drop="OnWindowDrop" Name="ObsidianWindow">
     <Window.Resources>
         <ResourceDictionary>
             <HierarchicalDataTemplate DataType="{x:Type WadViewModel:WadFolderViewModel}" 
@@ -44,18 +43,6 @@
                         <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Width="2" Margin="8,0"/>
                     </StackPanel>
                     <TextBlock Grid.Column="4" Text="{Binding Name}" ToolTip="{Binding Tooltip}"/>
-
-                    <Grid.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="{Binding Path=Window.LocalizationMap[WadContextMenuAddFiles]}"
-                                      Icon="{MaterialDesign:PackIcon Kind=FileOutline}" Click="OnFolderAddFiles"/>
-                            <MenuItem Header="{Binding Path=Window.LocalizationMap[WadContextMenuAddFolders]}"
-                                      Icon="{MaterialDesign:PackIcon Kind=Folder}" Click="OnFolderAddFolders"/>
-                            <Separator/>
-                            <MenuItem Header="{Binding Path=Window.LocalizationMap[WadContextMenuRemove]}"
-                                      Icon="{MaterialDesign:PackIcon Kind=PlaylistRemove}" Click="OnFolderRemove"/>
-                        </ContextMenu>
-                    </Grid.ContextMenu>
                 </Grid>
                 <DataTemplate.Triggers>
                     <DataTrigger Binding="{Binding IsExpanded, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type TreeViewItem}}}"
@@ -86,11 +73,12 @@
 
                     <Grid.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="{Binding Path=Window.LocalizationMap[WadContextMenuModifyData]}"
-                                      Icon="{MaterialDesign:PackIcon Kind=FileRestore}" Click="OnFileModifyData"/>
-                            <Separator/>
-                            <MenuItem Header="{Binding Path=Window.LocalizationMap[WadContextMenuRemove]}"
-                                      Icon="{MaterialDesign:PackIcon Kind=Close}" Click="OnFileRemove"/>
+                            <MenuItem Header="{Binding Path=LocalizationMap[WadContextMenuSaveAs]}"
+                                      Icon="{MaterialDesign:PackIcon Kind=FileExport}"
+                                      IsEnabled="{Binding ConversionOptions.IsConversionAvailable}"
+                                      ItemsSource="{Binding ConversionOptions.AvailableConversions}"
+                                      Click="OnFileSaveAs">
+                            </MenuItem>
                         </ContextMenu>
                     </Grid.ContextMenu>
                 </Grid>
@@ -241,9 +229,6 @@
                                         <MenuItem x:Name="MenuFile" Header="{Binding Path=LocalizationMap[MenuFile]}">
                                             <MenuItem x:Name="MenuFileOpen" Header="{Binding Path=LocalizationMap[MenuFileOpen]}"
                                                       Click="OnWadOpen" Icon="{MaterialDesign:PackIcon Kind=File}"/>
-                                            <MenuItem x:Name="MenuFileSave" Header="{Binding Path=LocalizationMap[MenuFileSave]}"
-                                                      Icon="{MaterialDesign:PackIcon Kind=FileExport}" 
-                                                      IsEnabled="{Binding IsWadOpened, UpdateSourceTrigger=PropertyChanged}" Click="OnWadSave"/>
                                             <Separator/>
                                             <MenuItem x:Name="MenuFileExtractAll" Header="{Binding Path=LocalizationMap[MenuFileExtractAll]}" 
                                                       Icon="{MaterialDesign:PackIcon Kind=ContentSaveAll}" 
@@ -277,7 +262,7 @@
 
                                     </Menu>
 
-                                    <Image Grid.Column="1" HorizontalAlignment="Right" Source="Resources/icon.ico" Width="50" MouseDown="OnObsidianImageClick"/>
+                                    <Image Grid.Column="1" HorizontalAlignment="Right" Source="Resources/icon.ico" Width="50" MouseDown="OnObsidianImageClickEasterEgg"/>
                                 </Grid>
                             </DockPanel>
                             <ProgressBar Grid.Row="1" Value="100"/>
@@ -285,7 +270,7 @@
 
                     </MaterialDesign:Card>
                     <TabControl Name="WadTabControl" Grid.Row="1" Style="{StaticResource MaterialDesignTabControl}" 
-                                ItemsSource="{Binding WadViewModels}" SelectedItem="{Binding SelectedWad, UpdateSourceTrigger=PropertyChanged}">
+                                ItemsSource="{Binding WadViewModels}" SelectedItem="{Binding SelectedWad, UpdateSourceTrigger=PropertyChanged}" SelectionChanged="OnWadTabSelectionChanged">
                         <TabControl.ItemTemplate>
                             <DataTemplate>
                                 <Grid VerticalAlignment="Center">
@@ -309,7 +294,7 @@
                                     </Grid.ColumnDefinitions>
                                     <TreeView x:Name="WadTree" Grid.Column="0"
                               ItemsSource="{Binding Items, UpdateSourceTrigger=PropertyChanged}" Margin="0,8,0,0"
-                              VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" SelectedItemChanged="OnSelectedItemChanged"/>
+                              VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" SelectedItemChanged="OnWadSelectedItemChanged"/>
                                     <GridSplitter Grid.Column="1" Width="3" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
                                     <Grid Grid.Column="2">
                                         <Grid.RowDefinitions>
@@ -323,7 +308,7 @@
                                                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                                                ItemsSource="{Binding Preview.Viewport.Content}" ShowCoordinateSystem="True" ModelUpDirection="0, 1, 0" 
                                                                CameraRotationMode="Trackball" CoordinateSystemWidth="82" MinWidth="300" 
-                                                               ShowTriangleCountInfo="True" Loaded="OnWadTabViewportLoaded"/>
+                                                               ShowTriangleCountInfo="True" Loaded="OnWadTabViewportLoaded" DataContextChanged="OnWadTabViewportDataContextChanged"/>
                                         <AvalonEdit:TextEditor Document="{Binding Preview.Document, UpdateSourceTrigger=PropertyChanged}"
                                                                Style="{StaticResource ContentPreviewTextDocument}"
                                                                Background="{DynamicResource MaterialDesignPaper}"
