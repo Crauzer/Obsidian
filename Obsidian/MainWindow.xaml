@@ -6,7 +6,7 @@
         xmlns:MaterialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:ControlzEx="clr-namespace:ControlzEx;assembly=MaterialDesignThemes.Wpf"
         xmlns:MaterialDesignUtilities="clr-namespace:Obsidian.Utilities.MaterialDesign"
-        xmlns:FantomeUtilities="clr-namespace:Fantome.Libraries.League.Helpers;assembly=Fantome.Libraries.League"
+        xmlns:FantomeUtilities="clr-namespace:LeagueToolkit.Helpers;assembly=LeagueToolkit"
         xmlns:AvalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
         xmlns:MaterialDesignExtensions="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
         xmlns:Helix="http://helix-toolkit.org/wpf"

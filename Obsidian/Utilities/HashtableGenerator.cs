@@ -1,13 +1,15 @@
-﻿using Fantome.Libraries.League.Helpers;
-using Fantome.Libraries.League.Helpers.Cryptography;
-using Fantome.Libraries.League.IO.BIN;
-using Fantome.Libraries.League.IO.WadFile;
+﻿using LeagueToolkit.Helpers;
+using LeagueToolkit.Helpers.Cryptography;
+using LeagueToolkit.Helpers.Hashing;
+using LeagueToolkit.IO.PropertyBin;
+using LeagueToolkit.IO.PropertyBin.Properties;
+using LeagueToolkit.IO.WadFile;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using LeagueUtilities = Fantome.Libraries.League.Helpers.Utilities;
+using LeagueUtilities = LeagueToolkit.Helpers.Utilities;
 
 namespace Obsidian.Utilities
 {
@@ -37,10 +39,10 @@ namespace Obsidian.Utilities
 
                 if (fileType == LeagueFileType.BIN)
                 {
-                    BINFile bin = null;
+                    BinTree bin = null;
                     try
                     {
-                        bin = new BINFile(entryStream);
+                        bin = new BinTree(entryStream);
                     }
                     catch (Exception)
                     {
@@ -49,8 +51,8 @@ namespace Obsidian.Utilities
 
                     if (bin != null)
                     {
-                        strings.AddRange(ProcessBINDependencies(bin.Dependencies));
-                        strings.AddRange(ProcessBINFile(bin));
+                        strings.AddRange(ProcessBinDependencies(bin.Dependencies));
+                        strings.AddRange(ProcessBinTree(bin));
                     }
                 }
                 else if (IsLegacyDirList(entry.XXHash))
@@ -78,127 +80,120 @@ namespace Obsidian.Utilities
             return hashtable;
         }
 
-        private static IEnumerable<string> ProcessBINFile(BINFile bin)
+        private static IEnumerable<string> ProcessBinTree(BinTree bin)
         {
             List<string> strings = new List<string>();
 
-            foreach (BINEntry entry in bin.Entries)
+            foreach (BinTreeObject treeObject in bin.Objects)
             {
-                strings.AddRange(ProcessBINEntry(entry));
+                strings.AddRange(ProcessBinTreeObject(treeObject));
             }
 
             return strings;
         }
-        private static IEnumerable<string> ProcessBINEntry(BINEntry entry)
+        private static IEnumerable<string> ProcessBinTreeObject(BinTreeObject treeObject)
         {
             List<string> strings = new List<string>();
 
-            foreach (BINValue value in entry.Values)
+            foreach (BinTreeProperty treeProperty in treeObject.Properties)
             {
-                strings.AddRange(ProcessBINValue(value));
+                strings.AddRange(ProcessBinTreeProperty(treeProperty));
             }
 
             return strings;
         }
-        private static IEnumerable<string> ProcessBINValue(BINValue value)
+        private static IEnumerable<string> ProcessBinTreeProperty(BinTreeProperty treeProperty)
+        {
+            return treeProperty switch
+            {
+                BinTreeString property => ProcessBinTreeString(property),
+                BinTreeOptional property => ProcessBinTreeOptional(property),
+                BinTreeContainer property => ProcessBinTreeContainer(property),
+                BinTreeStructure property => ProcessBinTreeStructure(property),
+                BinTreeMap property => ProcessBinTreeMap(property),
+                _ => Enumerable.Empty<string>()
+            };
+        }
+        private static IEnumerable<string> ProcessBinTreeString(BinTreeString treeString)
         {
             List<string> strings = new List<string>();
+            string value = treeString.Value;
 
-            if (value.Type == BINValueType.String)
-            {
-                string valueString = value.Value as string;
-                strings.Add(valueString);
+            strings.Add(value);
 
-                if ((valueString.StartsWith("ASSETS/", true, null) || valueString.StartsWith("LEVELS/", true, null)) && Path.GetExtension(valueString) == ".dds")
-                {
-                    int index = valueString.LastIndexOf('/');
-                    strings.Add(valueString.Insert(index + 1, "2x_"));
-                    strings.Add(valueString.Insert(index + 1, "4x_"));
-                }
+            if ((value.StartsWith("ASSETS/", true, null) || value.StartsWith("LEVELS/", true, null)) && Path.GetExtension(value) == ".dds")
+            {
+                int index = value.LastIndexOf('/');
+                strings.Add(value.Insert(index + 1, "2x_"));
+                strings.Add(value.Insert(index + 1, "4x_"));
+            }
 
-                if (value.Property == Cryptography.FNV32Hash("mapPath"))
-                {
-                    strings.Add("DATA/" + valueString + ".materials.bin");
-                    strings.Add("DATA/" + valueString + ".mapgeo");
-                }
-            }
-            else if (value.Type == BINValueType.Optional)
+            if (treeString.NameHash == Fnv1a.HashLower("mapPath"))
             {
-                strings.AddRange(ProcessBINAdditionalData(value.Value as BINOptional));
-            }
-            else if (value.Type == BINValueType.Container)
-            {
-                strings.AddRange(ProcessBINContainer(value.Value as BINContainer));
-            }
-            else if (value.Type == BINValueType.Embedded || value.Type == BINValueType.Structure)
-            {
-                strings.AddRange(ProcessBINStructure(value.Value as BINStructure));
-            }
-            else if (value.Type == BINValueType.Map)
-            {
-                strings.AddRange(ProcessBINMap(value.Value as BINMap));
+                strings.Add("DATA/" + value + ".materials.bin");
+                strings.Add("DATA/" + value + ".mapgeo");
             }
 
             return strings;
         }
-        private static IEnumerable<string> ProcessBINAdditionalData(BINOptional additionalData)
+        private static IEnumerable<string> ProcessBinTreeOptional(BinTreeOptional optional)
         {
             List<string> strings = new List<string>();
 
-            if (additionalData.Value != null)
+            if (optional.Value is not null)
             {
-                strings.AddRange(ProcessBINValue(additionalData.Value));
+                strings.AddRange(ProcessBinTreeProperty(optional.Value));
             }
 
             return strings;
         }
-        private static IEnumerable<string> ProcessBINContainer(BINContainer container)
+        private static IEnumerable<string> ProcessBinTreeContainer(BinTreeContainer container)
         {
             List<string> strings = new List<string>();
 
-            foreach (BINValue value in container.Values)
+            foreach (BinTreeProperty property in container.Properties)
             {
-                strings.AddRange(ProcessBINValue(value));
+                strings.AddRange(ProcessBinTreeProperty(property));
             }
 
             return strings;
         }
-        private static IEnumerable<string> ProcessBINStructure(BINStructure structure)
+        private static IEnumerable<string> ProcessBinTreeStructure(BinTreeStructure structure)
         {
             List<string> strings = new List<string>();
 
-            foreach (BINValue value in structure.Values)
+            foreach (BinTreeProperty property in structure.Properties)
             {
-                strings.AddRange(ProcessBINValue(value));
+                strings.AddRange(ProcessBinTreeProperty(property));
             }
 
             return strings;
         }
-        private static IEnumerable<string> ProcessBINMap(BINMap map)
+        private static IEnumerable<string> ProcessBinTreeMap(BinTreeMap map)
         {
             List<string> strings = new List<string>();
 
-            foreach (KeyValuePair<BINValue, BINValue> valuePair in map.Values)
+            foreach (var valuePair in map.Map)
             {
-                strings.AddRange(ProcessBINValue(valuePair.Key));
-                strings.AddRange(ProcessBINValue(valuePair.Value));
+                strings.AddRange(ProcessBinTreeProperty(valuePair.Key));
+                strings.AddRange(ProcessBinTreeProperty(valuePair.Value));
             }
 
             return strings;
         }
-        private static IEnumerable<string> ProcessBINDependencies(IEnumerable<string> linkedFiles)
+        private static IEnumerable<string> ProcessBinDependencies(IEnumerable<string> dependencies)
         {
             List<string> strings = new List<string>();
 
-            foreach (string fetchedString in linkedFiles)
+            foreach (string dependency in dependencies)
             {
-                strings.Add(fetchedString);
+                strings.Add(dependency);
 
                 bool containsKeyword = false;
                 string[] packedKeywords = Config.Get<string[]>("BINPackedKeywords");
                 for (int i = 0; i < packedKeywords.Length; i++)
                 {
-                    if (fetchedString.Contains("_" + packedKeywords[i] + "_", StringComparison.OrdinalIgnoreCase))
+                    if (dependency.Contains("_" + packedKeywords[i] + "_", StringComparison.OrdinalIgnoreCase))
                     {
                         containsKeyword = true;
                         break;
@@ -208,17 +203,17 @@ namespace Obsidian.Utilities
 
                 if (containsKeyword)
                 {
-                    strings.AddRange(ProcessBINPackedLinkedFile(fetchedString));
+                    strings.AddRange(ProcessBinPackedDependency(dependency));
                 }
             }
 
             return strings;
         }
-        private static IEnumerable<string> ProcessBINPackedLinkedFile(string linkedString)
+        private static IEnumerable<string> ProcessBinPackedDependency(string dependency)
         {
             List<string> strings = new List<string>();
-            string extension = Path.GetExtension(linkedString);
-            string[] unpacked = Path.GetFileNameWithoutExtension(linkedString).Split('_');
+            string extension = Path.GetExtension(dependency);
+            string[] unpacked = Path.GetFileNameWithoutExtension(dependency).Split('_');
 
             string characterName = "";
             int startIndexSkinData = 0;

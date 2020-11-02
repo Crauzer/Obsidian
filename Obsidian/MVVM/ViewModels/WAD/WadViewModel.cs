@@ -1,4 +1,4 @@
-﻿using Fantome.Libraries.League.IO.WadFile;
+﻿using LeagueToolkit.IO.WadFile;
 using HelixToolkit.Wpf;
 using Obsidian.Utilities;
 using System;

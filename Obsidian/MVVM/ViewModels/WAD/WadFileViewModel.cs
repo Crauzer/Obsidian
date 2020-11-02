@@ -1,8 +1,8 @@
-﻿using Fantome.Libraries.League.Helpers;
-using Fantome.Libraries.League.IO.WadFile;
+﻿using LeagueToolkit.Helpers;
+using LeagueToolkit.IO.WadFile;
 using Obsidian.Utilities;
 using PathIO = System.IO.Path;
-using UtilitiesFantome = Fantome.Libraries.League.Helpers.Utilities;
+using UtilitiesFantome = LeagueToolkit.Helpers.Utilities;
 
 namespace Obsidian.MVVM.ViewModels.WAD
 {

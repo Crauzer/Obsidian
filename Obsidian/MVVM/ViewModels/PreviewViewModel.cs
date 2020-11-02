@@ -1,7 +1,7 @@
 ﻿using CSharpImageLibrary;
-using Fantome.Libraries.League.IO.MapGeometry;
-using Fantome.Libraries.League.IO.SimpleSkinFile;
-using Fantome.Libraries.League.IO.StaticObjectFile;
+using LeagueToolkit.IO.MapGeometry;
+using LeagueToolkit.IO.SimpleSkinFile;
+using LeagueToolkit.IO.StaticObjectFile;
 using HelixToolkit.Wpf;
 using ICSharpCode.AvalonEdit.Document;
 using Newtonsoft.Json.Linq;

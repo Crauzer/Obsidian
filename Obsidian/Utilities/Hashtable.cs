@@ -1,11 +1,11 @@
-﻿using Fantome.Libraries.League.Helpers;
-using Fantome.Libraries.League.Helpers.Cryptography;
-using Fantome.Libraries.League.IO.WadFile;
+﻿using LeagueToolkit.Helpers;
+using LeagueToolkit.Helpers.Cryptography;
+using LeagueToolkit.IO.WadFile;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using LeagueUtilities = Fantome.Libraries.League.Helpers.Utilities;
+using LeagueUtilities = LeagueToolkit.Helpers.Utilities;
 
 namespace Obsidian.Utilities
 {

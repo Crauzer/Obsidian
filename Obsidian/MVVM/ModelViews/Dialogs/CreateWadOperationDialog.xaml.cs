@@ -1,5 +1,5 @@
-﻿using Fantome.Libraries.League.Helpers.Cryptography;
-using Fantome.Libraries.League.IO.WadFile;
+﻿using LeagueToolkit.Helpers.Cryptography;
+using LeagueToolkit.IO.WadFile;
 using Obsidian.MVVM.ViewModels.WAD;
 using Obsidian.Utilities;
 using System;

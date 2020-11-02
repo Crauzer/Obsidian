@@ -1,6 +1,6 @@
 ﻿using CSharpImageLibrary;
-using Fantome.Libraries.League.IO.MapGeometry;
-using Fantome.Libraries.League.IO.WadFile;
+using LeagueToolkit.IO.MapGeometry;
+using LeagueToolkit.IO.WadFile;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Obsidian.MVVM.Commands;
 using Obsidian.MVVM.ViewModels;
@@ -28,8 +28,8 @@ using System.Collections.ObjectModel;
 using HelixToolkit.Wpf;
 using System.Text;
 using DiscordRPC;
-using Fantome.Libraries.League.IO.StaticObjectFile;
-using Fantome.Libraries.League.IO.SimpleSkinFile;
+using LeagueToolkit.IO.StaticObjectFile;
+using LeagueToolkit.IO.SimpleSkinFile;
 using ImageMagick;
 
 namespace Obsidian

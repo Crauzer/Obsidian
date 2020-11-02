@@ -1,13 +1,14 @@
-﻿using Fantome.Libraries.League.Helpers.Structures;
-using Fantome.Libraries.League.IO.MapGeometry;
+﻿using LeagueToolkit.Helpers.Structures;
+using LeagueToolkit.IO.MapGeometry;
 using HelixToolkit.Wpf;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System;
-using Fantome.Libraries.League.IO.StaticObjectFile;
-using Fantome.Libraries.League.IO.SimpleSkinFile;
+using LeagueToolkit.IO.StaticObjectFile;
+using LeagueToolkit.IO.SimpleSkinFile;
+using System.Numerics;
 
 namespace Obsidian.MVVM.ViewModels
 {

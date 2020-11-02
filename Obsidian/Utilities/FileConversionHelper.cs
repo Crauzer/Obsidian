@@ -1,10 +1,10 @@
-﻿using Fantome.Libraries.League.Helpers;
-using Fantome.Libraries.League.IO.MapGeometry;
-using Fantome.Libraries.League.IO.OBJ;
-using Fantome.Libraries.League.IO.SimpleSkinFile;
-using Fantome.Libraries.League.IO.SkeletonFile;
-using Fantome.Libraries.League.IO.StaticObjectFile;
-using Fantome.Libraries.League.IO.WadFile;
+﻿using LeagueToolkit.Helpers;
+using LeagueToolkit.IO.MapGeometry;
+using LeagueToolkit.IO.OBJ;
+using LeagueToolkit.IO.SimpleSkinFile;
+using LeagueToolkit.IO.SkeletonFile;
+using LeagueToolkit.IO.StaticObjectFile;
+using LeagueToolkit.IO.WadFile;
 using Obsidian.MVVM.ViewModels.WAD;
 using SharpGLTF.Schema2;
 using System;
