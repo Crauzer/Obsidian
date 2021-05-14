@@ -37,7 +37,7 @@ namespace Obsidian.Utilities
                 using Stream entryStream = entry.GetDataHandle().GetDecompressedStream();
                 LeagueFileType fileType = LeagueUtilities.GetExtensionType(entryStream);
 
-                if (fileType == LeagueFileType.BIN)
+                if (fileType == LeagueFileType.PropertyBin)
                 {
                     BinTree bin = null;
                     try

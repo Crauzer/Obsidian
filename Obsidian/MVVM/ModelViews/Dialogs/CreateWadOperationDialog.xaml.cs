@@ -83,7 +83,7 @@ namespace Obsidian.MVVM.ModelViews.Dialogs
                 string fileNameWithoutExtension = PathIO.GetFileNameWithoutExtension(fileLocation);
                 this.Message = entryPath;
 
-                WadEntryBuilder entryBuilder = new WadEntryBuilder();
+                WadEntryBuilder entryBuilder = new WadEntryBuilder(WadEntryChecksumType.XXHash3);
 
                 bool hasUnknownPath = fileNameWithoutExtension.Length == 16 && fileNameWithoutExtension.All(c => "ABCDEF0123456789".Contains(c));
                 if (hasUnknownPath)

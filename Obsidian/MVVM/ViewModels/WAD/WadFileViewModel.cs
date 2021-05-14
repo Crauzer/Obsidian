@@ -26,7 +26,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
                 + "Compression Type: " + this.Entry.Type.ToString() + '\n'
                 + "Compressed Size: " + this.Entry.CompressedSize + '\n'
                 + "Uncompressed Size: " + this.Entry.UncompressedSize + '\n'
-                + "SHA256: " + UtilitiesFantome.ByteArrayToHex(this.Entry.SHA);
+                + "Checksum: " + UtilitiesFantome.ByteArrayToHex(this.Entry.Checksum);
         }
     }
 }

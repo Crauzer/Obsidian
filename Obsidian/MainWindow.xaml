@@ -86,52 +86,52 @@
                     <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.Unknown}">
                         <Setter TargetName="WadFileItemIcon" Property="Kind" Value="FileOutline"/>
                     </DataTrigger>
-                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.ANM}">
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.Animation}">
                         <Setter TargetName="WadFileItemIcon" Property="Kind" Value="AnimationPlay"/>
                     </DataTrigger>
-                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.BIN}">
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.PropertyBin}">
                         <Setter TargetName="WadFileItemIcon" Property="Kind" Value="FormatListText"/>
                     </DataTrigger>
-                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.BNK}">
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.WwiseBank}">
                         <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Audiobook"/>
                     </DataTrigger>
-                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.DDS}">
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.DdsImage}">
                         <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Image"/>
                     </DataTrigger>
-                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.LUAOBJ}">
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.LuaObj}">
                         <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Script"/>
                     </DataTrigger>
-                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.MAPGEO}">
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.MapGeometry}">
                         <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Map"/>
                     </DataTrigger>
-                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.PNG}">
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.PngImage}">
                         <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Image"/>
                     </DataTrigger>
-                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.PRELOAD}">
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.Preload}">
                         <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Script"/>
                     </DataTrigger>
-                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.SCB}">
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.StaticObjectBinary}">
                         <Setter TargetName="WadFileItemIcon" Property="Kind" Value="CubeOutline"/>
                     </DataTrigger>
-                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.SCO}">
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.StaticObjectAscii}">
                         <Setter TargetName="WadFileItemIcon" Property="Kind" Value="CubeOutline"/>
                     </DataTrigger>
-                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.SKL}">
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.Skeleton}">
                         <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Bone"/>
                     </DataTrigger>
-                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.SKN}">
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.SimpleSkin}">
                         <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Cube"/>
                     </DataTrigger>
-                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.WGEO}">
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.WorldGeometry}">
                         <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Map"/>
                     </DataTrigger>
-                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.WPK}">
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.WwisePackage}">
                         <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Audiobook"/>
                     </DataTrigger>
-                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.JPG}">
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.JpegImage}">
                         <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Image"/>
                     </DataTrigger>
-                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.RST}">
+                    <DataTrigger Binding="{Binding FileType}" Value="{x:Static FantomeUtilities:LeagueFileType.RiotStringTable}">
                         <Setter TargetName="WadFileItemIcon" Property="Kind" Value="Translate"/>
                     </DataTrigger>
                 </DataTemplate.Triggers>

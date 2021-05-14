@@ -19,7 +19,7 @@ namespace Obsidian.Utilities
     {
         public static FileConversionOptions GetFileConversionOptions(LeagueFileType fileType)
         {
-            if (fileType == LeagueFileType.SKN)
+            if (fileType == LeagueFileType.SimpleSkin)
             {
                 return new FileConversionOptions(new List<FileConversion>
                 {
@@ -27,7 +27,7 @@ namespace Obsidian.Utilities
                     new FileConversion("glTF (with Skeleton)", ".glb", ConstructSimpleSkinWithSkeletonParameter, ConvertSimpleSkinWithSkeletonToGltf)
                 });
             }
-            else if (fileType == LeagueFileType.SCB)
+            else if (fileType == LeagueFileType.StaticObjectBinary)
             {
                 return new FileConversionOptions(new List<FileConversion>()
                 {
@@ -35,7 +35,7 @@ namespace Obsidian.Utilities
                     new FileConversion("OBJ", ".obj", null, ConvertScbToObj)
                 });
             }
-            else if (fileType == LeagueFileType.SCO)
+            else if (fileType == LeagueFileType.StaticObjectAscii)
             {
                 return new FileConversionOptions(new List<FileConversion>()
                 {
@@ -43,7 +43,7 @@ namespace Obsidian.Utilities
                     new FileConversion("OBJ", ".obj", null, ConvertScoToObj)
                 });
             }
-            else if (fileType == LeagueFileType.MAPGEO)
+            else if (fileType == LeagueFileType.MapGeometry)
             {
                 return new FileConversionOptions(new List<FileConversion>()
                 {
