@@ -43,7 +43,7 @@
     <PackageReference Include="CSharpImageLibrary" Version="4.2.0" />
     <PackageReference Include="DiscordRichPresence" Version="1.0.150" />
     <PackageReference Include="HelixToolkit.Wpf" Version="2.12.0" />
-    <PackageReference Include="LeagueToolkit" Version="2.4.0" />
+    <PackageReference Include="LeagueToolkit" Version="2.4.1" />
     <PackageReference Include="MaterialDesignExtensions" Version="3.2.0" />
     <PackageReference Include="Microsoft.Packaging.Tools.Trimming" Version="1.1.0-preview1-26619-01" />
     <PackageReference Include="Octokit" Version="0.48.0" />
