@@ -162,11 +162,13 @@ namespace Obsidian.Utilities
         {
             List<string> strings = new List<string>();
 
-            foreach (BinTreeProperty property in structure.Properties)
+            if (structure.Properties is not null)
             {
-                strings.AddRange(ProcessBinTreeProperty(property));
+                foreach (BinTreeProperty property in structure.Properties)
+                {
+                    strings.AddRange(ProcessBinTreeProperty(property));
+                }
             }
-
             return strings;
         }
         private static IEnumerable<string> ProcessBinTreeMap(BinTreeMap map)
