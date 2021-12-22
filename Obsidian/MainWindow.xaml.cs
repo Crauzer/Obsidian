@@ -468,6 +468,26 @@ namespace Obsidian
             }
         }
 
+        private List<WadFileViewModel> getAllChampionFiles()
+        {
+
+            IEnumerator<WadViewModel> collection = WadViewModels.GetEnumerator();
+            List<WadFileViewModel> result = new();
+
+            while (collection.MoveNext())
+            {
+                WadViewModel current = collection.Current;
+                IEnumerable<WadFileViewModel> files = current.GetAllFiles();
+
+                foreach (WadFileViewModel file in files)
+                {
+                    result.Add(file);
+                }
+            }
+
+            return result;
+        }
+
         private async void ExtractAll()
         {
             using CommonOpenFileDialog dialog = new CommonOpenFileDialog
@@ -478,9 +498,10 @@ namespace Obsidian
 
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                await DialogHelper.ShowExtractOperationDialog(dialog.FileName, this.SelectedWad.GetAllFiles());
+                await DialogHelper.ShowExtractOperationDialog(dialog.FileName, this.getAllChampionFiles());
             }
         }
+
         private async void ExtractSelected()
         {
             using CommonOpenFileDialog dialog = new CommonOpenFileDialog
