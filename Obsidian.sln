@@ -1,9 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29613.14
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Obsidian", "Obsidian\Obsidian.csproj", "{D074D570-88A1-445D-9060-662CA6A5B5D0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0456EADD-8799-4710-9435-25D5CB90B114} = {0456EADD-8799-4710-9435-25D5CB90B114}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LeagueToolkit", "LeagueToolkit\LeagueToolkit\LeagueToolkit.csproj", "{0456EADD-8799-4710-9435-25D5CB90B114}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,6 +23,12 @@ Global
 		{D074D570-88A1-445D-9060-662CA6A5B5D0}.Release|x64.Build.0 = Release|x64
 		{D074D570-88A1-445D-9060-662CA6A5B5D0}.ReleasePortable|x64.ActiveCfg = ReleasePortable|x64
 		{D074D570-88A1-445D-9060-662CA6A5B5D0}.ReleasePortable|x64.Build.0 = ReleasePortable|x64
+		{0456EADD-8799-4710-9435-25D5CB90B114}.Debug|x64.ActiveCfg = Debug|x64
+		{0456EADD-8799-4710-9435-25D5CB90B114}.Debug|x64.Build.0 = Debug|x64
+		{0456EADD-8799-4710-9435-25D5CB90B114}.Release|x64.ActiveCfg = Release|x64
+		{0456EADD-8799-4710-9435-25D5CB90B114}.Release|x64.Build.0 = Release|x64
+		{0456EADD-8799-4710-9435-25D5CB90B114}.ReleasePortable|x64.ActiveCfg = Release|x64
+		{0456EADD-8799-4710-9435-25D5CB90B114}.ReleasePortable|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
