@@ -32,19 +32,16 @@ namespace Obsidian.MVVM.ViewModels.WAD
                         {
                             if (item.Type == WadItemType.File)
                             {
-                                return Regex.IsMatch(item.Path, value);
+                                return Regex.IsMatch(item.Path, value, RegexOptions.IgnoreCase);
+                            }
+                            else if ((item as WadFolderViewModel).Find(x => Regex.IsMatch(x.Path, value, RegexOptions.IgnoreCase)) == null)
+                            {
+                                return false;
                             }
                             else
                             {
-                                if ((item as WadFolderViewModel).Find(x => Regex.IsMatch(x.Path, value)) == null)
-                                {
-                                    return false;
-                                }
-                                else
-                                {
-                                    item.Filter = value;
-                                    return true;
-                                }
+                                item.Filter = value;
+                                return true;
                             }
                         }
                         catch(Exception)

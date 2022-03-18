@@ -49,11 +49,11 @@ namespace Obsidian.MVVM.ViewModels.WAD
                         {
                             case WadFileViewModel file:
                             {
-                                return Regex.IsMatch(file.Path, value);
+                                return Regex.IsMatch(file.Path, value, RegexOptions.IgnoreCase);
                             }
                             case WadFolderViewModel folder:
                             {
-                                if (folder.Find(x => Regex.IsMatch(x.Path, value)) == null)
+                                if (folder.Find(x => Regex.IsMatch(x.Path, value, RegexOptions.IgnoreCase)) == null)
                                 {
                                     return false;
                                 }
@@ -101,7 +101,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
                 NotifyPropertyChanged();
             }
         }
-        public string WadName 
+        public string WadName
         {
             get => this._wadName;
             set
