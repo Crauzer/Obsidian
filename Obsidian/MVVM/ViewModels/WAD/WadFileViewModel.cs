@@ -1,14 +1,13 @@
-﻿using LeagueToolkit.Helpers;
+﻿using System;
+using LeagueToolkit.Helpers;
 using LeagueToolkit.IO.WadFile;
 using Obsidian.Utilities;
-using PathIO = System.IO.Path;
-using UtilitiesFantome = LeagueToolkit.Helpers.Utilities;
 
 namespace Obsidian.MVVM.ViewModels.WAD
 {
     public class WadFileViewModel : WadItemViewModel
     {
-        public LeagueFileType FileType => UtilitiesFantome.GetExtensionType(PathIO.GetExtension(this.Path));
+        public LeagueFileType FileType => LeagueToolkit.Helpers.Utilities.GetExtensionType(System.IO.Path.GetExtension(this.Path));
         public FileConversionOptions ConversionOptions => FileConversionHelper.GetFileConversionOptions(this.FileType);
         public WadEntry Entry { get; private set; }
 
@@ -26,7 +25,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
                 + "Compression Type: " + this.Entry.Type.ToString() + '\n'
                 + "Compressed Size: " + this.Entry.CompressedSize + '\n'
                 + "Uncompressed Size: " + this.Entry.UncompressedSize + '\n'
-                + "Checksum: " + UtilitiesFantome.ByteArrayToHex(this.Entry.Checksum);
+                + "Checksum: " + Convert.ToHexString(this.Entry.Checksum);
         }
     }
 }

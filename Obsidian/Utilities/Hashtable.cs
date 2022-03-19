@@ -38,7 +38,7 @@ namespace Obsidian.Utilities
                 Stream decompressedStream = entry.GetDataHandle().GetDecompressedStream();
                 string extension = LeagueUtilities.GetExtension(LeagueUtilities.GetExtensionType(decompressedStream));
 
-                return string.Format("{0}.{1}", entry.XXHash.ToString("x16"), extension);
+                return string.IsNullOrEmpty(extension) ? entry.XXHash.ToString("x16") : $"{entry.XXHash:x16}.{extension}";
             }
         }
 
