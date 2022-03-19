@@ -31,6 +31,7 @@ using DiscordRPC;
 using LeagueToolkit.IO.StaticObjectFile;
 using LeagueToolkit.IO.SimpleSkinFile;
 using ImageMagick;
+using LeagueToolkit.IO.TEXFile;
 
 namespace Obsidian
 {
@@ -269,67 +270,62 @@ namespace Obsidian
                 var selectedEntryDataHandle = selectedEntry.Entry.GetDataHandle();
                 using Stream selectedEntryStream = selectedEntryDataHandle.GetDecompressedStream();
 
-                if (extension == ".dds" || extension == ".tga")
+                switch (extension)
                 {
-                    try
-                    {
-                        // Create a new stream for the ImageEngineImage
-                        MemoryStream imageStream = new MemoryStream();
-                        selectedEntryStream.CopyTo(imageStream);
-
-                        this.SelectedWad.Preview.Preview(new ImageEngineImage(imageStream));
-                    }
-                    catch (FileFormatException)
-                    {
-                        this.SelectedWad.Preview.Clear();
-                        await DialogHelper.ShowMessageDialog(Localization.Get("PreviewErrorDDS"));
-                    }
-                }
-                else if (extension == ".skn")
-                {
-                    this.SelectedWad.Preview.Preview(new SimpleSkin(selectedEntryStream));
-                }
-                else if (extension == ".scb")
-                {
-                    this.SelectedWad.Preview.Preview(StaticObject.ReadSCB(selectedEntryStream));
-                }
-                else if (extension == ".sco")
-                {
-                    this.SelectedWad.Preview.Preview(StaticObject.ReadSCO(selectedEntryStream));
-                }
-                else if (extension == ".mapgeo")
-                {
-                    this.SelectedWad.Preview.Preview(new MapGeometry(selectedEntryStream));
-                }
-                else
-                {
-                    // Use switch cuz it looks cooler than the shitty formatting for a big if statement
-                    switch (extension)
-                    {
-                        case ".png":
-                        case ".jpg":
-                        case ".jpeg":
+                    case ".dds" or ".tga" or ".tex":
+                        try
                         {
-                            BitmapImage bitmap = new BitmapImage();
+                            // Create a new stream for the ImageEngineImage
+                            MemoryStream imageStream = new MemoryStream();
+                            if (extension == ".tex")
+                                new TEX(selectedEntryStream).ToDds(imageStream);
+                            else
+                                selectedEntryStream.CopyTo(imageStream);
 
-                            bitmap.BeginInit();
-                            bitmap.StreamSource = selectedEntryStream;
-                            bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                            bitmap.EndInit();
-                            bitmap.Freeze();
-
-                            this.SelectedWad.Preview.Preview(bitmap);
-                            break;
+                            this.SelectedWad.Preview.Preview(new ImageEngineImage(imageStream));
                         }
-                        case ".json":
-                        case ".js":
-                        case ".xml":
-                        case ".ini":
-                        case ".cfg":
+                        catch (FileFormatException)
                         {
-                            this.SelectedWad.Preview.PreviewText(selectedEntryStream, extension);
-                            break;
+                            this.SelectedWad.Preview.Clear();
+                            await DialogHelper.ShowMessageDialog(Localization.Get("PreviewErrorDDS"));
                         }
+
+                        break;
+                    case ".skn":
+                        this.SelectedWad.Preview.Preview(new SimpleSkin(selectedEntryStream));
+                        break;
+                    case ".scb":
+                        this.SelectedWad.Preview.Preview(StaticObject.ReadSCB(selectedEntryStream));
+                        break;
+                    case ".sco":
+                        this.SelectedWad.Preview.Preview(StaticObject.ReadSCO(selectedEntryStream));
+                        break;
+                    case ".mapgeo":
+                        this.SelectedWad.Preview.Preview(new MapGeometry(selectedEntryStream));
+                        break;
+                    case ".png":
+                    case ".jpg":
+                    case ".jpeg":
+                    {
+                        BitmapImage bitmap = new BitmapImage();
+
+                        bitmap.BeginInit();
+                        bitmap.StreamSource = selectedEntryStream;
+                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmap.EndInit();
+                        bitmap.Freeze();
+
+                        this.SelectedWad.Preview.Preview(bitmap);
+                        break;
+                    }
+                    case ".json":
+                    case ".js":
+                    case ".xml":
+                    case ".ini":
+                    case ".cfg":
+                    {
+                        this.SelectedWad.Preview.PreviewText(selectedEntryStream, extension);
+                        break;
                     }
                 }
             }
