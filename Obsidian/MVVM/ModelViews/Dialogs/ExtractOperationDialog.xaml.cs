@@ -96,7 +96,7 @@ namespace Obsidian.MVVM.ModelViews.Dialogs
 
             GeneratePackedMapping();
             CreateFolders();
-            
+
             //Write the Packed Mapping file
             if (packedMappingFile.Count != 0)
             {
@@ -115,7 +115,7 @@ namespace Obsidian.MVVM.ModelViews.Dialogs
                 this.Message = entry.Path;
 
                 using Stream entryStream = entry.Entry.GetDataHandle().GetDecompressedStream();
-                using FileStream entryFileStream = File.OpenWrite(path);
+                using FileStream entryFileStream = File.Create(path);
 
                 entryStream.CopyTo(entryFileStream);
 
