@@ -30,8 +30,8 @@ using System.Text;
 using DiscordRPC;
 using LeagueToolkit.IO.StaticObjectFile;
 using LeagueToolkit.IO.SimpleSkinFile;
-using ImageMagick;
 using LeagueToolkit.IO.TEXFile;
+using Button = System.Windows.Controls.Button;
 
 namespace Obsidian
 {
