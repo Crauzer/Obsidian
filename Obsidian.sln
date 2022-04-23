@@ -10,6 +10,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Obsidian", "Obsidian\Obsidi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LeagueToolkit", "LeagueToolkit\LeagueToolkit\LeagueToolkit.csproj", "{0456EADD-8799-4710-9435-25D5CB90B114}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeagueToolkit.IO.Extensions", "LeagueToolkit\LeagueToolkit.IO.Extensions\LeagueToolkit.IO.Extensions.csproj", "{A341E864-D951-402C-A66F-D04B24AC8434}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -29,6 +31,12 @@ Global
 		{0456EADD-8799-4710-9435-25D5CB90B114}.Release|x64.Build.0 = Release|x64
 		{0456EADD-8799-4710-9435-25D5CB90B114}.ReleasePortable|x64.ActiveCfg = Release|x64
 		{0456EADD-8799-4710-9435-25D5CB90B114}.ReleasePortable|x64.Build.0 = Release|x64
+		{A341E864-D951-402C-A66F-D04B24AC8434}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A341E864-D951-402C-A66F-D04B24AC8434}.Debug|x64.Build.0 = Debug|Any CPU
+		{A341E864-D951-402C-A66F-D04B24AC8434}.Release|x64.ActiveCfg = Release|Any CPU
+		{A341E864-D951-402C-A66F-D04B24AC8434}.Release|x64.Build.0 = Release|Any CPU
+		{A341E864-D951-402C-A66F-D04B24AC8434}.ReleasePortable|x64.ActiveCfg = Debug|Any CPU
+		{A341E864-D951-402C-A66F-D04B24AC8434}.ReleasePortable|x64.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
