@@ -8,7 +8,7 @@
     <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
     <Platforms>x64</Platforms>
     <Configurations>Debug;Release;ReleasePortable</Configurations>
-    <Version>4.3.1</Version>
+    <Version>4.3.2</Version>
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Crauzer/Obsidian</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Crauzer/Obsidian</RepositoryUrl>
