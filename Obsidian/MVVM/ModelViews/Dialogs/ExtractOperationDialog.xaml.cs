@@ -114,10 +114,17 @@ namespace Obsidian.MVVM.ModelViews.Dialogs
 
                 this.Message = entry.Path;
 
-                using Stream entryStream = entry.Entry.GetDataHandle().GetDecompressedStream();
-                using FileStream entryFileStream = File.OpenWrite(path);
+                try
+                {
+                    using Stream entryStream = entry.Entry.GetDataHandle().GetDecompressedStream();
+                    using FileStream entryFileStream = File.OpenWrite(path);
 
-                entryStream.CopyTo(entryFileStream);
+                    entryStream.CopyTo(entryFileStream);
+                } catch(Exception)
+                {
+
+                }
+
 
                 progress += 1;
                 (e.Argument as BackgroundWorker).ReportProgress((int)progress);
