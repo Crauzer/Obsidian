@@ -4,8 +4,7 @@ using Obsidian.MVVM.ViewModels.WAD;
 using Obsidian.MVVM.ModelViews.Dialogs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System;
-using System.Collections.ObjectModel;
+using System.Net.Http;
 
 namespace Obsidian.Utilities
 {
@@ -14,6 +13,8 @@ namespace Obsidian.Utilities
         public static DialogHost MessageDialog { get; set; }
         public static DialogHost OperationDialog { get; set; }
         public static DialogHost RootDialog { get; set; }
+
+        internal static readonly HttpClient httpClient = new HttpClient();
 
         public static async Task<WadViewModel> ShowOpenWadOperartionDialog(string wadLocation)
         {

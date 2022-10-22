@@ -1,5 +1,4 @@
-﻿using CSharpImageLibrary;
-using LeagueToolkit.IO.MapGeometry;
+﻿using LeagueToolkit.IO.MapGeometry;
 using LeagueToolkit.IO.SimpleSkinFile;
 using LeagueToolkit.IO.StaticObjectFile;
 using HelixToolkit.Wpf;
@@ -7,7 +6,9 @@ using ICSharpCode.AvalonEdit.Document;
 using Newtonsoft.Json.Linq;
 using Obsidian.Utilities;
 using System.IO;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Pfim;
 
 namespace Obsidian.MVVM.ViewModels
 {
@@ -84,9 +85,9 @@ namespace Obsidian.MVVM.ViewModels
             this.PreviewType = PreviewType.Viewport;
             this.ContentType = Localization.Get("PreviewDescriptionStaticObject");
         }
-        public void Preview(ImageEngineImage ddsImage)
+        public void Preview(Dds ddsImage)
         {
-            this.Image = ddsImage.GetWPFBitmap(512);
+            this.Image = BitmapSource.Create(ddsImage.Width, ddsImage.Height, 96, 96, PixelFormats.Bgr32, null, ddsImage.Data, ddsImage.Stride);
 
             this.PreviewType = PreviewType.Image;
             this.ContentType = Localization.Get("PreviewDescriptionDDS");

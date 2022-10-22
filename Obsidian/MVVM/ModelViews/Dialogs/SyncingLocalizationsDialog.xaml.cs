@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
@@ -37,7 +36,6 @@ namespace Obsidian.MVVM.ModelViews.Dialogs
             //Do it in try so we don't crash if there isn't internet connection
             try
             {
-                using WebClient webClient = new WebClient();
                 GitHubClient gitClient = new GitHubClient(new ProductHeaderValue("Obsidian"));
                 IReadOnlyList<RepositoryContent> files = await gitClient.Repository.Content.GetAllContents("Crauzer", "Obsidian", "Localizations");
                 List<string> availableLocalizations = Localization.GetAvailableLocalizations(false);
@@ -47,7 +45,8 @@ namespace Obsidian.MVVM.ModelViews.Dialogs
                     string fileLocalizationName = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(file.Name));
                     if (!availableLocalizations.Any(x => x == fileLocalizationName))
                     {
-                        await webClient.DownloadFileTaskAsync(file.DownloadUrl, Path.Combine(Localization.LOCALIZATION_FOLDER, file.Name));
+                        await using FileStream outputStream = File.Create(Path.Combine(Localization.LOCALIZATION_FOLDER, file.Name));
+                        await (await DialogHelper.httpClient.GetStreamAsync(file.DownloadUrl)).CopyToAsync(outputStream);
                     }
                 }
             }

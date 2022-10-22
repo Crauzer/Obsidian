@@ -1,5 +1,4 @@
-﻿using CSharpImageLibrary;
-using LeagueToolkit.IO.MapGeometry;
+﻿using LeagueToolkit.IO.MapGeometry;
 using LeagueToolkit.IO.WadFile;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Obsidian.MVVM.Commands;
@@ -31,6 +30,7 @@ using DiscordRPC;
 using LeagueToolkit.IO.StaticObjectFile;
 using LeagueToolkit.IO.SimpleSkinFile;
 using LeagueToolkit.IO.TEXFile;
+using Pfim;
 using Button = System.Windows.Controls.Button;
 
 namespace Obsidian
@@ -275,14 +275,12 @@ namespace Obsidian
                     case ".dds" or ".tga" or ".tex":
                         try
                         {
-                            // Create a new stream for the ImageEngineImage
-                            MemoryStream imageStream = new MemoryStream();
+                            Stream imageStream = selectedEntryStream;
                             if (extension == ".tex")
                                 new TEX(selectedEntryStream).ToDds(imageStream);
-                            else
-                                selectedEntryStream.CopyTo(imageStream);
+                            imageStream.Position = 0;
 
-                            this.SelectedWad.Preview.Preview(new ImageEngineImage(imageStream));
+                            this.SelectedWad.Preview.Preview(Dds.Create(imageStream, new PfimConfig()));
                         }
                         catch (FileFormatException)
                         {

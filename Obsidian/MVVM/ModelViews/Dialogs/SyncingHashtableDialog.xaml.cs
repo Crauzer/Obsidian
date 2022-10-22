@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
@@ -71,9 +70,9 @@ namespace Obsidian.MVVM.ModelViews.Dialogs
                 {
                     if (!File.Exists(Hashtable.GAME_HASHTABLE_FILE) || gameHashesContent.Sha != Config.Get<string>("GameHashtableChecksum"))
                     {
-                        using (WebClient webClient = new WebClient())
+                        await using (FileStream outputStream = File.Create(Hashtable.GAME_HASHTABLE_FILE))
                         {
-                            await webClient.DownloadFileTaskAsync(gameHashesContent.DownloadUrl, Hashtable.GAME_HASHTABLE_FILE);
+                            await (await DialogHelper.httpClient.GetStreamAsync(gameHashesContent.DownloadUrl)).CopyToAsync(outputStream);
                         }
 
                         Config.Set("GameHashtableChecksum", gameHashesContent.Sha);
@@ -83,9 +82,9 @@ namespace Obsidian.MVVM.ModelViews.Dialogs
                 {
                     if (!File.Exists(Hashtable.LCU_HASHTABLE_FILE) || lcuHashesContent.Sha != Config.Get<string>("LCUHashtableChecksum"))
                     {
-                        using (WebClient webClient = new WebClient())
+                        await using (FileStream outputStream = File.Create(Hashtable.LCU_HASHTABLE_FILE))
                         {
-                            await webClient.DownloadFileTaskAsync(lcuHashesContent.DownloadUrl, Hashtable.LCU_HASHTABLE_FILE);
+                            await (await DialogHelper.httpClient.GetStreamAsync(lcuHashesContent.DownloadUrl)).CopyToAsync(outputStream);
                         }
 
                         Config.Set("LCUHashtableChecksum", lcuHashesContent.Sha);
