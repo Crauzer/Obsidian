@@ -101,7 +101,7 @@ namespace Obsidian.MVVM.ViewModels
             }
 
             SetGeometryModels(geometryModels);
-            SetCamera(skn.GetBoundingBox().GetCentralPoint());
+            SetCamera(skn.CalculateBoundingBox().GetCentralPoint());
         }
         public void LoadMesh(StaticObject staticObject)
         {
@@ -137,7 +137,7 @@ namespace Obsidian.MVVM.ViewModels
             }
 
             SetGeometryModels(geometryModels);
-            SetCamera(staticObject.GetBoundingBox().GetCentralPoint());
+            SetCamera(staticObject.CalculateBoundingBox().GetCentralPoint());
         }
         public void LoadMap(MapGeometry mgeo)
         {
