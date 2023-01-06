@@ -1,5 +1,4 @@
-﻿using LeagueToolkit.Helpers.Cryptography;
-using LeagueToolkit.IO.WadFile;
+﻿using LeagueToolkit.IO.WadFile;
 using Obsidian.MVVM.ViewModels.WAD;
 using Obsidian.Utilities;
 using System;
@@ -10,6 +9,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows.Controls;
+using LeagueToolkit.Hashing;
 using PathIO = System.IO.Path;
 
 namespace Obsidian.MVVM.ModelViews.Dialogs

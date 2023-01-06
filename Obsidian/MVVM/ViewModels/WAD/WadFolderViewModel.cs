@@ -1,5 +1,4 @@
-﻿using LeagueToolkit.Helpers.Cryptography;
-using LeagueToolkit.IO.WadFile;
+﻿using LeagueToolkit.IO.WadFile;
 using Obsidian.Utilities;
 using System;
 using System.Collections.Generic;

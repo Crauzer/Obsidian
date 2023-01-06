@@ -1,6 +1,4 @@
 ﻿using LeagueToolkit.Helpers;
-using LeagueToolkit.Helpers.Cryptography;
-using LeagueToolkit.Helpers.Hashing;
 using LeagueToolkit.IO.PropertyBin;
 using LeagueToolkit.IO.PropertyBin.Properties;
 using LeagueToolkit.IO.WadFile;
@@ -9,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using LeagueToolkit.Hashing;
 using LeagueUtilities = LeagueToolkit.Helpers.Utilities;
 
 namespace Obsidian.Utilities

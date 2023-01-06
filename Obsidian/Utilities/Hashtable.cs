@@ -1,10 +1,10 @@
 ﻿using LeagueToolkit.Helpers;
-using LeagueToolkit.Helpers.Cryptography;
 using LeagueToolkit.IO.WadFile;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using LeagueToolkit.Hashing;
 using LeagueUtilities = LeagueToolkit.Helpers.Utilities;
 
 namespace Obsidian.Utilities

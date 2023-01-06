@@ -25,8 +25,7 @@ namespace Obsidian.Utilities
             {
                 return new FileConversionOptions(new List<FileConversion>
                 {
-                    // TODO: remove entirely or fix code when a matching gltf function exists in LeagueToolkit
-                    // new FileConversion("glTF", ".glb", null, ConvertSimpleSkinToGltf),
+                    new FileConversion("glTF", ".glb", null, ConvertSimpleSkinToGltf),
                     new FileConversion("glTF (with Skeleton)", ".glb", ConstructSimpleSkinWithSkeletonParameter, ConvertSimpleSkinWithSkeletonToGltf)
                 });
             }
@@ -61,13 +60,9 @@ namespace Obsidian.Utilities
 
         private static void ConvertSimpleSkinToGltf(FileConversionParameter parameter)
         {
-            // TODO: this is not proper
             WadEntry simpleSkinWadEntry = parameter.Parameter;
             SkinnedMesh simpleSkin = SkinnedMesh.ReadFromSimpleSkin(simpleSkinWadEntry.GetDataHandle().GetDecompressedStream());
-            ModelRoot gltf = simpleSkin.ToGltf(new Skeleton(
-                new List<SkeletonJoint>(), new List<short>(new short[simpleSkin.VerticesView.VertexCount])),
-                new Dictionary<string, ReadOnlyMemory<byte>>(),
-                new List<(string, Animation)>());
+            ModelRoot gltf = simpleSkin.ToGltf(new Dictionary<string, ReadOnlyMemory<byte>>());
 
             gltf.SaveGLB(Path.ChangeExtension(parameter.OutputPath, "glb"));
         }
