@@ -1,5 +1,4 @@
-﻿using LeagueToolkit.IO.MapGeometry;
-using LeagueToolkit.IO.WadFile;
+﻿using LeagueToolkit.IO.WadFile;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Obsidian.MVVM.Commands;
 using Obsidian.MVVM.ViewModels;
@@ -27,6 +26,8 @@ using System.Collections.ObjectModel;
 using HelixToolkit.Wpf;
 using System.Text;
 using DiscordRPC;
+using LeagueToolkit.Core.Mesh;
+using LeagueToolkit.IO.MapGeometryFile;
 using LeagueToolkit.IO.StaticObjectFile;
 using LeagueToolkit.IO.SimpleSkinFile;
 using LeagueToolkit.IO.TEXFile;
@@ -290,7 +291,7 @@ namespace Obsidian
 
                         break;
                     case ".skn":
-                        this.SelectedWad.Preview.Preview(new SimpleSkin(selectedEntryStream));
+                        this.SelectedWad.Preview.Preview(SkinnedMesh.ReadFromSimpleSkin(selectedEntryStream));
                         break;
                     case ".scb":
                         this.SelectedWad.Preview.Preview(StaticObject.ReadSCB(selectedEntryStream));

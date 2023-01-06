@@ -1,6 +1,4 @@
-﻿using LeagueToolkit.IO.MapGeometry;
-using LeagueToolkit.IO.SimpleSkinFile;
-using LeagueToolkit.IO.StaticObjectFile;
+﻿using LeagueToolkit.IO.StaticObjectFile;
 using HelixToolkit.Wpf;
 using ICSharpCode.AvalonEdit.Document;
 using Newtonsoft.Json.Linq;
@@ -8,6 +6,8 @@ using Obsidian.Utilities;
 using System.IO;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using LeagueToolkit.Core.Mesh;
+using LeagueToolkit.IO.MapGeometryFile;
 using Pfim;
 
 namespace Obsidian.MVVM.ViewModels
@@ -71,7 +71,7 @@ namespace Obsidian.MVVM.ViewModels
             this._viewport = new ViewportViewModel();
         }
 
-        public void Preview(SimpleSkin skn)
+        public void Preview(SkinnedMesh skn)
         {
             this.Viewport.LoadMesh(skn);
 
