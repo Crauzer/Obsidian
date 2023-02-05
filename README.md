@@ -24,7 +24,7 @@ If you want to talk to the developers or other people in the community, join our
   <tbody>
     <tr>
       <td><img width=64 height=64 src="https://cdn.worldvectorlogo.com/logos/discord.svg"></td>
-      <td><h1>https://discord.gg/SUHpgaF</h1></td>
+      <td><h1>https://discord.gg/B36wgabjmD</h1></td>
     </tr>
   </tbody>
 </table> 
