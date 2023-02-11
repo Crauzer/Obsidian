@@ -1,14 +1,15 @@
-﻿using LeagueToolkit.IO.StaticObjectFile;
-using HelixToolkit.Wpf;
-using ICSharpCode.AvalonEdit.Document;
-using Newtonsoft.Json.Linq;
-using Obsidian.Utilities;
-using System.IO;
+﻿using System.IO;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using HelixToolkit.Wpf;
+using ICSharpCode.AvalonEdit.Document;
 using LeagueToolkit.Core.Mesh;
 using LeagueToolkit.IO.MapGeometryFile;
-using Pfim;
+using LeagueToolkit.IO.StaticObjectFile;
+using Newtonsoft.Json.Linq;
+using Obsidian.Utilities;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace Obsidian.MVVM.ViewModels
 {
@@ -85,9 +86,11 @@ namespace Obsidian.MVVM.ViewModels
             this.PreviewType = PreviewType.Viewport;
             this.ContentType = Localization.Get("PreviewDescriptionStaticObject");
         }
-        public void Preview(Dds ddsImage)
+        public void Preview(Image<Bgra32> image)
         {
-            this.Image = BitmapSource.Create(ddsImage.Width, ddsImage.Height, 96, 96, PixelFormats.Bgr32, null, ddsImage.Data, ddsImage.Stride);
+            byte[] pixelData = new byte[image.Width * image.Height * 4];
+            image.CopyPixelDataTo(pixelData);
+            this.Image = BitmapSource.Create(image.Width, image.Height, 96, 96, PixelFormats.Bgra32, null, pixelData, image.Width * 4);
 
             this.PreviewType = PreviewType.Image;
             this.ContentType = Localization.Get("PreviewDescriptionDDS");

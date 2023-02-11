@@ -1,12 +1,6 @@
-﻿using LeagueToolkit.IO.WadFile;
-using Microsoft.WindowsAPICodePack.Dialogs;
-using Obsidian.MVVM.Commands;
-using Obsidian.MVVM.ViewModels;
-using Obsidian.MVVM.ViewModels.WAD;
-using Obsidian.Utilities;
-using Octokit;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -15,24 +9,28 @@ using System.Media;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using PathIO = System.IO.Path;
-using Localization = Obsidian.Utilities.Localization;
-using MaterialDesignThemes.Wpf;
 using System.Windows.Controls;
-using System.Collections.ObjectModel;
+using System.Windows.Input;
+using System.Windows.Media.Imaging;
+using CommunityToolkit.HighPerformance;
+using CommunityToolkit.HighPerformance.Buffers;
 using HelixToolkit.Wpf;
-using System.Text;
-using DiscordRPC;
 using LeagueToolkit.Core.Mesh;
+using LeagueToolkit.Core.Renderer;
+using LeagueToolkit.Core.Wad;
 using LeagueToolkit.IO.MapGeometryFile;
 using LeagueToolkit.IO.StaticObjectFile;
-using LeagueToolkit.IO.SimpleSkinFile;
-using LeagueToolkit.IO.TEXFile;
-using Pfim;
-using Button = System.Windows.Controls.Button;
+using LeagueToolkit.Toolkit;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using Obsidian.MVVM.Commands;
+using Obsidian.MVVM.ViewModels.WAD;
+using Obsidian.Utilities;
+using Octokit;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using Image = SixLabors.ImageSharp.Image;
+using Localization = Obsidian.Utilities.Localization;
+using PathIO = System.IO.Path;
 
 namespace Obsidian
 {
@@ -268,28 +266,30 @@ namespace Obsidian
 
             try
             {
-                var selectedEntryDataHandle = selectedEntry.Entry.GetDataHandle();
-                using Stream selectedEntryStream = selectedEntryDataHandle.GetDecompressedStream();
+                MemoryOwner<byte> selectedEntryDataHandle = selectedEntry.ParentWad.LoadChunkDecompressed(selectedEntry.Entry);
+                using Stream selectedEntryStream = selectedEntryDataHandle.AsStream();
 
                 switch (extension)
                 {
-                    case ".dds" or ".tga" or ".tex":
+                    case ".dds" or ".tex":
                         try
                         {
-                            Stream imageStream = selectedEntryStream;
-                            if (extension == ".tex")
-                                new TEX(selectedEntryStream).ToDds(imageStream);
-                            imageStream.Position = 0;
-
-                            this.SelectedWad.Preview.Preview(Dds.Create(imageStream, new PfimConfig()));
+                            using Image<Bgra32> image = TextureExtensions.ToImage(Texture.Load(selectedEntryStream).Mips[0]).CloneAs<Bgra32>();
+                            this.SelectedWad.Preview.Preview(image);
                         }
-                        catch (FileFormatException)
+                        catch (Exception e)
                         {
                             this.SelectedWad.Preview.Clear();
-                            await DialogHelper.ShowMessageDialog(Localization.Get("PreviewErrorDDS"));
+                            await DialogHelper.ShowMessageDialog($"{Localization.Get("PreviewErrorGeneric")}: {e}");
                         }
 
                         break;
+                    case ".tga":
+                    {
+                        using Image<Bgra32> image = Image.Load<Bgra32>(selectedEntryStream);
+                        this.SelectedWad.Preview.Preview(image);
+                        break;
+                    }
                     case ".skn":
                         this.SelectedWad.Preview.Preview(SkinnedMesh.ReadFromSimpleSkin(selectedEntryStream));
                         break;
@@ -458,8 +458,8 @@ namespace Obsidian
             catch (Exception exception)
             {
                 await DialogHelper.ShowMessageDialog(Localization.Get("OpeningWadError") + '\n'
-                    + exception.Message + '\n'
-                    + exception.StackTrace);
+                                                                                         + exception.Message + '\n'
+                                                                                         + exception.StackTrace);
             }
         }
 
@@ -514,8 +514,8 @@ namespace Obsidian
             catch (Exception exception)
             {
                 await DialogHelper.ShowMessageDialog(Localization.Get("OpeningHashtablesError") + '\n'
-                    + exception.Message + '\n'
-                    + exception.StackTrace);
+                                                                                                + exception.Message + '\n'
+                                                                                                + exception.StackTrace);
             }
         }
         private void GenerateHashtable()
@@ -538,7 +538,7 @@ namespace Obsidian
 
                     foreach (string wadLocation in wadDialog.FileNames)
                     {
-                        using Wad wad = Wad.Mount(wadLocation, false);
+                        using var wad = new WadFile(wadLocation);
                         HashtableGenerator.Generate(wad).ToList().ForEach(x =>
                         {
                             if (!hashtable.ContainsKey(x.Key))
@@ -582,7 +582,6 @@ namespace Obsidian
                     AddWadToTabControl(wad);
                 }
             }
-
         }
 
         private void AddWadToTabControl(WadViewModel wad)

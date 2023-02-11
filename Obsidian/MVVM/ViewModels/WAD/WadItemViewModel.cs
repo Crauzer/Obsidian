@@ -1,10 +1,10 @@
-﻿using Obsidian.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
 using System.Windows.Data;
+using Obsidian.Utilities;
 using PathIO = System.IO.Path;
 
 namespace Obsidian.MVVM.ViewModels.WAD
@@ -91,7 +91,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
                     }
                 }
 
-                this._wadViewModel.NotifySelectionChanged();
+                this.wadViewModel.NotifySelectionChanged();
                 NotifyPropertyChanged();
                 NotifySelectionChanged();
             }
@@ -116,11 +116,11 @@ namespace Obsidian.MVVM.ViewModels.WAD
 
         private bool _isSelected;
         private string _filter;
-        protected WadViewModel _wadViewModel;
+        protected readonly WadViewModel wadViewModel;
 
         public WadItemViewModel(WadViewModel wadViewModel, WadItemViewModel parent, WadItemType type)
         {
-            this._wadViewModel = wadViewModel;
+            this.wadViewModel = wadViewModel;
             this.Parent = parent;
             this.Type = type;
         }

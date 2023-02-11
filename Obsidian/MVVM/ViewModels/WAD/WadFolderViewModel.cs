@@ -1,11 +1,9 @@
-﻿using LeagueToolkit.IO.WadFile;
-using Obsidian.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Text;
+using LeagueToolkit.Core.Wad;
+using Obsidian.Utilities;
 using PathIO = System.IO.Path;
 
 namespace Obsidian.MVVM.ViewModels.WAD
@@ -21,7 +19,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
             this.Name = PathIO.GetFileName(path);
         }
 
-        public void AddFile(string path, string entryPath, WadEntry entry)
+        public void AddFile(string path, string entryPath, WadChunk entry)
         {
             char pathSeparator = Pathing.GetPathSeparator(path);
             string[] folders = path.Split(pathSeparator);
@@ -30,7 +28,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
             //if not, then we pass it down the hierarchy
             if (folders.Length == 1)
             {
-                this.Items.Add(new WadFileViewModel(this._wadViewModel, this, entryPath, folders[0], entry));
+                this.Items.Add(new WadFileViewModel(this.wadViewModel, this, entryPath, folders[0], entry));
             }
             else
             {
@@ -43,7 +41,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
                 else
                 {
                     string newFolderPath = string.Format("{0}/{1}", this.Path, folders[0]);
-                    WadFolderViewModel newFolder = new WadFolderViewModel(this._wadViewModel, this, newFolderPath);
+                    WadFolderViewModel newFolder = new WadFolderViewModel(this.wadViewModel, this, newFolderPath);
 
                     newFolder.AddFile(path.Substring(path.IndexOf(pathSeparator) + 1), entryPath, entry);
                     this.Items.Add(newFolder);

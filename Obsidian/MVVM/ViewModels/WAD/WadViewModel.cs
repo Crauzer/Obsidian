@@ -1,15 +1,13 @@
-﻿using LeagueToolkit.IO.WadFile;
-using HelixToolkit.Wpf;
-using Obsidian.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Windows.Data;
+using LeagueToolkit.Core.Wad;
+using Obsidian.Utilities;
 
 namespace Obsidian.MVVM.ViewModels.WAD
 {
@@ -78,17 +76,9 @@ namespace Obsidian.MVVM.ViewModels.WAD
         }
         public ObservableCollection<WadItemViewModel> Items { get; set; } = new ObservableCollection<WadItemViewModel>();
 
-        public Wad WAD
+        public WadFile WAD
         {
-            get
-            {
-                if (this._wad == null)
-                {
-                    this._wad = Wad.Mount(this.WADLocation, false);
-                }
-
-                return this._wad;
-            }
+            get => this._wad ??= new WadFile(this.WADLocation);
             set => this._wad = value;
         }
         public string WADLocation
@@ -114,7 +104,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
         public PreviewViewModel Preview { get; private set; }
 
         private string _filter;
-        private Wad _wad;
+        private WadFile _wad;
         private string _wadLocation;
         private string _wadName;
 
@@ -130,7 +120,7 @@ namespace Obsidian.MVVM.ViewModels.WAD
 
         public void LoadWad(string wadLocation)
         {
-            this.WAD = Wad.Mount(wadLocation, false);
+            this.WAD = new WadFile(wadLocation);
             this.WADLocation = wadLocation;
 
             if(Config.Get<bool>("GenerateHashesFromBIN"))
@@ -142,9 +132,9 @@ namespace Obsidian.MVVM.ViewModels.WAD
         }
         private void GenerateWadItems()
         {
-            foreach (WadEntry entry in this.WAD.Entries.Values)
+            foreach (WadChunk entry in this.WAD.Chunks.Values)
             {
-                string path = Hashtable.Get(entry);
+                string path = Hashtable.Get(entry, this.WAD);
                 char pathSeparator = Pathing.GetPathSeparator(path);
                 string[] folders = path.Split(pathSeparator);
 

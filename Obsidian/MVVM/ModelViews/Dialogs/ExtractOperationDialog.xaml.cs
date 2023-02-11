@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
+using CommunityToolkit.HighPerformance.Buffers;
 using PathIO = System.IO.Path;
 
 namespace Obsidian.MVVM.ModelViews.Dialogs
@@ -49,16 +50,16 @@ namespace Obsidian.MVVM.ModelViews.Dialogs
         private double _progress;
         private double _jobCount;
 
-        private string _extractLocation;
-        private IEnumerable<WadFileViewModel> _entries;
+        private readonly string _extractLocation;
+        private readonly WadFileViewModel[] _entries;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public ExtractOperationDialog(string extractLocation, IEnumerable<WadFileViewModel> entries)
         {
-            this.JobCount = entries.Count();
+            this._entries = entries.ToArray();
+            this.JobCount = this._entries.Length;
             this._extractLocation = extractLocation;
-            this._entries = entries;
 
             InitializeComponent();
 
@@ -100,26 +101,26 @@ namespace Obsidian.MVVM.ModelViews.Dialogs
             //Write the Packed Mapping file
             if (packedMappingFile.Count != 0)
             {
-                File.WriteAllLines(string.Format(@"{0}\OBSIDIAN_PACKED_MAPPING.txt", this._extractLocation), packedMappingFile);
+                File.WriteAllLines(Path.Combine(this._extractLocation, "OBSIDIAN_PACKED_MAPPING.txt"), packedMappingFile);
             }
 
             //Write the entries
             foreach (WadFileViewModel entry in this._entries)
             {
-                string path = string.Format(@"{0}\{1}", this._extractLocation, entry.Path);
-                if (packedPaths.Contains(entry.Entry.XXHash))
+                string path = Path.Combine(this._extractLocation, entry.Path);
+                if (packedPaths.Contains(entry.Entry.PathHash))
                 {
-                    path = string.Format(@"{0}\{1}", this._extractLocation, entry.Entry.XXHash.ToString("X16") + ".bin");
+                    path = Path.Combine(this._extractLocation, $"{entry.Entry.PathHash:X16}.bin");
                 }
 
                 this.Message = entry.Path;
 
-                using Stream entryStream = entry.Entry.GetDataHandle().GetDecompressedStream();
+                using MemoryOwner<byte> entryData = entry.ParentWad.LoadChunkDecompressed(entry.Entry);
                 using FileStream entryFileStream = File.Create(path);
 
-                entryStream.CopyTo(entryFileStream);
+                entryFileStream.Write(entryData.Span);
 
-                progress += 1;
+                progress++;
                 (e.Argument as BackgroundWorker).ReportProgress((int)progress);
             }
 
@@ -132,9 +133,9 @@ namespace Obsidian.MVVM.ModelViews.Dialogs
                     //Check if the entry is a packed bin file
                     if (Regex.IsMatch(entry.Path, Config.Get<string>("PackedBinRegex"), RegexOptions.IgnoreCase))
                     {
-                        string line = string.Format("{0} = {1}", entry.Entry.XXHash.ToString("X16") + ".bin", entry.Path);
+                        string line = $"{entry.Entry.PathHash:X16}.bin = {entry.Path}";
                         packedMappingFile.Add(line);
-                        packedPaths.Add(entry.Entry.XXHash);
+                        packedPaths.Add(entry.Entry.PathHash);
                     }
                 }
             }

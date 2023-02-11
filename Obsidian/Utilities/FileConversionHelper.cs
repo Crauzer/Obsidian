@@ -1,19 +1,22 @@
-﻿using LeagueToolkit.Helpers;
-using LeagueToolkit.IO.OBJ;
-using LeagueToolkit.IO.SkeletonFile;
-using LeagueToolkit.IO.StaticObjectFile;
-using LeagueToolkit.IO.WadFile;
-using Obsidian.MVVM.ViewModels.WAD;
-using SharpGLTF.Schema2;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using CommunityToolkit.HighPerformance;
+using LeagueToolkit.Core.Animation;
 using LeagueToolkit.Core.Mesh;
+using LeagueToolkit.Core.Meta;
+using LeagueToolkit.Core.Wad;
+using LeagueToolkit.Helpers;
 using LeagueToolkit.IO.MapGeometryFile;
+using LeagueToolkit.IO.OBJ;
 using LeagueToolkit.IO.SimpleSkinFile;
-using Animation = LeagueToolkit.IO.AnimationFile.Animation;
+using LeagueToolkit.IO.StaticObjectFile;
+using LeagueToolkit.Meta;
+using Obsidian.MVVM.ViewModels.WAD;
+using SharpGLTF.Schema2;
 
 namespace Obsidian.Utilities
 {
@@ -49,7 +52,7 @@ namespace Obsidian.Utilities
             {
                 return new FileConversionOptions(new List<FileConversion>()
                 {
-                    new FileConversion("glTF", ".glb", null, ConvertMapGeometryToGltf)
+                    new FileConversion("glTF", ".glb", MapGeoMaterialBinParameter, ConvertMapGeometryToGltf)
                 });
             }
             else
@@ -60,37 +63,38 @@ namespace Obsidian.Utilities
 
         private static void ConvertSimpleSkinToGltf(FileConversionParameter parameter)
         {
-            WadEntry simpleSkinWadEntry = parameter.Parameter;
-            SkinnedMesh simpleSkin = SkinnedMesh.ReadFromSimpleSkin(simpleSkinWadEntry.GetDataHandle().GetDecompressedStream());
-            ModelRoot gltf = simpleSkin.ToGltf(new Dictionary<string, ReadOnlyMemory<byte>>());
+            WadChunk simpleSkinWadChunk = parameter.WadEntry;
+            SkinnedMesh simpleSkin = SkinnedMesh.ReadFromSimpleSkin(parameter.Wad.OpenChunk(simpleSkinWadChunk), false);
+            ModelRoot gltf = simpleSkin.ToGltf(Array.Empty<(string, Stream)>());
 
             gltf.SaveGLB(Path.ChangeExtension(parameter.OutputPath, "glb"));
         }
         private static void ConvertSimpleSkinWithSkeletonToGltf(FileConversionParameter parameter)
         {
-            WadEntry simpleSkinWadEntry = parameter.Parameter;
-            WadEntry skeletonWadEntry = parameter.AdditionalParameters.FirstOrDefault(x => x.Item1 == FileConversionAdditionalParameterType.Skeleton).Item2;
+            WadChunk simpleSkinWadChunk = parameter.WadEntry;
+            WadChunk skeletonWadChunk = parameter.AdditionalParameters.FirstOrDefault(x => x.Item1 == FileConversionAdditionalParameterType.Skeleton).Item2;
 
-            SkinnedMesh simpleSkin = SkinnedMesh.ReadFromSimpleSkin(simpleSkinWadEntry.GetDataHandle().GetDecompressedStream());
-            Skeleton skeleton = new Skeleton(skeletonWadEntry.GetDataHandle().GetDecompressedStream());
+            SkinnedMesh simpleSkin = SkinnedMesh.ReadFromSimpleSkin(parameter.Wad.OpenChunk(simpleSkinWadChunk), false);
+            using Stream skeletonStream = parameter.Wad.OpenChunk(skeletonWadChunk);
+            RigResource skeleton = new RigResource(skeletonStream);
 
-            ModelRoot gltf = simpleSkin.ToGltf(skeleton, new Dictionary<string, ReadOnlyMemory<byte>>(), new List<(string, Animation)>());
+            ModelRoot gltf = simpleSkin.ToGltf(skeleton, Array.Empty<(string Material, Stream Texture)>(), Array.Empty<(string, IAnimationAsset)>());
 
             gltf.SaveGLB(Path.ChangeExtension(parameter.OutputPath, "glb"));
         }
 
         private static void ConvertScbToGltf(FileConversionParameter parameter)
         {
-            WadEntry staticObjectWadEntry = parameter.Parameter;
-            StaticObject staticObject = StaticObject.ReadSCB(staticObjectWadEntry.GetDataHandle().GetDecompressedStream());
+            WadChunk staticObjectWadChunk = parameter.WadEntry;
+            StaticObject staticObject = StaticObject.ReadSCB(parameter.Wad.OpenChunk(staticObjectWadChunk)); // leaveOpen: false
             ModelRoot gltf = staticObject.ToGltf();
 
             gltf.SaveGLB(Path.ChangeExtension(parameter.OutputPath, "glb"));
         }
         private static void ConvertScbToObj(FileConversionParameter parameter)
         {
-            WadEntry staticObjectWadEntry = parameter.Parameter;
-            StaticObject staticObject = StaticObject.ReadSCB(staticObjectWadEntry.GetDataHandle().GetDecompressedStream());
+            WadChunk staticObjectWadChunk = parameter.WadEntry;
+            StaticObject staticObject = StaticObject.ReadSCB(parameter.Wad.OpenChunk(staticObjectWadChunk)); // leaveOpen: false
             var objs = staticObject.ToObj();
 
             string baseName = Path.GetFileNameWithoutExtension(parameter.OutputPath);
@@ -103,16 +107,16 @@ namespace Obsidian.Utilities
 
         private static void ConvertScoToGltf(FileConversionParameter parameter)
         {
-            WadEntry staticObjectWadEntry = parameter.Parameter;
-            StaticObject staticObject = StaticObject.ReadSCO(staticObjectWadEntry.GetDataHandle().GetDecompressedStream());
+            WadChunk staticObjectWadChunk = parameter.WadEntry;
+            StaticObject staticObject = StaticObject.ReadSCO(parameter.Wad.OpenChunk(staticObjectWadChunk)); // leaveOpen: false
             ModelRoot gltf = staticObject.ToGltf();
 
             gltf.SaveGLB(Path.ChangeExtension(parameter.OutputPath, "glb"));
         }
         private static void ConvertScoToObj(FileConversionParameter parameter)
         {
-            WadEntry staticObjectWadEntry = parameter.Parameter;
-            StaticObject staticObject = StaticObject.ReadSCO(staticObjectWadEntry.GetDataHandle().GetDecompressedStream());
+            WadChunk staticObjectWadChunk = parameter.WadEntry;
+            StaticObject staticObject = StaticObject.ReadSCO(parameter.Wad.OpenChunk(staticObjectWadChunk)); // leaveOpen: false
             var objs = staticObject.ToObj();
 
             string baseName = Path.GetFileNameWithoutExtension(parameter.OutputPath);
@@ -125,9 +129,14 @@ namespace Obsidian.Utilities
 
         private static void ConvertMapGeometryToGltf(FileConversionParameter parameter)
         {
-            WadEntry mapGeometryWadEntry = parameter.Parameter;
-            MapGeometry mapGeometry = new MapGeometry(mapGeometryWadEntry.GetDataHandle().GetDecompressedStream());
-            ModelRoot gltf = mapGeometry.ToGLTF();
+            WadChunk mapGeometryWadChunk = parameter.WadEntry;
+            WadChunk materialBinWadChunk = parameter.AdditionalParameters.First(x => x.Item1 == FileConversionAdditionalParameterType.MaterialBin).Item2;
+            MapGeometry mapGeometry = new MapGeometry(parameter.Wad.LoadChunkDecompressed(mapGeometryWadChunk).AsStream()); // leaveOpen: false
+            using Stream materialBinStream = parameter.Wad.LoadChunkDecompressed(materialBinWadChunk).AsStream();
+            ModelRoot gltf = mapGeometry.ToGltf(new BinTree(materialBinStream), new MapGeometryGltfConversionContext
+            {
+                MetaEnvironment = MetaEnvironment.Create(Assembly.Load("LeagueToolkit.Meta.Classes").GetExportedTypes().Where(x => x.IsClass))
+            });
 
             gltf.SaveGLB(Path.ChangeExtension(parameter.OutputPath, "glb"));
         }
@@ -136,18 +145,31 @@ namespace Obsidian.Utilities
         {
             // We need to find a skeleton file with the same filename as the Simple Skin
             string skeletonPath = Path.ChangeExtension(parameter.Path, "skl");
-            WadEntry skeletonWadEntry = wad.GetAllFiles().FirstOrDefault(x => x.Path == skeletonPath).Entry;
-            if (skeletonWadEntry is null)
+            WadChunk? skeletonWadChunk = wad.GetAllFiles().FirstOrDefault(x => x.Path == skeletonPath)?.Entry;
+            if (skeletonWadChunk is null)
             {
                 throw new Exception(Localization.Get("ConversionSimpleSkinWithSkeletonSkeletonNotFound"));
             }
             else
             {
-                return new FileConversionParameter(outputPath, parameter.Entry, new List<(FileConversionAdditionalParameterType, WadEntry)>()
+                return new FileConversionParameter(outputPath, parameter, new (FileConversionAdditionalParameterType, WadChunk)[]
                 {
-                    (FileConversionAdditionalParameterType.Skeleton, skeletonWadEntry)
+                    (FileConversionAdditionalParameterType.Skeleton, skeletonWadChunk.Value)
                 });
             }
+        }
+
+        private static FileConversionParameter MapGeoMaterialBinParameter(string outputPath, WadFileViewModel parameter, WadViewModel wad)
+        {
+            string materialBinPath = Path.ChangeExtension(parameter.Path, "materials.bin");
+            WadChunk? materialBinWadChunk = wad.GetAllFiles().FirstOrDefault(x => x.Path == materialBinPath)?.Entry;
+
+            if (materialBinWadChunk is null) throw new Exception("Failed to find corresponding materials.bin file.");
+
+            return new FileConversionParameter(outputPath, parameter, new (FileConversionAdditionalParameterType, WadChunk)[]
+            {
+                (FileConversionAdditionalParameterType.MaterialBin, materialBinWadChunk.Value)
+            });
         }
     }
 
@@ -200,7 +222,7 @@ namespace Obsidian.Utilities
             }
             else
             {
-                return new FileConversionParameter(outputPath, parameter.Entry);
+                return new FileConversionParameter(outputPath, parameter);
             }
         }
 
@@ -213,27 +235,30 @@ namespace Obsidian.Utilities
     public class FileConversionParameter
     {
         public string OutputPath { get; }
-        public WadEntry Parameter { get; }
-        public List<(FileConversionAdditionalParameterType, WadEntry)> AdditionalParameters { get; set; }
+        public WadFile Wad { get; }
+        public WadChunk WadEntry { get; }
+        public IReadOnlyList<(FileConversionAdditionalParameterType, WadChunk)> AdditionalParameters { get; }
 
-        public FileConversionParameter(string outputPath, WadEntry parameter)
-            : this(outputPath, parameter, new List<(FileConversionAdditionalParameterType, WadEntry)>())
+        public FileConversionParameter(string outputPath, WadFileViewModel parameter)
+            : this(outputPath, parameter, Array.Empty<(FileConversionAdditionalParameterType, WadChunk)>())
         {
 
         }
         public FileConversionParameter(
             string outputPath,
-            WadEntry parameter,
-            List<(FileConversionAdditionalParameterType, WadEntry)> additionalParameters)
+            WadFileViewModel parameter,
+            IReadOnlyList<(FileConversionAdditionalParameterType, WadChunk)> additionalParameters)
         {
             this.OutputPath = outputPath;
-            this.Parameter = parameter;
+            this.Wad = parameter.ParentWad;
+            this.WadEntry = parameter.Entry;
             this.AdditionalParameters = additionalParameters;
         }
 
     }
     public enum FileConversionAdditionalParameterType
     {
-        Skeleton
+        Skeleton,
+        MaterialBin
     }
 }

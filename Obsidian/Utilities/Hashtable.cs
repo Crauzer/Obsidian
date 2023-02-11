@@ -1,10 +1,9 @@
-﻿using LeagueToolkit.Helpers;
-using LeagueToolkit.IO.WadFile;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text;
-using LeagueToolkit.Hashing;
+using LeagueToolkit.Core.Wad;
+using XXHash3NET;
 using LeagueUtilities = LeagueToolkit.Helpers.Utilities;
 
 namespace Obsidian.Utilities
@@ -27,18 +26,20 @@ namespace Obsidian.Utilities
                 return key.ToString("x16");
             }
         }
-        public static string Get(WadEntry entry)
+        public static string Get(WadChunk entry, WadFile wad)
         {
-            if (_hashtable.ContainsKey(entry.XXHash))
+            if (_hashtable.ContainsKey(entry.PathHash))
             {
-                return _hashtable[entry.XXHash];
+                return _hashtable[entry.PathHash];
             }
             else
             {
-                Stream decompressedStream = entry.GetDataHandle().GetDecompressedStream();
-                string extension = LeagueUtilities.GetExtension(LeagueUtilities.GetExtensionType(decompressedStream));
+                using Stream decompressedStream = wad.OpenChunk(entry);
+                Span<byte> magicBytes = stackalloc byte[8];
+                decompressedStream.Read(magicBytes);
+                string extension = LeagueUtilities.GetExtension(LeagueUtilities.GetExtensionType(magicBytes));
 
-                return string.IsNullOrEmpty(extension) ? entry.XXHash.ToString("x16") : $"{entry.XXHash:x16}.{extension}";
+                return string.IsNullOrEmpty(extension) ? entry.PathHash.ToString("x16") : $"{entry.PathHash:x16}.{extension}";
             }
         }
 
@@ -72,7 +73,7 @@ namespace Obsidian.Utilities
 
                 if(lineSplit.Length == 1)
                 {
-                    hash = XXHash.XXH64(Encoding.ASCII.GetBytes(lineSplit[0].ToLower()));
+                    hash = XXHash64.Compute(lineSplit[0].ToLower());
                     name = lineSplit[0];
                 }
                 else
@@ -103,7 +104,7 @@ namespace Obsidian.Utilities
             {
                 foreach (KeyValuePair<ulong, string> hashPair in hashtable)
                 {
-                    sw.WriteLine(string.Format("{0} {1}", hashPair.Key.ToString("X16"), hashPair.Value));
+                    sw.WriteLine($"{hashPair.Key:X16} {hashPair.Value}");
                 }
             }
         }

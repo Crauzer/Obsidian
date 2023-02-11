@@ -1,15 +1,13 @@
-﻿using LeagueToolkit.IO.WadFile;
-using Obsidian.MVVM.ViewModels.WAD;
-using Obsidian.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Windows.Controls;
-using LeagueToolkit.Hashing;
+using LeagueToolkit.Core.Wad;
+using Obsidian.MVVM.ViewModels.WAD;
+using Obsidian.Utilities;
 using PathIO = System.IO.Path;
 
 namespace Obsidian.MVVM.ModelViews.Dialogs
@@ -67,53 +65,60 @@ namespace Obsidian.MVVM.ModelViews.Dialogs
 
         private void Create(object sender, DoWorkEventArgs e)
         {
-            WadBuilder wadBuilder = new WadBuilder();
-            var newPathHashes = new Dictionary<ulong, string>();
+            IEnumerable<string> files = Directory.EnumerateFiles(this._folderLocation, "*", SearchOption.AllDirectories)
+                .Where(path => PathIO.GetFileName(path) != "OBSIDIAN_PACKED_MAPPING.txt");
 
-            foreach (string fileLocation in Directory.EnumerateFiles(this._folderLocation, "*", SearchOption.AllDirectories))
-            {
-                //Ignore packed mapping 
-                if (PathIO.GetFileName(fileLocation) == "OBSIDIAN_PACKED_MAPPING.txt")
-                {
-                    continue;
-                }
+            WadBuilder.BakeFiles(files, this._folderLocation, this._wadLocation, new WadBakeSettings());
 
-                char separator = Pathing.GetPathSeparator(fileLocation);
-                string entryPath = fileLocation.Replace(this._folderLocation + separator, "").Replace(separator, '/');
-                string fileNameWithoutExtension = PathIO.GetFileNameWithoutExtension(fileLocation);
-                this.Message = entryPath;
+            // TODO: this does not fully replicate the previous logic, most notably files previously extracted with unknown real path
+            // (aka extracted as [0-9A-F]{16}) can not be re-packed correctly, as their file name will be hashed again
 
-                WadEntryBuilder entryBuilder = new WadEntryBuilder(WadEntryChecksumType.XXHash3);
+            // WadBuilder wadBuilder = new WadBuilder();
+            // var newPathHashes = new Dictionary<ulong, string>();
+            //
+            // foreach (string fileLocation in Directory.EnumerateFiles(this._folderLocation, "*", SearchOption.AllDirectories))
+            // {
+            //     //Ignore packed mapping
+            //     if (PathIO.GetFileName(fileLocation) == "OBSIDIAN_PACKED_MAPPING.txt")
+            //     {
+            //         continue;
+            //     }
+            //
+            //     char separator = Pathing.GetPathSeparator(fileLocation);
+            //     string entryPath = fileLocation.Replace(this._folderLocation + separator, "").Replace(separator, '/');
+            //     string fileNameWithoutExtension = PathIO.GetFileNameWithoutExtension(fileLocation);
+            //     this.Message = entryPath;
+            //
+            //     WadEntryBuilder entryBuilder = new WadEntryBuilder(WadEntryChecksumType.XXHash3);
+            //
+            //     bool hasUnknownPath = fileNameWithoutExtension.Length == 16 && fileNameWithoutExtension.All(c => "ABCDEF0123456789".Contains(c));
+            //     if (hasUnknownPath)
+            //     {
+            //         ulong hash = Convert.ToUInt64(fileNameWithoutExtension, 16);
+            //
+            //         entryBuilder
+            //             .WithPathXXHash(hash)
+            //             .WithFileDataStream(fileLocation);
+            //     }
+            //     else
+            //     {
+            //         entryBuilder
+            //             .WithPath(entryPath)
+            //             .WithFileDataStream(fileLocation);
+            //
+            //         // Add the entry path in case the user is adding new files
+            //         ulong hash = XXHash64.Compute(entryPath.ToLower());
+            //         if(!newPathHashes.ContainsKey(hash))
+            //         {
+            //             newPathHashes.Add(hash, entryPath.ToLower());
+            //         }
+            //     }
+            //
+            //     wadBuilder.WithEntry(entryBuilder);
+            // }
+            // Hashtable.Add(newPathHashes);
+            // wadBuilder.Build(this._wadLocation);
 
-                bool hasUnknownPath = fileNameWithoutExtension.Length == 16 && fileNameWithoutExtension.All(c => "ABCDEF0123456789".Contains(c));
-                if (hasUnknownPath)
-                {
-                    ulong hash = Convert.ToUInt64(fileNameWithoutExtension, 16);
-
-                    entryBuilder
-                        .WithPathXXHash(hash)
-                        .WithFileDataStream(fileLocation);
-                }
-                else
-                {
-                    entryBuilder
-                        .WithPath(entryPath)
-                        .WithFileDataStream(fileLocation);
-
-                    // Add the entry path in case the user is adding new files
-                    ulong hash = XXHash.XXH64(Encoding.UTF8.GetBytes(entryPath.ToLower()));
-                    if(!newPathHashes.ContainsKey(hash))
-                    {
-                        newPathHashes.Add(hash, entryPath.ToLower());
-                    }
-                }
-
-                wadBuilder.WithEntry(entryBuilder);
-            }
-
-            Hashtable.Add(newPathHashes);
-
-            wadBuilder.Build(this._wadLocation);
             this.WadViewModel.LoadWad(this._wadLocation);
         }
 
