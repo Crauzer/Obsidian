@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <PropertyGroup>
+      <OutputType>WinExe</OutputType>
+      <TargetFramework>net6.0</TargetFramework>
+      <ApplicationIcon>favicon.ico</ApplicationIcon>
+      <ImplicitUsings>enable</ImplicitUsings>
+      <Version>5.0.0-beta.1</Version>
+      <Platforms>x64</Platforms>
+      <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FluentValidation" Version="11.5.0" />
+      <PackageReference Include="LeagueToolkit" Version="4.0.0-beta.14" />
+      <PackageReference Include="LeagueToolkit.IO.Extensions" Version="4.0.0-beta.14" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
+      <PackageReference Include="MudBlazor" Version="6.1.9" />
+      <PackageReference Include="NativeFileDialogSharp" Version="0.5.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Photino.Blazor\Photino.Blazor.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Update="wwwroot\**">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="favicon.ico">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+</Project>

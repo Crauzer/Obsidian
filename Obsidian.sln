@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29613.14
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33403.182
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Obsidian", "Obsidian\Obsidian.csproj", "{D074D570-88A1-445D-9060-662CA6A5B5D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Photino.Blazor", "Photino.Blazor\Photino.Blazor.csproj", "{5B517B5D-E47D-4E96-BF97-7DA763487FF7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Obsidian", "Obsidian\Obsidian.csproj", "{22CFFFD0-55B8-4E71-BB81-FCCC59D0F3AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,12 +14,18 @@ Global
 		ReleasePortable|x64 = ReleasePortable|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D074D570-88A1-445D-9060-662CA6A5B5D0}.Debug|x64.ActiveCfg = Debug|x64
-		{D074D570-88A1-445D-9060-662CA6A5B5D0}.Debug|x64.Build.0 = Debug|x64
-		{D074D570-88A1-445D-9060-662CA6A5B5D0}.Release|x64.ActiveCfg = Release|x64
-		{D074D570-88A1-445D-9060-662CA6A5B5D0}.Release|x64.Build.0 = Release|x64
-		{D074D570-88A1-445D-9060-662CA6A5B5D0}.ReleasePortable|x64.ActiveCfg = ReleasePortable|x64
-		{D074D570-88A1-445D-9060-662CA6A5B5D0}.ReleasePortable|x64.Build.0 = ReleasePortable|x64
+		{5B517B5D-E47D-4E96-BF97-7DA763487FF7}.Debug|x64.ActiveCfg = Debug|x64
+		{5B517B5D-E47D-4E96-BF97-7DA763487FF7}.Debug|x64.Build.0 = Debug|x64
+		{5B517B5D-E47D-4E96-BF97-7DA763487FF7}.Release|x64.ActiveCfg = Release|x64
+		{5B517B5D-E47D-4E96-BF97-7DA763487FF7}.Release|x64.Build.0 = Release|x64
+		{5B517B5D-E47D-4E96-BF97-7DA763487FF7}.ReleasePortable|x64.ActiveCfg = Release|x64
+		{5B517B5D-E47D-4E96-BF97-7DA763487FF7}.ReleasePortable|x64.Build.0 = Release|x64
+		{22CFFFD0-55B8-4E71-BB81-FCCC59D0F3AA}.Debug|x64.ActiveCfg = Debug|x64
+		{22CFFFD0-55B8-4E71-BB81-FCCC59D0F3AA}.Debug|x64.Build.0 = Debug|x64
+		{22CFFFD0-55B8-4E71-BB81-FCCC59D0F3AA}.Release|x64.ActiveCfg = Release|x64
+		{22CFFFD0-55B8-4E71-BB81-FCCC59D0F3AA}.Release|x64.Build.0 = Release|x64
+		{22CFFFD0-55B8-4E71-BB81-FCCC59D0F3AA}.ReleasePortable|x64.ActiveCfg = Release|x64
+		{22CFFFD0-55B8-4E71-BB81-FCCC59D0F3AA}.ReleasePortable|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
