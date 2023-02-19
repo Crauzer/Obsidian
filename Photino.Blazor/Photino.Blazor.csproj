@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<Authors>TryPhotino</Authors>
+		<Company>TryPhotino</Company>
+		<Description>.NET 6 app that opens native OS windows hosting Blazor UI on Windows, Mac, and Linux</Description>
+		<GenerateNuspecDependsOn>$(GenerateNuspecDependsOn);SetPackageVersion</GenerateNuspecDependsOn>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<PackageDescription>.NET 6 app that opens native OS windows hosting Blazor UI on Windows, Mac, and Linux</PackageDescription>
+		<PackageId>Photino.Blazor</PackageId>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/tryphotino/photino.Blazor</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/tryphotino/photino.Blazor</RepositoryUrl>
+		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+		<Title>Photino.blazor</Title>
+		<PackageIcon>photino.png</PackageIcon>
+		<Platforms>x64</Platforms>
+	</PropertyGroup>
+
+	<Target Name="SetPackageVersion" DependsOnTargets="Build">
+		<PropertyGroup>
+			<PackageVersion>$(Version)</PackageVersion>
+		</PropertyGroup>
+	</Target>
+
+	<ItemGroup>
+		<None Remove="Photino.Blazor.nuspec" />
+	</ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\photino.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebView" Version="6.0.13" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
+	</ItemGroup>
+	
+	<ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebView" Version="7.0.2" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
+	</ItemGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="Photino.NET" Version="2.3.2" />
+	</ItemGroup>
+
+</Project>
