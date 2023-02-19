@@ -3,8 +3,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using HelixToolkit.Wpf;
 using ICSharpCode.AvalonEdit.Document;
+using LeagueToolkit.Core.Environment;
 using LeagueToolkit.Core.Mesh;
-using LeagueToolkit.IO.MapGeometryFile;
 using LeagueToolkit.IO.StaticObjectFile;
 using Newtonsoft.Json.Linq;
 using Obsidian.Utilities;
@@ -95,7 +95,7 @@ namespace Obsidian.MVVM.ViewModels
             this.PreviewType = PreviewType.Image;
             this.ContentType = Localization.Get("PreviewDescriptionDDS");
         }
-        public void Preview(MapGeometry mgeo)
+        public void Preview(EnvironmentAsset mgeo)
         {
             this.Viewport.LoadMap(mgeo);
 

@@ -1,15 +1,13 @@
-﻿using LeagueToolkit.Helpers.Structures;
-using HelixToolkit.Wpf;
+﻿using HelixToolkit.Wpf;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
-using System;
 using LeagueToolkit.IO.StaticObjectFile;
 using System.Numerics;
+using LeagueToolkit.Core.Environment;
 using LeagueToolkit.Core.Memory;
 using LeagueToolkit.Core.Mesh;
-using LeagueToolkit.IO.MapGeometryFile;
 
 namespace Obsidian.MVVM.ViewModels
 {
@@ -82,9 +80,11 @@ namespace Obsidian.MVVM.ViewModels
                 Int32Collection indices = new Int32Collection(meshRange.IndexCount);
                 Point3DCollection vertices = new Point3DCollection(meshRange.VertexCount);
                 Vector3DCollection normals = new Vector3DCollection(meshRange.VertexCount);
-                for (int i = 0; i < meshRange.IndexCount; i++)
+
+                IndexArray indicesView = skn.Indices.Slice(meshRange.StartIndex, meshRange.IndexCount);
+                foreach (int index in indicesView)
                 {
-                    indices.Add(skn.IndicesView.Span[meshRange.StartIndex + i]);
+                    indices.Add(index);
                 }
 
                 var vertexPositions = skn.VerticesView.GetAccessor(ElementName.Position).AsVector3Array();
@@ -145,20 +145,20 @@ namespace Obsidian.MVVM.ViewModels
             SetGeometryModels(geometryModels);
             SetCamera(staticObject.GetBoundingBox().GetCentralPoint());
         }
-        public void LoadMap(MapGeometry mgeo)
+        public void LoadMap(EnvironmentAsset mgeo)
         {
             this.Content.Clear();
 
             List<GeometryModel3D> geometryModels = new List<GeometryModel3D>();
 
-            foreach (MapGeometryModel mgeoObject in mgeo.Meshes)
+            foreach (EnvironmentAssetMesh mgeoObject in mgeo.Meshes)
             {
                 MeshGeometry3D geometry = new MeshGeometry3D();
                 DiffuseMaterial material = new DiffuseMaterial(Brushes.Gray);
                 Point3DCollection vertices = new Point3DCollection();
                 Int32Collection indices = new Int32Collection();
 
-                foreach(ushort index in mgeoObject.Indices.Span)
+                foreach(ushort index in mgeoObject.Indices)
                 {
                     indices.Add(index);
                 }

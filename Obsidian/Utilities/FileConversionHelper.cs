@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using CommunityToolkit.HighPerformance;
 using LeagueToolkit.Core.Animation;
+using LeagueToolkit.Core.Environment;
 using LeagueToolkit.Core.Mesh;
 using LeagueToolkit.Core.Meta;
 using LeagueToolkit.Core.Wad;
@@ -131,7 +132,8 @@ namespace Obsidian.Utilities
         {
             WadChunk mapGeometryWadChunk = parameter.WadEntry;
             WadChunk materialBinWadChunk = parameter.AdditionalParameters.First(x => x.Item1 == FileConversionAdditionalParameterType.MaterialBin).Item2;
-            MapGeometry mapGeometry = new MapGeometry(parameter.Wad.LoadChunkDecompressed(mapGeometryWadChunk).AsStream()); // leaveOpen: false
+            using Stream mapGeometryStream = parameter.Wad.LoadChunkDecompressed(mapGeometryWadChunk).AsStream();
+            EnvironmentAsset mapGeometry = new EnvironmentAsset(mapGeometryStream);
             using Stream materialBinStream = parameter.Wad.LoadChunkDecompressed(materialBinWadChunk).AsStream();
             ModelRoot gltf = mapGeometry.ToGltf(new BinTree(materialBinStream), new MapGeometryGltfConversionContext
             {

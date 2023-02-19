@@ -15,10 +15,10 @@ using System.Windows.Media.Imaging;
 using CommunityToolkit.HighPerformance;
 using CommunityToolkit.HighPerformance.Buffers;
 using HelixToolkit.Wpf;
+using LeagueToolkit.Core.Environment;
 using LeagueToolkit.Core.Mesh;
 using LeagueToolkit.Core.Renderer;
 using LeagueToolkit.Core.Wad;
-using LeagueToolkit.IO.MapGeometryFile;
 using LeagueToolkit.IO.StaticObjectFile;
 using LeagueToolkit.Toolkit;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -300,7 +300,7 @@ namespace Obsidian
                         this.SelectedWad.Preview.Preview(StaticObject.ReadSCO(selectedEntryStream));
                         break;
                     case ".mapgeo":
-                        this.SelectedWad.Preview.Preview(new MapGeometry(selectedEntryStream));
+                        this.SelectedWad.Preview.Preview(new EnvironmentAsset(selectedEntryStream));
                         break;
                     case ".png":
                     case ".jpg":
