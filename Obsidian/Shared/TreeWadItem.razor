@@ -1,0 +1,34 @@
+﻿@using Obsidian.Data.Wad;
+<MudStack Row Spacing="2" AlignItems="AlignItems.Center">
+    <MudTreeViewItemToggleButton @bind-Expanded="@Expanded" Visible="@(Items is not null && Items.Count is not 0)" />
+    <MudText>@Name</MudText>
+</MudStack>
+@if (Items is not null && Items.Count is not 0)
+{
+    <MudCollapse @bind-Expanded="@Expanded" >
+        <MudStack Spacing="0" Class="ml-8">
+            <Virtualize TItem="WadItemModel" Items="@Items" OverscanCount="10">
+                <Placeholder>
+                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" />
+                </Placeholder>
+                <ItemContent>
+                    <TreeWadItem Name="@context.Name" @bind-Expanded="@context.IsExpanded" Items="@context.Items" />
+                </ItemContent>
+            </Virtualize>
+        </MudStack>
+    </MudCollapse>
+}
+
+@code {
+    [Parameter]
+    public string Name { get; set; }
+
+    [Parameter]
+    public HashSet<WadItemModel> Items { get; set; }
+
+    [Parameter]
+    public bool Expanded { get; set; }
+
+    [Parameter] 
+    public EventCallback<bool> ExpandedChanged { get; set; }
+}

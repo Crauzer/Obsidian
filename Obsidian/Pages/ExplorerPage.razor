@@ -22,7 +22,45 @@
         <ChildContent>
             @foreach (WadTabModel wadTab in this.Tabs)
             {
-                <MudTabPanel Text="@wadTab.Name" Tag="@wadTab.Id"></MudTabPanel>
+                <MudTabPanel Text="@wadTab.Name" Tag="@wadTab.Id">
+                    <TreeView Style="margin-left: 2rem" ItemsFlat="@wadTab.GetFlattenedItems()" Height="750px" ItemSize="30f">
+                        <ItemTemplate>
+                            <table>
+                                <tr @key="context.Id" style="height: 30px;">
+                                    <td>
+                                        <span style="@($"margin-left: {context.Depth * 20}px;")"></span>
+                                    </td>
+
+                                    <td style="vertical-align: middle;">
+                                        @if (context.Type is WadItemType.Folder)
+                                        {
+                                            <MudIconButton Icon="@(context.IsExpanded ? Icons.Material.TwoTone.KeyboardArrowUp : Icons.Material.TwoTone.KeyboardArrowDown)"
+                                                   Color="Color.Inherit" Size="Size.Small" OnClick="@(_ => OnWadItemToggleExpand(context))" />
+                                        }
+                                        else if (context.Type is WadItemType.File)
+                                        {
+                                            <MudIconButton Color="Color.Transparent" Size="Size.Small" />
+                                        }
+                                    </td>
+
+                                    <td style="text-align: center;">
+                                        @if (context.Type is WadItemType.File)
+                                        {
+                                            <MudIcon Class="d-block" Icon="@Icons.Custom.FileFormats.FileDocument" Size="Size.Small" Color="Color.Primary" />
+                                        }
+                                        else if (context.Type is WadItemType.Folder)
+                                        {
+                                            <MudIcon Class="d-block" Icon="@Icons.Material.TwoTone.Folder" Size="Size.Small" Color="Color.Primary" />
+                                        }
+                                    </td>
+                                    <td style="white-space: nowrap;">
+                                        <MudText Class="ml-2">@context.Name</MudText>
+                                    </td>
+                                </tr>
+                            </table>
+                        </ItemTemplate>
+                    </TreeView>
+                </MudTabPanel>
             }
         </ChildContent>
         <TabPanelHeader>
@@ -95,5 +133,11 @@
             tab.Wad.Dispose();
             this.Tabs.Remove(tab);
         }
+    }
+
+    private void OnWadItemToggleExpand(WadItemModel item)
+    {
+        item.IsExpanded = !item.IsExpanded;
+        StateHasChanged();
     }
 }

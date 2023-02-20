@@ -77,6 +77,21 @@ public class WadTabModel : IDisposable
         }
     }
 
+    public List<WadItemModel> GetFlattenedItems() => TraverseFlattenedVisibleItems().ToList();
+
+    public IEnumerable<WadItemModel> TraverseFlattenedVisibleItems()
+    {
+        foreach (WadItemModel item in this.Items)
+        {
+            // root items are always visible
+            yield return item;
+
+            if (item is WadFolderModel folder && item.IsExpanded)
+                foreach (WadItemModel folderItem in folder.GetFlattenedItems())
+                    yield return folderItem;
+        }
+    }
+
     public void Dispose()
     {
         Dispose(disposing: true);

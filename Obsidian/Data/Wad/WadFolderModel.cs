@@ -6,12 +6,11 @@ namespace Obsidian.Data.Wad;
 [DebuggerDisplay("{Name}")]
 public class WadFolderModel : WadItemModel
 {
-    public HashSet<WadItemModel> Items { get; set; } = new();
-
     public WadFolderModel(WadFolderModel parent, string name)
     {
         this.Parent = parent;
         this.Name = name;
+        this.Items = new();
     }
 
     public void AddFile(IEnumerable<string> pathComponents, WadChunk chunk)
@@ -43,6 +42,19 @@ public class WadFolderModel : WadItemModel
         {
             if(item is WadFolderModel folder)
                 folder.SortItems();
+        }
+    }
+
+    public IEnumerable<WadItemModel> GetFlattenedItems()
+    {
+        foreach (WadItemModel item in this.Items)
+        {
+            // root items are always visible
+            yield return item;
+
+            if (item is WadFolderModel folder && item.IsExpanded)
+                foreach (WadItemModel folderItem in folder.GetFlattenedItems())
+                    yield return folderItem;
         }
     }
 }
