@@ -1,4 +1,5 @@
-﻿using Obsidian.Data;
+﻿using LeagueToolkit.Core.Wad;
+using Obsidian.Data;
 using Octokit;
 using System.Collections.Generic;
 using System.Globalization;
@@ -107,5 +108,11 @@ public class HashtableService
         } while (reader.EndOfStream is false);
     }
 
-    public string GetChunkPath(ulong pathHash) => throw new NotImplementedException();
+    public string GetChunkPath(WadChunk chunk) 
+    {
+        if(this.Hashes.TryGetValue(chunk.PathHash, out string existingPath))
+            return existingPath;
+
+        return string.Format("{0:x16}", chunk.PathHash);
+    }
 }

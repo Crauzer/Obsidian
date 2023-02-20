@@ -1,6 +1,8 @@
 ﻿@page "/explorer"
 @using LeagueToolkit.Core.Wad;
 @using Microsoft.WindowsAPICodePack.Dialogs;
+@using Obsidian.Data.Wad;
+@using Obsidian.Services;
 @using Obsidian.Utils;
 @using PhotinoNET;
 
@@ -18,7 +20,7 @@
 
     <MudTabs @bind-ActivePanelIndex="_activeTabId">
         <ChildContent>
-            @foreach(WadTabModel wadTab in this.Tabs)
+            @foreach (WadTabModel wadTab in this.Tabs)
             {
                 <MudTabPanel Text="@wadTab.Name" Tag="@wadTab.Id"></MudTabPanel>
             }
@@ -26,17 +28,18 @@
         <TabPanelHeader>
             <MudTooltip Text="Close">
                 <MudIconButton Class="ml-1" Color="Color.Error" Icon="@Icons.Material.TwoTone.Close"
-                               OnClick="(_) => RemoveWadTab(context)"/>
+                               OnClick="(_) => RemoveWadTab(context)" />
             </MudTooltip>
         </TabPanelHeader>
     </MudTabs>
 
     <MudOverlay DarkBackground Absolute Visible="_isBusy">
-        <MudProgressCircular Indeterminate Color="Color.Primary"/>
+        <MudProgressCircular Indeterminate Color="Color.Primary" />
     </MudOverlay>
 </MudPaper>
 
 @code {
+    [Inject] public HashtableService Hashtable { get; set; }
     [Inject] public PhotinoWindow Window { get; set; }
     [Inject] public ISnackbar Snackbar { get; set; }
 
@@ -45,13 +48,6 @@
     private bool _isBusy;
 
     private int _activeTabId = 0;
-
-    public class WadTabModel
-    {
-        public Guid Id { get; set; } = Guid.NewGuid();
-        public string Name { get; set; }
-        public WadFile Wad { get; set; }
-    }
 
     public async Task OpenWad()
     {
@@ -67,7 +63,7 @@
             await Task.Run(() => OpenWadFiles(dialog.FileNames));
             this.Snackbar.Add("Successfully opened Wad archives!", Severity.Success);
         }
-        catch(Exception exception)
+        catch (Exception exception)
         {
             SnackbarUtils.ShowError(this.Snackbar, exception);
         }
@@ -84,13 +80,7 @@
             FileStream wadFileStream = File.OpenRead(wadPath);
             WadFile wad = new(wadFileStream);
 
-            this.Tabs.Add(
-                new()
-                { 
-                    Name = Path.GetFileName(wadPath), 
-                    Wad = wad 
-                }
-            );
+            this.Tabs.Add(new(Path.GetFileName(wadPath), wad, this.Hashtable));
         }
     }
 
@@ -100,7 +90,7 @@
             return;
 
         WadTabModel tab = this.Tabs.FirstOrDefault(x => x.Id == tabId);
-        if(tab is not null)
+        if (tab is not null)
         {
             tab.Wad.Dispose();
             this.Tabs.Remove(tab);
