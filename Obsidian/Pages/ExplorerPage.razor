@@ -34,23 +34,25 @@
                                     <td style="vertical-align: middle;">
                                         @if (context.Type is WadItemType.Folder)
                                         {
-                                            <MudIconButton Icon="@(context.IsExpanded ? Icons.Material.TwoTone.KeyboardArrowUp : Icons.Material.TwoTone.KeyboardArrowDown)"
+                                            <MudIconButton Icon="@(context.IsExpanded ? Icons.Material.TwoTone.KeyboardArrowDown : Icons.Material.TwoTone.KeyboardArrowRight)"
                                                    Color="Color.Inherit" Size="Size.Small" OnClick="@(_ => OnWadItemToggleExpand(context))" />
                                         }
                                         else if (context.Type is WadItemType.File)
                                         {
-                                            <MudIconButton Color="Color.Transparent" Size="Size.Small" />
+                                            <MudIconButton Icon="@Icons.Material.TwoTone.KeyboardArrowRight" Color="Color.Transparent" Size="Size.Small" />
                                         }
                                     </td>
-
+                                    <td>
+                                        <MudCheckBox @bind-Checked="context.IsChecked" Color="Color.Primary" Size="Size.Small"/>
+                                    </td>
                                     <td style="text-align: center;">
                                         @if (context.Type is WadItemType.File)
                                         {
-                                            <MudIcon Class="d-block" Icon="@Icons.Custom.FileFormats.FileDocument" Size="Size.Small" Color="Color.Primary" />
+                                            <MudIcon Class="d-block" Icon="@Icons.Custom.FileFormats.FileDocument" Size="Size.Small" Color="Color.Inherit" />
                                         }
                                         else if (context.Type is WadItemType.Folder)
                                         {
-                                            <MudIcon Class="d-block" Icon="@Icons.Material.TwoTone.Folder" Size="Size.Small" Color="Color.Primary" />
+                                            <MudIcon Class="d-block" Icon="@Icons.Material.TwoTone.Folder" Size="Size.Small" Color="Color.Inherit" />
                                         }
                                     </td>
                                     <td style="white-space: nowrap;">
