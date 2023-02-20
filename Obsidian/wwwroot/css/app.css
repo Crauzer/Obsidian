@@ -1,7 +1,6 @@
-﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
-
-html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+﻿@font-face {
+    font-family: Fira Sans;
+    src: url(../fonts/FiraSans-Medium.ttf)
 }
 
 a, .btn-link {

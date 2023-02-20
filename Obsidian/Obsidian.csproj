@@ -2,7 +2,7 @@
 
     <PropertyGroup>
       <OutputType>WinExe</OutputType>
-      <TargetFramework>net6.0</TargetFramework>
+      <TargetFramework>net6.0-windows</TargetFramework>
       <ApplicationIcon>favicon.ico</ApplicationIcon>
       <ImplicitUsings>enable</ImplicitUsings>
       <Version>5.0.0-beta.1</Version>
@@ -16,7 +16,8 @@
       <PackageReference Include="LeagueToolkit.IO.Extensions" Version="4.0.0-beta.14" />
       <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
       <PackageReference Include="MudBlazor" Version="6.1.9" />
-      <PackageReference Include="NativeFileDialogSharp" Version="0.5.0" />
+      <PackageReference Include="Octokit" Version="5.0.0" />
+      <PackageReference Include="WindowsAPICodePackShell" Version="7.0.3" />
     </ItemGroup>
 
     <ItemGroup>

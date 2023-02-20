@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using MudBlazor;
 using MudBlazor.Services;
+using Obsidian.Data;
+using Obsidian.Services;
 using Photino.Blazor;
 
 namespace Obsidian;
@@ -17,6 +19,8 @@ public class Program
         // register root component and selector
         builder.RootComponents.Add<App>("app");
 
+        builder.Services.AddSingleton(Config.Load());
+        builder.Services.AddScoped<HashtableService>();
         builder.Services.AddMudServices(config =>
         {
             config.SnackbarConfiguration.PreventDuplicates = true;
