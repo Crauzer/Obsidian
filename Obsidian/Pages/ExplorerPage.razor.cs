@@ -27,6 +27,9 @@ public partial class ExplorerPage
 
     public List<WadTabModel> Tabs { get; set; } = new();
     public WadTabModel ActiveTab => this.Tabs.ElementAt(this._activeTabId);
+    private int _activeTabId = 0;
+
+    private MudProgressLinear _extractionProgressComponent;
 
     private bool _isLoadingWadFile = false;
     private bool _isExportingFiles = false;
@@ -34,7 +37,7 @@ public partial class ExplorerPage
     private int _filesExportProgress = 0;
     private int _filesExportCount = 0;
 
-    private int _activeTabId = 0;
+    private const int FILE_EXPORT_PROGRESS_CHUNK = 100;
 
     private delegate Task ReportExtractionProgressDelegate(int progress);
 
@@ -49,7 +52,7 @@ public partial class ExplorerPage
         this._isLoadingWadFile = true;
         try
         {
-            await Task.Run(() => OpenWadFiles(dialog.FileNames));
+            await InvokeAsync(() => OpenWadFiles(dialog.FileNames));
             this.Snackbar.Add("Successfully opened Wad archives!", Severity.Success);
         }
         catch (Exception exception)
@@ -84,7 +87,9 @@ public partial class ExplorerPage
         StateHasChanged();
         try
         {
-            await ExtractFiles(allFileItems, extractionDirectory, ReportFileExtractionProgress);
+            await InvokeAsync(
+                () => ExtractFiles(allFileItems, extractionDirectory, ReportFileExtractionProgress)
+            );
 
             this.Snackbar.Add(
                 $"Successfully exported {this._filesExportCount} files!",
@@ -184,12 +189,23 @@ public partial class ExplorerPage
         return dialog.FileName;
     }
 
-    private async Task ReportFileExtractionProgress(int progress) =>
+    private async Task ReportFileExtractionProgress(int progress)
+    {
+        // We need to report progress in chunks, otherwise the thread will get choked
+        if (
+            progress / FILE_EXPORT_PROGRESS_CHUNK
+            == this._filesExportProgress / FILE_EXPORT_PROGRESS_CHUNK
+        )
+            return;
+
         await InvokeAsync(() =>
         {
             this._filesExportProgress = progress;
             StateHasChanged();
         });
+        await Task.Delay(1);
+        
+    }
 
     public void RefreshState() => StateHasChanged();
 }

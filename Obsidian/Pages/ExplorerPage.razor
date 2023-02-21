@@ -6,7 +6,7 @@
 @using Obsidian.Utils;
 @using PhotinoNET;
 
-<MudPaper Style="position: relative;">
+<MudPaper>
     <MudPaper Elevation="25">
         <MudToolBar Dense DisableGutters>
             <MudTooltip Text="File" Delay="300">
@@ -59,11 +59,14 @@
         <MudProgressCircular Indeterminate Color="Color.Primary" />
     </MudOverlay>
     <MudOverlay DarkBackground Visible="_isExportingFiles" ZIndex="9999">
-        <MudProgressLinear Rounded
+        @*adihttps://stackoverflow.com/a/61865580*@
+        <MudProgressLinear @ref="_extractionProgressComponent" Rounded
                            Class="my-6" Style="width: 500px"
                            Value="@_filesExportProgress" Max="@_filesExportCount"
                            Color="Color.Primary" Size="Size.Large">
-            <MudText Class="unselectable-text">@($"{_filesExportProgress}/{_filesExportCount}")</MudText>
-            </MudProgressLinear>
-        </MudOverlay>
-    </MudPaper>
+            <MudText Class="unselectable-text">
+                @($"{_filesExportProgress}/{_filesExportCount}")
+            </MudText>
+        </MudProgressLinear>
+    </MudOverlay>
+</MudPaper>
