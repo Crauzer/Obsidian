@@ -79,6 +79,19 @@ public class WadTabModel : IDisposable
 
     public List<WadItemModel> GetFlattenedItems() => TraverseFlattenedVisibleItems().ToList();
 
+    public IEnumerable<WadItemModel> TraverseFlattenedItems()
+    {
+        if (this.Items is null)
+            yield break;
+
+        foreach (WadItemModel item in this.Items)
+        {
+            yield return item;
+
+            foreach (WadItemModel itemItem in item.TraverseFlattenedItems())
+                yield return itemItem;
+        }
+    }
     public IEnumerable<WadItemModel> TraverseFlattenedSelectedItems()
     {
         if (this.Items is null)

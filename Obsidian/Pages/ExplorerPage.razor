@@ -9,20 +9,24 @@
 <MudPaper Style="position: relative;">
     <MudPaper Elevation="25">
         <MudToolBar Dense DisableGutters>
-            <MudMenu Dense Class="ml-4" Icon="@Icons.Material.TwoTone.Archive" Color="Color.Inherit"
-                     AnchorOrigin="Origin.BottomLeft" Size="Size.Medium">
-                <MudMenuItem Icon="fa fa-file-import" IconColor="Color.Primary" IconSize="Size.Small"
-                             OnClick="OpenWad">
-                    Open
-                </MudMenuItem>
-                <MudDivider/>
-                <MudMenuItem Icon="fa fa-floppy-disk" IconColor="Color.Primary" IconSize="Size.Small">
-                    Extract All
-                </MudMenuItem>
-                <MudMenuItem Icon="fa fa-file-arrow-down" IconColor="Color.Primary" IconSize="Size.Small">
-                    Extract Selected
-                </MudMenuItem>
-            </MudMenu>
+            <MudTooltip Text="File" Delay="300">
+                <MudMenu Dense Class="ml-4" Icon="@Icons.Material.TwoTone.Archive" Color="Color.Inherit"
+                         AnchorOrigin="Origin.BottomLeft" Size="Size.Medium">
+                    <MudMenuItem Icon="fa fa-file-import" IconColor="Color.Primary" IconSize="Size.Small"
+                                 OnClick="OpenWad">
+                        Open
+                    </MudMenuItem>
+                    <MudDivider />
+                    <MudMenuItem Icon="fa fa-floppy-disk" IconColor="Color.Primary" IconSize="Size.Small"
+                                 OnClick="ExtractAll">
+                        Extract All
+                    </MudMenuItem>
+                    <MudMenuItem Icon="fa fa-file-arrow-down" IconColor="Color.Primary" IconSize="Size.Small"
+                                 OnClick="ExtractSelected">
+                        Extract Selected
+                    </MudMenuItem>
+                </MudMenu>
+            </MudTooltip>
         </MudToolBar>
     </MudPaper>
 
@@ -51,73 +55,12 @@
         </TabPanelHeader>
     </MudTabs>
 
-    <MudOverlay DarkBackground Absolute Visible="_isBusy">
+    <MudOverlay DarkBackground Visible="_isLoadingWadFile" ZIndex="9999">
         <MudProgressCircular Indeterminate Color="Color.Primary" />
     </MudOverlay>
+    <MudOverlay DarkBackground Visible="_isExportingFiles" ZIndex="9999">
+        <MudProgressLinear Rounded Class="my-6"
+                           Value="@_filesExportProgress" Max="@_filesExportCount"
+                           Color="Color.Primary" Size="Size.Large" />
+    </MudOverlay>
 </MudPaper>
-
-@code {
-    [Inject] public HashtableService Hashtable { get; set; }
-    [Inject] public PhotinoWindow Window { get; set; }
-    [Inject] public ISnackbar Snackbar { get; set; }
-    [Inject] public IJSRuntime JsRuntime { get; set; }
-
-    public List<WadTabModel> Tabs { get; set; } = new();
-
-    private bool _isBusy;
-
-    private int _activeTabId = 0;
-
-    public async Task OpenWad()
-    {
-        CommonOpenFileDialog dialog = new("Open Wad archives") { Multiselect = true };
-        dialog.Filters.Add(FileDialogUtils.CreateWadFilter());
-
-        if (dialog.ShowDialog(this.Window.WindowHandle) is CommonFileDialogResult.Cancel)
-            return;
-
-        this._isBusy = true;
-        try
-        {
-            await Task.Run(() => OpenWadFiles(dialog.FileNames));
-            this.Snackbar.Add("Successfully opened Wad archives!", Severity.Success);
-        }
-        catch (Exception exception)
-        {
-            SnackbarUtils.ShowError(this.Snackbar, exception);
-        }
-        finally
-        {
-            this._isBusy = false;
-        }
-    }
-
-    private void OpenWadFiles(IEnumerable<string> wadPaths)
-    {
-        foreach (string wadPath in wadPaths)
-        {
-            FileStream wadFileStream = File.OpenRead(wadPath);
-            WadFile wad = new(wadFileStream);
-
-            this.Tabs.Add(new(Path.GetFileName(wadPath), wad, this.Hashtable));
-        }
-    }
-
-    private void RemoveWadTab(MudTabPanel tabPanel)
-    {
-        if (tabPanel.ID is not Guid tabId)
-            return;
-
-        WadTabModel tab = this.Tabs.FirstOrDefault(x => x.Id == tabId);
-        if (tab is not null)
-        {
-            tab.Wad.Dispose();
-            this.Tabs.Remove(tab);
-        }
-    }
-
-    public void RefreshState()
-    {
-        StateHasChanged();
-    }
-}
