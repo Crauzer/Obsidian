@@ -8,10 +8,23 @@
 
 <MudLayout>
     <MudAppBar Elevation="1">
-        <MudImage ObjectFit="ObjectFit.ScaleDown" Height="50" Src="images/obsidian_logonew_256.png" Alt="Obsidian logo" Style="border-radius: 8px" />
-        <MudText Typo="Typo.h5" Class="ml-3">Obsidian</MudText>
+        <MudImage Style="border-radius: 8px"
+                  Elevation="6"
+                  ObjectFit="ObjectFit.ScaleDown" Height="50"
+                  Src="images/obsidian_logonew_256.png" Alt="Obsidian logo" />
+        <MudText Typo="Typo.h5" Class="ml-3" Style="text-shadow: 1px 1px 6px black">Obsidian</MudText>
         <MudSpacer />
-        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Edge="Edge.End" Href="https://github.com/Crauzer/Obsidian" Target="_blank" />
+        <MudStack Row Spacing="2">
+            <MudTooltip Text="Settings" Color="Color.Dark">
+                <MudIconButton Icon="@Icons.Material.TwoTone.Settings" Color="Color.Dark" Size="Size.Large"
+                               Variant="Variant.Filled" />
+            </MudTooltip>
+            <MudTooltip Text="Go to GitHub" Color="Color.Dark">
+                <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Dark" Size="Size.Large"
+                               Variant="Variant.Filled"
+                               Href="https://github.com/Crauzer/Obsidian" Target="_blank" />
+            </MudTooltip>
+        </MudStack>
     </MudAppBar>
     <MudMainContent Style="height: 100%">
         @Body
