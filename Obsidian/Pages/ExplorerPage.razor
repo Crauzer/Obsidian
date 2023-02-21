@@ -6,23 +6,6 @@
 @using Obsidian.Utils;
 @using PhotinoNET;
 
-<style>
-    .tree-view-item-wrapper {
-        width: 100%;
-        padding-left: 2rem;
-    }
-
-        .tree-view-item-wrapper:hover {
-            background-color: #0000000a;
-        }
-
-    .tree-view-item {
-        width: 100%;
-        table-layout: fixed;
-    }
-
-</style>
-
 <MudPaper Style="position: relative;">
     <MudPaper Elevation="25">
         <MudToolBar Dense DisableGutters>
@@ -42,35 +25,9 @@
                 <MudTabPanel Text="@wadTab.Name" Tag="@wadTab.Id">
                     <TreeView ItemsFlat="@wadTab.GetFlattenedItems()" Height="750px" ItemSize="30f">
                         <ItemTemplate>
-                            <div class="tree-view-item-wrapper cursor-pointer" @ondblclick="(_ => OnWadItemDoubleClick(context))">
-                                <table class="tree-view-item" style="@($"padding-left: {context.Depth * 20}px;")">
-                                    <tr @key="context.Id" style="height: 30px;">
-                                        <td style="vertical-align: middle; width: 2%">
-                                            @if (context.Type is WadItemType.Folder)
-                                            {
-                                                <MudIconButton Icon="@(context.IsExpanded ? Icons.Material.TwoTone.KeyboardArrowDown : Icons.Material.TwoTone.KeyboardArrowRight)"
-                                                       Color="Color.Inherit" Size="Size.Small" OnClick="@(_ => OnWadItemToggleExpand(context))" />
-                                            }
-                                        </td>
-                                        <td style="width: 3%">
-                                            <MudCheckBox @bind-Checked="context.IsChecked" Color="Color.Primary" Size="Size.Small" />
-                                        </td>
-                                        <td style="text-align: center; width: 2%">
-                                            @if (context.Type is WadItemType.File)
-                                            {
-                                                <MudIcon Class="d-block" Icon="@Icons.Custom.FileFormats.FileDocument" Size="Size.Small" Color="Color.Inherit" />
-                                            }
-                                            else if (context.Type is WadItemType.Folder)
-                                            {
-                                                <MudIcon Class="d-block" Icon="@Icons.Material.TwoTone.Folder" Size="Size.Small" Color="Color.Inherit" />
-                                            }
-                                        </td>
-                                        <td style="white-space: nowrap; width: 100%; vertical-align: middle;">
-                                            <MudText Class="d-block">@context.Name</MudText>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
+                            <CascadingValue Value="this">
+                                <TreeWadItem Item="@context"/>
+                            </CascadingValue>
                         </ItemTemplate>
                     </TreeView>
                 </MudTabPanel>
@@ -148,15 +105,8 @@
         }
     }
 
-    private void OnWadItemDoubleClick(WadItemModel item)
+    public void RefreshState()
     {
-        if (item is WadFolderModel folder)
-            OnWadItemToggleExpand(folder);
-    }
-
-    private void OnWadItemToggleExpand(WadItemModel item)
-    {
-        item.IsExpanded = !item.IsExpanded;
         StateHasChanged();
     }
 }

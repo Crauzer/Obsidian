@@ -36,7 +36,13 @@ public class Program
 
         // customize window
         app.MainWindow.UseOsDefaultSize = false;
-        app.MainWindow.SetIconFile("favicon.ico").SetTitle("Obsidian").Center().SetWidth(1600).SetHeight(1100);
+        app.MainWindow
+            .SetIconFile("favicon.ico")
+            .SetTitle("Obsidian")
+            .Center()
+            .SetWidth(1600)
+            .SetHeight(1100)
+            .SetContextMenuEnabled(false);
 
 #if DEBUG
         app.MainWindow.SetDevToolsEnabled(true);

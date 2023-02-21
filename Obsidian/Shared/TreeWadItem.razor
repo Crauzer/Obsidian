@@ -1,34 +1,75 @@
 ﻿@using Obsidian.Data.Wad;
-<MudStack Row Spacing="2" AlignItems="AlignItems.Center">
-    <MudTreeViewItemToggleButton @bind-Expanded="@Expanded" Visible="@(Items is not null && Items.Count is not 0)" />
-    <MudText>@Name</MudText>
-</MudStack>
-@if (Items is not null && Items.Count is not 0)
-{
-    <MudCollapse @bind-Expanded="@Expanded" >
-        <MudStack Spacing="0" Class="ml-8">
-            <Virtualize TItem="WadItemModel" Items="@Items" OverscanCount="10">
-                <Placeholder>
-                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" />
-                </Placeholder>
-                <ItemContent>
-                    <TreeWadItem Name="@context.Name" @bind-Expanded="@context.IsExpanded" Items="@context.Items" />
-                </ItemContent>
-            </Virtualize>
-        </MudStack>
-    </MudCollapse>
-}
+@using Obsidian.Pages;
+
+<style>
+    .tree-view-item-wrapper {
+        width: 100%;
+        padding-left: 2rem;
+    }
+
+        .tree-view-item-wrapper:hover {
+            background-color: #0000000a;
+        }
+
+    .tree-view-item {
+        width: 100%;
+        table-layout: fixed;
+    }
+
+    .tree-view-item-name {
+        user-select: none;
+        white-space: nowrap;
+        width: 100%;
+        vertical-align: middle;
+    }
+</style>
+
+<div class="tree-view-item-wrapper cursor-pointer" @ondblclick="OnRowDoubleClick">
+    <table class="tree-view-item" style="@($"padding-left: {Item.Depth * 20}px;")">
+        <tr @key="Item.Id" style="height: 30px;">
+            <td style="vertical-align: middle; width: 2%">
+                @if (Item.Type is WadItemType.Folder)
+                {
+                    <MudIconButton Icon="@(Item.IsExpanded ? Icons.Material.TwoTone.KeyboardArrowDown : Icons.Material.TwoTone.KeyboardArrowRight)"
+                               Color="Color.Inherit" Size="Size.Small" OnClick="@OnToggleExpand" />
+                }
+            </td>
+            <td style="width: 3%">
+                <MudCheckBox @bind-Checked="Item.IsChecked" Color="Color.Primary" Size="Size.Small" />
+            </td>
+            <td style="text-align: center; width: 2%">
+                @if (Item.Type is WadItemType.File)
+                {
+                    <MudIcon Class="d-block" Icon="@Icons.Custom.FileFormats.FileDocument" Size="Size.Small" Color="Color.Inherit" />
+                }
+                else if (Item.Type is WadItemType.Folder)
+                {
+                    <MudIcon Class="d-block" Icon="@Icons.Material.TwoTone.Folder" Size="Size.Small" Color="Color.Inherit" />
+                }
+            </td>
+            <td class="tree-view-item-name">
+                <MudText Class="d-block">@Item.Name</MudText>
+            </td>
+        </tr>
+    </table>
+</div>
 
 @code {
-    [Parameter]
-    public string Name { get; set; }
+    [CascadingParameter]
+    public ExplorerPage Root { get; set; }
 
     [Parameter]
-    public HashSet<WadItemModel> Items { get; set; }
+    public WadItemModel Item { get; set; }
 
-    [Parameter]
-    public bool Expanded { get; set; }
+    private void OnRowDoubleClick()
+    {
+        if (this.Item is WadFolderModel folder)
+            OnToggleExpand();
+    }
 
-    [Parameter] 
-    public EventCallback<bool> ExpandedChanged { get; set; }
+    private void OnToggleExpand()
+    {
+        this.Item.IsExpanded = !this.Item.IsExpanded;
+        this.Root.RefreshState();
+    }
 }
