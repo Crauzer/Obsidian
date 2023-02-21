@@ -2,13 +2,14 @@
 @using LeagueToolkit.Core.Wad;
 @using Microsoft.WindowsAPICodePack.Dialogs;
 @using Obsidian.Data.Wad;
+@using Obsidian.Data;
 @using Obsidian.Services;
 @using Obsidian.Utils;
 @using PhotinoNET;
 
 <MudPaper>
     <MudPaper Elevation="25">
-        <MudToolBar Dense DisableGutters>
+        <MudToolBar Dense DisableGutters Class="relative">
             <MudTooltip Text="File" Delay="150">
                 <MudMenu Dense Class="ml-4" Icon="@Icons.Material.TwoTone.Archive" Color="Color.Inherit"
                          AnchorOrigin="Origin.BottomLeft" Size="Size.Medium">
@@ -30,6 +31,18 @@
                 </MudMenu>
             </MudTooltip>
             <MudSpacer />
+            <MudStack Row Spacing="1">
+                <MudIcon Icon="@CustomIcons.Regex" Color="Color.Primary" Size="Size.Medium" />
+
+            </MudStack>
+            @if (ActiveTab is not null)
+            {
+                <div style="position: absolute; top: 46px; right: 8px; z-index: 100; width: 32rem">
+                    <MudTextField @bind-Value="ActiveTab.Filter" Label="Filter" Variant="Variant.Filled"
+                              Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.TwoTone.FilterList" AdornmentColor="Color.Primary" />
+                </div>
+
+            }
         </MudToolBar>
     </MudPaper>
     <MudDivider />

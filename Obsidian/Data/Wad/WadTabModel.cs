@@ -17,6 +17,8 @@ public class WadTabModel : IDisposable
     public string Name { get; set; }
     public WadFile Wad { get; set; }
 
+    public string Filter { get; set; }
+
     public HashSet<WadItemModel> Items { get; set; } = new();
     public IEnumerable<WadFileModel> SelectedFiles =>
         TraverseFlattenedSelectedItems()
