@@ -165,7 +165,7 @@ public partial class ExplorerPage
 
     private void RemoveWadTab(MudTabPanel tabPanel)
     {
-        if (tabPanel.ID is not Guid tabId)
+        if (tabPanel.Tag is not Guid tabId)
             return;
 
         WadTabModel tab = this.Tabs.FirstOrDefault(x => x.Id == tabId);
