@@ -24,41 +24,86 @@
     }
 </style>
 
+
 <div class="tree-view-item-wrapper cursor-pointer"
      @ondblclick="OnRowDoubleClick" @ondblclick:stopPropagation @ondblclick:preventDefault>
-    <table class="tree-view-item" style="@($"padding-left: {Item.Depth * 20}px;")">
-        <tr @key="Item.Id" style="height: 30px;">
-            <td style="vertical-align: middle; width: 2%">
-                @if (Item.Type is WadItemType.Folder)
-                {
-                    <MudIconButton Icon="@(Item.IsExpanded ? Icons.Material.TwoTone.KeyboardArrowDown : Icons.Material.TwoTone.KeyboardArrowRight)"
-                               Color="Color.Inherit" Size="Size.Small"
-                               OnClick="@OnToggleExpand" @ondblclick:stopPropagation />
-                }
-            </td>
-            <td style="width: 3%">
-                <MudCheckBox @bind-Checked="Item.IsChecked" Color="Color.Primary" Size="Size.Small" />
-            </td>
-            <td style="text-align: center; width: 2%">
-                @if (Item.Type is WadItemType.File)
-                {
-                    <MudIcon Class="d-block" Icon="@Icons.Custom.FileFormats.FileDocument" Size="Size.Small" Color="Color.Inherit" />
-                }
-                else if (Item.Type is WadItemType.Folder)
-                {
-                    <MudIcon Class="d-block" Icon="@Icons.Material.TwoTone.Folder" Size="Size.Small" Color="Color.Inherit" />
-                }
-            </td>
-            <td class="tree-view-item-name">
-                <MudText Class="d-block">@Item.Name</MudText>
-            </td>
-        </tr>
-    </table>
+    <MudMenu PositionAtCurser FullWidth="false" ActivationEvent="MouseEvent.RightClick" Size="Size.Small">
+        <ChildContent>
+            <MudMenuItem Icon="@Icons.Material.TwoTone.CopyAll" IconSize="Size.Small" IconColor="Color.Primary"
+                         OnClick="@CopyPathToClipboard">
+                <MudText Typo="Typo.subtitle2">Copy Path</MudText>
+            </MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.TwoTone.CopyAll" IconSize="Size.Small" IconColor="Color.Primary"
+                         OnClick="@CopyNameToClipboard">
+                <MudText Typo="Typo.subtitle2">Copy Name</MudText>
+            </MudMenuItem>
+            <MudDivider />
+            <MudMenuItem Icon="@Icons.Material.TwoTone.Code" IconSize="Size.Small" IconColor="Color.Primary">
+                <MudTooltip Delay="300" Placement="Placement.Right">
+                    <ChildContent>
+                        <MudText Typo="Typo.subtitle2">Details</MudText>
+                    </ChildContent>
+                    <TooltipContent>
+                        <MudStack Spacing="1">
+                            <MudText Typo="Typo.subtitle1">
+                                @Item.Path
+                            </MudText>
+                            @if (Item is WadFileModel file)
+                            {
+                                <MudText Typo="Typo.subtitle1">
+                                    XXHash: @string.Format("{0:x16}", file.Chunk.PathHash)
+                                </MudText>
+                                <MudText Typo="Typo.subtitle1">
+                                    Compressed Size: @file.Chunk.CompressedSize
+                                </MudText>
+                                <MudText Typo="Typo.subtitle1">
+                                    Uncompressed Size: @file.Chunk.UncompressedSize
+                                </MudText>
+                            }
+                        </MudStack>
+                    </TooltipContent>
+                </MudTooltip>
+            </MudMenuItem>
+        </ChildContent>
+        <ActivatorContent>
+            <table class="tree-view-item" style="@($"padding-left: {Item.Depth * 20}px;")">
+                <tr @key="Item.Id" style="height: 30px;">
+                    <td style="vertical-align: middle; width: 2%">
+                        @if (Item.Type is WadItemType.Folder)
+                        {
+                            <MudIconButton Icon="@(Item.IsExpanded ? Icons.Material.TwoTone.KeyboardArrowDown : Icons.Material.TwoTone.KeyboardArrowRight)"
+                                       Color="Color.Inherit" Size="Size.Small"
+                                       OnClick="@OnToggleExpand" @ondblclick:stopPropagation />
+                        }
+                    </td>
+                    <td style="width: 3%">
+                        <MudCheckBox @bind-Checked="Item.IsChecked" Color="Color.Primary" Size="Size.Small" />
+                    </td>
+                    <td style="text-align: center; width: 2%">
+                        @if (Item.Type is WadItemType.File)
+                        {
+                            <MudIcon Class="d-block" Icon="@Icons.Custom.FileFormats.FileDocument" Size="Size.Small" Color="Color.Inherit" />
+                        }
+                        else if (Item.Type is WadItemType.Folder)
+                        {
+                            <MudIcon Class="d-block" Icon="@Icons.Material.TwoTone.Folder" Size="Size.Small" Color="Color.Inherit" />
+                        }
+                    </td>
+                    <td class="tree-view-item-name">
+                        <MudText Class="d-block">@Item.Name</MudText>
+                    </td>
+                </tr>
+            </table>
+        </ActivatorContent>
+    </MudMenu>
 </div>
 
 @code {
     [CascadingParameter]
     public ExplorerPage Root { get; set; }
+
+    [CascadingParameter]
+    public IJSRuntime JsRuntime { get; set; }
 
     [Parameter]
     public WadItemModel Item { get; set; }
@@ -73,5 +118,15 @@
     {
         this.Item.IsExpanded = !this.Item.IsExpanded;
         this.Root.RefreshState();
+    }
+
+    private async Task CopyNameToClipboard()
+    {
+        await this.JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", this.Item.Name);
+    }
+
+    private async Task CopyPathToClipboard()
+    {
+        await this.JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", this.Item.Path);
     }
 }

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using PathIO = System.IO.Path;
 
 namespace Obsidian.Data.Wad;
 
@@ -31,6 +27,16 @@ public abstract class WadItemModel : IComparable<WadItemModel>
 
     public Guid Id { get; } = Guid.NewGuid();
     public string Name { get; set; }
+    public string Path
+    {
+        get
+        {
+            if (this.Parent is null)
+                return this.Name;
+
+            return string.Join('/', this.Parent.Path, this.Name);
+        }
+    }
 
     public bool IsChecked { get; set; }
     public bool IsExpanded { get; set; }

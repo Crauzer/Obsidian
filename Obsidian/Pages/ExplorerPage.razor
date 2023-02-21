@@ -24,11 +24,13 @@
             {
                 <MudTabPanel Text="@wadTab.Name" Tag="@wadTab.Id">
                     <CascadingValue Value="this">
-                        <TreeView ItemsFlat="@wadTab.GetFlattenedItems()" Height="750px" ItemSize="30f">
-                            <ItemTemplate>
-                                <TreeWadItem Item="@context" />
-                            </ItemTemplate>
-                        </TreeView>
+                        <CascadingValue Value="JsRuntime">
+                            <TreeView ItemsFlat="@wadTab.GetFlattenedItems()" Height="750px" ItemSize="30f">
+                                <ItemTemplate>
+                                    <TreeWadItem Item="@context" />
+                                </ItemTemplate>
+                            </TreeView>
+                        </CascadingValue>
                     </CascadingValue>
                 </MudTabPanel>
             }
@@ -50,6 +52,7 @@
     [Inject] public HashtableService Hashtable { get; set; }
     [Inject] public PhotinoWindow Window { get; set; }
     [Inject] public ISnackbar Snackbar { get; set; }
+    [Inject] public IJSRuntime JsRuntime { get; set; }
 
     public List<WadTabModel> Tabs { get; set; } = new();
 
