@@ -24,14 +24,16 @@
     }
 </style>
 
-<div class="tree-view-item-wrapper cursor-pointer" @ondblclick="OnRowDoubleClick">
+<div class="tree-view-item-wrapper cursor-pointer"
+     @ondblclick="OnRowDoubleClick" @ondblclick:stopPropagation @ondblclick:preventDefault>
     <table class="tree-view-item" style="@($"padding-left: {Item.Depth * 20}px;")">
         <tr @key="Item.Id" style="height: 30px;">
             <td style="vertical-align: middle; width: 2%">
                 @if (Item.Type is WadItemType.Folder)
                 {
                     <MudIconButton Icon="@(Item.IsExpanded ? Icons.Material.TwoTone.KeyboardArrowDown : Icons.Material.TwoTone.KeyboardArrowRight)"
-                               Color="Color.Inherit" Size="Size.Small" OnClick="@OnToggleExpand" />
+                               Color="Color.Inherit" Size="Size.Small"
+                               OnClick="@OnToggleExpand" @ondblclick:stopPropagation />
                 }
             </td>
             <td style="width: 3%">
@@ -61,7 +63,7 @@
     [Parameter]
     public WadItemModel Item { get; set; }
 
-    private void OnRowDoubleClick()
+    private void OnRowDoubleClick(MouseEventArgs e)
     {
         if (this.Item is WadFolderModel folder)
             OnToggleExpand();

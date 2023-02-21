@@ -23,13 +23,13 @@
             @foreach (WadTabModel wadTab in this.Tabs)
             {
                 <MudTabPanel Text="@wadTab.Name" Tag="@wadTab.Id">
-                    <TreeView ItemsFlat="@wadTab.GetFlattenedItems()" Height="750px" ItemSize="30f">
-                        <ItemTemplate>
-                            <CascadingValue Value="this">
-                                <TreeWadItem Item="@context"/>
-                            </CascadingValue>
-                        </ItemTemplate>
-                    </TreeView>
+                    <CascadingValue Value="this">
+                        <TreeView ItemsFlat="@wadTab.GetFlattenedItems()" Height="750px" ItemSize="30f">
+                            <ItemTemplate>
+                                <TreeWadItem Item="@context" />
+                            </ItemTemplate>
+                        </TreeView>
+                    </CascadingValue>
                 </MudTabPanel>
             }
         </ChildContent>
