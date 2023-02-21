@@ -9,10 +9,18 @@
 <MudPaper Style="position: relative;">
     <MudPaper Elevation="25">
         <MudToolBar Dense DisableGutters>
-            <MudMenu Class="ml-4" Icon="@Icons.Material.TwoTone.Archive" Color="Color.Inherit" AnchorOrigin="Origin.BottomLeft">
-                <MudMenuItem Icon="@Icons.Material.TwoTone.FileOpen" IconColor="Color.Primary" IconSize="Size.Small"
+            <MudMenu Dense Class="ml-4" Icon="@Icons.Material.TwoTone.Archive" Color="Color.Inherit"
+                     AnchorOrigin="Origin.BottomLeft" Size="Size.Medium">
+                <MudMenuItem Icon="fa fa-file-import" IconColor="Color.Primary" IconSize="Size.Small"
                              OnClick="OpenWad">
                     Open
+                </MudMenuItem>
+                <MudDivider/>
+                <MudMenuItem Icon="fa fa-floppy-disk" IconColor="Color.Primary" IconSize="Size.Small">
+                    Extract All
+                </MudMenuItem>
+                <MudMenuItem Icon="fa fa-file-arrow-down" IconColor="Color.Primary" IconSize="Size.Small">
+                    Extract Selected
                 </MudMenuItem>
             </MudMenu>
         </MudToolBar>

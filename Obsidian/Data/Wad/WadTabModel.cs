@@ -79,6 +79,20 @@ public class WadTabModel : IDisposable
 
     public List<WadItemModel> GetFlattenedItems() => TraverseFlattenedVisibleItems().ToList();
 
+    public IEnumerable<WadItemModel> TraverseFlattenedSelectedItems()
+    {
+        if (this.Items is null)
+            yield break;
+
+        foreach (WadItemModel item in this.Items)
+        {
+            if (item.IsSelected)
+                yield return item;
+
+            foreach (WadItemModel itemItem in item.TraverseFlattenedSelectedItems())
+                yield return itemItem;
+        }
+    }
     public IEnumerable<WadItemModel> TraverseFlattenedVisibleItems()
     {
         foreach (WadItemModel item in this.Items)
@@ -87,7 +101,7 @@ public class WadTabModel : IDisposable
             yield return item;
 
             if (item is WadFolderModel folder && item.IsExpanded)
-                foreach (WadItemModel folderItem in folder.GetFlattenedItems())
+                foreach (WadItemModel folderItem in folder.TraverseFlattenedVisibleItems())
                     yield return folderItem;
         }
     }

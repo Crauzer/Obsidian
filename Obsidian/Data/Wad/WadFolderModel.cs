@@ -35,28 +35,4 @@ public class WadFolderModel : WadItemModel
 
         folder.AddFile(pathComponents.Skip(1), chunk);
     }
-
-    public void SortItems()
-    {
-        this.Items = new(this.Items.OrderBy(x => x));
-
-        foreach (WadItemModel item in this.Items)
-        {
-            if (item is WadFolderModel folder)
-                folder.SortItems();
-        }
-    }
-
-    public IEnumerable<WadItemModel> GetFlattenedItems()
-    {
-        foreach (WadItemModel item in this.Items)
-        {
-            // root items are always visible
-            yield return item;
-
-            if (item is WadFolderModel folder && item.IsExpanded)
-                foreach (WadItemModel folderItem in folder.GetFlattenedItems())
-                    yield return folderItem;
-        }
-    }
 }
