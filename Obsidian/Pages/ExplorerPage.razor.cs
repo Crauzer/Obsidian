@@ -7,6 +7,7 @@ using Obsidian.Data.Wad;
 using Obsidian.Services;
 using Obsidian.Utils;
 using PhotinoNET;
+using XXHash3NET;
 
 namespace Obsidian.Pages;
 
@@ -35,7 +36,7 @@ public partial class ExplorerPage
 
     private int _activeTabId = 0;
 
-    private delegate void ReportExtractionProgressDelegate(int progress);
+    private delegate Task ReportExtractionProgressDelegate(int progress);
 
     public async Task OpenWad()
     {
@@ -61,7 +62,7 @@ public partial class ExplorerPage
         }
     }
 
-    public void ExtractAll()
+    public async Task ExtractAll()
     {
         if (this.Tabs.Count == 0)
         {
@@ -73,23 +74,21 @@ public partial class ExplorerPage
         if (string.IsNullOrEmpty(extractionDirectory))
             return;
 
+        IEnumerable<WadFileModel> allFileItems = this.ActiveTab
+            .TraverseFlattenedItems()
+            .Where(x => x is WadFileModel)
+            .Select(x => x as WadFileModel);
+
         this._isExportingFiles = true;
+        this._filesExportCount = allFileItems.Count();
         StateHasChanged();
         try
         {
-            IEnumerable<WadFileModel> allFileItems = this.ActiveTab
-                    .TraverseFlattenedItems()
-                    .Where(x => x is WadFileModel)
-                    .Select(x => x as WadFileModel);
+            await ExtractFiles(allFileItems, extractionDirectory, ReportFileExtractionProgress);
 
-            ExtractFiles(
-                allFileItems,
-                extractionDirectory,
-                progress =>
-                {
-                    this._filesExportProgress = progress;
-                    StateHasChanged();
-                }
+            this.Snackbar.Add(
+                $"Successfully exported {this._filesExportCount} files!",
+                Severity.Success
             );
         }
         catch (Exception exception)
@@ -113,7 +112,7 @@ public partial class ExplorerPage
         }
     }
 
-    private void ExtractFiles(
+    private async Task ExtractFiles(
         IEnumerable<WadFileModel> fileItems,
         string extractionDirectory,
         ReportExtractionProgressDelegate reportProgress
@@ -123,7 +122,7 @@ public partial class ExplorerPage
         WadFile wad = this.ActiveTab.Wad;
         foreach (WadFileModel fileItem in fileItems)
         {
-            string filePath = Path.Join(extractionDirectory, fileItem.Path);
+            string filePath = CreateWadChunkFilePath(extractionDirectory, fileItem.Path);
             Directory.CreateDirectory(Path.GetDirectoryName(filePath));
 
             using FileStream chunkFileStream = File.Create(filePath);
@@ -131,8 +130,24 @@ public partial class ExplorerPage
 
             chunkStream.CopyTo(chunkFileStream);
 
-            reportProgress(currentFileId++);
+            await reportProgress(currentFileId++);
         }
+    }
+
+    private string CreateWadChunkFilePath(string extractionDirectory, string chunkPath)
+    {
+        string naivePath = Path.Join(extractionDirectory, chunkPath);
+        if (naivePath.Length <= 260)
+            return naivePath;
+
+        return Path.Join(
+            extractionDirectory,
+            string.Format(
+                "{0:x16}.{1}",
+                XXHash64.Compute(chunkPath.ToLower()),
+                Path.GetExtension(chunkPath)
+            )
+        );
     }
 
     private void OpenWadFiles(IEnumerable<string> wadPaths)
@@ -168,6 +183,13 @@ public partial class ExplorerPage
 
         return dialog.FileName;
     }
+
+    private async Task ReportFileExtractionProgress(int progress) =>
+        await InvokeAsync(() =>
+        {
+            this._filesExportProgress = progress;
+            StateHasChanged();
+        });
 
     public void RefreshState() => StateHasChanged();
 }

@@ -18,11 +18,11 @@
                     </MudMenuItem>
                     <MudDivider />
                     <MudMenuItem Icon="fa fa-floppy-disk" IconColor="Color.Primary" IconSize="Size.Small"
-                                 OnClick="ExtractAll">
+                                 OnClick="@ExtractAll">
                         Extract All
                     </MudMenuItem>
                     <MudMenuItem Icon="fa fa-file-arrow-down" IconColor="Color.Primary" IconSize="Size.Small"
-                                 OnClick="ExtractSelected">
+                                 OnClick="@ExtractSelected">
                         Extract Selected
                     </MudMenuItem>
                 </MudMenu>
@@ -59,8 +59,11 @@
         <MudProgressCircular Indeterminate Color="Color.Primary" />
     </MudOverlay>
     <MudOverlay DarkBackground Visible="_isExportingFiles" ZIndex="9999">
-        <MudProgressLinear Rounded Class="my-6"
+        <MudProgressLinear Rounded
+                           Class="my-6" Style="width: 500px"
                            Value="@_filesExportProgress" Max="@_filesExportCount"
-                           Color="Color.Primary" Size="Size.Large" />
-    </MudOverlay>
-</MudPaper>
+                           Color="Color.Primary" Size="Size.Large">
+            <MudText Class="unselectable-text">@($"{_filesExportProgress}/{_filesExportCount}")</MudText>
+            </MudProgressLinear>
+        </MudOverlay>
+    </MudPaper>

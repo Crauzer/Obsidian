@@ -182,3 +182,7 @@ app {
         display: block;
     }
 }
+
+.unselectable-text {
+    user-select: none;
+}
