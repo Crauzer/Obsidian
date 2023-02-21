@@ -1,17 +1,17 @@
 ﻿@using Obsidian.Data;
 @inherits LayoutComponentBase
 
-<MudThemeProvider IsDarkMode Theme="Theme"/>
+<MudThemeProvider IsDarkMode Theme="Theme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
-<HashtableProvider OnLoadingStart="OnHashtableLoadingStart" OnLoadingFinished="OnHashtableLoadingFinished"/>
+<HashtableProvider OnLoadingStart="OnHashtableLoadingStart" OnLoadingFinished="OnHashtableLoadingFinished" />
 
 <MudLayout>
     <MudAppBar Elevation="1">
-        <MudImage ObjectFit="ObjectFit.ScaleDown" Height="50" Src="images/obsidian_logo_256.png" Alt="Obsidian logo" Style="border-radius: 8px"/>
+        <MudImage ObjectFit="ObjectFit.ScaleDown" Height="50" Src="images/obsidian_logonew_256.png" Alt="Obsidian logo" Style="border-radius: 8px" />
         <MudText Typo="Typo.h5" Class="ml-3">Obsidian</MudText>
         <MudSpacer />
-        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Edge="Edge.End" Href="https://github.com/Crauzer/Obsidian" Target="_blank"/>
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Edge="Edge.End" Href="https://github.com/Crauzer/Obsidian" Target="_blank" />
     </MudAppBar>
     <MudMainContent>
         @Body
@@ -37,28 +37,28 @@
         this._isLoadingHashtable = false;
     }
 
-    MudTheme Theme = new() 
-    {
-        Palette = new Palette() 
-        { 
-            Primary = Colors.Red.Default,
-            AppbarBackground = Colors.Red.Darken1 
-        },
-        PaletteDark = new PaletteDark() 
+    MudTheme Theme = new()
         {
-            Primary = Colors.Red.Default,
-            AppbarBackground = Colors.Red.Darken1
-        },
-        LayoutProperties = new LayoutProperties() 
-        {
-            DefaultBorderRadius = "8px"
-        },
-        Typography = new Typography()
-        {
-            Default = new Default()
+            Palette = new Palette()
             {
-                FontFamily = new[] { "Fira Sans" }
+                Primary = Colors.Red.Default,
+                AppbarBackground = Colors.Red.Darken1
+            },
+            PaletteDark = new PaletteDark()
+            {
+                Primary = Colors.Red.Default,
+                AppbarBackground = Colors.Red.Darken1
+            },
+            LayoutProperties = new LayoutProperties()
+            {
+                DefaultBorderRadius = "8px"
+            },
+            Typography = new Typography()
+            {
+                Default = new Default()
+                {
+                    FontFamily = new[] { "Fira Sans" }
+                }
             }
-        }
-    };
+        };
 }
