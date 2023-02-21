@@ -31,15 +31,15 @@
             </MudTooltip>
         </MudToolBar>
     </MudPaper>
-    <MudDivider/>
-    <MudTabs @bind-ActivePanelIndex="_activeTabId">
+    <MudDivider />
+    <MudTabs @bind-ActivePanelIndex="_activeTabId" Position="Position.Bottom">
         <ChildContent>
             @foreach (WadTabModel wadTab in this.Tabs)
             {
                 <MudTabPanel Text="@wadTab.Name" Tag="@wadTab.Id">
                     <CascadingValue Value="this">
                         <CascadingValue Value="JsRuntime">
-                            <TreeView ItemsFlat="@wadTab.GetFlattenedItems()" Height="750px" ItemSize="30f">
+                            <TreeView ItemsFlat="@wadTab.GetFlattenedItems()" Height="calc(100vh - 172px)" ItemSize="30f">
                                 <ItemTemplate>
                                     <TreeWadItem Item="@context" />
                                 </ItemTemplate>

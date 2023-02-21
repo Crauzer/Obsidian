@@ -183,6 +183,10 @@ app {
     }
 }
 
+html, body, app {
+    height: 100%;
+}
+
 .unselectable-text {
     user-select: none;
 }
