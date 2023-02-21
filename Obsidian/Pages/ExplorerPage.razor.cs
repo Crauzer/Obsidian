@@ -26,7 +26,7 @@ public partial class ExplorerPage
     public IJSRuntime JsRuntime { get; set; }
 
     public List<WadTabModel> Tabs { get; set; } = new();
-    public WadTabModel ActiveTab => this.Tabs.ElementAt(this._activeTabId);
+    public WadTabModel ActiveTab => this.Tabs.ElementAtOrDefault(this._activeTabId);
     private int _activeTabId = 0;
 
     private bool _isLoadingWadFile = false;
@@ -54,23 +54,17 @@ public partial class ExplorerPage
         finally
         {
             this._isLoadingWadFile = false;
-            StateHasChanged();  
+            StateHasChanged();
         }
     }
 
     public async Task ExtractAll()
     {
-        if (this.Tabs.Count == 0)
-        {
-            this.Snackbar.Add("You need to open a Wad archive!", Severity.Error);
-            return;
-        }
-
         string extractionDirectory = AskForExtractionDirectory();
         if (string.IsNullOrEmpty(extractionDirectory))
             return;
 
-        IEnumerable<WadFileModel> allFileItems = this.ActiveTab
+        IEnumerable<WadFileModel> fileItems = this.ActiveTab
             .TraverseFlattenedItems()
             .Where(x => x is WadFileModel)
             .Select(x => x as WadFileModel);
@@ -79,10 +73,10 @@ public partial class ExplorerPage
         StateHasChanged();
         try
         {
-            await Task.Run(() => ExtractFiles(allFileItems, extractionDirectory));
+            await Task.Run(() => ExtractFiles(fileItems, extractionDirectory));
 
             this.Snackbar.Add(
-                $"Successfully exported {allFileItems.Count()} files!",
+                $"Successfully exported {fileItems.Count()} files!",
                 Severity.Success
             );
         }
@@ -99,10 +93,31 @@ public partial class ExplorerPage
 
     public async Task ExtractSelected()
     {
-        if (this.Tabs.Count == 0)
-        {
-            this.Snackbar.Add("You need to open a Wad archive!", Severity.Error);
+        string extractionDirectory = AskForExtractionDirectory();
+        if (string.IsNullOrEmpty(extractionDirectory))
             return;
+
+        IEnumerable<WadFileModel> fileItems = this.ActiveTab.SelectedFiles;
+
+        this._isExportingFiles = true;
+        StateHasChanged();
+        try
+        {
+            await Task.Run(() => ExtractFiles(fileItems, extractionDirectory));
+
+            this.Snackbar.Add(
+                $"Successfully exported {fileItems.Count()} files!",
+                Severity.Success
+            );
+        }
+        catch (Exception exception)
+        {
+            SnackbarUtils.ShowError(this.Snackbar, exception);
+        }
+        finally
+        {
+            this._isExportingFiles = false;
+            StateHasChanged();
         }
     }
 
@@ -130,7 +145,7 @@ public partial class ExplorerPage
         return Path.Join(
             extractionDirectory,
             string.Format(
-                "{0:x16}.{1}",
+                "{0:x16}{1}",
                 XXHash64.Compute(chunkPath.ToLower()),
                 Path.GetExtension(chunkPath)
             )

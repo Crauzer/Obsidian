@@ -18,10 +18,12 @@
                     </MudMenuItem>
                     <MudDivider />
                     <MudMenuItem Icon="fa fa-floppy-disk" IconColor="Color.Primary" IconSize="Size.Small"
+                                 Disabled="@(ActiveTab is null)"
                                  OnClick="@ExtractAll">
                         Extract All
                     </MudMenuItem>
                     <MudMenuItem Icon="fa fa-file-arrow-down" IconColor="Color.Primary" IconSize="Size.Small"
+                                 Disabled="@(ActiveTab?.SelectedFiles.Count() is (0 or null))"
                                  OnClick="@ExtractSelected">
                         Extract Selected
                     </MudMenuItem>

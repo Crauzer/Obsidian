@@ -18,6 +18,10 @@ public class WadTabModel : IDisposable
     public WadFile Wad { get; set; }
 
     public HashSet<WadItemModel> Items { get; set; } = new();
+    public IEnumerable<WadFileModel> SelectedFiles =>
+        TraverseFlattenedSelectedItems()
+            .Where(x => x is WadFileModel)
+            .Select(x => x as WadFileModel);
 
     public bool IsDisposed { get; private set; }
 
@@ -92,6 +96,7 @@ public class WadTabModel : IDisposable
                 yield return itemItem;
         }
     }
+
     public IEnumerable<WadItemModel> TraverseFlattenedSelectedItems()
     {
         if (this.Items is null)
@@ -106,6 +111,7 @@ public class WadTabModel : IDisposable
                 yield return itemItem;
         }
     }
+
     public IEnumerable<WadItemModel> TraverseFlattenedVisibleItems()
     {
         foreach (WadItemModel item in this.Items)
