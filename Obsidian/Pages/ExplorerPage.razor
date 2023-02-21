@@ -1,0 +1,72 @@
+﻿@page "/explorer"
+@using LeagueToolkit.Core.Wad;
+@using Microsoft.WindowsAPICodePack.Dialogs;
+@using Obsidian.Data.Wad;
+@using Obsidian.Services;
+@using Obsidian.Utils;
+@using PhotinoNET;
+
+<MudPaper>
+    <MudPaper Elevation="25">
+        <MudToolBar Dense DisableGutters>
+            <MudTooltip Text="File" Delay="150">
+                <MudMenu Dense Class="ml-4" Icon="@Icons.Material.TwoTone.Archive" Color="Color.Inherit"
+                         AnchorOrigin="Origin.BottomLeft" Size="Size.Medium">
+                    <MudMenuItem Icon="fa fa-file-import" IconColor="Color.Primary" IconSize="Size.Small"
+                                 OnClick="OpenWad">
+                        Open
+                    </MudMenuItem>
+                    <MudDivider />
+                    <MudMenuItem Icon="fa fa-floppy-disk" IconColor="Color.Primary" IconSize="Size.Small"
+                                 Disabled="@(ActiveTab is null)"
+                                 OnClick="@ExtractAll">
+                        Extract All
+                    </MudMenuItem>
+                    <MudMenuItem Icon="fa fa-file-arrow-down" IconColor="Color.Primary" IconSize="Size.Small"
+                                 Disabled="@(ActiveTab?.SelectedFiles.Count() is (0 or null))"
+                                 OnClick="@ExtractSelected">
+                        Extract Selected
+                    </MudMenuItem>
+                </MudMenu>
+            </MudTooltip>
+        </MudToolBar>
+    </MudPaper>
+    <MudDivider />
+    <MudTabs @bind-ActivePanelIndex="_activeTabId" Position="Position.Bottom">
+        <ChildContent>
+            @foreach (WadTabModel wadTab in this.Tabs)
+            {
+                <MudTabPanel Text="@wadTab.Name" Tag="@wadTab.Id">
+                    <CascadingValue Value="this">
+                        <CascadingValue Value="JsRuntime">
+                            <TreeView ItemsFlat="@wadTab.GetFlattenedItems()" Height="calc(100vh - 172px)" ItemSize="30f">
+                                <ItemTemplate>
+                                    <TreeWadItem Item="@context" />
+                                </ItemTemplate>
+                            </TreeView>
+                        </CascadingValue>
+                    </CascadingValue>
+                </MudTabPanel>
+            }
+        </ChildContent>
+        <TabPanelHeader>
+            <MudTooltip Text="Close">
+                <MudIconButton Class="ml-1" Color="Color.Error" Icon="@Icons.Material.TwoTone.Close"
+                               OnClick="(_) => RemoveWadTab(context)" />
+            </MudTooltip>
+        </TabPanelHeader>
+    </MudTabs>
+
+    <MudOverlay DarkBackground Visible="_isLoadingWadFile" ZIndex="9999">
+        <MudProgressCircular Indeterminate Color="Color.Primary" />
+    </MudOverlay>
+    <MudOverlay DarkBackground Visible="_isExportingFiles" ZIndex="9999">
+        @*https://stackoverflow.com/a/61865580*@
+        <MudProgressLinear Rounded Indeterminate
+                           Class="my-6" Style="width: 500px"
+                           Color="Color.Primary" Size="Size.Large" />
+        <MudText Class="unselectable-text" Align="Align.Center" Typo="Typo.body1">
+            Extracting files...
+        </MudText>
+    </MudOverlay>
+</MudPaper>

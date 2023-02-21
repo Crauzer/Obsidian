@@ -1,0 +1,35 @@
+﻿@using MudBlazor.Utilities;
+@typeparam TItem
+@inherits ComponentBase
+
+<div style="@_style">
+    <Virtualize Items="@ItemsFlat" OverscanCount="10" ItemContent="@ItemTemplate" ItemSize="@ItemSize" />
+</div>
+
+@code {
+    private string _style =>
+        new StyleBuilder()
+            .AddStyle("height", this.Height, !string.IsNullOrEmpty(this.Height))
+            .AddStyle("max-height", this.MaxHeight, !string.IsNullOrEmpty(this.Height))
+            .AddStyle("overflow-y", "scroll")
+            .AddStyle(this.Style)
+            .Build();
+
+    [Parameter]
+    public ICollection<TItem> ItemsFlat { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> ItemTemplate { get; set; }
+
+    [Parameter]
+    public float ItemSize { get; set; } = 50f;
+
+    [Parameter]
+    public string Height { get; set; }
+
+    [Parameter]
+    public string MaxHeight { get; set; }
+
+    [Parameter]
+    public string Style { get; set; }
+}

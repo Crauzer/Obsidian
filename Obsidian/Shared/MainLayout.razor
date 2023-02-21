@@ -1,0 +1,64 @@
+﻿@using Obsidian.Data;
+@inherits LayoutComponentBase
+
+<MudThemeProvider IsDarkMode Theme="Theme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<HashtableProvider OnLoadingStart="OnHashtableLoadingStart" OnLoadingFinished="OnHashtableLoadingFinished" />
+
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudImage ObjectFit="ObjectFit.ScaleDown" Height="50" Src="images/obsidian_logonew_256.png" Alt="Obsidian logo" Style="border-radius: 8px" />
+        <MudText Typo="Typo.h5" Class="ml-3">Obsidian</MudText>
+        <MudSpacer />
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Edge="Edge.End" Href="https://github.com/Crauzer/Obsidian" Target="_blank" />
+    </MudAppBar>
+    <MudMainContent Style="height: 100%">
+        @Body
+    </MudMainContent>
+    <MudOverlay DarkBackground Visible="_isLoadingHashtable" ZIndex="9999">
+        <MudStack AlignItems="AlignItems.Center">
+            <MudProgressCircular Indeterminate Color="Color.Primary" Size="Size.Large" />
+            <MudText Typo="Typo.h5">Syncing hashtables from CDragon...</MudText>
+        </MudStack>
+    </MudOverlay>
+</MudLayout>
+
+@code {
+    private bool _isLoadingHashtable;
+
+    private void OnHashtableLoadingStart()
+    {
+        this._isLoadingHashtable = true;
+    }
+
+    private void OnHashtableLoadingFinished()
+    {
+        this._isLoadingHashtable = false;
+    }
+
+    MudTheme Theme = new()
+        {
+            Palette = new Palette()
+            {
+                Primary = Colors.Red.Default,
+                AppbarBackground = Colors.Red.Darken1
+            },
+            PaletteDark = new PaletteDark()
+            {
+                Primary = Colors.Red.Default,
+                AppbarBackground = Colors.Red.Darken1
+            },
+            LayoutProperties = new LayoutProperties()
+            {
+                DefaultBorderRadius = "8px"
+            },
+            Typography = new Typography()
+            {
+                Default = new Default()
+                {
+                    FontFamily = new[] { "Fira Sans" }
+                }
+            }
+        };
+}
