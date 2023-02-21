@@ -29,17 +29,8 @@ public partial class ExplorerPage
     public WadTabModel ActiveTab => this.Tabs.ElementAt(this._activeTabId);
     private int _activeTabId = 0;
 
-    private MudProgressLinear _extractionProgressComponent;
-
     private bool _isLoadingWadFile = false;
     private bool _isExportingFiles = false;
-
-    private int _filesExportProgress = 0;
-    private int _filesExportCount = 0;
-
-    private const int FILE_EXPORT_PROGRESS_CHUNK = 100;
-
-    private delegate Task ReportExtractionProgressDelegate(int progress);
 
     public async Task OpenWad()
     {
@@ -50,9 +41,10 @@ public partial class ExplorerPage
             return;
 
         this._isLoadingWadFile = true;
+        StateHasChanged();
         try
         {
-            await InvokeAsync(() => OpenWadFiles(dialog.FileNames));
+            await Task.Run(() => OpenWadFiles(dialog.FileNames));
             this.Snackbar.Add("Successfully opened Wad archives!", Severity.Success);
         }
         catch (Exception exception)
@@ -62,6 +54,7 @@ public partial class ExplorerPage
         finally
         {
             this._isLoadingWadFile = false;
+            StateHasChanged();  
         }
     }
 
@@ -83,16 +76,13 @@ public partial class ExplorerPage
             .Select(x => x as WadFileModel);
 
         this._isExportingFiles = true;
-        this._filesExportCount = allFileItems.Count();
         StateHasChanged();
         try
         {
-            await InvokeAsync(
-                () => ExtractFiles(allFileItems, extractionDirectory, ReportFileExtractionProgress)
-            );
+            await Task.Run(() => ExtractFiles(allFileItems, extractionDirectory));
 
             this.Snackbar.Add(
-                $"Successfully exported {this._filesExportCount} files!",
+                $"Successfully exported {allFileItems.Count()} files!",
                 Severity.Success
             );
         }
@@ -103,7 +93,6 @@ public partial class ExplorerPage
         finally
         {
             this._isExportingFiles = false;
-            this._filesExportProgress = 0;
             StateHasChanged();
         }
     }
@@ -117,13 +106,8 @@ public partial class ExplorerPage
         }
     }
 
-    private async Task ExtractFiles(
-        IEnumerable<WadFileModel> fileItems,
-        string extractionDirectory,
-        ReportExtractionProgressDelegate reportProgress
-    )
+    private void ExtractFiles(IEnumerable<WadFileModel> fileItems, string extractionDirectory)
     {
-        int currentFileId = 0;
         WadFile wad = this.ActiveTab.Wad;
         foreach (WadFileModel fileItem in fileItems)
         {
@@ -134,8 +118,6 @@ public partial class ExplorerPage
             using Stream chunkStream = wad.OpenChunk(fileItem.Chunk);
 
             chunkStream.CopyTo(chunkFileStream);
-
-            await reportProgress(currentFileId++);
         }
     }
 
@@ -187,24 +169,6 @@ public partial class ExplorerPage
         dialog.ShowDialog(this.Window.WindowHandle);
 
         return dialog.FileName;
-    }
-
-    private async Task ReportFileExtractionProgress(int progress)
-    {
-        // We need to report progress in chunks, otherwise the thread will get choked
-        if (
-            progress / FILE_EXPORT_PROGRESS_CHUNK
-            == this._filesExportProgress / FILE_EXPORT_PROGRESS_CHUNK
-        )
-            return;
-
-        await InvokeAsync(() =>
-        {
-            this._filesExportProgress = progress;
-            StateHasChanged();
-        });
-        await Task.Delay(1);
-        
     }
 
     public void RefreshState() => StateHasChanged();
