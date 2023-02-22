@@ -29,7 +29,7 @@ public class Program
             config.SnackbarConfiguration.ShowTransitionDuration = 250;
             config.SnackbarConfiguration.HideTransitionDuration = 250;
             config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
-            config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomCenter;
+            config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopCenter;
         });
 
         PhotinoBlazorApp app = builder.Build();

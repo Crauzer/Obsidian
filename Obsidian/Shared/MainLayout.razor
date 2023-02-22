@@ -1,32 +1,44 @@
 ﻿@using Obsidian.Data;
 @inherits LayoutComponentBase
 
+<style>
+    .main-content-vertical {
+        height: 100%;
+        margin-left: 75px !important;
+        padding-top: 0px !important;
+    }
+</style>
+
 <MudThemeProvider IsDarkMode Theme="Theme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 <HashtableProvider OnLoadingStart="OnHashtableLoadingStart" OnLoadingFinished="OnHashtableLoadingFinished" />
 
 <MudLayout>
-    <MudAppBar Elevation="1">
-        <MudImage Style="border-radius: 8px"
-                  Elevation="6"
-                  ObjectFit="ObjectFit.ScaleDown" Height="50"
-                  Src="images/obsidian_logonew_256.png" Alt="Obsidian logo" />
-        <MudText Typo="Typo.h5" Class="ml-3" Style="text-shadow: 1px 1px 6px black">Obsidian</MudText>
-        <MudSpacer />
-        <MudStack Row Spacing="2">
-            <MudTooltip Text="Settings" Color="Color.Dark">
-                <MudIconButton Icon="@Icons.Material.TwoTone.Settings" Color="Color.Dark" Size="Size.Large"
-                               Variant="Variant.Filled" />
-            </MudTooltip>
-            <MudTooltip Text="Go to GitHub" Color="Color.Dark">
-                <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Dark" Size="Size.Large"
-                               Variant="Variant.Filled"
-                               Href="https://github.com/Crauzer/Obsidian" Target="_blank" />
-            </MudTooltip>
+    <MudDrawer Open
+               Style="width: 75px;"
+               Elevation="2">
+        <MudStack Class="py-2" Style="height: 100%"
+                  AlignItems="AlignItems.Center">
+            <MudImage Style="border-radius: 8px"
+                      Elevation="6"
+                      ObjectFit="ObjectFit.ScaleDown" Width="50"
+                      Src="images/obsidian_logonew_256.png" Alt="Obsidian logo" />
+            <MudSpacer />
+            <MudStack Spacing="2">
+                <MudTooltip Text="Settings" Color="Color.Dark" Placement="Placement.Right">
+                    <MudIconButton Icon="@Icons.Material.TwoTone.Settings" Color="Color.Inherit" Size="Size.Large"
+                                   Variant="Variant.Filled" />
+                </MudTooltip>
+                <MudTooltip Text="Go to GitHub" Color="Color.Dark" Placement="Placement.Right">
+                    <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Size="Size.Large"
+                                   Variant="Variant.Filled"
+                                   Href="https://github.com/Crauzer/Obsidian" Target="_blank" />
+                </MudTooltip>
+            </MudStack>
         </MudStack>
-    </MudAppBar>
-    <MudMainContent Style="height: 100%">
+    </MudDrawer>
+    <MudMainContent Class="main-content-vertical">
         @Body
     </MudMainContent>
     <MudOverlay DarkBackground Visible="_isLoadingHashtable" ZIndex="9999">
@@ -55,12 +67,14 @@
             Palette = new Palette()
             {
                 Primary = Colors.Red.Accent2,
-                AppbarBackground = Colors.Red.Darken1
+                AppbarBackground = "#712b36",
+                DrawerBackground = "#712b36"
             },
             PaletteDark = new PaletteDark()
             {
                 Primary = Colors.Red.Accent2,
-                AppbarBackground = Colors.Red.Darken1
+                AppbarBackground = "#712b36",
+                DrawerBackground = "#712b36"
             },
             LayoutProperties = new LayoutProperties()
             {

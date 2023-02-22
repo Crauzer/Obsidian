@@ -68,7 +68,7 @@
         <ActivatorContent>
             <table class="tree-view-item" style="@($"padding-left: {Item.Depth * 20}px;")">
                 <tr @key="Item.Id" style="height: 30px;">
-                    <td style="vertical-align: middle; width: 2%">
+                    <td style="vertical-align: middle; width: 20px">
                         @if (Item.Type is WadItemType.Folder)
                         {
                             <MudIconButton Icon="@(Item.IsExpanded ? Icons.Material.TwoTone.KeyboardArrowDown : Icons.Material.TwoTone.KeyboardArrowRight)"
@@ -76,10 +76,10 @@
                                        OnClick="@OnToggleExpand" @ondblclick:stopPropagation />
                         }
                     </td>
-                    <td style="width: 3%">
+                    <td style="width: 44px">
                         <MudCheckBox StopClickPropagation @bind-Checked="IsSelected" Color="Color.Primary" Size="Size.Small" />
                     </td>
-                    <td style="text-align: center; width: 2%">
+                    <td style="text-align: center; width: 24px">
                         @if (Item.Type is WadItemType.File)
                         {
                             <MudIcon Class="d-block" Icon="@Icons.Custom.FileFormats.FileDocument" Size="Size.Small" Color="Color.Inherit" />

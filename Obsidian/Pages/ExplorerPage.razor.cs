@@ -190,15 +190,16 @@ public partial class ExplorerPage
     {
         try
         {
-            return this.ActiveTab.GetFlattenedItems();
+            return this.ActiveTab?.GetFlattenedItems() ?? new();
         }
-        catch(Exception exception)
+        catch (Exception exception)
         {
             SnackbarUtils.ShowSoftError(this.Snackbar, exception);
 
             return new();
         }
     }
+
     public void ToggleActiveTabRegexFilter()
     {
         this.ActiveTab.UseRegexFilter = !this.ActiveTab.UseRegexFilter;
