@@ -26,7 +26,7 @@ public class Program
         {
             config.SnackbarConfiguration.PreventDuplicates = true;
             config.SnackbarConfiguration.ShowCloseIcon = true;
-            config.SnackbarConfiguration.VisibleStateDuration = 5000;
+            config.SnackbarConfiguration.VisibleStateDuration = 3000;
             config.SnackbarConfiguration.ShowTransitionDuration = 250;
             config.SnackbarConfiguration.HideTransitionDuration = 250;
             config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
