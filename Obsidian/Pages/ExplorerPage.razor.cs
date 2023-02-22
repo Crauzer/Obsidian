@@ -49,7 +49,7 @@ public partial class ExplorerPage
         }
         catch (Exception exception)
         {
-            SnackbarUtils.ShowError(this.Snackbar, exception);
+            SnackbarUtils.ShowHardError(this.Snackbar, exception);
         }
         finally
         {
@@ -82,7 +82,7 @@ public partial class ExplorerPage
         }
         catch (Exception exception)
         {
-            SnackbarUtils.ShowError(this.Snackbar, exception);
+            SnackbarUtils.ShowHardError(this.Snackbar, exception);
         }
         finally
         {
@@ -112,7 +112,7 @@ public partial class ExplorerPage
         }
         catch (Exception exception)
         {
-            SnackbarUtils.ShowError(this.Snackbar, exception);
+            SnackbarUtils.ShowHardError(this.Snackbar, exception);
         }
         finally
         {
@@ -184,6 +184,25 @@ public partial class ExplorerPage
         dialog.ShowDialog(this.Window.WindowHandle);
 
         return dialog.FileName;
+    }
+
+    public List<WadItemModel> GetVisibleItemsForActiveTab()
+    {
+        try
+        {
+            return this.ActiveTab.GetFlattenedItems();
+        }
+        catch(Exception exception)
+        {
+            SnackbarUtils.ShowSoftError(this.Snackbar, exception);
+
+            return new();
+        }
+    }
+    public void ToggleActiveTabRegexFilter()
+    {
+        this.ActiveTab.UseRegexFilter = !this.ActiveTab.UseRegexFilter;
+        StateHasChanged();
     }
 
     public void RefreshState() => StateHasChanged();
