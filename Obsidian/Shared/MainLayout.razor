@@ -8,6 +8,11 @@
         padding-top: 0px !important;
     }
 
+    .mud-drawer {
+        background: rgb(113,43,54);
+        background: linear-gradient(180deg, rgba(113,43,54,1) 0%, rgba(143,41,57,1) 100%);
+    }
+
     .logo-image {
         width: 50px;
         border-radius: 25%;
@@ -36,15 +41,17 @@
                       ObjectFit="ObjectFit.ScaleDown"
                       Src="images/obsidian_logonew_256.png" Alt="Obsidian logo" />
             <MudSpacer />
-            <MudStack Spacing="2">
+            <MudStack AlignItems="AlignItems.Center">
                 <MudTooltip Text="Settings" Color="Color.Dark" Placement="Placement.Right">
-                    <MudIconButton Icon="@Icons.Material.TwoTone.Settings" Color="Color.Inherit" Size="Size.Large"
-                                   Variant="Variant.Filled" />
+                    <MudIconButton Icon="@Icons.Material.TwoTone.Settings" Size="Size.Large" />
+                </MudTooltip>
+                <MudTooltip Text="Submit Bug Report" Color="Color.Dark" Placement="Placement.Right">
+                    <MudIconButton Icon="@CustomIcons.Material.Alert" Color="Color.Inherit" Size="Size.Medium"
+                                   OnClick="SubmitBugReport"/>
                 </MudTooltip>
                 <MudTooltip Text="Go to GitHub" Color="Color.Dark" Placement="Placement.Right">
-                    <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Size="Size.Large"
-                                   Variant="Variant.Filled"
-                                   Href="https://github.com/Crauzer/Obsidian" Target="_blank" />
+                    <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Size="Size.Medium"
+                                   OnClick="GoToGithub" />
                 </MudTooltip>
             </MudStack>
         </MudStack>
@@ -61,6 +68,8 @@
 </MudLayout>
 
 @code {
+    [Inject] public IJSRuntime JS { get; set; }
+
     private bool _isLoadingHashtable;
 
     private void OnHashtableLoadingStart()
@@ -71,5 +80,15 @@
     private void OnHashtableLoadingFinished()
     {
         this._isLoadingHashtable = false;
+    }
+
+    private async Task SubmitBugReport()
+    {
+        await this.JS.InvokeVoidAsync("useCmd", @"explorer ""https://github.com/Crauzer/Obsidian/issues/new?assignees=&labels=bug%2C+triage&template=bug_report.md&title=%5BBUG%5D+%2A%2ABug+report+title+here%2A%2A""");
+    }
+
+    private async Task GoToGithub()
+    {
+        await this.JS.InvokeVoidAsync("useCmd", @"explorer ""https://github.com/Crauzer/Obsidian""");
     }
 }
