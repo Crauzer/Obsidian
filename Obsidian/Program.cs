@@ -4,6 +4,7 @@ using MudBlazor.Services;
 using Obsidian.Data;
 using Obsidian.Services;
 using Photino.Blazor;
+using PhotinoAPI;
 
 namespace Obsidian;
 
@@ -42,12 +43,12 @@ public class Program
             .Center()
             .SetWidth(1600)
             .SetHeight(1100)
-            .SetContextMenuEnabled(false);
+            .SetContextMenuEnabled(false)
+            .RegisterApi(new());
 
 #if DEBUG
         app.MainWindow.SetDevToolsEnabled(true);
 #endif
-
         AppDomain.CurrentDomain.UnhandledException += (sender, error) =>
         {
             app.MainWindow.OpenAlertWindow("Fatal exception", error.ExceptionObject.ToString());

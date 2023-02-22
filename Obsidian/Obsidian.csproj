@@ -17,6 +17,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
     <PackageReference Include="MudBlazor" Version="6.1.9" />
     <PackageReference Include="Octokit" Version="5.0.0" />
+    <PackageReference Include="Photino.API" Version="1.2.0-alpha" />
     <PackageReference Include="WindowsAPICodePackShell" Version="7.0.3" />
   </ItemGroup>
 

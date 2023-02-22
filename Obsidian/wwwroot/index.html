@@ -8,6 +8,7 @@
     <link href="css/app.css" rel="stylesheet" />
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <script src="photino.js"></script>
 </head>
 <body>
     <app>Loading...</app>
@@ -20,5 +21,13 @@
 
     <script src="_framework/blazor.webview.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+
+    <script>
+        const Photino = PhotinoAPI.Photino;
+
+        async function useCmd(command) {
+            await Photino.os.cmd(command);
+        }
+    </script>
 </body>
 </html>
