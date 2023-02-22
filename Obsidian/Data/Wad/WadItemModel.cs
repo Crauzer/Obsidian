@@ -1,4 +1,7 @@
-﻿using System.Diagnostics;
+﻿using Microsoft.Extensions.FileSystemGlobbing;
+using System.Diagnostics;
+using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using System.Windows.Controls;
 using PathIO = System.IO.Path;
 
@@ -74,6 +77,7 @@ public abstract class WadItemModel : IComparable<WadItemModel>
                 yield return itemItem;
         }
     }
+
     public IEnumerable<WadItemModel> TraverseFlattenedSelectedItems()
     {
         if (this.Items is null)
@@ -88,21 +92,65 @@ public abstract class WadItemModel : IComparable<WadItemModel>
                 yield return itemItem;
         }
     }
-    public IEnumerable<WadItemModel> TraverseFlattenedVisibleItems()
+
+    public IEnumerable<WadItemModel> TraverseFlattenedVisibleItems(
+        string filter,
+        bool useRegex = false
+    )
     {
         if (this.Items is null)
             yield break;
 
         foreach (WadItemModel item in this.Items)
         {
-            // root items are always visible
-            yield return item;
+            if (!string.IsNullOrEmpty(filter))
+            {
+                // If the current item is a file we check if it matches the filter
+                if (item is WadFileModel && DoesMatchFilter(item, filter, useRegex))
+                {
+                    yield return item;
+                    continue;
+                }
 
-            if (item is WadFolderModel folder && item.IsExpanded)
-                foreach (WadItemModel folderItem in folder.TraverseFlattenedVisibleItems())
-                    yield return folderItem;
+                // If the current item is a folder we get filtered items and if there are none we skip
+                IReadOnlyList<WadItemModel> filteredItems = item.TraverseFlattenedVisibleItems(
+                        filter,
+                        useRegex
+                    )
+                    .ToList();
+                if (filteredItems.Count is 0)
+                    continue;
+
+                // Return parent only if its children are included in the filter
+                yield return item;
+
+                if (item.IsExpanded)
+                    foreach (WadItemModel itemItem in filteredItems)
+                        yield return itemItem;
+            }
+            else
+            {
+                // root items are always visible
+                yield return item;
+
+                if (item is WadFolderModel folder && item.IsExpanded)
+                    foreach (WadItemModel folderItem in folder.TraverseFlattenedVisibleItems(null))
+                        yield return folderItem;
+            }
         }
     }
+
+    public static bool DoesMatchFilter(WadItemModel item, string filter, bool useRegex) =>
+        useRegex switch
+        {
+            true
+                => Regex.IsMatch(
+                    item.Path,
+                    filter,
+                    RegexOptions.IgnoreCase | RegexOptions.CultureInvariant
+                ),
+            false => item.Path.Contains(filter, StringComparison.InvariantCultureIgnoreCase)
+        };
 
     public int CompareTo(WadItemModel other) =>
         (this, other) switch

@@ -17,6 +17,7 @@ public class WadTabModel : IDisposable
     public string Name { get; set; }
     public WadFile Wad { get; set; }
 
+    public bool UseRegexFilter { get; set; }
     public string Filter { get; set; }
 
     public HashSet<WadItemModel> Items { get; set; } = new();
@@ -118,12 +119,43 @@ public class WadTabModel : IDisposable
     {
         foreach (WadItemModel item in this.Items)
         {
-            // root items are always visible
-            yield return item;
+            if (!string.IsNullOrEmpty(this.Filter))
+            {
+                // If the current item is a file we check if it matches the filter
+                if (
+                    item is WadFileModel
+                    && WadItemModel.DoesMatchFilter(item, this.Filter, this.UseRegexFilter)
+                )
+                {
+                    yield return item;
+                    continue;
+                }
 
-            if (item is WadFolderModel folder && item.IsExpanded)
-                foreach (WadItemModel folderItem in folder.TraverseFlattenedVisibleItems())
-                    yield return folderItem;
+                // If the current item is a folder we get filtered items and if there are none we skip
+                IReadOnlyList<WadItemModel> filteredItems = item.TraverseFlattenedVisibleItems(
+                        this.Filter,
+                        this.UseRegexFilter
+                    )
+                    .ToList();
+                if (filteredItems.Count is 0)
+                    continue;
+
+                // Return parent only if its children are included in the filter
+                yield return item;
+
+                if (item.IsExpanded)
+                    foreach (WadItemModel itemItem in filteredItems)
+                        yield return itemItem;
+            }
+            else
+            {
+                // root items are always visible
+                yield return item;
+
+                if (item is WadFolderModel folder && item.IsExpanded)
+                    foreach (WadItemModel folderItem in folder.TraverseFlattenedVisibleItems(null))
+                        yield return folderItem;
+            }
         }
     }
 

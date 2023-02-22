@@ -13,17 +13,17 @@
             <MudTooltip Text="File" Delay="150">
                 <MudMenu Dense Class="ml-4" Icon="@Icons.Material.TwoTone.Archive" Color="Color.Inherit"
                          AnchorOrigin="Origin.BottomLeft" Size="Size.Medium">
-                    <MudMenuItem Icon="fa fa-file-import" IconColor="Color.Primary" IconSize="Size.Small"
+                    <MudMenuItem Icon="@CustomIcons.Material.ArchiveEdit" IconColor="Color.Primary" IconSize="Size.Small"
                                  OnClick="OpenWad">
                         Open
                     </MudMenuItem>
                     <MudDivider />
-                    <MudMenuItem Icon="fa fa-floppy-disk" IconColor="Color.Primary" IconSize="Size.Small"
+                    <MudMenuItem Icon="@CustomIcons.Material.ContentSaveAll" IconColor="Color.Primary" IconSize="Size.Small"
                                  Disabled="@(ActiveTab is null)"
                                  OnClick="@ExtractAll">
                         Extract All
                     </MudMenuItem>
-                    <MudMenuItem Icon="fa fa-file-arrow-down" IconColor="Color.Primary" IconSize="Size.Small"
+                    <MudMenuItem Icon="@CustomIcons.Material.ContentSave" IconColor="Color.Primary" IconSize="Size.Small"
                                  Disabled="@(ActiveTab?.SelectedFiles.Count() is (0 or null))"
                                  OnClick="@ExtractSelected">
                         Extract Selected
@@ -31,15 +31,30 @@
                 </MudMenu>
             </MudTooltip>
             <MudSpacer />
-            <MudStack Row Spacing="1">
-                <MudIcon Icon="@CustomIcons.Regex" Color="Color.Primary" Size="Size.Medium" />
-
-            </MudStack>
             @if (ActiveTab is not null)
             {
-                <div style="position: absolute; top: 46px; right: 8px; z-index: 100; width: 32rem">
-                    <MudTextField @bind-Value="ActiveTab.Filter" Label="Filter" Variant="Variant.Filled"
-                              Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.TwoTone.FilterList" AdornmentColor="Color.Primary" />
+                <div style="position: absolute; top: 48px; right: 8px; z-index: 100; width: 32rem">
+                    <MudStack Row Spacing="1" AlignItems="AlignItems.Start">
+                        <MudTooltip Text="Regex" Color="Color.Dark">
+                            @if (ActiveTab.UseRegexFilter)
+                            {
+                                <MudIconButton Class="mt-1"
+                                       Icon="@CustomIcons.Material.CodeJson" Size="Size.Small" Color="Color.Primary"
+                                       Variant="Variant.Filled"
+                                       OnClick="ToggleActiveTabRegexFilter" />
+                            }
+                            else
+                            {
+                                <MudIconButton Class="mt-1"
+                                       Icon="@CustomIcons.Material.CodeJson" Size="Size.Small" Color="Color.Inherit"
+                                       Variant="Variant.Filled"
+                                       OnClick="ToggleActiveTabRegexFilter" />
+                            }
+                        </MudTooltip>
+                        <MudTextField Class="mt-0"
+                                  DebounceInterval="500" @bind-Value="ActiveTab.Filter"
+                                  Label="Filter" Variant="Variant.Filled" />
+                    </MudStack>
                 </div>
 
             }
@@ -53,11 +68,13 @@
                 <MudTabPanel Text="@wadTab.Name" Tag="@wadTab.Id">
                     <CascadingValue Value="this">
                         <CascadingValue Value="JsRuntime">
-                            <TreeView ItemsFlat="@wadTab.GetFlattenedItems()" Height="calc(100vh - 172px)" ItemSize="30f">
-                                <ItemTemplate>
-                                    <TreeWadItem Item="@context" />
-                                </ItemTemplate>
-                            </TreeView>
+                            <CascadingValue Value="ActiveTab">
+                                <TreeView ItemsFlat="@GetVisibleItemsForActiveTab()" Height="calc(100vh - 172px)" ItemSize="30f">
+                                    <ItemTemplate>
+                                        <TreeWadItem Item="@context" />
+                                    </ItemTemplate>
+                                </TreeView>
+                            </CascadingValue>
                         </CascadingValue>
                     </CascadingValue>
                 </MudTabPanel>
