@@ -9,14 +9,26 @@
 
 <style>
     /*.mud-tabs-toolbar-wrapper > div.d-inline-block {
-            border-top: 1px solid #ffffff1e;
-            border-left: 1px solid #ffffff1e;
+                        border-top: 1px solid #ffffff1e;
+                        border-left: 1px solid #ffffff1e;
+                    }
+
+                    .mud-tabs-toolbar-wrapper:nth-last-child(-n+1) {
+                        border-left: none;
+                        border-right: 1px solid #ffffff1e;
+                    }*/
+
+    .wad-tab-close-button {
+        border-radius: 0%;
+    }
+
+        .wad-tab-close-button:hover {
+            background-color: transparent !important;
         }
 
-        .mud-tabs-toolbar-wrapper:nth-last-child(-n+1) {
-            border-left: none;
-            border-right: 1px solid #ffffff1e;
-        }*/
+            .wad-tab-close-button:hover > .mud-icon-button-label > svg {
+                fill: #ff3f5fff;
+            }
 </style>
 
 <MudPaper>
@@ -98,10 +110,10 @@
             }
         </ChildContent>
         <TabPanelHeader>
-            <MudTooltip Text="Close">
-                <MudIconButton Class="ml-1" Color="Color.Error" Icon="@Icons.Material.TwoTone.Close"
-                               OnClick="(_) => RemoveWadTab(context)" />
-            </MudTooltip>
+            <MudIconButton DisableRipple
+                           Class="ml-1 wad-tab-close-button" Color="Color.Inherit" Icon="@Icons.Material.TwoTone.Close"
+                           Size="Size.Medium"
+                           OnClick="(_) => RemoveWadTab(context)" />
         </TabPanelHeader>
     </MudTabs>
 
