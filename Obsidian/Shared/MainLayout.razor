@@ -7,6 +7,17 @@
         margin-left: 75px !important;
         padding-top: 0px !important;
     }
+
+    .logo-image {
+        width: 50px;
+        border-radius: 25%;
+        transition: box-shadow 500ms, width 500ms;
+    }
+
+        .logo-image:hover {
+            width: 51px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,8);
+        }
 </style>
 
 <MudThemeProvider IsDarkMode Theme="AppTheme.Theme" />
@@ -20,9 +31,9 @@
                Elevation="2">
         <MudStack Class="py-2" Style="height: 100%"
                   AlignItems="AlignItems.Center">
-            <MudImage Style="border-radius: 8px"
+            <MudImage Class="logo-image"
                       Elevation="6"
-                      ObjectFit="ObjectFit.ScaleDown" Width="50"
+                      ObjectFit="ObjectFit.ScaleDown"
                       Src="images/obsidian_logonew_256.png" Alt="Obsidian logo" />
             <MudSpacer />
             <MudStack Spacing="2">
