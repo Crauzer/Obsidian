@@ -1,5 +1,8 @@
-﻿@using Obsidian.Data.Wad;
+﻿@using Microsoft.WindowsAPICodePack.Dialogs;
+@using Obsidian.Data.Wad;
+@using Obsidian.Data;
 @using Obsidian.Pages;
+@using Obsidian.Utils;
 
 <style>
     .tree-view-item-wrapper {
@@ -38,25 +41,37 @@
                 <MudText Typo="Typo.subtitle2">Copy Name</MudText>
             </MudMenuItem>
             <MudDivider />
+            @if (this.Item.Type is WadItemType.File)
+            {
+                <MudMenuItem Icon="@CustomIcons.Material.ContentSave" IconSize="Size.Small" IconColor="Color.Primary"
+                         OnClick="@Save">
+                    <MudText Typo="Typo.subtitle2">Save</MudText>
+                </MudMenuItem>
+            }
+            else
+            {
+
+            }
+            <MudDivider />
             <MudMenuItem Icon="@Icons.Material.TwoTone.Code" IconSize="Size.Small" IconColor="Color.Primary">
-                <MudTooltip Delay="150" Placement="Placement.Right">
+                <MudTooltip Delay="150" Placement="Placement.Right" Color="Color.Dark">
                     <ChildContent>
                         <MudText Typo="Typo.subtitle2">Details</MudText>
                     </ChildContent>
                     <TooltipContent>
-                        <MudStack Spacing="1">
-                            <MudText Typo="Typo.subtitle1">
+                        <MudStack Spacing="1" AlignItems="AlignItems.Start">
+                            <MudText Typo="Typo.subtitle2">
                                 @Item.Path
                             </MudText>
                             @if (Item is WadFileModel file)
                             {
-                                <MudText Typo="Typo.subtitle1">
+                                <MudText Typo="Typo.subtitle2">
                                     XXHash: @string.Format("{0:x16}", file.Chunk.PathHash)
                                 </MudText>
-                                <MudText Typo="Typo.subtitle1">
+                                <MudText Typo="Typo.subtitle2">
                                     Compressed Size: @file.Chunk.CompressedSize
                                 </MudText>
-                                <MudText Typo="Typo.subtitle1">
+                                <MudText Typo="Typo.subtitle2">
                                     Uncompressed Size: @file.Chunk.UncompressedSize
                                 </MudText>
                             }
@@ -150,5 +165,30 @@
     private async Task CopyPathToClipboard()
     {
         await this.JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", this.Item.Path);
+    }
+
+    private void Save()
+    {
+        if (this.Item is not WadFileModel fileItem)
+            return;
+
+        CommonSaveFileDialog dialog = new("Save") { DefaultFileName = fileItem.Name };
+        if (dialog.ShowDialog(this.Root.Window.WindowHandle) is not CommonFileDialogResult.Ok)
+            return;
+
+        this.Root.ToggleExporting(true);
+        try
+        {
+            WadUtils.SaveChunk(this.WadTab.Wad, fileItem.Chunk, dialog.FileName);
+            this.Root.Snackbar.Add($"Saved {fileItem.Name}", Severity.Success);
+        }
+        catch (Exception exception)
+        {
+            SnackbarUtils.ShowHardError(this.Root.Snackbar, exception);
+        }
+        finally
+        {
+            this.Root.ToggleExporting(false);
+        }
     }
 }

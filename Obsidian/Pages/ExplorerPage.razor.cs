@@ -69,8 +69,7 @@ public partial class ExplorerPage
             .Where(x => x is WadFileModel)
             .Select(x => x as WadFileModel);
 
-        this._isExportingFiles = true;
-        StateHasChanged();
+        ToggleExporting(true);
         try
         {
             await Task.Run(() => ExtractFiles(fileItems, extractionDirectory));
@@ -86,8 +85,7 @@ public partial class ExplorerPage
         }
         finally
         {
-            this._isExportingFiles = false;
-            StateHasChanged();
+            ToggleExporting(false);
         }
     }
 
@@ -99,8 +97,7 @@ public partial class ExplorerPage
 
         IEnumerable<WadFileModel> fileItems = this.ActiveTab.SelectedFiles;
 
-        this._isExportingFiles = true;
-        StateHasChanged();
+        ToggleExporting(true);
         try
         {
             await Task.Run(() => ExtractFiles(fileItems, extractionDirectory));
@@ -116,8 +113,7 @@ public partial class ExplorerPage
         }
         finally
         {
-            this._isExportingFiles = false;
-            StateHasChanged();
+            ToggleExporting(false);
         }
     }
 
@@ -125,31 +121,7 @@ public partial class ExplorerPage
     {
         WadFile wad = this.ActiveTab.Wad;
         foreach (WadFileModel fileItem in fileItems)
-        {
-            string filePath = CreateWadChunkFilePath(extractionDirectory, fileItem.Path);
-            Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-
-            using FileStream chunkFileStream = File.Create(filePath);
-            using Stream chunkStream = wad.OpenChunk(fileItem.Chunk);
-
-            chunkStream.CopyTo(chunkFileStream);
-        }
-    }
-
-    private string CreateWadChunkFilePath(string extractionDirectory, string chunkPath)
-    {
-        string naivePath = Path.Join(extractionDirectory, chunkPath);
-        if (naivePath.Length <= 260)
-            return naivePath;
-
-        return Path.Join(
-            extractionDirectory,
-            string.Format(
-                "{0:x16}{1}",
-                XXHash64.Compute(chunkPath.ToLower()),
-                Path.GetExtension(chunkPath)
-            )
-        );
+            Utils.WadUtils.SaveChunk(wad, fileItem.Chunk, fileItem.Path, extractionDirectory);
     }
 
     private void OpenWadFiles(IEnumerable<string> wadPaths)
@@ -203,6 +175,12 @@ public partial class ExplorerPage
     public void ToggleActiveTabRegexFilter()
     {
         this.ActiveTab.UseRegexFilter = !this.ActiveTab.UseRegexFilter;
+        StateHasChanged();
+    }
+
+    public void ToggleExporting(bool isExporting)
+    {
+        this._isExportingFiles = isExporting;
         StateHasChanged();
     }
 
