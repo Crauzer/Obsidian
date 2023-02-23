@@ -40,9 +40,7 @@ public class Program
         app.MainWindow
             .SetIconFile("favicon.ico")
             .SetTitle("Obsidian")
-            .Center()
-            .SetWidth(1600)
-            .SetHeight(1100)
+            .SetUseOsDefaultSize(true)
             .SetContextMenuEnabled(false)
             .RegisterApi(new());
 
