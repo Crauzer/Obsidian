@@ -95,7 +95,7 @@ public partial class ExplorerPage
         if (string.IsNullOrEmpty(extractionDirectory))
             return;
 
-        IEnumerable<WadFileModel> fileItems = this.ActiveTab.SelectedFiles;
+        IEnumerable<WadFileModel> fileItems = this.ActiveTab.CheckedFiles;
 
         ToggleExporting(true);
         try

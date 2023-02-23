@@ -52,7 +52,7 @@
                     Extract All
                 </MudMenuItem>
                 <MudMenuItem Icon="@CustomIcons.Material.ContentSave" IconColor="Color.Primary" IconSize="Size.Small"
-                             Disabled="@(ActiveTab?.SelectedFiles.Count() is (0 or null))"
+                             Disabled="@(ActiveTab?.CheckedFiles.Count() is (0 or null))"
                              OnClick="@ExtractSelected">
                     Extract Selected
                 </MudMenuItem>

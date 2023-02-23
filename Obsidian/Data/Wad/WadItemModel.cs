@@ -43,7 +43,7 @@ public abstract class WadItemModel : IComparable<WadItemModel>
     }
 
     public bool IsSelected { get; set; }
-
+    public bool IsChecked { get; set; }
     public bool IsExpanded { get; set; }
 
     public HashSet<WadItemModel> Items { get; protected set; }
@@ -78,17 +78,17 @@ public abstract class WadItemModel : IComparable<WadItemModel>
         }
     }
 
-    public IEnumerable<WadItemModel> TraverseFlattenedSelectedItems()
+    public IEnumerable<WadItemModel> TraverseFlattenedCheckedItems()
     {
         if (this.Items is null)
             yield break;
 
         foreach (WadItemModel item in this.Items)
         {
-            if (item.IsSelected)
+            if (item.IsChecked)
                 yield return item;
 
-            foreach (WadItemModel itemItem in item.TraverseFlattenedSelectedItems())
+            foreach (WadItemModel itemItem in item.TraverseFlattenedCheckedItems())
                 yield return itemItem;
         }
     }

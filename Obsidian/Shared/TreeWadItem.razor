@@ -10,9 +10,13 @@
         padding-left: 2rem;
     }
 
-        .tree-view-item-wrapper:hover {
+        .tree-view-item-wrapper:hover:not(.tree-view-item-wrapper-selected) {
             background-color: #0000000a;
         }
+
+    .tree-view-item-wrapper-selected {
+        background-color: rgba(0,0,0,0.15);
+    }
 
     .tree-view-item {
         width: 100%;
@@ -29,7 +33,7 @@
 </style>
 
 
-<div class="tree-view-item-wrapper cursor-pointer"
+<div class="tree-view-item-wrapper cursor-pointer @(Item.IsSelected ? "tree-view-item-wrapper-selected" : "")"
      @ondblclick="OnRowDoubleClick" @ondblclick:stopPropagation @ondblclick:preventDefault>
     <MudMenu Dense PositionAtCurser FullWidth="false" ActivationEvent="MouseEvent.RightClick" Size="Size.Small">
         <ChildContent>
@@ -83,7 +87,8 @@
         </ChildContent>
         <ActivatorContent>
             <table class="tree-view-item" style="@($"padding-left: {Item.Depth * 20}px;")">
-                <tr @key="Item.Id" style="height: 30px;">
+                <tr @key="Item.Id" style="height: 30px;"
+                    @onclick="OnRowClick">
                     <td style="vertical-align: middle; width: 20px">
                         @if (Item.Type is WadItemType.Folder)
                         {
@@ -93,7 +98,7 @@
                         }
                     </td>
                     <td style="width: 44px">
-                        <MudCheckBox StopClickPropagation @bind-Checked="IsSelected" Color="Color.Primary" Size="Size.Small" />
+                        <MudCheckBox StopClickPropagation @bind-Checked="IsChecked" Color="Color.Primary" Size="Size.Small" />
                     </td>
                     <td style="text-align: center; width: 24px">
                         @if (Item.Type is WadItemType.File)
@@ -128,22 +133,31 @@
     [Parameter]
     public WadItemModel Item { get; set; }
 
-    public bool IsSelected
+    public bool IsChecked
     {
-        get => this.Item.IsSelected;
+        get => this.Item.IsChecked;
         set
         {
-            if (this.Item.IsSelected == value)
+            if (this.Item.IsChecked == value)
                 return;
 
-            // Update children selection state
-            this.Item.IsSelected = value;
+            // Update children checked state
+            this.Item.IsChecked = value;
             if (this.Item.Items is not null)
                 foreach (WadItemModel item in this.Item.TraverseFlattenedItems())
-                    item.IsSelected = value;
+                    item.IsChecked = value;
 
             this.Root.RefreshState();
         }
+    }
+
+    private void OnRowClick(MouseEventArgs e)
+    {
+        foreach (WadItemModel item in this.WadTab.TraverseFlattenedItems())
+            item.IsSelected = false;
+
+        this.Item.IsSelected = true;
+        this.Root.RefreshState();
     }
 
     private void OnRowDoubleClick(MouseEventArgs e)
