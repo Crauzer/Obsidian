@@ -34,14 +34,6 @@
         text-transform: none;
     }
 
-    .mud-tabs-toolbar-content {
-        overflow-x: scroll;
-    }
-
-    .mud-tabs-scroll-button {
-        display:none;
-    }
-
 </style>
 
 <MudPaper>
@@ -110,7 +102,7 @@
                         <CascadingValue Value="this">
                             <CascadingValue Value="JsRuntime">
                                 <CascadingValue Value="ActiveTab">
-                                    <TreeView ItemsFlat="@GetVisibleItemsForActiveTab()" Height="calc(100vh - 117px)" ItemSize="30f">
+                                    <TreeView ItemsFlat="@GetVisibleItemsForActiveTab()" Height="calc(100vh - 109px)" ItemSize="30f">
                                         <ItemTemplate>
                                             <TreeWadItem Item="@context" />
                                         </ItemTemplate>

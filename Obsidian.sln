@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Photino.Blazor", "Photino.B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Obsidian", "Obsidian\Obsidian.csproj", "{22CFFFD0-55B8-4E71-BB81-FCCC59D0F3AA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{60E03993-5762-413C-8C5F-94CB4E64062D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -26,6 +28,10 @@ Global
 		{22CFFFD0-55B8-4E71-BB81-FCCC59D0F3AA}.Release|x64.Build.0 = Release|x64
 		{22CFFFD0-55B8-4E71-BB81-FCCC59D0F3AA}.ReleasePortable|x64.ActiveCfg = Release|x64
 		{22CFFFD0-55B8-4E71-BB81-FCCC59D0F3AA}.ReleasePortable|x64.Build.0 = Release|x64
+		{60E03993-5762-413C-8C5F-94CB4E64062D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{60E03993-5762-413C-8C5F-94CB4E64062D}.Release|x64.ActiveCfg = Release|Any CPU
+		{60E03993-5762-413C-8C5F-94CB4E64062D}.ReleasePortable|x64.ActiveCfg = Release|Any CPU
+		{60E03993-5762-413C-8C5F-94CB4E64062D}.ReleasePortable|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
