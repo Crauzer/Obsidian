@@ -34,6 +34,10 @@
         text-transform: none;
     }
 
+    .mud-tab-slider {
+        box-shadow: 0px 3px 5px -1px rgba(0,0,0,0.2),0px 5px 8px 0px rgba(0,0,0,0.14),0px 1px 14px 0px rgba(0,0,0,0.12);
+    }
+
 </style>
 
 <MudPaper>
@@ -88,7 +92,7 @@
         </MudToolBar>
     </MudPaper>
     <MudDivider />
-    <MudTabs @bind-ActivePanelIndex="_activeTabId" Position="Position.Bottom">
+    <MudTabs @bind-ActivePanelIndex="_activeTabId" Position="Position.Bottom" Elevation="6">
         <ChildContent>
             @foreach (WadTabModel wadTab in this.Tabs)
             {
