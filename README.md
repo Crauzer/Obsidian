@@ -1,19 +1,19 @@
-![Obsidian](https://github.com/Crauzer/Obsidian/blob/main/Images/obsidian-banner.png)
+<p align="center">
+  <img width="128" src="resources\obsidian_logonew_256.png"> 
+</p>
 
-<a href="">
-  <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/Crauzer/Obsidian?color=red&style=for-the-badge">
-  <img alt="GitHub All Releases" src="https://img.shields.io/github/downloads/Crauzer/Obsidian/total?color=red&style=for-the-badge">
-</a>
+<h1 align="center">
+  Obsidian
+</h1>
 
-* **Obsidian is a WAD Archive editor for League of Legends.**
-
-* **It allows you to open, extract and create WAD files.**
-
-* **You can also preview certain assets such as maps, champion models and particle meshes.**
+<p align="center">
+  <a href="">
+    <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/Crauzer/Obsidian?color=red&style=for-the-badge">
+    <img alt="GitHub All Releases" src="https://img.shields.io/github/downloads/Crauzer/Obsidian/total?color=red&style=for-the-badge">
+  </a>
+</p>
 
 # [How to use](https://github.com/Crauzer/Obsidian/wiki/Introduction)
-
-<a href="https://github.com/Crauzer/Obsidian/releases" rel="some text">![Foo](https://github.com/Crauzer/Obsidian/blob/main/Images/obsidiandownload.png)</a>
 
 ## Discord
 If you want to talk to the developers or other people in the community, join our discord server:
