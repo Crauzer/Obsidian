@@ -26,6 +26,13 @@ public class WadTabModel : IDisposable
             .Where(x => x is WadFileModel)
             .Select(x => x as WadFileModel);
 
+    public WadFileModel SelectedFile => this.SelectedFiles.FirstOrDefault();
+
+    public IEnumerable<WadFileModel> SelectedFiles =>
+        TraverseFlattenedItems()
+            .Where(x => x.IsSelected && x is WadFileModel)
+            .Select(x => x as WadFileModel);
+
     public bool IsDisposed { get; private set; }
 
     public WadTabModel(string name, WadFile wad, HashtableService hashtable)
