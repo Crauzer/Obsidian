@@ -31,6 +31,7 @@ public partial class ExplorerPage
 
     private bool _isLoadingWadFile = false;
     private bool _isExportingFiles = false;
+    private bool _isLoadingHashtable = false;
 
     public async Task OpenWad()
     {
@@ -119,7 +120,31 @@ public partial class ExplorerPage
 
     public async Task LoadHashtable()
     {
-        await Task.Delay(200);
+        CommonOpenFileDialog dialog = new("Select hashtables") { Multiselect = true };
+        if (dialog.ShowDialog(this.Window.WindowHandle) is not CommonFileDialogResult.Ok)
+            return;
+
+        ToggleLoadingHashtable(true);
+        try
+        {
+            await Task.Run(() =>
+            {
+                foreach (string hashtableFile in dialog.FileNames)
+                {
+                    this.Hashtable.LoadHashtable(hashtableFile);
+                }
+            });
+
+            this.Snackbar.Add("Successfully loaded hashtables!", Severity.Success);
+        }
+        catch(Exception exception)
+        {
+            SnackbarUtils.ShowHardError(this.Snackbar, exception);
+        }
+        finally
+        {
+            ToggleLoadingHashtable(false);
+        }
     }
 
     private void ExtractFiles(IEnumerable<WadFileModel> fileItems, string extractionDirectory)
@@ -186,6 +211,11 @@ public partial class ExplorerPage
     public void ToggleExporting(bool isExporting)
     {
         this._isExportingFiles = isExporting;
+        StateHasChanged();
+    }
+    public void ToggleLoadingHashtable(bool value)
+    {
+        this._isLoadingHashtable = value;
         StateHasChanged();
     }
 
