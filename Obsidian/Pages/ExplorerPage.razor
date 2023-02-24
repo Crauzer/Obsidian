@@ -150,4 +150,9 @@
             Extracting files...
         </MudText>
     </MudOverlay>
+    <MudOverlay DarkBackground Visible="_isLoadingHashtable" ZIndex="9999">
+        <MudProgressLinear Rounded Indeterminate
+                           Class="my-6" Style="width: 500px"
+                           Color="Color.Primary" Size="Size.Large" />
+    </MudOverlay>
 </MudPaper>

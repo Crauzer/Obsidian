@@ -89,7 +89,7 @@ public class HashtableService
         this.Config.LcuHashesChecksum = lcuHashesContent.Sha;
     }
 
-    private void LoadHashtable(string hashtablePath)
+    public void LoadHashtable(string hashtablePath)
     {
         using StreamReader reader = new(hashtablePath);
         StringBuilder nameBuilder = new();
