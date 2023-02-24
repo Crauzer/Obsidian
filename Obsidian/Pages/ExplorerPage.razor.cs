@@ -117,6 +117,11 @@ public partial class ExplorerPage
         }
     }
 
+    public async Task LoadHashtable()
+    {
+        await Task.Delay(200);
+    }
+
     private void ExtractFiles(IEnumerable<WadFileModel> fileItems, string extractionDirectory)
     {
         WadFile wad = this.ActiveTab.Wad;

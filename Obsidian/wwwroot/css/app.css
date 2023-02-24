@@ -187,6 +187,11 @@ html, body, app {
     height: 100%;
 }
 
+body {
+    background: rgb(58,59,71);
+    background: linear-gradient(0deg, rgba(58,59,71,1) 0%, rgba(50,51,61,1) 100%);
+}
+
 .unselectable-text {
     user-select: none;
 }

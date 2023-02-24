@@ -38,6 +38,11 @@
         box-shadow: 0px 3px 5px -1px rgba(0,0,0,0.2),0px 5px 8px 0px rgba(0,0,0,0.14),0px 1px 14px 0px rgba(0,0,0,0.12);
     }
 
+    .mud-tabs-panels {
+        background: rgb(58,59,71);
+        background: linear-gradient(0deg, rgba(58,59,71,1) 0%, rgba(50,51,61,1) 100%);
+    }
+
 </style>
 
 <MudPaper>
@@ -59,6 +64,13 @@
                              Disabled="@(ActiveTab?.CheckedFiles.Count() is (0 or null))"
                              OnClick="@ExtractSelected">
                     Extract Selected
+                </MudMenuItem>
+            </MudMenu>
+            <MudMenu Dense Class="ml-4" Icon="@CustomIcons.Material.Hexadecimal" Color="Color.Inherit"
+                     AnchorOrigin="Origin.BottomLeft" Size="Size.Medium">
+                <MudMenuItem Icon="@CustomIcons.Material.TableArrowUp" IconColor="Color.Primary" IconSize="Size.Small"
+                             OnClick="LoadHashtable">
+                    Load hashtable
                 </MudMenuItem>
             </MudMenu>
             <MudSpacer />
