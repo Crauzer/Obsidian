@@ -1,5 +1,7 @@
 ﻿using BCnEncoder.Shared;
 using CommunityToolkit.HighPerformance;
+using LeagueToolkit.Core.Memory;
+using LeagueToolkit.Core.Mesh;
 using LeagueToolkit.Core.Renderer;
 using LeagueToolkit.Core.Wad;
 using LeagueToolkit.Toolkit;
@@ -15,6 +17,7 @@ using Obsidian.Utils;
 using PhotinoNET;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using System.Numerics;
 using XXHash3NET;
 
 namespace Obsidian.Pages;
@@ -228,13 +231,20 @@ public partial class ExplorerPage
             return;
         }
 
-        MemoryStream fileStream = new();
-        using Stream chunkStream = this.ActiveTab.Wad.OpenChunk(this.ActiveTab.SelectedFile.Chunk);
+        try
+        {
+            MemoryStream fileStream = new();
+            using Stream chunkStream = this.ActiveTab.Wad.OpenChunk(this.ActiveTab.SelectedFile.Chunk);
 
-        chunkStream.CopyTo(fileStream);
-        fileStream.Position = 0;
+            chunkStream.CopyTo(fileStream);
+            fileStream.Position = 0;
 
-        await PreviewSelectedFile(fileStream);
+            await PreviewSelectedFile(fileStream);
+        }
+        catch (Exception exception)
+        {
+            SnackbarUtils.ShowSoftError(this.Snackbar, exception);
+        }
     }
 
     private async Task PreviewSelectedFile(MemoryStream fileStream)
@@ -244,6 +254,11 @@ public partial class ExplorerPage
         {
             await PreviewTexture(fileStream);
             SetCurrentPreviewType(WadFilePreviewType.Image);
+        }
+        else if (fileType is LeagueFileType.SimpleSkin)
+        {
+            await PreviewSimpleSkin(fileStream);
+            SetCurrentPreviewType(WadFilePreviewType.Viewport);
         }
         else
         {
@@ -257,7 +272,73 @@ public partial class ExplorerPage
         MemoryStream imageStream = ImageUtils.ConvertTextureToPng(texture);
         DotNetStreamReference jsStream = new(imageStream);
 
-        await this.JsRuntime.InvokeVoidAsync("setImage", $"{this.ActiveTab.Id}_imagePreview", jsStream);
+        await this.JsRuntime.InvokeVoidAsync(
+            "setImage",
+            $"{this.ActiveTab.Id}_imagePreview",
+            jsStream
+        );
+    }
+
+    private async Task PreviewSimpleSkin(MemoryStream fileStream)
+    {
+        using SkinnedMesh skinnedMesh = SkinnedMesh.ReadFromSimpleSkin(fileStream);
+
+        // Create vertex data for babylon
+        float[] positions = CreateVector3Data(
+            skinnedMesh.VerticesView.GetAccessor(ElementName.Position).AsVector3Array()
+        );
+        float[] normals = CreateVector3Data(
+            skinnedMesh.VerticesView.GetAccessor(ElementName.Normal).AsVector3Array()
+        );
+        float[] uvs = CreateVector2Data(
+            skinnedMesh.VerticesView.GetAccessor(ElementName.Texcoord0).AsVector2Array()
+        );
+
+        uint[] indices = skinnedMesh.Indices.ToArray();
+
+        await this.JsRuntime.InvokeVoidAsync(
+            "initBabylonCanvas",
+            this.ActiveTab.GetViewportCanvasId()
+        );
+        await this.JsRuntime.InvokeVoidAsync(
+            "renderSkinnedMesh",
+            this.ActiveTab.GetViewportCanvasId(),
+            skinnedMesh.Ranges,
+            indices,
+            positions,
+            normals,
+            uvs
+        );
+
+        static float[] CreateVector2Data(IReadOnlyList<Vector2> array)
+        {
+            int dataOffset = 0;
+            var data = new float[array.Count * 2];
+            for (int i = 0; i < array.Count; i++)
+            {
+                data[dataOffset + 0] = array[i].X;
+                data[dataOffset + 1] = array[i].Y;
+
+                dataOffset += 2;
+            }
+
+            return data;
+        }
+        static float[] CreateVector3Data(IReadOnlyList<Vector3> array)
+        {
+            int dataOffset = 0;
+            var data = new float[array.Count * 3];
+            for (int i = 0; i < array.Count; i++)
+            {
+                data[dataOffset + 0] = array[i].X;
+                data[dataOffset + 1] = array[i].Y;
+                data[dataOffset + 2] = array[i].Z;
+
+                dataOffset += 3;
+            }
+
+            return data;
+        }
     }
 
     private void SetCurrentPreviewType(WadFilePreviewType previewType)
@@ -266,11 +347,18 @@ public partial class ExplorerPage
         StateHasChanged();
     }
 
+    private async Task OnDimensionChanged(double dimension)
+    {
+        if(this.ActiveTab is not null && this.ActiveTab.CurrentPreviewType is WadFilePreviewType.Viewport)
+            await this.JsRuntime.InvokeVoidAsync("resizeBabylonEngine", this.ActiveTab.GetViewportCanvasId());
+    }
+
     public void ToggleExporting(bool isExporting)
     {
         this._isExportingFiles = isExporting;
         StateHasChanged();
     }
+
     public void ToggleLoadingHashtable(bool value)
     {
         this._isLoadingHashtable = value;

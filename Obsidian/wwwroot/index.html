@@ -10,6 +10,8 @@
     <link href="_content/CodeBeam.MudExtensions/MudExtensions.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <script src="photino.js"></script>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/materialsLibrary/babylon.gridMaterial.min.js"></script>
 </head>
 <body>
     <app>Loading...</app>
@@ -40,6 +42,100 @@
                 URL.revokeObjectURL(url);
             }
             image.src = url;
+        }
+
+
+        const babylonScenes = new Map();
+        const babylonEngines = new Map();
+
+        window.initBabylonCanvas = (canvasId) => {
+            const canvas = document.getElementById(canvasId); // Get the canvas element
+
+            const engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
+            babylonEngines.set(canvasId, engine);
+
+            const createScene = function () {
+                // This creates a basic Babylon Scene object (non-mesh)
+                const scene = new BABYLON.Scene(engine);
+
+                // Parameters: name, alpha, beta, radius, target position, scene
+                const camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 3, Math.PI / 3, 1000, BABYLON.Vector3.Zero(), scene);
+
+                camera.setTarget(BABYLON.Vector3.Zero());
+                camera.zoomToMouseLocation = true;
+                camera.wheelDeltaPercentage = 0.01;
+                camera.panningSensibility = 50;
+
+                // This attaches the camera to the canvas
+                camera.attachControl(canvas, true);
+
+                // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
+                const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+
+                // Our built-in 'ground' shape.
+                const ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 1000, height: 1000 }, scene, false);
+                ground.material = new BABYLON.GridMaterial("groundMat");
+                ground.material.majorUnitFrequency = 5;
+                ground.material.minorUnitVisibility = 0.5;
+                ground.material.gridRatio = 2;
+                ground.material.opacity = 0.99;
+                ground.material.useMaxLine = true;
+
+                return scene;
+            };
+
+            const scene = createScene();
+            babylonScenes.set(canvasId, scene);
+
+            // Register a render loop to repeatedly render the scene
+            engine.runRenderLoop(function () {
+                scene.render();
+            });
+
+            // Watch for browser/canvas resize events
+            window.addEventListener("resize", function () {
+                engine.resize();
+            });
+        }
+
+        window.resizeBabylonEngine = (canvasId) => {
+            babylonEngines.get(canvasId).resize();
+        }
+
+        window.renderSkinnedMesh = (canvasId, primitives, indices, positions, normals, uvs) => {
+            const scene = babylonScenes.get(canvasId);
+
+            const mesh = new BABYLON.Mesh("skinnedMesh", scene);
+            const meshMultiMaterial = new BABYLON.MultiMaterial("multi", scene);
+
+            // Create materials for each primitive
+            primitives.forEach(primitive => {
+                const material = new BABYLON.StandardMaterial(primitive.material, scene);
+
+                material.twoSidedLighting = true;
+                material.backFaceCulling = false;
+                material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
+
+                meshMultiMaterial.subMaterials.push(material);
+            });
+
+            // Apply material
+            mesh.material = meshMultiMaterial;
+
+            // Apply vertex data
+            const vertexData = new BABYLON.VertexData();
+            vertexData.indices = indices;
+            vertexData.positions = positions;
+            vertexData.normals = normals;
+            vertexData.uvs = uvs;
+
+            vertexData.applyToMesh(mesh);
+
+            // Create submeshes
+            mesh.subMeshes = [];
+            primitives.forEach((primitive, i) => {
+                new BABYLON.SubMesh(i, primitive.startIndex, primitive.vertexCount, primitive.startIndex, primitive.indexCount, mesh);
+            });
         }
     </script>
 </body>

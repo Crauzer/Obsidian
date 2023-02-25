@@ -1,5 +1,6 @@
 ﻿using LeagueToolkit.Core.Wad;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using Obsidian.Services;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,6 @@ public class WadTabModel : IDisposable
     public string Filter { get; set; }
 
     public WadFilePreviewType CurrentPreviewType { get; set; }
-
 
     public HashSet<WadItemModel> Items { get; set; } = new();
     public IEnumerable<WadFileModel> CheckedFiles =>
@@ -169,6 +169,9 @@ public class WadTabModel : IDisposable
         }
     }
 
+
+    public string GetViewportCanvasId() => $"{this.Id}_renderCanvas";
+
     public void Dispose()
     {
         Dispose(disposing: true);
@@ -190,5 +193,6 @@ public class WadTabModel : IDisposable
 public enum WadFilePreviewType
 {
     None,
-    Image
+    Image,
+    Viewport
 }
