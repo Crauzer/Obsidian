@@ -1,4 +1,5 @@
 ﻿@using Obsidian.Data.Wad;
+@using Obsidian.Data;
 
 <style>
     .wad-file-preview-viewport {
@@ -12,19 +13,31 @@
     .wad-file-render-canvas {
         width: 50vw;
         height: 100%;
-        max-height: calc(100vh - 147px);
+        max-height: calc(100vh - 131px);
         aspect-ratio: 1;
         touch-action: none;
+    }
+
+    .wad-file-render-canvas-wrapper {
+        overflow-x: scroll;
+        overflow-y: clip;
     }
 </style>
 
 <div class="@(_isEnabled ? "wad-file-preview-viewport" : "wad-file-preview-viewport-hidden")">
-    <MudText id="@($"{WadTab.Id}_renderCanvas_fps")"
-             Class="absolute unselectable-text"
-             Style="top: 0px; left: 0px; z-index: 1">
-        FPS: n/a
-    </MudText>
-    <div style="overflow:scroll; position: relative;">
+    <div class="absolute" style="top:0px; left: 0px; z-index: 1; height: 100%; width: 100%; pointer-events: none;">
+        <div style="position: sticky; left: 0px; display: flex; flex-direction: column; width: 128px; height: 100%;">
+            <MudText id="@($"{WadTab.Id}_renderCanvas_fps")"
+                     Class="unselectable-text mt-2 ml-2"
+                     Style="pointer-events: auto;">
+                FPS: n/a
+            </MudText>
+            <MudButton Class="mt-auto mb-2 ml-2" Style="pointer-events: auto;"
+                       Color="Color.Primary" Variant="Variant.Filled"
+                       StartIcon="@CustomIcons.Material.ContentSave">GLTF</MudButton>
+        </div>
+    </div>
+    <div class="wad-file-render-canvas-wrapper">
         <canvas id="@($"{WadTab.Id}_renderCanvas")" class="wad-file-render-canvas" />
     </div>
 </div>
