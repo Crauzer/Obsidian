@@ -1,12 +1,12 @@
-﻿@using Obsidian.Data.Wad;
-@using Obsidian.Data;
+﻿@using Obsidian.Data;
 
 <MudMenu PositionAtCurser Dense
          Class="ma-auto"
          Style="@(_isEnabled ? "" : "display: none;")"
          ActivationEvent="MouseEvent.RightClick">
     <ChildContent>
-        <MudMenuItem Icon="@CustomIcons.Material.ContentSave" IconColor="Color.Primary" IconSize="Size.Small">
+        <MudMenuItem Icon="@CustomIcons.Material.ContentSave" IconColor="Color.Primary" IconSize="Size.Small"
+                     OnClick="SaveAsPng">
             Save as PNG
         </MudMenuItem>
     </ChildContent>
@@ -16,10 +16,11 @@
         </div>
     </ActivatorContent>
 </MudMenu>
-
-@code {
-    [Parameter]
-    public WadTabModel WadTab { get; set; }
-
-    private bool _isEnabled => this.WadTab.CurrentPreviewType is WadFilePreviewType.Image;
-}
+<MudOverlay DarkBackground Visible="_isSavingAsPng" ZIndex="9999">
+    <MudProgressLinear Rounded Indeterminate
+                       Class="my-6" Style="width: 500px"
+                       Color="Color.Primary" Size="Size.Large" />
+    <MudText Class="unselectable-text" Align="Align.Center" Typo="Typo.body1">
+        Saving PNG file...
+    </MudText>
+</MudOverlay>
