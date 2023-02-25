@@ -255,6 +255,10 @@ public partial class ExplorerPage
         {
             await PreviewSimpleSkin(fileStream);
             SetCurrentPreviewType(WadFilePreviewType.Viewport);
+
+            // TODO: Move this into some generic function
+            // Fixes viewport dpi issue
+            await this.JsRuntime.InvokeVoidAsync("resizeBabylonEngine", this.ActiveTab.GetViewportCanvasId());
         }
         else
         {

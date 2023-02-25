@@ -60,6 +60,8 @@
             const engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
             babylonEngines.set(canvasId, engine);
 
+            engine.setHardwareScalingLevel(1 / window.devicePixelRatio);
+
             const createScene = function () {
                 // This creates a basic Babylon Scene object (non-mesh)
                 const scene = new BABYLON.Scene(engine);
