@@ -27,7 +27,7 @@ public partial class WadFileImagePreview
 
     private void SaveAsPng()
     {
-        CommonOpenFileDialog dialog = new() { DefaultFileName = this.WadTab.SelectedFile.Name };
+        CommonSaveFileDialog dialog = new() { DefaultFileName = this.WadTab.SelectedFile.Name };
         dialog.Filters.Add(new("Image", "png"));
 
         if (dialog.ShowDialog(this.Window.WindowHandle) is not CommonFileDialogResult.Ok)
