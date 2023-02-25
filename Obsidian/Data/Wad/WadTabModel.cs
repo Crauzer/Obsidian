@@ -20,7 +20,6 @@ public class WadTabModel : IDisposable
     public bool UseRegexFilter { get; set; }
     public string Filter { get; set; }
 
-    public double PreviewSplitterDimension { get; set; } = 80f;
     public WadFilePreviewType CurrentPreviewType { get; set; }
 
 
