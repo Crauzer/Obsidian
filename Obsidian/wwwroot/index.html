@@ -87,8 +87,11 @@
             const scene = createScene();
             babylonScenes.set(canvasId, scene);
 
+            const fpsElement = document.getElementById(`${canvasId}_fps`);
+
             // Register a render loop to repeatedly render the scene
             engine.runRenderLoop(function () {
+                fpsElement.innerText = "FPS: " + engine.getFps().toFixed();
                 scene.render();
             });
 

@@ -11,8 +11,9 @@
 </style>
 
 <div class="@(_isEnabled ? "wad-file-preview-viewport" : "wad-file-preview-viewport-hidden")">
-    <MudText Class="absolute unselectable-text"
-             Style="top: 24px; left: 0px;">
+    <MudText id="@($"{WadTab.Id}_renderCanvas_fps")"
+             Class="absolute unselectable-text"
+             Style="top: 0px; left: 0px; z-index: 1">
         FPS: n/a
     </MudText>
     <div style="overflow:scroll; position: relative;">
