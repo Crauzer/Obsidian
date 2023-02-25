@@ -2,6 +2,34 @@
 @typeparam TItem
 @inherits ComponentBase
 
+<style>
+    .tree-view-item-wrapper {
+        width: 100%;
+        padding-left: 2rem;
+    }
+
+        .tree-view-item-wrapper:hover:not(.tree-view-item-wrapper-selected) {
+            background-color: #0000000a;
+        }
+
+    .tree-view-item-wrapper-selected {
+        background-color: rgba(0,0,0,0.15);
+    }
+
+    .tree-view-item {
+        width: 100%;
+        table-layout: fixed;
+    }
+
+    .tree-view-item-name {
+        user-select: none;
+        white-space: nowrap;
+        width: 100%;
+        vertical-align: middle;
+        overflow-x: clip;
+    }
+</style>
+
 <div style="@_style">
     <Virtualize Items="@ItemsFlat" OverscanCount="10" ItemContent="@ItemTemplate" ItemSize="@ItemSize" />
 </div>

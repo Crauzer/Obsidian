@@ -187,6 +187,10 @@ app {
     outline: none;
 }
 
+table {
+    border-spacing: 0px;
+}
+
 html, body, app {
     height: 100%;
 }

@@ -4,38 +4,11 @@
 @using Obsidian.Pages;
 @using Obsidian.Utils;
 
-<style>
-    .tree-view-item-wrapper {
-        width: 100%;
-        padding-left: 2rem;
-    }
-
-        .tree-view-item-wrapper:hover:not(.tree-view-item-wrapper-selected) {
-            background-color: #0000000a;
-        }
-
-    .tree-view-item-wrapper-selected {
-        background-color: rgba(0,0,0,0.15);
-    }
-
-    .tree-view-item {
-        width: 100%;
-        table-layout: fixed;
-    }
-
-    .tree-view-item-name {
-        user-select: none;
-        white-space: nowrap;
-        width: 100%;
-        vertical-align: middle;
-        overflow-x: clip;
-    }
-</style>
-
-
 <div class="tree-view-item-wrapper cursor-pointer @(Item.IsSelected ? "tree-view-item-wrapper-selected" : "")"
+     style="height: 44px"
      @ondblclick="OnRowDoubleClick" @ondblclick:stopPropagation @ondblclick:preventDefault>
-    <MudMenu Dense PositionAtCurser FullWidth="false" ActivationEvent="MouseEvent.RightClick" Size="Size.Small">
+    <MudMenu Dense PositionAtCurser
+             FullWidth="false" ActivationEvent="MouseEvent.RightClick" Size="Size.Small">
         <ChildContent>
             <MudMenuItem Icon="@Icons.Material.TwoTone.CopyAll" IconSize="Size.Small" IconColor="Color.Primary"
                          OnClick="@CopyPathToClipboard">
@@ -86,9 +59,13 @@
             </MudMenuItem>
         </ChildContent>
         <ActivatorContent>
-            <table class="tree-view-item" style="@($"padding-left: {Item.Depth * 20}px;")">
-                <tr @key="Item.Id" style="height: 30px;"
+            <table class="tree-view-item" style="height: 44px;">
+                <tr @key="Item.Id"
                     @onclick="OnRowClick">
+                    @for (int i = 0; i < Item.Depth; i++)
+                    {
+                        <td class="tree-view-item-childrenLine"/>
+                    }
                     <td style="vertical-align: middle; width: 20px">
                         @if (Item.Type is WadItemType.Folder)
                         {
@@ -98,7 +75,10 @@
                         }
                     </td>
                     <td style="width: 44px">
-                        <MudCheckBox StopClickPropagation @bind-Checked="IsChecked" Color="Color.Primary" Size="Size.Small" />
+                        <MudCheckBox StopClickPropagation
+                                     Style="height: 44px"
+                                     @bind-Checked="IsChecked"
+                                     Color="Color.Primary" Size="Size.Small" />
                     </td>
                     <td style="text-align: center; width: 24px">
                         @if (Item.Type is WadItemType.File)
