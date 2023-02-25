@@ -1,0 +1,28 @@
+﻿@using Obsidian.Data.Wad;
+
+<style>
+    .wad-file-preview-viewport {
+        position: relative;
+    }
+
+    .wad-file-preview-viewport-hidden {
+        display: none;
+    }
+</style>
+
+<div class="@(_isEnabled ? "wad-file-preview-viewport" : "wad-file-preview-viewport-hidden")">
+    <MudText Class="absolute unselectable-text"
+             Style="top: 24px; left: 0px;">
+        FPS: n/a
+    </MudText>
+    <div style="overflow:scroll; position: relative;">
+        <canvas id="@($"{WadTab.Id}_renderCanvas")" class="wad-file-render-canvas" />
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public WadTabModel WadTab { get; set; }
+
+    private bool _isEnabled => this.WadTab.CurrentPreviewType is WadFilePreviewType.Viewport;
+}
