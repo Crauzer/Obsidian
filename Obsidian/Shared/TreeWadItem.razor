@@ -151,13 +151,13 @@
         }
     }
 
-    private void OnRowClick(MouseEventArgs e)
+    private async Task OnRowClick(MouseEventArgs e)
     {
         foreach (WadItemModel item in this.WadTab.TraverseFlattenedItems())
             item.IsSelected = false;
 
         this.Item.IsSelected = true;
-        this.Root.RefreshState();
+        await this.Root.UpdateSelectedFile();
     }
 
     private void OnRowDoubleClick(MouseEventArgs e)

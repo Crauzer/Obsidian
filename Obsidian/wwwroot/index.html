@@ -7,6 +7,7 @@
     <base href="/" />
     <link href="css/app.css" rel="stylesheet" />
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+    <link href="_content/CodeBeam.MudExtensions/MudExtensions.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <script src="photino.js"></script>
 </head>
@@ -21,12 +22,24 @@
 
     <script src="_framework/blazor.webview.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+    <script src="_content/CodeBeam.MudExtensions/MudExtensions.js"></script>
 
     <script>
         const Photino = PhotinoAPI.Photino;
 
         async function useCmd(command) {
             await Photino.os.cmd(command);
+        }
+
+        window.setImage = async (imageElementId, imageStream) => {
+            const arrayBuffer = await imageStream.arrayBuffer();
+            const blob = new Blob([arrayBuffer]);
+            const url = URL.createObjectURL(blob);
+            const image = document.getElementById(imageElementId);
+            image.onload = () => {
+                URL.revokeObjectURL(url);
+            }
+            image.src = url;
         }
     </script>
 </body>

@@ -20,6 +20,10 @@ public class WadTabModel : IDisposable
     public bool UseRegexFilter { get; set; }
     public string Filter { get; set; }
 
+    public double PreviewSplitterDimension { get; set; } = 80f;
+    public WadFilePreviewType CurrentPreviewType { get; set; }
+
+
     public HashSet<WadItemModel> Items { get; set; } = new();
     public IEnumerable<WadFileModel> CheckedFiles =>
         TraverseFlattenedCheckedItems()
@@ -182,4 +186,10 @@ public class WadTabModel : IDisposable
 
         this.IsDisposed = true;
     }
+}
+
+public enum WadFilePreviewType
+{
+    None,
+    Image
 }

@@ -1,12 +1,20 @@
-﻿using LeagueToolkit.Core.Wad;
+﻿using BCnEncoder.Shared;
+using CommunityToolkit.HighPerformance;
+using LeagueToolkit.Core.Renderer;
+using LeagueToolkit.Core.Wad;
+using LeagueToolkit.Toolkit;
+using LeagueToolkit.Utils;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using MudBlazor;
+using MudExtensions;
 using Obsidian.Data.Wad;
 using Obsidian.Services;
 using Obsidian.Utils;
 using PhotinoNET;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using XXHash3NET;
 
 namespace Obsidian.Pages;
@@ -28,6 +36,8 @@ public partial class ExplorerPage
     public List<WadTabModel> Tabs { get; set; } = new();
     public WadTabModel ActiveTab => this.Tabs.ElementAtOrDefault(this._activeTabId);
     private int _activeTabId = 0;
+
+    private MudSplitter _splitter;
 
     private bool _isLoadingWadFile = false;
     private bool _isExportingFiles = false;
@@ -137,7 +147,7 @@ public partial class ExplorerPage
 
             this.Snackbar.Add("Successfully loaded hashtables!", Severity.Success);
         }
-        catch(Exception exception)
+        catch (Exception exception)
         {
             SnackbarUtils.ShowHardError(this.Snackbar, exception);
         }
@@ -205,6 +215,54 @@ public partial class ExplorerPage
     public void ToggleActiveTabRegexFilter()
     {
         this.ActiveTab.UseRegexFilter = !this.ActiveTab.UseRegexFilter;
+        StateHasChanged();
+    }
+
+    // TODO: Refactor this to be an event from the tree view itself
+    public async Task UpdateSelectedFile()
+    {
+        // Hide the preview if the selected file is null
+        if (this.ActiveTab.SelectedFile is null)
+        {
+            SetCurrentPreviewType(WadFilePreviewType.None);
+            return;
+        }
+
+        MemoryStream fileStream = new();
+        using Stream chunkStream = this.ActiveTab.Wad.OpenChunk(this.ActiveTab.SelectedFile.Chunk);
+
+        chunkStream.CopyTo(fileStream);
+        fileStream.Position = 0;
+
+        await PreviewSelectedFile(fileStream);
+    }
+
+    private async Task PreviewSelectedFile(MemoryStream fileStream)
+    {
+        LeagueFileType fileType = LeagueFile.GetFileType(fileStream);
+        if (fileType is (LeagueFileType.TextureDds or LeagueFileType.Texture))
+        {
+            await PreviewTexture(fileStream);
+            SetCurrentPreviewType(WadFilePreviewType.Image);
+        }
+        else
+        {
+            SetCurrentPreviewType(WadFilePreviewType.None);
+        }
+    }
+
+    private async Task PreviewTexture(MemoryStream fileStream)
+    {
+        Texture texture = Texture.LoadDds(fileStream);
+        MemoryStream imageStream = ImageUtils.ConvertTextureToPng(texture);
+        DotNetStreamReference jsStream = new(imageStream);
+
+        await this.JsRuntime.InvokeVoidAsync("setImage", $"{this.ActiveTab.Id}_imagePreview", jsStream);
+    }
+
+    private void SetCurrentPreviewType(WadFilePreviewType previewType)
+    {
+        this.ActiveTab.CurrentPreviewType = previewType;
         StateHasChanged();
     }
 
