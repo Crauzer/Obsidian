@@ -253,7 +253,7 @@ public partial class ExplorerPage
 
     private async Task PreviewTexture(MemoryStream fileStream)
     {
-        Texture texture = Texture.LoadDds(fileStream);
+        Texture texture = Texture.Load(fileStream);
         MemoryStream imageStream = ImageUtils.ConvertTextureToPng(texture);
         DotNetStreamReference jsStream = new(imageStream);
 
