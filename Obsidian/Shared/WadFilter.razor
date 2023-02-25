@@ -1,0 +1,42 @@
+﻿@using Obsidian.Data;
+
+<MudStack Row Spacing="1" AlignItems="AlignItems.Start">
+    <MudTooltip Text="Regex" Color="Color.Dark">
+        @if (UseRegexFilter)
+        {
+            <MudIconButton Class="mt-1"
+                       Icon="@CustomIcons.Material.CodeJson" Size="Size.Small" Color="Color.Primary"
+                       Variant="Variant.Filled"
+                       OnClick="ToggleRegex" />
+        }
+        else
+        {
+            <MudIconButton Class="mt-1"
+                       Icon="@CustomIcons.Material.CodeJson" Size="Size.Small" Color="Color.Inherit"
+                       Variant="Variant.Filled"
+                       OnClick="ToggleRegex" />
+        }
+    </MudTooltip>
+    <MudTextField T="string" Class="mt-0 mud-elevation-2"
+                  DebounceInterval="500" Value="Filter" ValueChanged="FilterChanged"
+                  Label="Filter" Variant="Variant.Filled" />
+</MudStack>
+
+@code {
+    [Parameter]
+    public bool UseRegexFilter { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> UseRegexFilterChanged { get; set; }
+
+    [Parameter]
+    public string Filter { get; set; }
+
+    [Parameter]
+    public EventCallback<string> FilterChanged { get; set; }
+
+    private async Task ToggleRegex()
+    {
+        await this.UseRegexFilterChanged.InvokeAsync(!this.UseRegexFilter);
+    }
+}

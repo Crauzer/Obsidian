@@ -6,17 +6,20 @@
 @using Obsidian.Services;
 @using Obsidian.Utils;
 @using PhotinoNET;
+@using Microsoft.AspNetCore.Components;
 
 <style>
-    /*.mud-tabs-toolbar-wrapper > div.d-inline-block {
-                        border-top: 1px solid #ffffff1e;
-                        border-left: 1px solid #ffffff1e;
-                    }
 
-                    .mud-tabs-toolbar-wrapper:nth-last-child(-n+1) {
-                        border-left: none;
-                        border-right: 1px solid #ffffff1e;
-                    }*/
+    /*.mud-tabs-toolbar-wrapper > div.d-inline-block {
+                                                                            border-top: 1px solid #ffffff1e;
+                                                                            border-left: 1px solid #ffffff1e;
+                                                                        }
+
+                                                                        TOOD: Figure out how to make the tabs scrollable, this works but when user clicks on a tab, it will break the scroll/overflow behavior
+                                                                        .mud-tabs-toolbar-wrapper:nth-last-child(-n+1) {
+                                                                            border-left: none;
+                                                                            border-right: 1px solid #ffffff1e;
+                                                                        }*/
 
     .wad-tab-close-button {
         border-radius: 0%;
@@ -41,6 +44,10 @@
     .mud-tabs-panels {
         background: rgb(58,59,71);
         background: linear-gradient(0deg, rgba(58,59,71,1) 0%, rgba(50,51,61,1) 100%);
+    }
+
+    .wad-file-preview-hidden {
+        display: none;
     }
 
 </style>
@@ -74,33 +81,6 @@
                 </MudMenuItem>
             </MudMenu>
             <MudSpacer />
-            @if (ActiveTab is not null)
-            {
-                <div style="position: absolute; top: 48px; right: 8px; z-index: 100; width: 32rem">
-                    <MudStack Row Spacing="1" AlignItems="AlignItems.Start">
-                        <MudTooltip Text="Regex" Color="Color.Dark">
-                            @if (ActiveTab.UseRegexFilter)
-                            {
-                                <MudIconButton Class="mt-1"
-                                       Icon="@CustomIcons.Material.CodeJson" Size="Size.Small" Color="Color.Primary"
-                                       Variant="Variant.Filled"
-                                       OnClick="ToggleActiveTabRegexFilter" />
-                            }
-                            else
-                            {
-                                <MudIconButton Class="mt-1"
-                                       Icon="@CustomIcons.Material.CodeJson" Size="Size.Small" Color="Color.Inherit"
-                                       Variant="Variant.Filled"
-                                       OnClick="ToggleActiveTabRegexFilter" />
-                            }
-                        </MudTooltip>
-                        <MudTextField Class="mt-0 mud-elevation-2"
-                                  DebounceInterval="500" @bind-Value="ActiveTab.Filter"
-                                  Label="Filter" Variant="Variant.Filled" />
-                    </MudStack>
-                </div>
-
-            }
         </MudToolBar>
     </MudPaper>
     <MudDivider />
@@ -115,17 +95,35 @@
                         </div>
                     </TabWrapperContent>
                     <ChildContent>
-                        <CascadingValue Value="this">
-                            <CascadingValue Value="JsRuntime">
-                                <CascadingValue Value="ActiveTab">
-                                    <TreeView ItemsFlat="@GetVisibleItemsForActiveTab()" Height="calc(100vh - 109px)" ItemSize="30f">
-                                        <ItemTemplate>
-                                            <TreeWadItem Item="@context" />
-                                        </ItemTemplate>
-                                    </TreeView>
-                                </CascadingValue>
-                            </CascadingValue>
-                        </CascadingValue>
+                        <MudSplitter EnableSlide @ref="_splitter" Sensitivity="0.5f">
+                            <StartContent>
+                                <div style="position: relative;">
+                                    <CascadingValue Value="this">
+                                        <CascadingValue Value="JsRuntime">
+                                            <CascadingValue Value="ActiveTab">
+                                                <TreeView ItemsFlat="@GetVisibleItemsForActiveTab()" Height="calc(100vh - 125px)" ItemSize="30f">
+                                                    <ItemTemplate>
+                                                        <TreeWadItem Item="@context" />
+                                                    </ItemTemplate>
+                                                </TreeView>
+                                            </CascadingValue>
+                                        </CascadingValue>
+                                    </CascadingValue>
+                                    @if (ActiveTab is not null)
+                                    {
+                                        <div style="position: absolute; top: 0px; right: 8px; z-index: 100; width: 32rem">
+                                            <WadFilter @bind-Filter="ActiveTab.Filter" @bind-UseRegexFilter="ActiveTab.UseRegexFilter" />
+                                        </div>
+                                    }
+                                </div>
+                            </StartContent>
+                            <EndContent>
+                                <div class="@(wadTab.CurrentPreviewType is not WadFilePreviewType.Image ? "wad-file-preview-hidden" : "")"
+                                 style="margin: auto;">
+                                    <MudImage ObjectFit="ObjectFit.Contain" id="@($"{wadTab.Id}_imagePreview")" Style="max-height: 70vh;"/>
+                                </div>
+                            </EndContent>
+                        </MudSplitter>
                     </ChildContent>
                 </MudTabPanel>
             }

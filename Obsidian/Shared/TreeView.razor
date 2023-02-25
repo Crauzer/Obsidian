@@ -32,4 +32,7 @@
 
     [Parameter]
     public string Style { get; set; }
+
+    [Parameter]
+    public EventCallback<TItem> OnSelectedItemChanged { get; set; }
 }

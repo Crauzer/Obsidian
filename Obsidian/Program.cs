@@ -5,6 +5,7 @@ using Obsidian.Data;
 using Obsidian.Services;
 using Photino.Blazor;
 using PhotinoAPI;
+using MudExtensions.Services;
 
 namespace Obsidian;
 
@@ -32,6 +33,7 @@ public class Program
             config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
             config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopCenter;
         });
+        builder.Services.AddMudExtensions();
 
         PhotinoBlazorApp app = builder.Build();
 
