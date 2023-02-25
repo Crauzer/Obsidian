@@ -11,15 +11,15 @@
 <style>
 
     /*.mud-tabs-toolbar-wrapper > div.d-inline-block {
-                                                                            border-top: 1px solid #ffffff1e;
-                                                                            border-left: 1px solid #ffffff1e;
-                                                                        }
+                                                                                            border-top: 1px solid #ffffff1e;
+                                                                                            border-left: 1px solid #ffffff1e;
+                                                                                        }
 
-                                                                        TOOD: Figure out how to make the tabs scrollable, this works but when user clicks on a tab, it will break the scroll/overflow behavior
-                                                                        .mud-tabs-toolbar-wrapper:nth-last-child(-n+1) {
-                                                                            border-left: none;
-                                                                            border-right: 1px solid #ffffff1e;
-                                                                        }*/
+                                                                                        TOOD: Figure out how to make the tabs scrollable, this works but when user clicks on a tab, it will break the scroll/overflow behavior
+                                                                                        .mud-tabs-toolbar-wrapper:nth-last-child(-n+1) {
+                                                                                            border-left: none;
+                                                                                            border-right: 1px solid #ffffff1e;
+                                                                                        }*/
 
     .wad-tab-close-button {
         border-radius: 0%;
@@ -48,6 +48,14 @@
 
     .wad-file-preview-hidden {
         display: none;
+    }
+
+    .wad-file-render-canvas {
+        width: 100%;
+        height: 100%;
+        max-height: calc(100vh - 133px);
+        aspect-ratio: 1;
+        touch-action: none;
     }
 
 </style>
@@ -95,7 +103,7 @@
                         </div>
                     </TabWrapperContent>
                     <ChildContent>
-                        <MudSplitter EnableSlide @ref="_splitter" Sensitivity="0.5f">
+                        <MudSplitter EnableSlide @ref="_splitter" Sensitivity="2.5f" DimensionChanged="OnDimensionChanged">
                             <StartContent>
                                 <div style="position: relative;">
                                     <CascadingValue Value="this">
@@ -120,7 +128,10 @@
                             <EndContent>
                                 <div class="@(wadTab.CurrentPreviewType is not WadFilePreviewType.Image ? "wad-file-preview-hidden" : "")"
                                  style="margin: auto;">
-                                    <MudImage ObjectFit="ObjectFit.Contain" id="@($"{wadTab.Id}_imagePreview")" Style="max-height: 70vh;"/>
+                                    <MudImage ObjectFit="ObjectFit.Contain" id="@($"{wadTab.Id}_imagePreview")" Style="max-height: 70vh;" />
+                                </div>
+                                <div class="@(wadTab.CurrentPreviewType is not WadFilePreviewType.Viewport ? "wad-file-preview-hidden" : "")">
+                                    <canvas id="@($"{wadTab.Id}_renderCanvas")" class="wad-file-render-canvas" />
                                 </div>
                             </EndContent>
                         </MudSplitter>
