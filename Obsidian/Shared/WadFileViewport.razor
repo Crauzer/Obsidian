@@ -1,5 +1,4 @@
-﻿@using Obsidian.Data.Wad;
-@using Obsidian.Data;
+﻿@using Obsidian.Data;
 
 <style>
     .wad-file-preview-viewport {
@@ -34,17 +33,21 @@
             </MudText>
             <MudButton Class="mt-auto mb-2 ml-2" Style="pointer-events: auto;"
                        Color="Color.Primary" Variant="Variant.Filled"
-                       StartIcon="@CustomIcons.Material.ContentSave">GLTF</MudButton>
+                       StartIcon="@CustomIcons.Material.ContentSave"
+                       OnClick="SaveAsGltf">
+                GLTF
+            </MudButton>
         </div>
     </div>
     <div class="wad-file-render-canvas-wrapper">
         <canvas id="@($"{WadTab.Id}_renderCanvas")" class="wad-file-render-canvas" />
     </div>
+    <MudOverlay Absolute DarkBackground Visible="_isSavingAsGltf" ZIndex="9999">
+        <MudProgressLinear Rounded Indeterminate
+                           Class="my-6" Style="width: 500px"
+                           Color="Color.Primary" Size="Size.Large" />
+        <MudText Class="unselectable-text" Align="Align.Center" Typo="Typo.body1">
+            Saving as glTF...
+        </MudText>
+    </MudOverlay>
 </div>
-
-@code {
-    [Parameter]
-    public WadTabModel WadTab { get; set; }
-
-    private bool _isEnabled => this.WadTab.CurrentPreviewType is WadFilePreviewType.Viewport;
-}
