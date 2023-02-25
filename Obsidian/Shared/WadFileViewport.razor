@@ -8,6 +8,14 @@
     .wad-file-preview-viewport-hidden {
         display: none;
     }
+
+    .wad-file-render-canvas {
+        width: 50vw;
+        height: 100%;
+        max-height: calc(100vh - 147px);
+        aspect-ratio: 1;
+        touch-action: none;
+    }
 </style>
 
 <div class="@(_isEnabled ? "wad-file-preview-viewport" : "wad-file-preview-viewport-hidden")">

@@ -46,18 +46,6 @@
         background: linear-gradient(0deg, rgba(58,59,71,1) 0%, rgba(50,51,61,1) 100%);
     }
 
-    .wad-file-preview-hidden {
-        display: none;
-    }
-
-    .wad-file-render-canvas {
-        width: 50vw;
-        height: 100%;
-        max-height: calc(100vh - 141px);
-        aspect-ratio: 1;
-        touch-action: none;
-    }
-
 </style>
 
 <MudPaper>
@@ -126,22 +114,7 @@
                                 </div>
                             </StartContent>
                             <EndContent>
-                                <MudMenu PositionAtCurser Dense
-                                     Class="ma-auto"
-                                     Style="@(wadTab.CurrentPreviewType is not WadFilePreviewType.Image ? "display: none;" : "")"
-                                     ActivationEvent="MouseEvent.RightClick">
-                                    <ChildContent>
-                                        <MudMenuItem Icon="@CustomIcons.Material.ContentSave" IconColor="Color.Primary" IconSize="Size.Small">
-                                            Save as PNG
-                                        </MudMenuItem>
-                                    </ChildContent>
-                                    <ActivatorContent>
-                                        <div class="@(wadTab.CurrentPreviewType is not WadFilePreviewType.Image ? "wad-file-preview-hidden" : "")"
-                                         style="margin: auto;">
-                                            <MudImage ObjectFit="ObjectFit.Contain" id="@($"{wadTab.Id}_imagePreview")" Style="max-height: 70vh;" />
-                                        </div>
-                                    </ActivatorContent>
-                                </MudMenu>
+                                <WadFileImagePreview WadTab="wadTab"/>
                                 <WadFileViewport WadTab="wadTab"/>
                             </EndContent>
                         </MudSplitter>
