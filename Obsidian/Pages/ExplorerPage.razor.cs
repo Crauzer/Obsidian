@@ -233,11 +233,7 @@ public partial class ExplorerPage
 
         try
         {
-            MemoryStream fileStream = new();
-            using Stream chunkStream = this.ActiveTab.Wad.OpenChunk(this.ActiveTab.SelectedFile.Chunk);
-
-            chunkStream.CopyTo(fileStream);
-            fileStream.Position = 0;
+            using Stream fileStream = this.ActiveTab.Wad.LoadChunkDecompressed(this.ActiveTab.SelectedFile.Chunk).AsStream();
 
             await PreviewSelectedFile(fileStream);
         }
@@ -247,12 +243,12 @@ public partial class ExplorerPage
         }
     }
 
-    private async Task PreviewSelectedFile(MemoryStream fileStream)
+    private async Task PreviewSelectedFile(Stream fileStream)
     {
         LeagueFileType fileType = LeagueFile.GetFileType(fileStream);
         if (fileType is (LeagueFileType.TextureDds or LeagueFileType.Texture))
         {
-            await PreviewTexture(fileStream);
+            await PreviewImage(ImageUtils.GetImageFromStream(fileStream));
             SetCurrentPreviewType(WadFilePreviewType.Image);
         }
         else if (fileType is LeagueFileType.SimpleSkin)
@@ -266,10 +262,13 @@ public partial class ExplorerPage
         }
     }
 
-    private async Task PreviewTexture(MemoryStream fileStream)
+    private async Task PreviewImage(Image<Rgba32> image)
     {
-        Texture texture = Texture.Load(fileStream);
-        MemoryStream imageStream = ImageUtils.ConvertTextureToPng(texture);
+        MemoryStream imageStream = new();
+        
+        await image.SaveAsPngAsync(imageStream);
+        imageStream.Position = 0;
+
         DotNetStreamReference jsStream = new(imageStream);
 
         await this.JsRuntime.InvokeVoidAsync(
@@ -279,7 +278,7 @@ public partial class ExplorerPage
         );
     }
 
-    private async Task PreviewSimpleSkin(MemoryStream fileStream)
+    private async Task PreviewSimpleSkin(Stream fileStream)
     {
         using SkinnedMesh skinnedMesh = SkinnedMesh.ReadFromSimpleSkin(fileStream);
 
