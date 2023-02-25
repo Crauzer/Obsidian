@@ -183,6 +183,10 @@ app {
     }
 }
 
+:focus-visible {
+    outline: none;
+}
+
 html, body, app {
     height: 100%;
 }
