@@ -46,9 +46,8 @@ public class Program
             .SetContextMenuEnabled(false)
             .RegisterApi(new());
 
-#if DEBUG
         app.MainWindow.SetDevToolsEnabled(true);
-#endif
+
         AppDomain.CurrentDomain.UnhandledException += (sender, error) =>
         {
             app.MainWindow.OpenAlertWindow("Fatal exception", error.ExceptionObject.ToString());
