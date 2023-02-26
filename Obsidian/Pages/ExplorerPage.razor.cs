@@ -233,7 +233,7 @@ public partial class ExplorerPage
         // Hide the preview if the selected file is null
         if (this.ActiveTab.SelectedFile is null)
         {
-            SetCurrentPreviewType(WadFilePreviewType.None);
+            await SetCurrentPreviewType(WadFilePreviewType.None);
             return;
         }
 
@@ -259,11 +259,10 @@ public partial class ExplorerPage
         else if (fileType is (LeagueFileType.TextureDds or LeagueFileType.Texture))
         {
             await PreviewImage(ImageUtils.GetImageFromStream(fileStream));
-            SetCurrentPreviewType(WadFilePreviewType.Image);
         }
         else
         {
-            SetCurrentPreviewType(WadFilePreviewType.None);
+            await SetCurrentPreviewType(WadFilePreviewType.None);
         }
 
         // Fixes viewport dpi issue
@@ -304,8 +303,8 @@ public partial class ExplorerPage
         RigResource skeleton = new(skeletonStream);
 
         // Make sure viewport is created
-        SetCurrentPreviewType(WadFilePreviewType.Viewport);
-        await Task.Delay(100);
+        await SetCurrentPreviewType(WadFilePreviewType.Viewport);
+        await Task.Delay(50);
 
         await Babylon.CreateSkinnedMesh(
             this.JsRuntime,
@@ -417,10 +416,15 @@ public partial class ExplorerPage
             $"{this.ActiveTab.Id}_imagePreview",
             jsStream
         );
+
+        await SetCurrentPreviewType(WadFilePreviewType.Image);
     }
 
-    private void SetCurrentPreviewType(WadFilePreviewType previewType)
+    private async Task SetCurrentPreviewType(WadFilePreviewType previewType)
     {
+        if (this.ActiveTab.CurrentPreviewType is WadFilePreviewType.Viewport)
+            await this.JsRuntime.InvokeVoidAsync("destroyBabylonCanvas", this.ActiveTab.GetViewportCanvasId());
+
         this.ActiveTab.CurrentPreviewType = previewType;
         StateHasChanged();
     }
