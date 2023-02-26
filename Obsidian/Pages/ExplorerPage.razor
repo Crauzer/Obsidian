@@ -37,7 +37,7 @@
 
 <MudPaper>
     <MudPaper Elevation="25">
-        <MudToolBar Dense DisableGutters Class="relative">
+        <MudToolBar Dense DisableGutters Class="relative" Style="height: 55px">
             <MudMenu Dense Class="ml-4" Icon="@Icons.Material.TwoTone.Archive" Color="Color.Inherit"
                      AnchorOrigin="Origin.BottomLeft" Size="Size.Medium">
                 <MudMenuItem Icon="@CustomIcons.Material.ArchiveEdit" IconColor="Color.Primary" IconSize="Size.Small"
@@ -67,7 +67,7 @@
         </MudToolBar>
     </MudPaper>
     <MudDivider />
-    <MudTabs @bind-ActivePanelIndex="_activeTabId" Position="Position.Bottom" Elevation="6">
+    <MudTabs @bind-ActivePanelIndex="ActiveTabId" Position="Position.Bottom" Elevation="6">
         <ChildContent>
             @foreach (WadTabModel wadTab in this.Tabs)
             {
@@ -80,7 +80,7 @@
                     <ChildContent>
                         <MudSplitter EnableSlide DisableMargin @ref="_splitter" Sensitivity="2.5f" DimensionChanged="OnDimensionChanged">
                             <StartContent>
-                                <div style="position: relative;">
+                                <div style="position: relative; width: 100%">
                                     <CascadingValue Value="this">
                                         <CascadingValue Value="JsRuntime">
                                             <CascadingValue Value="ActiveTab">
@@ -94,7 +94,7 @@
                                     </CascadingValue>
                                     @if (ActiveTab is not null)
                                     {
-                                        <div style="position: absolute; top: 0px; right: 8px; z-index: 100; width: 32rem">
+                                        <div style="position: fixed; top: 0px; right: 0px; z-index: 100; width: 32rem;">
                                             <WadFilter @bind-Filter="ActiveTab.Filter" @bind-UseRegexFilter="ActiveTab.UseRegexFilter" />
                                         </div>
                                     }

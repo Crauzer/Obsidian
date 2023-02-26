@@ -40,8 +40,9 @@ public partial class ExplorerPage
     public IJSRuntime JsRuntime { get; set; }
 
     public List<WadTabModel> Tabs { get; set; } = new();
-    public WadTabModel ActiveTab => this.Tabs.ElementAtOrDefault(this._activeTabId);
-    private int _activeTabId = 0;
+
+    public WadTabModel ActiveTab => this.Tabs.ElementAtOrDefault(this.ActiveTabId);
+    public int ActiveTabId { get; set; } = 0;
 
     private MudSplitter _splitter;
 
@@ -181,7 +182,7 @@ public partial class ExplorerPage
         }
     }
 
-    private void RemoveWadTab(MudTabPanel tabPanel)
+    private async Task RemoveWadTab(MudTabPanel tabPanel)
     {
         if (tabPanel.Tag is not Guid tabId)
             return;
@@ -189,6 +190,8 @@ public partial class ExplorerPage
         WadTabModel tab = this.Tabs.FirstOrDefault(x => x.Id == tabId);
         if (tab is not null)
         {
+            await this.JsRuntime.InvokeVoidAsync("destroyBabylonCanvas", tab.GetViewportCanvasId());
+
             tab.Wad.Dispose();
             this.Tabs.Remove(tab);
         }

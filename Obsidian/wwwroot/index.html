@@ -118,6 +118,20 @@
             });
         }
 
+        function destroyBabylonCanvas(canvasId) {
+            const scene = babylonScenes.get(canvasId);
+            if (scene) {
+                scene.dispose();
+                babylonScenes.delete(canvasId);
+            }
+
+            const engine = babylonEngines.get(canvasId);
+            if (engine) {
+                engine.dispose();
+                babylonEngines.delete(canvasId);
+            }
+        }
+
         window.resizeBabylonEngine = (canvasId) => {
             babylonEngines.get(canvasId).resize();
         }
@@ -144,9 +158,9 @@
                 //material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
                 material.diffuseTexture = new BABYLON.Texture(textures[primitive.material], scene);
                 material.diffuseTexture.vScale = -1;
-                
+
                 material.emissiveColor = new BABYLON.Color3(1, 1, 1);
-                
+
                 meshMultiMaterial.subMaterials.push(material);
             });
 
