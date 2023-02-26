@@ -94,7 +94,7 @@
                                     </CascadingValue>
                                     @if (ActiveTab is not null)
                                     {
-                                        <div style="position: fixed; top: 0px; right: 0px; z-index: 100; width: 32rem;">
+                                        <div style="position: absolute; top: 0px; right: 8px; z-index: 100; width: 32rem;">
                                             <WadFilter @bind-Filter="ActiveTab.Filter" @bind-UseRegexFilter="ActiveTab.UseRegexFilter" />
                                         </div>
                                     }

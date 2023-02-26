@@ -41,7 +41,7 @@
         }
 
         window.setImage = async (imageElementId, imageStream) => {
-            const url = createImageBlobFromStream(imageStream);
+            const url = await createImageBlobFromStream(imageStream);
             const image = document.getElementById(imageElementId);
             image.onload = () => {
                 URL.revokeObjectURL(url);
