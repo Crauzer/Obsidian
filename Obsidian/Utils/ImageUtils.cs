@@ -1,8 +1,10 @@
 ﻿using BCnEncoder.Shared;
 using CommunityToolkit.HighPerformance;
 using LeagueToolkit.Core.Renderer;
+using LeagueToolkit.Core.Wad;
 using LeagueToolkit.Toolkit;
 using LeagueToolkit.Utils;
+using Microsoft.JSInterop;
 using Obsidian.Data.Wad;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -44,5 +46,24 @@ public static class ImageUtils
         }
 
         throw new InvalidDataException($"Failed to create Image for fileType: {fileType}");
+    }
+
+    public static async Task<string> CreateImageBlobFromChunk(
+        IJSRuntime js,
+        string path,
+        WadFile wad
+    )
+    {
+        using Stream textureStream = wad.LoadChunkDecompressed(path).AsStream();
+        MemoryStream textureImageStream = ConvertTextureToPng(Texture.Load(textureStream));
+
+        return await CreateImageBlobFromStream(js, textureImageStream);
+    }
+
+    public static async Task<string> CreateImageBlobFromStream(IJSRuntime js, Stream stream)
+    {
+        DotNetStreamReference jsStream = new(stream);
+
+        return await js.InvokeAsync<string>("createImageBlobFromStream", jsStream);
     }
 }

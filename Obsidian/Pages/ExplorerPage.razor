@@ -102,7 +102,10 @@
                             </StartContent>
                             <EndContent>
                                 <WadFileImagePreview WadTab="wadTab"/>
-                                <WadFileViewport WadTab="wadTab"/>
+                                @if(wadTab.CurrentPreviewType is WadFilePreviewType.Viewport)
+                                {
+                                    <WadFileViewport WadTab="wadTab" />
+                                }
                             </EndContent>
                         </MudSplitter>
                     </ChildContent>

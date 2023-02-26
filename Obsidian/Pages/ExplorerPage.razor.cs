@@ -1,24 +1,27 @@
-﻿using BCnEncoder.Shared;
-using CommunityToolkit.HighPerformance;
-using LeagueToolkit.Core.Memory;
+﻿using CommunityToolkit.HighPerformance;
 using LeagueToolkit.Core.Mesh;
+using LeagueToolkit.Core.Meta;
 using LeagueToolkit.Core.Renderer;
 using LeagueToolkit.Core.Wad;
-using LeagueToolkit.Toolkit;
+using LeagueToolkit.Hashing;
+using LeagueToolkit.Meta;
+using LeagueToolkit.Meta.Classes;
 using LeagueToolkit.Utils;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using MudBlazor;
 using MudExtensions;
+using Obsidian.BabylonJs;
 using Obsidian.Data.Wad;
 using Obsidian.Services;
 using Obsidian.Utils;
 using PhotinoNET;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using System.Numerics;
-using XXHash3NET;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using RigResource = LeagueToolkit.Core.Animation.RigResource;
 
 namespace Obsidian.Pages;
 
@@ -233,9 +236,7 @@ public partial class ExplorerPage
 
         try
         {
-            using Stream fileStream = this.ActiveTab.Wad.LoadChunkDecompressed(this.ActiveTab.SelectedFile.Chunk).AsStream();
-
-            await PreviewSelectedFile(fileStream);
+            await PreviewSelectedFile(this.ActiveTab.SelectedFile);
         }
         catch (Exception exception)
         {
@@ -243,33 +244,166 @@ public partial class ExplorerPage
         }
     }
 
-    private async Task PreviewSelectedFile(Stream fileStream)
+    private async Task PreviewSelectedFile(WadFileModel file)
     {
+        using Stream fileStream = this.ActiveTab.Wad.LoadChunkDecompressed(file.Chunk).AsStream();
         LeagueFileType fileType = LeagueFile.GetFileType(fileStream);
-        if (fileType is (LeagueFileType.TextureDds or LeagueFileType.Texture))
+
+        if (BinUtils.IsSkinPackage(file.Path))
+        {
+            await PreviewSkinPackage(fileStream);
+        }
+        else if (fileType is (LeagueFileType.TextureDds or LeagueFileType.Texture))
         {
             await PreviewImage(ImageUtils.GetImageFromStream(fileStream));
             SetCurrentPreviewType(WadFilePreviewType.Image);
         }
-        else if (fileType is LeagueFileType.SimpleSkin)
-        {
-            await PreviewSimpleSkin(fileStream);
-            SetCurrentPreviewType(WadFilePreviewType.Viewport);
-
-            // TODO: Move this into some generic function
-            // Fixes viewport dpi issue
-            await this.JsRuntime.InvokeVoidAsync("resizeBabylonEngine", this.ActiveTab.GetViewportCanvasId());
-        }
         else
         {
             SetCurrentPreviewType(WadFilePreviewType.None);
+        }
+
+        // Fixes viewport dpi issue
+        if (this.ActiveTab.CurrentPreviewType is WadFilePreviewType.Viewport)
+            await Babylon.ResizeEngine(this.JsRuntime, this.ActiveTab.GetViewportCanvasId());
+    }
+
+    private async Task PreviewSkinPackage(Stream stream)
+    {
+        BinTree skinPackage = new(stream);
+        var metaEnvironment = MetaEnvironment.Create(
+            Assembly.Load("LeagueToolkit.Meta.Classes").ExportedTypes.Where(x => x.IsClass)
+        );
+
+        BinTreeObject skinDataObject = skinPackage.Objects.Values.FirstOrDefault(
+            x => x.ClassHash == Fnv1a.HashLower(nameof(SkinCharacterDataProperties))
+        );
+
+        if (skinDataObject is null)
+            throw new InvalidDataException(
+                $"Skin package does not contain {nameof(SkinCharacterDataProperties)}"
+            );
+
+        var skinData = MetaSerializer.Deserialize<SkinCharacterDataProperties>(
+            metaEnvironment,
+            skinDataObject
+        );
+        SkinMeshDataProperties meshData = skinData.SkinMeshProperties;
+
+        using Stream simpleSkinStream = this.ActiveTab.Wad
+            .LoadChunkDecompressed(meshData.SimpleSkin)
+            .AsStream();
+        using Stream skeletonStream = this.ActiveTab.Wad
+            .LoadChunkDecompressed(meshData.Skeleton)
+            .AsStream();
+
+        using SkinnedMesh skinnedMesh = SkinnedMesh.ReadFromSimpleSkin(simpleSkinStream);
+        RigResource skeleton = new(skeletonStream);
+
+        // Make sure viewport is created
+        SetCurrentPreviewType(WadFilePreviewType.Viewport);
+        await Task.Delay(100);
+
+        await Babylon.CreateSkinnedMesh(
+            this.JsRuntime,
+            this.ActiveTab.GetViewportCanvasId(),
+            skinnedMesh,
+            skeleton,
+            await CreateTextureImages(
+                this.JsRuntime,
+                skinnedMesh,
+                meshData,
+                skinPackage,
+                this.ActiveTab.Wad,
+                metaEnvironment
+            )
+        );
+
+        static async Task<Dictionary<string, string>> CreateTextureImages(
+            IJSRuntime js,
+            SkinnedMesh skinnedMesh,
+            SkinMeshDataProperties meshData,
+            BinTree skinPackage,
+            WadFile wad,
+            MetaEnvironment metaEnvironment
+        )
+        {
+            Dictionary<string, string> textures = new();
+
+            string defaultTexture = await ImageUtils.CreateImageBlobFromChunk(
+                js,
+                meshData.Texture,
+                wad
+            );
+
+            // TODO: Refactor this garbage code
+            foreach (SkinnedMeshRange range in skinnedMesh.Ranges)
+            {
+                SkinMeshDataProperties_MaterialOverride materialOverride =
+                    meshData.MaterialOverride.FirstOrDefault(
+                        x => x.Value.Submesh == range.Material
+                    );
+
+                if (materialOverride is null)
+                {
+                    textures.Add(range.Material, defaultTexture);
+                    continue;
+                }
+
+                if (string.IsNullOrEmpty(materialOverride.Texture) is not true)
+                {
+                    textures.Add(
+                        range.Material,
+                        await ImageUtils.CreateImageBlobFromChunk(js, materialOverride.Texture, wad)
+                    );
+                    continue;
+                }
+
+                if (
+                    skinPackage.Objects.TryGetValue(
+                        materialOverride.Material,
+                        out BinTreeObject materialDefObject
+                    )
+                    is not true
+                )
+                {
+                    textures.Add(range.Material, defaultTexture);
+                    continue;
+                }
+
+                var materialDef = MetaSerializer.Deserialize<StaticMaterialDef>(
+                    metaEnvironment,
+                    materialDefObject
+                );
+                StaticMaterialShaderSamplerDef diffuseSamplerDef =
+                    materialDef.SamplerValues.FirstOrDefault(
+                        x => x.Value.SamplerName is "Diffuse_Texture"
+                    );
+                diffuseSamplerDef ??= new();
+
+                textures.Add(
+                    range.Material,
+                    string.IsNullOrEmpty(diffuseSamplerDef.TextureName) switch
+                    {
+                        true => defaultTexture,
+                        false
+                            => await ImageUtils.CreateImageBlobFromChunk(
+                                js,
+                                diffuseSamplerDef.TextureName,
+                                wad
+                            )
+                    }
+                );
+            }
+
+            return textures;
         }
     }
 
     private async Task PreviewImage(Image<Rgba32> image)
     {
         MemoryStream imageStream = new();
-        
+
         await image.SaveAsPngAsync(imageStream);
         imageStream.Position = 0;
 
@@ -282,68 +416,6 @@ public partial class ExplorerPage
         );
     }
 
-    private async Task PreviewSimpleSkin(Stream fileStream)
-    {
-        using SkinnedMesh skinnedMesh = SkinnedMesh.ReadFromSimpleSkin(fileStream);
-
-        // Create vertex data for babylon
-        float[] positions = CreateVector3Data(
-            skinnedMesh.VerticesView.GetAccessor(ElementName.Position).AsVector3Array()
-        );
-        float[] normals = CreateVector3Data(
-            skinnedMesh.VerticesView.GetAccessor(ElementName.Normal).AsVector3Array()
-        );
-        float[] uvs = CreateVector2Data(
-            skinnedMesh.VerticesView.GetAccessor(ElementName.Texcoord0).AsVector2Array()
-        );
-
-        uint[] indices = skinnedMesh.Indices.ToArray();
-
-        await this.JsRuntime.InvokeVoidAsync(
-            "initBabylonCanvas",
-            this.ActiveTab.GetViewportCanvasId()
-        );
-        await this.JsRuntime.InvokeVoidAsync(
-            "renderSkinnedMesh",
-            this.ActiveTab.GetViewportCanvasId(),
-            skinnedMesh.Ranges,
-            indices,
-            positions,
-            normals,
-            uvs
-        );
-
-        static float[] CreateVector2Data(IReadOnlyList<Vector2> array)
-        {
-            int dataOffset = 0;
-            var data = new float[array.Count * 2];
-            for (int i = 0; i < array.Count; i++)
-            {
-                data[dataOffset + 0] = array[i].X;
-                data[dataOffset + 1] = array[i].Y;
-
-                dataOffset += 2;
-            }
-
-            return data;
-        }
-        static float[] CreateVector3Data(IReadOnlyList<Vector3> array)
-        {
-            int dataOffset = 0;
-            var data = new float[array.Count * 3];
-            for (int i = 0; i < array.Count; i++)
-            {
-                data[dataOffset + 0] = array[i].X;
-                data[dataOffset + 1] = array[i].Y;
-                data[dataOffset + 2] = array[i].Z;
-
-                dataOffset += 3;
-            }
-
-            return data;
-        }
-    }
-
     private void SetCurrentPreviewType(WadFilePreviewType previewType)
     {
         this.ActiveTab.CurrentPreviewType = previewType;
@@ -352,8 +424,14 @@ public partial class ExplorerPage
 
     private async Task OnDimensionChanged(double dimension)
     {
-        if(this.ActiveTab is not null && this.ActiveTab.CurrentPreviewType is WadFilePreviewType.Viewport)
-            await this.JsRuntime.InvokeVoidAsync("resizeBabylonEngine", this.ActiveTab.GetViewportCanvasId());
+        if (
+            this.ActiveTab is not null
+            && this.ActiveTab.CurrentPreviewType is WadFilePreviewType.Viewport
+        )
+            await this.JsRuntime.InvokeVoidAsync(
+                "resizeBabylonEngine",
+                this.ActiveTab.GetViewportCanvasId()
+            );
     }
 
     public void ToggleExporting(bool isExporting)
