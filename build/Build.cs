@@ -129,14 +129,15 @@ class Build : NukeBuild
                 .Requires(() => Configuration.Equals(Configuration.Release))
                 .Executes(() =>
                 {
+                    // --nobuild makes it crash
                     DotNetPublish(
                         s =>
                             s.SetProject(Solution.GetProject("Obsidian"))
                                 .SetOutput(ObsidianPublishDirectory)
                                 .SetConfiguration(Configuration)
                                 .EnableSelfContained()
+                                .EnablePublishSingleFile()
                                 .EnableNoRestore()
-                                .EnableNoBuild()
                                 .SetVersion(MinVer.Version)
                                 .SetAssemblyVersion(MinVer.AssemblyVersion)
                                 .SetFileVersion(MinVer.FileVersion)
