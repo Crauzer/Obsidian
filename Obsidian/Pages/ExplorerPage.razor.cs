@@ -8,11 +8,13 @@ using LeagueToolkit.Meta;
 using LeagueToolkit.Meta.Classes;
 using LeagueToolkit.Utils;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using MudBlazor;
 using MudExtensions;
 using Obsidian.BabylonJs;
+using Obsidian.Data;
 using Obsidian.Data.Wad;
 using Obsidian.Services;
 using Obsidian.Utils;
@@ -21,12 +23,17 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Windows.Forms;
 using RigResource = LeagueToolkit.Core.Animation.RigResource;
 
 namespace Obsidian.Pages;
 
 public partial class ExplorerPage
 {
+    #region Injection
+    [Inject]
+    public Config Config { get; set; }
+
     [Inject]
     public HashtableService Hashtable { get; set; }
 
@@ -38,6 +45,7 @@ public partial class ExplorerPage
 
     [Inject]
     public IJSRuntime JsRuntime { get; set; }
+    #endregion
 
     public List<WadTabModel> Tabs { get; set; } = new();
 
@@ -52,9 +60,9 @@ public partial class ExplorerPage
 
     public async Task OpenWad()
     {
-        CommonOpenFileDialog dialog = new("Open Wad archives") { Multiselect = true };
-        dialog.Filters.Add(FileDialogUtils.CreateWadFilter());
-
+        CommonOpenFileDialog dialog = FileDialogUtils.CreateOpenWadDialog(
+            this.Config.GameDataDirectory
+        );
         if (dialog.ShowDialog(this.Window.WindowHandle) is CommonFileDialogResult.Cancel)
             return;
 
@@ -78,8 +86,10 @@ public partial class ExplorerPage
 
     public async Task ExtractAll()
     {
-        string extractionDirectory = AskForExtractionDirectory();
-        if (string.IsNullOrEmpty(extractionDirectory))
+        CommonOpenFileDialog dialog = FileDialogUtils.CreateExtractWadDialog(
+            this.Config.DefaultExtractDirectory
+        );
+        if (dialog.ShowDialog(this.Window.WindowHandle) is not CommonFileDialogResult.Ok)
             return;
 
         IEnumerable<WadFileModel> fileItems = this.ActiveTab
@@ -90,7 +100,7 @@ public partial class ExplorerPage
         ToggleExporting(true);
         try
         {
-            await Task.Run(() => ExtractFiles(fileItems, extractionDirectory));
+            await Task.Run(() => ExtractFiles(fileItems, dialog.FileName));
 
             this.Snackbar.Add(
                 $"Successfully exported {fileItems.Count()} files!",
@@ -109,8 +119,10 @@ public partial class ExplorerPage
 
     public async Task ExtractSelected()
     {
-        string extractionDirectory = AskForExtractionDirectory();
-        if (string.IsNullOrEmpty(extractionDirectory))
+        CommonOpenFileDialog dialog = FileDialogUtils.CreateExtractWadDialog(
+            this.Config.DefaultExtractDirectory
+        );
+        if (dialog.ShowDialog(this.Window.WindowHandle) is not CommonFileDialogResult.Ok)
             return;
 
         IEnumerable<WadFileModel> fileItems = this.ActiveTab.CheckedFiles;
@@ -118,7 +130,7 @@ public partial class ExplorerPage
         ToggleExporting(true);
         try
         {
-            await Task.Run(() => ExtractFiles(fileItems, extractionDirectory));
+            await Task.Run(() => ExtractFiles(fileItems, dialog.FileName));
 
             this.Snackbar.Add(
                 $"Successfully exported {fileItems.Count()} files!",
@@ -195,16 +207,6 @@ public partial class ExplorerPage
             tab.Wad.Dispose();
             this.Tabs.Remove(tab);
         }
-    }
-
-    private string AskForExtractionDirectory()
-    {
-        CommonOpenFileDialog dialog =
-            new("Select the extraction directory") { IsFolderPicker = true };
-
-        dialog.ShowDialog(this.Window.WindowHandle);
-
-        return dialog.FileName;
     }
 
     public List<WadItemModel> GetVisibleItemsForActiveTab()
@@ -343,7 +345,10 @@ public partial class ExplorerPage
     private async Task SetCurrentPreviewType(WadFilePreviewType previewType)
     {
         if (this.ActiveTab.CurrentPreviewType is WadFilePreviewType.Viewport)
-            await this.JsRuntime.InvokeVoidAsync("destroyBabylonCanvas", this.ActiveTab.GetViewportCanvasId());
+            await this.JsRuntime.InvokeVoidAsync(
+                "destroyBabylonCanvas",
+                this.ActiveTab.GetViewportCanvasId()
+            );
 
         this.ActiveTab.CurrentPreviewType = previewType;
         StateHasChanged();

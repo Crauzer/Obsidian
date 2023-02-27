@@ -1,0 +1,93 @@
+﻿@using Microsoft.WindowsAPICodePack.Dialogs;
+@using Obsidian.Data;
+@using PhotinoNET;
+<MudDialog DisableSidePadding>
+    <TitleContent>
+        <MudStack Row AlignItems="AlignItems.Center">
+            <MudIcon Icon="@Icons.Material.TwoTone.Settings" Size="Size.Large" Color="Color.Primary" />
+            <MudText Typo="Typo.h4">
+                Settings
+            </MudText>
+        </MudStack>
+    </TitleContent>
+    <DialogContent>
+        <MudContainer Style="width: 60vw; height: 75vh; overflow-y: scroll;">
+            <MudGrid Spacing="2"> 
+                <MudItem xs="12">
+                    
+                    <MudField FullWidth Label="Game Data">
+                        <MudStack Row AlignItems="AlignItems.Center">
+                            <MudIconButton Icon="@Icons.Material.TwoTone.FolderOpen"
+                                           Variant="Variant.Filled" Color="Color.Primary"
+                                           OnClick="SelectGameDataDirectory" />
+                            @if (string.IsNullOrEmpty(Config.GameDataDirectory) is false)
+                            {
+                                <MudText Class="flex-grow-1">@Config.GameDataDirectory</MudText>
+                                <MudIconButton Icon="@Icons.Material.TwoTone.Close" Size="Size.Small"
+                                           OnClick="@(_ => this.Config.GameDataDirectory = null)" />
+                            }
+                        </MudStack>
+                    </MudField>
+                    <MudAlert Dense Severity="Severity.Info" Style="border-top-left-radius: 0px; border-top-right-radius: 0px;">
+                      <MudText>
+                        This is the default directory that will be used for opening Wad archives
+                      </MudText>
+                    </MudAlert>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudField FullWidth Label="Default Export directory">
+                        <MudStack Row AlignItems="AlignItems.Center">
+                            <MudIconButton Icon="@Icons.Material.TwoTone.FolderOpen"
+                                           Variant="Variant.Filled" Color="Color.Primary"
+                                           OnClick="SelectDefaultExportDirectory" />
+                            @if (string.IsNullOrEmpty(Config.DefaultExtractDirectory) is false)
+                            {
+                                <MudText Class="flex-grow-1">@Config.DefaultExtractDirectory</MudText>
+                                <MudIconButton Icon="@Icons.Material.TwoTone.Close" Size="Size.Small"
+                                           OnClick="@(_ => this.Config.DefaultExtractDirectory = null)" />
+                            }
+                        </MudStack>
+                    </MudField>
+                    <MudAlert Dense Severity="Severity.Info" Style="border-top-left-radius: 0px; border-top-right-radius: 0px;">
+                      <MudText>
+                        This is the default directory that will be used for exporting files
+                      </MudText>
+                    </MudAlert>
+                </MudItem>
+            </MudGrid>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Inject] public PhotinoWindow Window { get; set; }
+    [Inject] public Config Config { get; set; }
+
+    [CascadingParameter] MudDialogInstance Dialog { get; set; }
+
+    private DialogOptions _options = new() { CloseButton = true, MaxWidth = MaxWidth.Large };
+
+    public void SelectGameDataDirectory()
+    {
+        CommonOpenFileDialog dialog = new() { IsFolderPicker = true };
+
+        if (dialog.ShowDialog(this.Window.WindowHandle) is CommonFileDialogResult.Ok)
+            this.Config.GameDataDirectory = dialog.FileName;
+    }
+    public void SelectDefaultExportDirectory()
+    {
+        CommonOpenFileDialog dialog = new() { IsFolderPicker = true };
+
+        if (dialog.ShowDialog(this.Window.WindowHandle) is CommonFileDialogResult.Ok)
+            this.Config.DefaultExtractDirectory = dialog.FileName;
+    }
+
+    protected override void OnInitialized()
+    {
+        this.Dialog.SetOptions(this._options);
+        base.OnInitialized();
+    }
+}
