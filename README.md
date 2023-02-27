@@ -15,6 +15,8 @@
 
 # [How to use](https://github.com/Crauzer/Obsidian/wiki/Introduction)
 
+![image](https://user-images.githubusercontent.com/18646077/221690473-c5d590bd-2e27-41d2-9c86-b1164500b054.png)
+
 ## Discord
 If you want to talk to the developers or other people in the community, join our discord server:
 <table>
