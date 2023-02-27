@@ -67,7 +67,7 @@
         </MudToolBar>
     </MudPaper>
     <MudDivider />
-    <MudTabs @bind-ActivePanelIndex="_activeTabId" Position="Position.Bottom" Elevation="6">
+    <MudTabs @bind-ActivePanelIndex="ActiveTabId" Position="Position.Bottom" Elevation="6">
         <ChildContent>
             @foreach (WadTabModel wadTab in this.Tabs)
             {
@@ -80,7 +80,7 @@
                     <ChildContent>
                         <MudSplitter EnableSlide DisableMargin @ref="_splitter" Sensitivity="2.5f" DimensionChanged="OnDimensionChanged">
                             <StartContent>
-                                <div style="position: relative;">
+                                <div style="position: relative; width: 100%">
                                     <CascadingValue Value="this">
                                         <CascadingValue Value="JsRuntime">
                                             <CascadingValue Value="ActiveTab">
@@ -94,7 +94,7 @@
                                     </CascadingValue>
                                     @if (ActiveTab is not null)
                                     {
-                                        <div style="position: absolute; top: 0px; right: 8px; z-index: 100; width: 32rem">
+                                        <div style="position: absolute; top: 0px; right: 8px; z-index: 100; width: 32rem;">
                                             <WadFilter @bind-Filter="ActiveTab.Filter" @bind-UseRegexFilter="ActiveTab.UseRegexFilter" />
                                         </div>
                                     }
@@ -102,7 +102,10 @@
                             </StartContent>
                             <EndContent>
                                 <WadFileImagePreview WadTab="wadTab"/>
-                                <WadFileViewport WadTab="wadTab"/>
+                                @if(wadTab.CurrentPreviewType is WadFilePreviewType.Viewport)
+                                {
+                                    <WadFileViewport WadTab="wadTab" />
+                                }
                             </EndContent>
                         </MudSplitter>
                     </ChildContent>

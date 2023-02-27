@@ -14,7 +14,8 @@ public abstract class WadItemModel : IComparable<WadItemModel>
         this switch
         {
             WadFileModel => WadItemType.File,
-            WadFolderModel => WadItemType.Folder
+            WadFolderModel => WadItemType.Folder,
+            _ => throw new NotImplementedException("Invalid wad item type")
         };
 
     public WadFolderModel Parent { get; protected set; }

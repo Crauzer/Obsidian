@@ -41,9 +41,7 @@
         }
 
         window.setImage = async (imageElementId, imageStream) => {
-            const arrayBuffer = await imageStream.arrayBuffer();
-            const blob = new Blob([arrayBuffer]);
-            const url = URL.createObjectURL(blob);
+            const url = await createImageBlobFromStream(imageStream);
             const image = document.getElementById(imageElementId);
             image.onload = () => {
                 URL.revokeObjectURL(url);
@@ -51,6 +49,12 @@
             image.src = url;
         }
 
+        async function createImageBlobFromStream(imageStream) {
+            const arrayBuffer = await imageStream.arrayBuffer();
+            const blob = new Blob([arrayBuffer]);
+
+            return URL.createObjectURL(blob);
+        }
 
         const babylonScenes = new Map();
         const babylonEngines = new Map();
@@ -96,6 +100,10 @@
             const scene = createScene();
             babylonScenes.set(canvasId, scene);
 
+            scene.debugLayer.show({
+                embedMode: true
+            });
+
             const fpsElement = document.getElementById(`${canvasId}_fps`);
 
             // Register a render loop to repeatedly render the scene
@@ -110,15 +118,35 @@
             });
         }
 
+        function destroyBabylonCanvas(canvasId) {
+            const scene = babylonScenes.get(canvasId);
+            if (scene) {
+                scene.dispose();
+                babylonScenes.delete(canvasId);
+            }
+
+            const engine = babylonEngines.get(canvasId);
+            if (engine) {
+                engine.dispose();
+                babylonEngines.delete(canvasId);
+            }
+        }
+
         window.resizeBabylonEngine = (canvasId) => {
             babylonEngines.get(canvasId).resize();
         }
 
-        window.renderSkinnedMesh = (canvasId, primitives, indices, positions, normals, uvs) => {
+        window.renderSkinnedMesh = (canvasId, joints, primitives, indices, positions, normals, uvs, weightIds, weights, textures) => {
+            console.info(textures);
             const scene = babylonScenes.get(canvasId);
 
-            const mesh = new BABYLON.Mesh("skinnedMesh", scene);
+            const mesh = new BABYLON.Mesh("skinned_mesh", scene);
             const meshMultiMaterial = new BABYLON.MultiMaterial("multi", scene);
+
+            // Create skeleton
+            const skeleton = new BABYLON.Skeleton("skeleton", "skinned_mesh_skeleton");
+            createBones(skeleton, joints);
+            mesh.skeleton = skeleton;
 
             // Create materials for each primitive
             primitives.forEach(primitive => {
@@ -126,7 +154,12 @@
 
                 material.twoSidedLighting = true;
                 material.backFaceCulling = false;
-                material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
+
+                //material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
+                material.diffuseTexture = new BABYLON.Texture(textures[primitive.material], scene);
+                material.diffuseTexture.vScale = -1;
+
+                material.emissiveColor = new BABYLON.Color3(1, 1, 1);
 
                 meshMultiMaterial.subMaterials.push(material);
             });
@@ -140,6 +173,8 @@
             vertexData.positions = positions;
             vertexData.normals = normals;
             vertexData.uvs = uvs;
+            vertexData.matricesIndices = weightIds;
+            vertexData.matricesWeights = weights;
 
             vertexData.applyToMesh(mesh);
 
@@ -148,6 +183,59 @@
             primitives.forEach((primitive, i) => {
                 new BABYLON.SubMesh(i, primitive.startIndex, primitive.vertexCount, primitive.startIndex, primitive.indexCount, mesh);
             });
+
+            scene.debugLayer.show({
+                embedMode: true
+            });
+        }
+
+        function createBones(skeleton, joints) {
+            createdBones = [];
+
+            joints.forEach(joint => {
+                createBone(skeleton, joint, joints, createdBones);
+            });
+        }
+
+        function createBone(skeleton, joint, joints, createdBones) {
+            const existingBone = createdBones.find(x => x.name === joint.name);
+            if (existingBone) {
+                return existingBone;
+            }
+
+            if (joint.parentId === -1) {
+                const bone = new BABYLON.Bone(
+                    joint.name,
+                    skeleton,
+                    null,
+                    BABYLON.Matrix.FromArray(joint.localTransform),
+                    BABYLON.Matrix.FromArray(joint.inverseBindTransform),
+                    null,
+                    joint.id
+                );
+
+                createdBones.push(bone);
+                return bone;
+            } else {
+                const parentJoint = joints[joint.parentId];
+                let parentBone = createdBones.find(x => x.name === parentJoint.name);
+                if (!parentBone) {
+                    parentBone = createBone(skeleton, parentJoint, joints, createdBones);
+                }
+
+                const bone = new BABYLON.Bone(
+                    joint.name,
+                    skeleton,
+                    parentBone,
+                    BABYLON.Matrix.FromArray(joint.localTransform),
+                    BABYLON.Matrix.FromArray(joint.inverseBindTransform),
+                    null,
+                    joint.id
+                );
+
+                createdBones.push(bone);
+                return bone;
+            }
         }
     </script>
 </body>
