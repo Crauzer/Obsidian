@@ -46,11 +46,12 @@ public partial class ExplorerPage
     [Inject]
     public IJSRuntime JsRuntime { get; set; }
     #endregion
-
     public List<WadTabModel> Tabs { get; set; } = new();
 
     public WadTabModel ActiveTab => this.Tabs.ElementAtOrDefault(this.ActiveTabId);
-    public int ActiveTabId { get; set; } = 0;
+    public int ActiveTabId { get; set; }
+
+    private MudTabs _tabsComponent;
 
     private MudSplitter _splitter;
 
@@ -192,6 +193,9 @@ public partial class ExplorerPage
 
             this.Tabs.Add(new(Path.GetFileName(wadPath), wad, this.Hashtable));
         }
+
+        // Set opened wad as active
+        this.ActiveTabId = this.Tabs.Count - 1;
     }
 
     private async Task RemoveWadTab(MudTabPanel tabPanel)
@@ -221,12 +225,6 @@ public partial class ExplorerPage
 
             return new();
         }
-    }
-
-    public void ToggleActiveTabRegexFilter()
-    {
-        this.ActiveTab.UseRegexFilter = !this.ActiveTab.UseRegexFilter;
-        StateHasChanged();
     }
 
     // TODO: Refactor this to be an event from the tree view itself

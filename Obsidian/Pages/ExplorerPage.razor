@@ -73,7 +73,7 @@
         </MudToolBar>
     </MudPaper>
     <MudDivider />
-    <MudTabs @bind-ActivePanelIndex="ActiveTabId" Position="Position.Bottom" Elevation="6">
+    <MudTabs @ref="_tabsComponent" @bind-ActivePanelIndex="ActiveTabId" Position="Position.Bottom" Elevation="6">
         <ChildContent>
             @foreach (WadTabModel wadTab in this.Tabs)
             {
