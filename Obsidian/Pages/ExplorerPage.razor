@@ -37,7 +37,7 @@
 
 <MudPaper>
     <MudPaper Elevation="25">
-        <MudToolBar Dense DisableGutters Class="relative">
+        <MudToolBar Dense DisableGutters>
             <MudMenu Dense Class="ml-4" Icon="@Icons.Material.TwoTone.Archive" Color="Color.Inherit"
                      AnchorOrigin="Origin.BottomLeft" Size="Size.Medium">
                 <MudMenuItem Icon="@CustomIcons.Material.ArchiveEdit" IconColor="Color.Primary" IconSize="Size.Small"
@@ -64,6 +64,12 @@
                 </MudMenuItem>
             </MudMenu>
             <MudSpacer />
+            @if (ActiveTab is not null)
+            {
+                <MudStack AlignItems="AlignItems.Center" Style="width: 33%">
+                    <WadFilter FullWidth @bind-Filter="ActiveTab.Filter" @bind-UseRegexFilter="ActiveTab.UseRegexFilter" />
+                </MudStack>
+            }
         </MudToolBar>
     </MudPaper>
     <MudDivider />
@@ -92,17 +98,11 @@
                                             </CascadingValue>
                                         </CascadingValue>
                                     </CascadingValue>
-                                    @if (ActiveTab is not null)
-                                    {
-                                        <div style="position: absolute; top: 0px; right: 8px; z-index: 100; width: 32rem;">
-                                            <WadFilter @bind-Filter="ActiveTab.Filter" @bind-UseRegexFilter="ActiveTab.UseRegexFilter" />
-                                        </div>
-                                    }
                                 </div>
                             </StartContent>
                             <EndContent>
-                                <WadFileImagePreview WadTab="wadTab"/>
-                                @if(wadTab.CurrentPreviewType is WadFilePreviewType.Viewport)
+                                <WadFileImagePreview WadTab="wadTab" />
+                                @if (wadTab.CurrentPreviewType is WadFilePreviewType.Viewport)
                                 {
                                     <WadFileViewport WadTab="wadTab" />
                                 }

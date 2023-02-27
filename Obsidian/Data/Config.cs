@@ -26,6 +26,28 @@ public class Config
     }
     private string _lcuHashesChecksum;
 
+    public string GameDataDirectory 
+    {
+        get => this._gameDataDirectory;
+        set
+        {
+            this._gameDataDirectory = value;
+            Save();
+        }
+    }
+    private string _gameDataDirectory;
+
+    public string DefaultExtractDirectory
+    {
+        get => this._defaultExportDirectory;
+        set
+        {
+            this._defaultExportDirectory = value;
+            Save();
+        }
+    }
+    private string _defaultExportDirectory;
+
     private const string CONFIG_FILE = "config.json";
 
     public Config() { }

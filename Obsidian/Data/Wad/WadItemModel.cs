@@ -1,9 +1,5 @@
-﻿using Microsoft.Extensions.FileSystemGlobbing;
-using System.Diagnostics;
-using System.Security.Cryptography;
+﻿using System.Diagnostics;
 using System.Text.RegularExpressions;
-using System.Windows.Controls;
-using PathIO = System.IO.Path;
 
 namespace Obsidian.Data.Wad;
 

@@ -43,11 +43,12 @@
             <MudSpacer />
             <MudStack AlignItems="AlignItems.Center">
                 <MudTooltip Text="Settings" Color="Color.Dark" Placement="Placement.Right">
-                    <MudIconButton Icon="@Icons.Material.TwoTone.Settings" Size="Size.Large" />
+                    <MudIconButton Icon="@Icons.Material.TwoTone.Settings" Size="Size.Large"
+                                   OnClick="OpenSettings" />
                 </MudTooltip>
                 <MudTooltip Text="Submit Bug Report" Color="Color.Dark" Placement="Placement.Right">
                     <MudIconButton Icon="@CustomIcons.Material.Alert" Color="Color.Inherit" Size="Size.Medium"
-                                   OnClick="SubmitBugReport"/>
+                                   OnClick="SubmitBugReport" />
                 </MudTooltip>
                 <MudTooltip Text="Go to GitHub" Color="Color.Dark" Placement="Placement.Right">
                     <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Size="Size.Medium"
@@ -68,6 +69,7 @@
 </MudLayout>
 
 @code {
+    [Inject] public IDialogService DialogService { get; set; }
     [Inject] public IJSRuntime JS { get; set; }
 
     private bool _isLoadingHashtable;
@@ -80,6 +82,11 @@
     private void OnHashtableLoadingFinished()
     {
         this._isLoadingHashtable = false;
+    }
+
+    private void OpenSettings()
+    {
+        this.DialogService.Show<SettingsDialog>();
     }
 
     private async Task SubmitBugReport()

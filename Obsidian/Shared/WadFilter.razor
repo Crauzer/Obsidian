@@ -1,6 +1,9 @@
-﻿@using Obsidian.Data;
+﻿@using MudBlazor.Utilities;
+@using Obsidian.Data;
 
-<MudStack Row Spacing="1" AlignItems="AlignItems.Start">
+<MudStack Row
+          Style="@_style"
+          Spacing="1" AlignItems="AlignItems.Start">
     <MudTooltip Text="Regex" Color="Color.Dark">
         @if (UseRegexFilter)
         {
@@ -19,10 +22,19 @@
     </MudTooltip>
     <MudTextField T="string" Class="mt-0 mud-elevation-2"
                   DebounceInterval="500" Value="Filter" ValueChanged="FilterChanged"
-                  Label="Filter" Variant="Variant.Filled" />
+                  Label="Filter" Variant="Variant.Filled"
+                  OnKeyPress="OnKeyPressed" />
 </MudStack>
 
 @code {
+    private string _style =>
+            new StyleBuilder()
+                .AddStyle("width", this.FullWidth ? "100%" : "initial")
+                .Build();
+
+    [Parameter]
+    public bool FullWidth { get; set; }
+
     [Parameter]
     public bool UseRegexFilter { get; set; }
 
