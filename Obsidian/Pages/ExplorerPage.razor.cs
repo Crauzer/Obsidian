@@ -311,7 +311,7 @@ public partial class ExplorerPage
             this.ActiveTab.GetViewportCanvasId(),
             skinnedMesh,
             skeleton,
-            await CreateTextureImages(
+            await SkinnedMeshUtils.CreateTextureImages(
                 this.JsRuntime,
                 skinnedMesh,
                 meshData,
@@ -320,86 +320,6 @@ public partial class ExplorerPage
                 metaEnvironment
             )
         );
-
-        static async Task<Dictionary<string, string>> CreateTextureImages(
-            IJSRuntime js,
-            SkinnedMesh skinnedMesh,
-            SkinMeshDataProperties meshData,
-            BinTree skinPackage,
-            WadFile wad,
-            MetaEnvironment metaEnvironment
-        )
-        {
-            Dictionary<string, string> textures = new();
-
-            string defaultTexture = await ImageUtils.CreateImageBlobFromChunk(
-                js,
-                meshData.Texture,
-                wad
-            );
-
-            // TODO: Refactor this garbage code
-            foreach (SkinnedMeshRange range in skinnedMesh.Ranges)
-            {
-                SkinMeshDataProperties_MaterialOverride materialOverride =
-                    meshData.MaterialOverride.FirstOrDefault(
-                        x => x.Value.Submesh == range.Material
-                    );
-
-                if (materialOverride is null)
-                {
-                    textures.Add(range.Material, defaultTexture);
-                    continue;
-                }
-
-                if (string.IsNullOrEmpty(materialOverride.Texture) is not true)
-                {
-                    textures.Add(
-                        range.Material,
-                        await ImageUtils.CreateImageBlobFromChunk(js, materialOverride.Texture, wad)
-                    );
-                    continue;
-                }
-
-                if (
-                    skinPackage.Objects.TryGetValue(
-                        materialOverride.Material,
-                        out BinTreeObject materialDefObject
-                    )
-                    is not true
-                )
-                {
-                    textures.Add(range.Material, defaultTexture);
-                    continue;
-                }
-
-                var materialDef = MetaSerializer.Deserialize<StaticMaterialDef>(
-                    metaEnvironment,
-                    materialDefObject
-                );
-                StaticMaterialShaderSamplerDef diffuseSamplerDef =
-                    materialDef.SamplerValues.FirstOrDefault(
-                        x => x.Value.SamplerName is "Diffuse_Texture"
-                    );
-                diffuseSamplerDef ??= new();
-
-                textures.Add(
-                    range.Material,
-                    string.IsNullOrEmpty(diffuseSamplerDef.TextureName) switch
-                    {
-                        true => defaultTexture,
-                        false
-                            => await ImageUtils.CreateImageBlobFromChunk(
-                                js,
-                                diffuseSamplerDef.TextureName,
-                                wad
-                            )
-                    }
-                );
-            }
-
-            return textures;
-        }
     }
 
     private async Task PreviewImage(Image<Rgba32> image)
