@@ -5,7 +5,6 @@
     <TargetFramework>net7.0-windows</TargetFramework>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>5.0.0-beta.2</Version>
     <Platforms>x64</Platforms>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
