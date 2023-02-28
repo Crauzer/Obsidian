@@ -131,84 +131,147 @@
         window.resizeBabylonEngine = (canvasId) => {
             babylonEngines.get(canvasId).resize();
         }
+    </script>
+
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+    <script type="importmap">
+        {
+          "imports": {
+            "three": "https://unpkg.com/three@0.150.1/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.150.1/examples/jsm/"
+          }
+        }
+    </script>
+    <script type="module">
+        import * as THREE from 'three';
+        import { DoubleSide } from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        const threeJsRenderers = new Map();
+        const threeJsScenes = new Map();
+
+        window.initThreeJsRenderer = (viewportId) => {
+            const viewport = document.getElementById(viewportId);
+            const viewportRect = viewport.getBoundingClientRect();
+
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0.5, 0.5, 0.5);
+            threeJsScenes.set(viewportId, scene);
+
+            const camera = new THREE.PerspectiveCamera(75, viewportRect.width / viewportRect.height, 2.5, 2500);
+            camera.position.x = 200;
+            camera.position.y = 200;
+
+            const renderer = new THREE.WebGLRenderer();
+            renderer.setSize(viewportRect.width, viewportRect.height);
+            threeJsRenderers.set(viewportId, renderer);
+            viewport.appendChild(renderer.domElement);
+
+            const controls = new OrbitControls(camera, renderer.domElement);
+
+            const gridHelper = new THREE.GridHelper(1000, 100);
+            scene.add(gridHelper);
+
+            scene.add(new THREE.HemisphereLight(0x443333, 0x222233, 4));
+
+            function animate() {
+                requestAnimationFrame(animate);
+
+                controls.update();
+                
+                renderer.render(scene, camera);
+            }
+
+            animate();
+        }
+
+        window.destroyThreeJsRenderer = (viewportId) => {
+            const renderer = threeJsRenderers.get(viewportId);
+            if (renderer) {
+                renderer.dispose();
+                renderer.domElement.remove();
+                threeJsRenderers.delete(viewportId);
+            }
+
+            const scene = threeJsScenes.get(viewportId);
+            if (scene) {
+                threeJsScenes.delete(viewportId);
+            }
+        }
+
+        window.resizeThreeJsRenderer = (viewportId) => {
+            const scene = threeJsScenes.get(viewportId);
+            const camera = scene.find(x => x.isPerspectiveCamera);
+        }
 
         window.renderSkinnedMesh = (canvasId, joints, primitives, indices, positions, normals, uvs, weightIds, weights, textures) => {
-            console.info(textures);
-            const scene = babylonScenes.get(canvasId);
+            const scene = threeJsScenes.get(canvasId);
+            const geometry = new THREE.BufferGeometry();
 
-            const mesh = new BABYLON.Mesh("skinned_mesh", scene);
-            const meshMultiMaterial = new BABYLON.MultiMaterial("multi", scene);
+            // Set vertex data
+            geometry.setIndex(indices);
 
-            // Create skeleton
-            const skeleton = new BABYLON.Skeleton("skeleton", "skinned_mesh_skeleton");
-            createBones(skeleton, joints);
-            mesh.skeleton = skeleton;
+            geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+            geometry.setAttribute("normal", new THREE.Float32BufferAttribute(normals, 3));
+            geometry.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
+            geometry.setAttribute("skinIndex", new THREE.Uint8BufferAttribute(weightIds, 4));
+            geometry.setAttribute("skinWeight", new THREE.Float32BufferAttribute(weights, 4));
 
-            // Create materials for each primitive
-            primitives.forEach(primitive => {
-                const material = new BABYLON.StandardMaterial(primitive.material, scene);
-
-                material.twoSidedLighting = true;
-                material.backFaceCulling = false;
-
-                //material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
-                material.diffuseTexture = new BABYLON.Texture(textures[primitive.material], scene);
-                material.diffuseTexture.vScale = -1;
-
-                material.emissiveColor = new BABYLON.Color3(1, 1, 1);
-
-                meshMultiMaterial.subMaterials.push(material);
-            });
-
-            // Apply material
-            mesh.material = meshMultiMaterial;
-
-            // Apply vertex data
-            const vertexData = new BABYLON.VertexData();
-            vertexData.indices = indices;
-            vertexData.positions = positions;
-            vertexData.normals = normals;
-            vertexData.uvs = uvs;
-            vertexData.matricesIndices = weightIds;
-            vertexData.matricesWeights = weights;
-
-            vertexData.applyToMesh(mesh);
-
-            // Create submeshes
-            mesh.subMeshes = [];
+            // Create draw ranges
             primitives.forEach((primitive, i) => {
-                new BABYLON.SubMesh(i, primitive.startIndex, primitive.vertexCount, primitive.startIndex, primitive.indexCount, mesh);
+                geometry.addGroup(primitive.startIndex, primitive.indexCount, i);
             });
 
-            scene.debugLayer.show({
-                embedMode: true
+            // Create materials
+            const materials = [];
+            primitives.forEach(primitive => {
+                const material = new THREE.MeshLambertMaterial();
+
+                material.name = primitive.material;
+                material.side = DoubleSide;
+
+                material.map = new THREE.TextureLoader().load(textures[primitive.material]);
+                material.map.flipY = false;
+
+                materials.push(material);
             });
+
+            const skinnedMesh = new THREE.SkinnedMesh(geometry, materials);
+
+            const inverseBindMatrices = [];
+            const bones = createBones(joints);
+
+            bones.forEach(bone => {
+                const joint = joints.find(x => x.name === bone.name);
+                inverseBindMatrices.push(joint.inverseBindTransform);
+            });
+
+            skinnedMesh.bind(new THREE.Skeleton(bones, inverseBindMatrices));
+
+            scene.add(skinnedMesh);
         }
 
-        function createBones(skeleton, joints) {
-            createdBones = [];
+        function createBones(joints) {
+            const createdBones = [];
 
             joints.forEach(joint => {
-                createBone(skeleton, joint, joints, createdBones);
+                createBone(joint, joints, createdBones);
             });
+
+            return createdBones;
         }
 
-        function createBone(skeleton, joint, joints, createdBones) {
+        function createBone(joint, joints, createdBones) {
             const existingBone = createdBones.find(x => x.name === joint.name);
             if (existingBone) {
                 return existingBone;
             }
 
             if (joint.parentId === -1) {
-                const bone = new BABYLON.Bone(
-                    joint.name,
-                    skeleton,
-                    null,
-                    BABYLON.Matrix.FromArray(joint.localTransform),
-                    BABYLON.Matrix.FromArray(joint.inverseBindTransform),
-                    null,
-                    joint.id
-                );
+                const bone = new THREE.Bone();
+
+                bone.name = joint.name;
+                bone.matrix = joint.localTransform;
 
                 createdBones.push(bone);
                 return bone;
@@ -216,23 +279,20 @@
                 const parentJoint = joints[joint.parentId];
                 let parentBone = createdBones.find(x => x.name === parentJoint.name);
                 if (!parentBone) {
-                    parentBone = createBone(skeleton, parentJoint, joints, createdBones);
+                    parentBone = createBone(parentJoint, joints, createdBones);
                 }
 
-                const bone = new BABYLON.Bone(
-                    joint.name,
-                    skeleton,
-                    parentBone,
-                    BABYLON.Matrix.FromArray(joint.localTransform),
-                    BABYLON.Matrix.FromArray(joint.inverseBindTransform),
-                    null,
-                    joint.id
-                );
+                const bone = new THREE.Bone();
+
+                bone.name = joint.name;
+                bone.matrix = joint.localTransform;
 
                 createdBones.push(bone);
+                parentBone.add(bone);
                 return bone;
             }
         }
+
     </script>
 </body>
 </html>

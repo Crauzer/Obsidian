@@ -17,7 +17,7 @@ namespace Obsidian.BabylonJs;
 public static class Babylon
 {
     public static async Task InitializeCanvas(IJSRuntime js, string canvasId) =>
-        await js.InvokeVoidAsync("initBabylonCanvas", canvasId);
+        await js.InvokeVoidAsync("initThreeJsRenderer", canvasId);
 
     public static async Task CreateSkinnedMesh(
         IJSRuntime js,

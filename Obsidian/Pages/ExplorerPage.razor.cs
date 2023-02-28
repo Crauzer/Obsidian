@@ -308,7 +308,7 @@ public partial class ExplorerPage
 
         await Babylon.CreateSkinnedMesh(
             this.JsRuntime,
-            this.ActiveTab.GetViewportCanvasId(),
+            this.ActiveTab.GetViewportContainerId(),
             skinnedMesh,
             skeleton,
             await SkinnedMeshUtils.CreateTextureImages(
@@ -344,8 +344,8 @@ public partial class ExplorerPage
     {
         if (this.ActiveTab.CurrentPreviewType is WadFilePreviewType.Viewport)
             await this.JsRuntime.InvokeVoidAsync(
-                "destroyBabylonCanvas",
-                this.ActiveTab.GetViewportCanvasId()
+                "destroyThreeJsRenderer",
+                this.ActiveTab.GetViewportContainerId()
             );
 
         this.ActiveTab.CurrentPreviewType = previewType;

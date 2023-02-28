@@ -17,6 +17,7 @@
     }
 
     .wad-file-render-canvas-wrapper {
+        width: calc(100vh - 123px);
         height: calc(100vh - 123px);
     }
 
@@ -56,8 +57,8 @@
             </MudButton>
         </div>
     </div>
-    <div class="wad-file-render-canvas-wrapper">
-        <canvas id="@($"{WadTab.Id}_renderCanvas")" class="wad-file-render-canvas" />
+    <div id="@($"{WadTab.Id}_viewport_container")" class="wad-file-render-canvas-wrapper">
+        @*<canvas id="@($"{WadTab.Id}_renderCanvas")" class="wad-file-render-canvas" />*@
     </div>
     <MudOverlay Absolute DarkBackground Visible="_isSavingAsGltf" ZIndex="9999">
         <MudProgressLinear Rounded Indeterminate
