@@ -206,7 +206,7 @@ public partial class ExplorerPage
         WadTabModel tab = this.Tabs.FirstOrDefault(x => x.Id == tabId);
         if (tab is not null)
         {
-            await this.JsRuntime.InvokeVoidAsync("destroyBabylonCanvas", tab.GetViewportCanvasId());
+            await this.JsRuntime.InvokeVoidAsync("destroyThreeJsRenderer", tab.GetViewportContainerId());
 
             tab.Wad.Dispose();
             this.Tabs.Remove(tab);
@@ -264,10 +264,6 @@ public partial class ExplorerPage
         {
             await SetCurrentPreviewType(WadFilePreviewType.None);
         }
-
-        // Fixes viewport dpi issue
-        if (this.ActiveTab.CurrentPreviewType is WadFilePreviewType.Viewport)
-            await Babylon.ResizeEngine(this.JsRuntime, this.ActiveTab.GetViewportCanvasId());
     }
 
     private async Task PreviewSkinPackage(Stream stream)
@@ -306,9 +302,9 @@ public partial class ExplorerPage
         await SetCurrentPreviewType(WadFilePreviewType.Viewport);
         await Task.Delay(50);
 
-        await Babylon.CreateSkinnedMesh(
+        await Three.CreateSkinnedMesh(
             this.JsRuntime,
-            this.ActiveTab.GetViewportCanvasId(),
+            this.ActiveTab.GetViewportContainerId(),
             skinnedMesh,
             skeleton,
             await SkinnedMeshUtils.CreateTextureImages(
@@ -344,8 +340,8 @@ public partial class ExplorerPage
     {
         if (this.ActiveTab.CurrentPreviewType is WadFilePreviewType.Viewport)
             await this.JsRuntime.InvokeVoidAsync(
-                "destroyBabylonCanvas",
-                this.ActiveTab.GetViewportCanvasId()
+                "destroyThreeJsRenderer",
+                this.ActiveTab.GetViewportContainerId()
             );
 
         this.ActiveTab.CurrentPreviewType = previewType;
@@ -359,8 +355,8 @@ public partial class ExplorerPage
             && this.ActiveTab.CurrentPreviewType is WadFilePreviewType.Viewport
         )
             await this.JsRuntime.InvokeVoidAsync(
-                "resizeBabylonEngine",
-                this.ActiveTab.GetViewportCanvasId()
+                "resizeViewport",
+                this.ActiveTab.GetViewportContainerId()
             );
     }
 

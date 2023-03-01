@@ -169,8 +169,7 @@ public class WadTabModel : IDisposable
         }
     }
 
-
-    public string GetViewportCanvasId() => $"{this.Id}_renderCanvas";
+    public string GetViewportContainerId() => $"{this.Id}_viewport_container";
 
     public void Dispose()
     {

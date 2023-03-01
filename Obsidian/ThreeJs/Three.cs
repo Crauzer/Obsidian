@@ -2,22 +2,14 @@
 using LeagueToolkit.Core.Memory;
 using LeagueToolkit.Core.Mesh;
 using Microsoft.JSInterop;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace Obsidian.BabylonJs;
 
-public static class Babylon
+public static class Three
 {
     public static async Task InitializeCanvas(IJSRuntime js, string canvasId) =>
-        await js.InvokeVoidAsync("initBabylonCanvas", canvasId);
+        await js.InvokeVoidAsync("initThreeJsRenderer", canvasId);
 
     public static async Task CreateSkinnedMesh(
         IJSRuntime js,
@@ -46,7 +38,7 @@ public static class Babylon
 
         uint[] indices = skinnedMesh.Indices.ToArray();
 
-        BabylonBone[] bones = CreateBones(skeleton.Joints);
+        ThreeBone[] bones = CreateBones(skeleton.Joints);
 
         await InitializeCanvas(js, canvasId);
         await js.InvokeVoidAsync(
@@ -67,11 +59,11 @@ public static class Babylon
     public static async Task ResizeEngine(IJSRuntime js, string canvasId) =>
         await js.InvokeVoidAsync("resizeBabylonEngine", canvasId);
 
-    private static BabylonBone[] CreateBones(IEnumerable<Joint> joints) =>
+    private static ThreeBone[] CreateBones(IEnumerable<Joint> joints) =>
         joints
             .Select(
                 x =>
-                    new BabylonBone
+                    new ThreeBone
                     {
                         Name = x.Name,
                         Id = x.Id,
