@@ -51,86 +51,6 @@
 
             return URL.createObjectURL(blob);
         }
-
-        const babylonScenes = new Map();
-        const babylonEngines = new Map();
-
-        window.initBabylonCanvas = (canvasId) => {
-            const canvas = document.getElementById(canvasId); // Get the canvas element
-
-            const engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
-            babylonEngines.set(canvasId, engine);
-
-            engine.setHardwareScalingLevel(1 / window.devicePixelRatio);
-
-            const createScene = function () {
-                // This creates a basic Babylon Scene object (non-mesh)
-                const scene = new BABYLON.Scene(engine);
-
-                // Parameters: name, alpha, beta, radius, target position, scene
-                const camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 3, Math.PI / 3, 1000, BABYLON.Vector3.Zero(), scene);
-
-                camera.setTarget(BABYLON.Vector3.Zero());
-                camera.zoomToMouseLocation = true;
-                camera.wheelDeltaPercentage = 0.01;
-                camera.panningSensibility = 50;
-
-                // This attaches the camera to the canvas
-                camera.attachControl(canvas, true);
-
-                // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
-                const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
-
-                // Our built-in 'ground' shape.
-                const ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 1000, height: 1000 }, scene, false);
-                ground.material = new BABYLON.GridMaterial("groundMat");
-                ground.material.majorUnitFrequency = 5;
-                ground.material.minorUnitVisibility = 0.5;
-                ground.material.gridRatio = 2;
-                ground.material.opacity = 0.99;
-                ground.material.useMaxLine = true;
-
-                return scene;
-            };
-
-            const scene = createScene();
-            babylonScenes.set(canvasId, scene);
-
-            scene.debugLayer.show({
-                embedMode: true
-            });
-
-            const fpsElement = document.getElementById(`${canvasId}_fps`);
-
-            // Register a render loop to repeatedly render the scene
-            engine.runRenderLoop(function () {
-                fpsElement.innerText = "FPS: " + engine.getFps().toFixed();
-                scene.render();
-            });
-
-            // Watch for browser/canvas resize events
-            window.addEventListener("resize", function () {
-                engine.resize();
-            });
-        }
-
-        function destroyBabylonCanvas(canvasId) {
-            const scene = babylonScenes.get(canvasId);
-            if (scene) {
-                scene.dispose();
-                babylonScenes.delete(canvasId);
-            }
-
-            const engine = babylonEngines.get(canvasId);
-            if (engine) {
-                engine.dispose();
-                babylonEngines.delete(canvasId);
-            }
-        }
-
-        window.resizeBabylonEngine = (canvasId) => {
-            babylonEngines.get(canvasId).resize();
-        }
     </script>
 
     <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
@@ -155,10 +75,10 @@
             const viewportRect = viewport.getBoundingClientRect();
 
             const scene = new THREE.Scene();
-            scene.background = new THREE.Color(0.5, 0.5, 0.5);
+            scene.background = new THREE.Color(0.3, 0.3, 0.4);
             threeJsScenes.set(viewportId, scene);
 
-            const camera = new THREE.PerspectiveCamera(75, viewportRect.width / viewportRect.height, 2.5, 2500);
+            const camera = new THREE.PerspectiveCamera(45, viewportRect.width / viewportRect.height, 2.5, 2500);
             camera.position.x = 200;
             camera.position.y = 200;
 
@@ -178,7 +98,7 @@
                 requestAnimationFrame(animate);
 
                 controls.update();
-                
+
                 renderer.render(scene, camera);
             }
 
@@ -249,6 +169,10 @@
             skinnedMesh.bind(new THREE.Skeleton(bones, inverseBindMatrices));
 
             scene.add(skinnedMesh);
+
+            // Visualize skeleton
+            const skeletonHelper = new THREE.SkeletonHelper(skinnedMesh.skeleton.bones[0]);
+            scene.add(skeletonHelper);
         }
 
         function createBones(joints) {
