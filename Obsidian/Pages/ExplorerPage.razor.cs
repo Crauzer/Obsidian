@@ -290,9 +290,7 @@ public partial class ExplorerPage : IDisposable
     private async Task PreviewSkinPackage(Stream stream)
     {
         BinTree skinPackage = new(stream);
-        var metaEnvironment = MetaEnvironment.Create(
-            Assembly.Load("LeagueToolkit.Meta.Classes").ExportedTypes.Where(x => x.IsClass)
-        );
+        MetaEnvironment metaEnvironment = BinUtils.CreateMetaEnvironment();
 
         BinTreeObject skinDataObject = skinPackage.Objects.Values.FirstOrDefault(
             x => x.ClassHash == Fnv1a.HashLower(nameof(SkinCharacterDataProperties))

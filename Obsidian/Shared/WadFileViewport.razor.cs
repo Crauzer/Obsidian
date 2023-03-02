@@ -1,6 +1,11 @@
 ﻿using CommunityToolkit.HighPerformance;
+using LeagueToolkit.Core.Animation;
 using LeagueToolkit.Core.Mesh;
+using LeagueToolkit.Core.Meta;
+using LeagueToolkit.Core.Wad;
+using LeagueToolkit.Hashing;
 using LeagueToolkit.IO.SimpleSkinFile;
+using LeagueToolkit.Meta;
 using LeagueToolkit.Meta.Classes;
 using LeagueToolkit.Utils;
 using Microsoft.AspNetCore.Components;
@@ -10,12 +15,8 @@ using Obsidian.Data.Wad;
 using Obsidian.Utils;
 using PhotinoNET;
 using SharpGLTF.Schema2;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using RigResource = LeagueToolkit.Core.Animation.RigResource;
+using Texture = LeagueToolkit.Core.Renderer.Texture;
 
 namespace Obsidian.Shared;
 
@@ -34,6 +35,12 @@ public partial class WadFileViewport
 
     private bool _isSavingAsGltf;
 
+    private static readonly string[] DIFFUSE_SAMPLERS = new[]
+    {
+        "DiffuseTexture",
+        "Diffuse_Texture"
+    };
+
     public void SaveAsGltf()
     {
         CommonSaveFileDialog dialog =
@@ -47,16 +54,19 @@ public partial class WadFileViewport
         ToggleIsSavingAsGltf(true);
         try
         {
-            using Stream fileStream = this.WadTab.Wad.LoadChunkDecompressed(this.WadTab.SelectedFile.Chunk).AsStream();
+            using Stream fileStream = this.WadTab.Wad
+                .LoadChunkDecompressed(this.WadTab.SelectedFile.Chunk)
+                .AsStream();
 
             LeagueFileType fileType = LeagueFile.GetFileType(fileStream);
-            ModelRoot gltf = fileType switch
+            if (BinUtils.IsSkinPackage(this.WadTab.SelectedFile.Path))
             {
-                LeagueFileType.SimpleSkin => CreateGltfFromSkinnedMesh(fileStream),
-                _ => throw new InvalidOperationException($"Cannot save fileType: {fileType} as glTF")
-            };
-
-            gltf.Save(dialog.FileName);
+                CreateGltfFromSkinPackage(fileStream).Save(dialog.FileName);
+            }
+            else
+            {
+                throw new InvalidOperationException($"Cannot save fileType: {fileType} as glTF");
+            }
 
             this.Snackbar.Add($"Saved {this.WadTab.SelectedFile.Name} as glTF!", Severity.Success);
         }
@@ -70,11 +80,153 @@ public partial class WadFileViewport
         }
     }
 
-    private ModelRoot CreateGltfFromSkinnedMesh(Stream stream)
+    private ModelRoot CreateGltfFromSkinPackage(Stream stream)
     {
-        using SkinnedMesh skinnedMesh = SkinnedMesh.ReadFromSimpleSkin(stream);
+        BinTree skinPackage = new(stream);
+        MetaEnvironment metaEnvironment = BinUtils.CreateMetaEnvironment();
 
-        return skinnedMesh.ToGltf(new List<(string, Stream)>());
+        BinTreeObject skinDataObject = skinPackage.Objects.Values.FirstOrDefault(
+            x => x.ClassHash == Fnv1a.HashLower(nameof(SkinCharacterDataProperties))
+        );
+
+        if (skinDataObject is null)
+            throw new InvalidDataException(
+                $"Skin package does not contain {nameof(SkinCharacterDataProperties)}"
+            );
+
+        var skinData = MetaSerializer.Deserialize<SkinCharacterDataProperties>(
+            metaEnvironment,
+            skinDataObject
+        );
+        SkinMeshDataProperties meshData = skinData.SkinMeshProperties;
+
+        using Stream simpleSkinStream = this.WadTab.Wad
+            .LoadChunkDecompressed(meshData.SimpleSkin)
+            .AsStream();
+        using Stream skeletonStream = this.WadTab.Wad
+            .LoadChunkDecompressed(meshData.Skeleton)
+            .AsStream();
+
+        using SkinnedMesh skinnedMesh = SkinnedMesh.ReadFromSimpleSkin(simpleSkinStream);
+        RigResource skeleton = new(skeletonStream);
+
+        return skinnedMesh.ToGltf(
+            skeleton,
+            CollectMaterialTextures(
+                skinnedMesh,
+                meshData,
+                skinPackage,
+                this.WadTab.Wad,
+                metaEnvironment
+            ),
+            new List<(string, IAnimationAsset)>()
+        );
+    }
+
+    private List<(string, Stream)> CollectMaterialTextures(
+        SkinnedMesh skinnedMesh,
+        SkinMeshDataProperties meshData,
+        BinTree skinPackage,
+        WadFile wad,
+        MetaEnvironment metaEnvironment
+    )
+    {
+        string defaultTexture = ResolveMaterialTexturePath(
+            meshData.Material,
+            meshData.Texture,
+            skinPackage,
+            metaEnvironment
+        );
+        List<(string, Stream)> textures = new();
+
+        foreach (SkinnedMeshRange primitive in skinnedMesh.Ranges)
+        {
+            SkinMeshDataProperties_MaterialOverride materialOverride =
+                meshData.MaterialOverride.FirstOrDefault(
+                    x => x.Value.Submesh == primitive.Material
+                );
+
+            textures.Add(
+                (materialOverride is null) switch
+                {
+                    true => (primitive.Material, CreateTextureImage(defaultTexture, wad)),
+                    false
+                        => (
+                            primitive.Material,
+                            CreateMaterialTextureImage(
+                                materialOverride.Material,
+                                materialOverride.Texture,
+                                skinPackage,
+                                wad,
+                                metaEnvironment
+                            )
+                        )
+                }
+            );
+        }
+
+        return textures;
+    }
+
+    private static Stream CreateMaterialTextureImage(
+        MetaObjectLink materialLink,
+        string fallbackTexturePath,
+        BinTree skinPackage,
+        WadFile wad,
+        MetaEnvironment metaEnvironment
+    )
+    {
+        BinTreeObject materialDefObject = skinPackage.Objects.GetValueOrDefault(materialLink);
+        if (materialDefObject is null)
+            return CreateTextureImage(fallbackTexturePath, wad);
+
+        var materialDef = MetaSerializer.Deserialize<StaticMaterialDef>(
+            metaEnvironment,
+            materialDefObject
+        );
+        StaticMaterialShaderSamplerDef diffuseSamplerDef = materialDef.SamplerValues.FirstOrDefault(
+            x => DIFFUSE_SAMPLERS.Contains(x.Value.SamplerName)
+        );
+        diffuseSamplerDef ??= new();
+
+        return string.IsNullOrEmpty(diffuseSamplerDef.TextureName) switch
+        {
+            true => CreateTextureImage(fallbackTexturePath, wad),
+            false => CreateTextureImage(diffuseSamplerDef.TextureName, wad),
+        };
+    }
+
+    private static string ResolveMaterialTexturePath(
+        MetaObjectLink materialLink,
+        string fallbackTexturePath,
+        BinTree skinPackage,
+        MetaEnvironment metaEnvironment
+    )
+    {
+        BinTreeObject materialDefObject = skinPackage.Objects.GetValueOrDefault(materialLink);
+        if (materialDefObject is null)
+            return fallbackTexturePath;
+
+        var materialDef = MetaSerializer.Deserialize<StaticMaterialDef>(
+            metaEnvironment,
+            materialDefObject
+        );
+        StaticMaterialShaderSamplerDef diffuseSamplerDef = materialDef.SamplerValues.FirstOrDefault(
+            x => DIFFUSE_SAMPLERS.Contains(x.Value.SamplerName)
+        );
+        diffuseSamplerDef ??= new();
+
+        return string.IsNullOrEmpty(diffuseSamplerDef.TextureName) switch
+        {
+            true => fallbackTexturePath,
+            false => diffuseSamplerDef.TextureName,
+        };
+    }
+
+    private static Stream CreateTextureImage(string path, WadFile wad)
+    {
+        using Stream fallbackTextureStream = wad.LoadChunkDecompressed(path).AsStream();
+        return ImageUtils.ConvertTextureToPng(Texture.Load(fallbackTextureStream));
     }
 
     private void ToggleIsSavingAsGltf(bool value)

@@ -101,16 +101,11 @@
                                 </div>
                             </StartContent>
                             <EndContent>
-                                <div style="position: relative; width: 100%; height: 100%">
-                                    <WadFileImagePreview WadTab="wadTab" />
-                                    @if (wadTab.CurrentPreviewType is WadFilePreviewType.Viewport)
-                                    {
-                                        <WadFileViewport WadTab="wadTab" />
-                                    }
-                                    <MudOverlay Absolute DarkBackground Visible="_isLoadingPreview" ZIndex="9999">
-                                        <MudProgressCircular Indeterminate Color="Color.Primary" />
-                                    </MudOverlay>
-                                </div>
+                                <WadFileImagePreview WadTab="wadTab" />
+                                @if (wadTab.CurrentPreviewType is WadFilePreviewType.Viewport)
+                                {
+                                    <WadFileViewport WadTab="wadTab" />
+                                }
                             </EndContent>
                         </MudSplitter>
                     </ChildContent>
@@ -141,5 +136,8 @@
         <MudProgressLinear Rounded Indeterminate
                            Class="my-6" Style="width: 500px"
                            Color="Color.Primary" Size="Size.Large" />
+    </MudOverlay>
+    <MudOverlay DarkBackground Visible="_isLoadingPreview" ZIndex="9999">
+        <MudProgressCircular Indeterminate Color="Color.Primary" />
     </MudOverlay>
 </MudPaper>
