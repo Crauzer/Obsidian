@@ -32,7 +32,7 @@ namespace Obsidian.Pages;
 
 public partial class ExplorerPage : IDisposable
 {
-  #region Injection
+    #region Injection
     [Inject]
     public Config Config { get; set; }
 
@@ -50,7 +50,7 @@ public partial class ExplorerPage : IDisposable
 
     [Inject]
     public IJSRuntime JsRuntime { get; set; }
-  #endregion
+    #endregion
 
     public HotKeysContext _hotKeysContext;
 
@@ -68,6 +68,9 @@ public partial class ExplorerPage : IDisposable
     private bool _isLoadingWadFile = false;
     private bool _isExportingFiles = false;
     private bool _isLoadingHashtable = false;
+
+    // TODO: Asset loading should be moved into a new component
+    private bool _isLoadingPreview = false;
 
     public async Task OpenWad()
     {
@@ -250,6 +253,7 @@ public partial class ExplorerPage : IDisposable
             return;
         }
 
+        ToggleLoadingPreview(true);
         try
         {
             await PreviewSelectedFile(this.ActiveTab.SelectedFile);
@@ -257,6 +261,10 @@ public partial class ExplorerPage : IDisposable
         catch (Exception exception)
         {
             SnackbarUtils.ShowSoftError(this.Snackbar, exception);
+        }
+        finally
+        {
+            ToggleLoadingPreview(false);
         }
     }
 
@@ -313,7 +321,6 @@ public partial class ExplorerPage : IDisposable
 
         // Make sure viewport is created
         await SetCurrentPreviewType(WadFilePreviewType.Viewport);
-        await Task.Delay(50);
 
         await Three.CreateSkinnedMesh(
             this.JsRuntime,
@@ -385,14 +392,20 @@ public partial class ExplorerPage : IDisposable
         StateHasChanged();
     }
 
+    public void ToggleLoadingPreview(bool value)
+    {
+        this._isLoadingPreview = value;
+        StateHasChanged();
+    }
+
     public void RefreshState() => StateHasChanged();
 
-  #region Hotkey Handlers
+    #region Hotkey Handlers
     private async ValueTask FocusWadFilter()
     {
         await this.WadFilterComponent.InputField.FocusAsync();
     }
-  #endregion
+    #endregion
 
     protected override void OnInitialized()
     {
