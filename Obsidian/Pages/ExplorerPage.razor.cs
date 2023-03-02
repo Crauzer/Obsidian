@@ -17,6 +17,7 @@ using Obsidian.BabylonJs;
 using Obsidian.Data;
 using Obsidian.Data.Wad;
 using Obsidian.Services;
+using Obsidian.Shared;
 using Obsidian.Utils;
 using PhotinoNET;
 using SixLabors.ImageSharp;
@@ -24,13 +25,14 @@ using SixLabors.ImageSharp.PixelFormats;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
+using Toolbelt.Blazor.HotKeys2;
 using RigResource = LeagueToolkit.Core.Animation.RigResource;
 
 namespace Obsidian.Pages;
 
-public partial class ExplorerPage
+public partial class ExplorerPage : IDisposable
 {
-    #region Injection
+  #region Injection
     [Inject]
     public Config Config { get; set; }
 
@@ -44,8 +46,16 @@ public partial class ExplorerPage
     public ISnackbar Snackbar { get; set; }
 
     [Inject]
+    public HotKeys HotKeys { get; set; }
+
+    [Inject]
     public IJSRuntime JsRuntime { get; set; }
-    #endregion
+  #endregion
+
+    public HotKeysContext _hotKeysContext;
+
+    public WadFilter WadFilterComponent { get; set; }
+
     public List<WadTabModel> Tabs { get; set; } = new();
 
     public WadTabModel ActiveTab => this.Tabs.ElementAtOrDefault(this.ActiveTabId);
@@ -206,7 +216,10 @@ public partial class ExplorerPage
         WadTabModel tab = this.Tabs.FirstOrDefault(x => x.Id == tabId);
         if (tab is not null)
         {
-            await this.JsRuntime.InvokeVoidAsync("destroyThreeJsRenderer", tab.GetViewportContainerId());
+            await this.JsRuntime.InvokeVoidAsync(
+                "destroyThreeJsRenderer",
+                tab.GetViewportContainerId()
+            );
 
             tab.Wad.Dispose();
             this.Tabs.Remove(tab);
@@ -373,4 +386,23 @@ public partial class ExplorerPage
     }
 
     public void RefreshState() => StateHasChanged();
+
+  #region Hotkey Handlers
+    private async ValueTask FocusWadFilter()
+    {
+        await this.WadFilterComponent.InputField.FocusAsync();
+    }
+  #endregion
+
+    protected override void OnInitialized()
+    {
+        this._hotKeysContext = this.HotKeys
+            .CreateContext()
+            .Add(ModCode.Ctrl, Code.F, FocusWadFilter, "Focus Wad Filter");
+    }
+
+    public void Dispose()
+    {
+        this._hotKeysContext?.Dispose();
+    }
 }
