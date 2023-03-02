@@ -19,6 +19,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="Octokit" Version="5.0.0" />
     <PackageReference Include="Photino.API" Version="1.2.0-alpha" />
+    <PackageReference Include="Toolbelt.Blazor.HotKeys2" Version="1.0.0" />
     <PackageReference Include="WindowsAPICodePackShell" Version="7.0.3" />
   </ItemGroup>
 
