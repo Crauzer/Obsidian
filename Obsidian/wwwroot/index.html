@@ -74,7 +74,7 @@
             const viewportRect = viewport.getBoundingClientRect();
 
             const scene = new THREE.Scene();
-            scene.background = new THREE.Color(0.3, 0.3, 0.4);
+            scene.background = new THREE.Color("rgb(48, 44, 54)");
 
             const camera = new THREE.PerspectiveCamera(45, viewportRect.width / viewportRect.height, 2.5, 2500);
             camera.position.x = 200;
@@ -85,8 +85,8 @@
             viewport.appendChild(renderer.domElement);
 
             const controls = new OrbitControls(camera, renderer.domElement);
-
-            const gridHelper = new THREE.GridHelper(1000, 100);
+    
+            const gridHelper = new THREE.GridHelper(1000, 50, new THREE.Color("rgb(65, 168, 238)"), new THREE.Color("rgb(38, 88, 122)") );
             scene.add(gridHelper);
 
             scene.add(new THREE.HemisphereLight(0x443333, 0x222233, 4));
