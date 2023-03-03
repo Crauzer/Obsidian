@@ -51,11 +51,6 @@
 <div class="@(_isEnabled ? "wad-file-preview-viewport" : "wad-file-preview-viewport-hidden")">
     <div class="wad-file-render-canvas-content-wrapper">
         <div class="wad-file-render-canvas-content">
-            <MudText id="@($"{WadTab.Id}_renderCanvas_fps")"
-                     Class="unselectable-text mt-2 ml-2"
-                     Style="pointer-events: auto;">
-                FPS: n/a
-            </MudText>
             <MudButton Class="mt-auto mb-2 ml-2" Style="pointer-events: auto;"
                        Color="Color.Primary" Variant="Variant.Filled"
                        StartIcon="@CustomIcons.Material.ContentSave"

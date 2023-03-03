@@ -58,6 +58,7 @@
           }
         }
     </script>
+    <script src="http://mrdoob.github.io/stats.js/build/stats.min.js"></script>
     <script type="module">
         import * as THREE from 'three';
         import { DoubleSide } from 'three';
@@ -88,6 +89,13 @@
 
             scene.add(new THREE.HemisphereLight(0x443333, 0x222233, 4));
 
+            const stats = Stats();
+            stats.dom.style.position = "absolute";
+            stats.dom.style.top = "0px";
+            stats.dom.style.left = "0px";
+
+            viewport.appendChild(stats.dom);
+
             // Resize handler
             const resizeViewport = () => {
                 const viewportRect = viewport.getBoundingClientRect();
@@ -114,6 +122,7 @@
                 controls.update();
 
                 renderer.render(scene, camera);
+                stats.update();
             }
 
             animate();
@@ -131,7 +140,7 @@
                 if (viewport.gui) {
                     viewport.gui.destroy();
                 }
-                
+
                 viewports.delete(viewportId);
             }
         }
@@ -148,11 +157,11 @@
         window.renderSkinnedMesh = (viewportId, joints, primitives, indices, positions, normals, uvs, weightIds, weights, textures) => {
             const viewport = viewports.get(viewportId);
             const geometry = new THREE.BufferGeometry();
-            
+
             // GUI
             const gui = new GUI({ container: document.getElementById(viewportId) });
             viewport.gui = gui;
-            
+
             // Set vertex data
             geometry.setIndex(indices);
 
