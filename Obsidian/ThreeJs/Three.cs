@@ -68,8 +68,14 @@ public static class Three
                         Name = x.Name,
                         Id = x.Id,
                         ParentId = x.ParentId,
-                        LocalTransform = CreateMatrix44(x.LocalTransform),
-                        InverseBindTransform = CreateMatrix44(x.InverseBindTransform)
+
+                        LocalTranslation = CreateVector3(x.LocalTranslation),
+                        LocalRotation = CreateQuaternion(x.LocalRotation),
+                        LocalScale = CreateVector3(x.LocalScale),
+
+                        InverseBindTranslation = CreateVector3(x.InverseBindTranslation),
+                        InverseBindRotation = CreateQuaternion(x.InverseBindRotation),
+                        InverseBindScale = CreateVector3(x.InverseBindScale),
                     }
             )
             .ToArray();
@@ -154,24 +160,6 @@ public static class Three
         return data;
     }
 
-    private static float[] CreateMatrix44(Matrix4x4 matrix) =>
-        new float[]
-        {
-            matrix.M11,
-            matrix.M12,
-            matrix.M13,
-            matrix.M14,
-            matrix.M21,
-            matrix.M22,
-            matrix.M23,
-            matrix.M24,
-            matrix.M31,
-            matrix.M32,
-            matrix.M33,
-            matrix.M34,
-            matrix.M41,
-            matrix.M42,
-            matrix.M43,
-            matrix.M44,
-        };
+    private static float[] CreateVector3(Vector3 value) => new float[] { value.X, value.Y, value.Z };
+    private static float[] CreateQuaternion(Quaternion value) => new float[] { value.X, value.Y, value.Z, value.W };
 }
