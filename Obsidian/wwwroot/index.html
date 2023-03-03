@@ -62,6 +62,7 @@
         import * as THREE from 'three';
         import { DoubleSide } from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
         const viewports = new Map();
 
@@ -81,8 +82,8 @@
             viewport.appendChild(renderer.domElement);
 
             const controls = new OrbitControls(camera, renderer.domElement);
-    
-            const gridHelper = new THREE.GridHelper(1000, 50, new THREE.Color("rgb(65, 168, 238)"), new THREE.Color("rgb(38, 88, 122)") );
+
+            const gridHelper = new THREE.GridHelper(1000, 50, new THREE.Color("rgb(65, 168, 238)"), new THREE.Color("rgb(38, 88, 122)"));
             scene.add(gridHelper);
 
             scene.add(new THREE.HemisphereLight(0x443333, 0x222233, 4));
@@ -127,6 +128,10 @@
                 // De-register resize handler
                 window.removeEventListener('resize', viewport.resizeViewport);
 
+                if (viewport.gui) {
+                    viewport.gui.destroy();
+                }
+                
                 viewports.delete(viewportId);
             }
         }
@@ -143,7 +148,11 @@
         window.renderSkinnedMesh = (viewportId, joints, primitives, indices, positions, normals, uvs, weightIds, weights, textures) => {
             const viewport = viewports.get(viewportId);
             const geometry = new THREE.BufferGeometry();
-
+            
+            // GUI
+            const gui = new GUI({ container: document.getElementById(viewportId) });
+            viewport.gui = gui;
+            
             // Set vertex data
             geometry.setIndex(indices);
 
@@ -159,6 +168,7 @@
             });
 
             // Create materials
+            const materialsGui = gui.addFolder("materials");
             const materials = [];
             primitives.forEach(primitive => {
                 const material = new THREE.MeshLambertMaterial();
@@ -170,38 +180,56 @@
                 material.map.flipY = false;
 
                 materials.push(material);
+
+                // GUI
+                const materialGui = materialsGui.addFolder(material.name);
+                materialGui.open(false);
+                materialGui.add({ visible: true }, 'visible').onChange((value) => {
+                    material.visible = value;
+                });
             });
 
             const skinnedMesh = new THREE.SkinnedMesh(geometry, materials);
 
+            const skeletonGroup = new THREE.Group();
             const inverseBindMatrices = [];
-            const bones = createBones(joints);
+            const bones = createBones(joints, skeletonGroup);
 
             bones.forEach(bone => {
                 const joint = joints.find(x => x.name === bone.name);
-                inverseBindMatrices.push(joint.inverseBindTransform);
+                inverseBindMatrices.push(
+                    makeTransformFromArray(
+                        joint.inverseBindTranslation,
+                        joint.inverseBindRotation,
+                        joint.inverseBindScale
+                    )
+                );
             });
 
+            skinnedMesh.add(skeletonGroup);
             skinnedMesh.bind(new THREE.Skeleton(bones, inverseBindMatrices));
 
             viewport.scene.add(skinnedMesh);
 
             // Visualize skeleton
             const skeletonHelper = new THREE.SkeletonHelper(skinnedMesh);
+            gui.add({ "show skeleton": true }, "show skeleton").onChange(value => {
+                skeletonHelper.visible = value;
+            });
             viewport.scene.add(skeletonHelper);
         }
 
-        function createBones(joints) {
+        function createBones(joints, skeletonRoot) {
             const createdBones = [];
 
             joints.forEach(joint => {
-                createBone(joint, joints, createdBones);
+                createBone(joint, joints, createdBones, skeletonRoot);
             });
 
             return createdBones;
         }
 
-        function createBone(joint, joints, createdBones) {
+        function createBone(joint, joints, createdBones, skeletonRoot) {
             const existingBone = createdBones.find(x => x.name === joint.name);
             if (existingBone) {
                 return existingBone;
@@ -211,9 +239,10 @@
                 const bone = new THREE.Bone();
 
                 bone.name = joint.name;
-                bone.matrix = joint.localTransform;
+                bone.applyMatrix4(makeTransformFromArray(joint.localTranslation, joint.localRotation, joint.localScale));
 
                 createdBones.push(bone);
+                skeletonRoot.add(bone);
                 return bone;
             } else {
                 const parentJoint = joints[joint.parentId];
@@ -225,12 +254,36 @@
                 const bone = new THREE.Bone();
 
                 bone.name = joint.name;
-                bone.matrix = joint.localTransform;
+                bone.applyMatrix4(makeTransformFromArray(joint.localTranslation, joint.localRotation, joint.localScale));
 
                 createdBones.push(bone);
                 parentBone.add(bone);
                 return bone;
             }
+        }
+
+        function makeTransformFromArray(translation, rotation, scale) {
+            const translationMatrix = new THREE.Matrix4().makeTranslation(translation[0], translation[1], translation[2]);
+            const rotationMatrix = new THREE.Matrix4()
+                .makeRotationFromQuaternion(new THREE.Quaternion(rotation[0], rotation[1], rotation[2], rotation[3]));
+            const scaleMatrix = new THREE.Matrix4().makeScale(scale[0], scale[1], scale[2]);
+
+            return translationMatrix.multiply(rotationMatrix).multiply(scaleMatrix);
+        }
+
+        function makeTransform(translation, rotation, scale) {
+            const translationMatrix = new THREE.Matrix4().makeTranslation(translation.x, translation.y, translation.z);
+            const rotationMatrix = new THREE.Matrix4().makeRotationFromQuaternion(rotation);
+            const scaleMatrix = new THREE.Matrix4().makeScale(scale.x, scale.y, scale.z);
+
+            return translationMatrix.multiply(rotationMatrix).multiply(scaleMatrix);
+        }
+
+        function makeVector3(value) {
+            return new THREE.Vector3(value[0], value[1], value[2]);
+        }
+        function makeQuaternion(value) {
+            return new THREE.Quaternion(value[0], value[1], value[2], value[3]);
         }
 
     </script>

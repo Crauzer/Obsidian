@@ -9,6 +9,11 @@ public struct ThreeBone
     public int Id { get; set; }
     public int ParentId { get; set; }
 
-    public float[] LocalTransform { get; set; }
-    public float[] InverseBindTransform { get; set; }
+    public float[] LocalTranslation { get; set; }
+    public float[] LocalRotation { get; set; }
+    public float[] LocalScale { get; set; }
+
+    public float[] InverseBindTranslation { get; set; }
+    public float[] InverseBindRotation { get; set; }
+    public float[] InverseBindScale { get; set; }
 }
