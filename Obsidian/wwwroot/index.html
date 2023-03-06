@@ -11,6 +11,9 @@
     <link href="_content/CodeBeam.MudExtensions/MudExtensions.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <script src="photino.js"></script>
+
+    <script src="prism.js"></script>
+    <link href="css/prism.css" rel="stylesheet"/>
 </head>
 <body>
     <app>Loading...</app>
@@ -295,6 +298,12 @@
             return new THREE.Quaternion(value[0], value[1], value[2], value[3]);
         }
 
+    </script>
+
+    <script>
+        window.highlightCodePython = (code) => {
+            return Prism.highlight(code, Prism.languages.python, 'python');
+        }
     </script>
 </body>
 </html>
