@@ -1,5 +1,46 @@
-﻿<h3>WadFileTextPreview</h3>
+﻿@using CommunityToolkit.HighPerformance;
+@using LeagueToolkit.Toolkit.Ritobin;
+@using Obsidian.Data.Wad;
+@using System.Text;
+
+<div style="overflow: scroll;">
+    @if (_text.Value is not null)
+    {
+        <pre class="language-python">
+        <code class="language-python" style="display: block; height: calc(100vh - 160px); width: 100%">
+                @_text
+                </code>
+            </pre>
+    }
+</div>
 
 @code {
+    [Inject]
+    public IJSRuntime Js{ get; set; }
 
+    [Parameter]
+    public WadTabModel WadTab { get; set; }
+
+    private MarkupString _text;
+
+    protected override async void OnInitialized()
+    {
+        using Stream fileStream = this.WadTab.Wad.LoadChunkDecompressed(this.WadTab.SelectedFile.Chunk).AsStream();
+        using MemoryStream textStream = new();
+        using RitobinWriter writer =
+            new(
+                textStream,
+                new Dictionary<uint, string>(),
+                new Dictionary<uint, string>(),
+                new Dictionary<uint, string>(),
+                new Dictionary<uint, string>()
+            );
+        writer.WritePropertyBin(new(fileStream));
+
+        string previewText = Encoding.UTF8.GetString(textStream.ToArray());
+
+        this._text = new(await this.Js.InvokeAsync<string>("highlightCodePython", previewText));
+
+        base.OnInitialized();
+    }
 }

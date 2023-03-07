@@ -193,5 +193,6 @@ public enum WadFilePreviewType
 {
     None,
     Image,
-    Viewport
+    Viewport,
+    Text
 }

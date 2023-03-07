@@ -6,6 +6,7 @@ using LeagueToolkit.Core.Wad;
 using LeagueToolkit.Hashing;
 using LeagueToolkit.Meta;
 using LeagueToolkit.Meta.Classes;
+using LeagueToolkit.Toolkit.Ritobin;
 using LeagueToolkit.Utils;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -24,6 +25,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Windows.Forms;
 using Toolbelt.Blazor.HotKeys2;
 using RigResource = LeagueToolkit.Core.Animation.RigResource;
@@ -281,6 +283,10 @@ public partial class ExplorerPage : IDisposable
         {
             await PreviewImage(ImageUtils.GetImageFromStream(fileStream));
         }
+        else if (fileType is LeagueFileType.PropertyBin)
+        {
+            await PreviewPropertyBin(fileStream);
+        }
         else
         {
             await SetCurrentPreviewType(WadFilePreviewType.None);
@@ -352,6 +358,11 @@ public partial class ExplorerPage : IDisposable
         );
 
         await SetCurrentPreviewType(WadFilePreviewType.Image);
+    }
+
+    private async Task PreviewPropertyBin(Stream stream)
+    {
+        await SetCurrentPreviewType(WadFilePreviewType.Text);
     }
 
     private async Task SetCurrentPreviewType(WadFilePreviewType previewType)
