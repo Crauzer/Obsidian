@@ -48,6 +48,17 @@ public class Config
     }
     private string _defaultExportDirectory;
 
+    public bool SyncHashtables 
+    {
+        get => this._syncHashtables;
+        set
+        {
+            this._syncHashtables = value;
+            Save();
+        }
+    }
+    private bool _syncHashtables;
+
     public bool SyncBinHashtables
     {
         get => this._syncBinHashtables;

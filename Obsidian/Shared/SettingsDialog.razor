@@ -12,10 +12,10 @@
     </TitleContent>
     <DialogContent>
         <MudContainer Style="width: 60vw; height: 75vh; overflow-y: scroll;">
-            <MudGrid Spacing="2"> 
+            <MudGrid Spacing="2">
                 <MudItem xs="12">
-                    
-                    <MudField FullWidth Label="Game Data">
+
+                    <MudField FullWidth Label="Game Data" Variant="Variant.Filled">
                         <MudStack Row AlignItems="AlignItems.Center">
                             <MudIconButton Icon="@Icons.Material.TwoTone.FolderOpen"
                                            Variant="Variant.Filled" Color="Color.Primary"
@@ -29,13 +29,13 @@
                         </MudStack>
                     </MudField>
                     <MudAlert Dense Severity="Severity.Info" Style="border-top-left-radius: 0px; border-top-right-radius: 0px;">
-                      <MudText>
-                        This is the default directory that will be used for opening Wad archives
-                      </MudText>
+                        <MudText>
+                            This is the default directory that will be used for opening Wad archives
+                        </MudText>
                     </MudAlert>
                 </MudItem>
                 <MudItem xs="12">
-                    <MudField FullWidth Label="Default Export directory">
+                    <MudField FullWidth Label="Default Export directory" Variant="Variant.Filled">
                         <MudStack Row AlignItems="AlignItems.Center">
                             <MudIconButton Icon="@Icons.Material.TwoTone.FolderOpen"
                                            Variant="Variant.Filled" Color="Color.Primary"
@@ -49,10 +49,17 @@
                         </MudStack>
                     </MudField>
                     <MudAlert Dense Severity="Severity.Info" Style="border-top-left-radius: 0px; border-top-right-radius: 0px;">
-                      <MudText>
-                        This is the default directory that will be used for exporting files
-                      </MudText>
+                        <MudText>
+                            This is the default directory that will be used for exporting files
+                        </MudText>
                     </MudAlert>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTooltip Arrow Text="Whether to update hashtables from CDragon on startup"
+                                Color="Color.Dark">
+                        <MudCheckBox Label="Sync Hashtables" @bind-Checked="Config.SyncHashtables"
+                                     Color="Color.Primary" />
+                    </MudTooltip>
                 </MudItem>
             </MudGrid>
         </MudContainer>
