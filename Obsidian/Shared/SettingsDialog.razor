@@ -61,6 +61,13 @@
                                      Color="Color.Primary" />
                     </MudTooltip>
                 </MudItem>
+                <MudItem xs="12">
+                    <MudTooltip Arrow Text="Whether to load animations for skinned meshes from skin packages"
+                                Color="Color.Dark">
+                        <MudCheckBox Label="Load Skinned Mesh Animations" @bind-Checked="Config.LoadSkinnedMeshAnimations"
+                                     Color="Color.Primary" />
+                    </MudTooltip>
+                </MudItem>
             </MudGrid>
         </MudContainer>
     </DialogContent>

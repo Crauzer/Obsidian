@@ -57,7 +57,7 @@ public class Config
             Save();
         }
     }
-    private bool _syncHashtables;
+    private bool _syncHashtables = true;
 
     public bool SyncBinHashtables
     {
@@ -69,6 +69,17 @@ public class Config
         }
     }
     private bool _syncBinHashtables;
+
+    public bool LoadSkinnedMeshAnimations
+    {
+        get => this._loadSkinnedMeshAnimations;
+        set
+        {
+            this._loadSkinnedMeshAnimations = value;
+            Save();
+        }
+    }
+    private bool _loadSkinnedMeshAnimations = false;
 
     private const string CONFIG_FILE = "config.json";
 

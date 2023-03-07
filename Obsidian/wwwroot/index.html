@@ -83,7 +83,6 @@
             camera.position.y = 200;
 
             const renderer = new THREE.WebGLRenderer();
-            renderer.outputEncoding = THREE.sRGBEncoding;
             renderer.setSize(viewportRect.width, viewportRect.height);
             viewport.appendChild(renderer.domElement);
 
@@ -170,6 +169,8 @@
             const loader = new GLTFLoader();
 
             loader.load(gltfUrl, gltf => {
+                viewport.renderer.outputEncoding = THREE.sRGBEncoding;
+
                 // Add gltf stuff to scene
                 viewport.scene.add(gltf.scene);
                 viewport.scene.animations.push(...gltf.animations);
