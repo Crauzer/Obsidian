@@ -326,15 +326,20 @@ public partial class ExplorerPage : IDisposable
         // Make sure viewport is created
         await SetCurrentPreviewType(WadFilePreviewType.Viewport);
 
-        await Three.CreateSkinnedMesh(
+        await Three.RenderSkinnedMeshFromGltf(
             this.JsRuntime,
             this.ActiveTab.GetViewportContainerId(),
             skinnedMesh,
             skeleton,
-            await SkinnedMeshUtils.CreateTextureImages(
-                this.JsRuntime,
+            SkinnedMeshUtils.CollectMaterialTextures(
                 skinnedMesh,
                 meshData,
+                skinPackage,
+                this.ActiveTab.Wad,
+                metaEnvironment
+            ),
+            SkinnedMeshUtils.LoadAnimationAssets(
+                skinData,
                 skinPackage,
                 this.ActiveTab.Wad,
                 metaEnvironment

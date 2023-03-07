@@ -48,6 +48,12 @@ public static class ImageUtils
         throw new InvalidDataException($"Failed to create Image for fileType: {fileType}");
     }
 
+    public static Stream CreateTexturePngImage(string path, WadFile wad)
+    {
+        using Stream fallbackTextureStream = wad.LoadChunkDecompressed(path).AsStream();
+        return ConvertTextureToPng(Texture.Load(fallbackTextureStream));
+    }
+
     public static async Task<string> CreateImageBlobFromChunk(
         IJSRuntime js,
         string path,
@@ -64,6 +70,6 @@ public static class ImageUtils
     {
         DotNetStreamReference jsStream = new(stream);
 
-        return await js.InvokeAsync<string>("createImageBlobFromStream", jsStream);
+        return await js.InvokeAsync<string>("createBlobFromStream", jsStream);
     }
 }
