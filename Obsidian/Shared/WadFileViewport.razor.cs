@@ -112,7 +112,7 @@ public partial class WadFileViewport
 
         return skinnedMesh.ToGltf(
             skeleton,
-            CollectMaterialTextures(
+            SkinnedMeshUtils.CollectMaterialTextures(
                 skinnedMesh,
                 meshData,
                 skinPackage,
@@ -121,112 +121,6 @@ public partial class WadFileViewport
             ),
             new List<(string, IAnimationAsset)>()
         );
-    }
-
-    private List<(string, Stream)> CollectMaterialTextures(
-        SkinnedMesh skinnedMesh,
-        SkinMeshDataProperties meshData,
-        BinTree skinPackage,
-        WadFile wad,
-        MetaEnvironment metaEnvironment
-    )
-    {
-        string defaultTexture = ResolveMaterialTexturePath(
-            meshData.Material,
-            meshData.Texture,
-            skinPackage,
-            metaEnvironment
-        );
-        List<(string, Stream)> textures = new();
-
-        foreach (SkinnedMeshRange primitive in skinnedMesh.Ranges)
-        {
-            SkinMeshDataProperties_MaterialOverride materialOverride =
-                meshData.MaterialOverride.FirstOrDefault(
-                    x => x.Value.Submesh == primitive.Material
-                );
-
-            textures.Add(
-                (materialOverride is null) switch
-                {
-                    true => (primitive.Material, CreateTextureImage(defaultTexture, wad)),
-                    false
-                        => (
-                            primitive.Material,
-                            CreateMaterialTextureImage(
-                                materialOverride.Material,
-                                materialOverride.Texture,
-                                skinPackage,
-                                wad,
-                                metaEnvironment
-                            )
-                        )
-                }
-            );
-        }
-
-        return textures;
-    }
-
-    private static Stream CreateMaterialTextureImage(
-        MetaObjectLink materialLink,
-        string fallbackTexturePath,
-        BinTree skinPackage,
-        WadFile wad,
-        MetaEnvironment metaEnvironment
-    )
-    {
-        BinTreeObject materialDefObject = skinPackage.Objects.GetValueOrDefault(materialLink);
-        if (materialDefObject is null)
-            return CreateTextureImage(fallbackTexturePath, wad);
-
-        var materialDef = MetaSerializer.Deserialize<StaticMaterialDef>(
-            metaEnvironment,
-            materialDefObject
-        );
-        StaticMaterialShaderSamplerDef diffuseSamplerDef = materialDef.SamplerValues.FirstOrDefault(
-            x => DIFFUSE_SAMPLERS.Contains(x.Value.SamplerName)
-        );
-        diffuseSamplerDef ??= new();
-
-        return string.IsNullOrEmpty(diffuseSamplerDef.TextureName) switch
-        {
-            true => CreateTextureImage(fallbackTexturePath, wad),
-            false => CreateTextureImage(diffuseSamplerDef.TextureName, wad),
-        };
-    }
-
-    private static string ResolveMaterialTexturePath(
-        MetaObjectLink materialLink,
-        string fallbackTexturePath,
-        BinTree skinPackage,
-        MetaEnvironment metaEnvironment
-    )
-    {
-        BinTreeObject materialDefObject = skinPackage.Objects.GetValueOrDefault(materialLink);
-        if (materialDefObject is null)
-            return fallbackTexturePath;
-
-        var materialDef = MetaSerializer.Deserialize<StaticMaterialDef>(
-            metaEnvironment,
-            materialDefObject
-        );
-        StaticMaterialShaderSamplerDef diffuseSamplerDef = materialDef.SamplerValues.FirstOrDefault(
-            x => DIFFUSE_SAMPLERS.Contains(x.Value.SamplerName)
-        );
-        diffuseSamplerDef ??= new();
-
-        return string.IsNullOrEmpty(diffuseSamplerDef.TextureName) switch
-        {
-            true => fallbackTexturePath,
-            false => diffuseSamplerDef.TextureName,
-        };
-    }
-
-    private static Stream CreateTextureImage(string path, WadFile wad)
-    {
-        using Stream fallbackTextureStream = wad.LoadChunkDecompressed(path).AsStream();
-        return ImageUtils.ConvertTextureToPng(Texture.Load(fallbackTextureStream));
     }
 
     private void ToggleIsSavingAsGltf(bool value)

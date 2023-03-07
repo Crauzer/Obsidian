@@ -13,7 +13,7 @@
     <script src="photino.js"></script>
 
     <script src="prism.js"></script>
-    <link href="css/prism.css" rel="stylesheet"/>
+    <link href="css/prism.css" rel="stylesheet" />
 </head>
 <body>
     <app>Loading...</app>
@@ -36,7 +36,7 @@
         }
 
         window.setImage = async (imageElementId, imageStream) => {
-            const url = await createImageBlobFromStream(imageStream);
+            const url = await createBlobFromStream(imageStream);
             const image = document.getElementById(imageElementId);
             image.onload = () => {
                 URL.revokeObjectURL(url);
@@ -44,8 +44,8 @@
             image.src = url;
         }
 
-        async function createImageBlobFromStream(imageStream) {
-            const arrayBuffer = await imageStream.arrayBuffer();
+        async function createBlobFromStream(stream) {
+            const arrayBuffer = await stream.arrayBuffer();
             const blob = new Blob([arrayBuffer]);
 
             return URL.createObjectURL(blob);
@@ -67,6 +67,7 @@
         import { DoubleSide } from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
         const viewports = new Map();
 
@@ -87,10 +88,10 @@
 
             const controls = new OrbitControls(camera, renderer.domElement);
 
-            const gridHelper = new THREE.GridHelper(1000, 50, new THREE.Color("rgb(65, 168, 238)"), new THREE.Color("rgb(38, 88, 122)"));
+            const gridHelper = new THREE.GridHelper(1000, 50, new THREE.Color("rgb(65, 168, 238)"), new THREE.Color("rgb(39, 68, 88)"));
             scene.add(gridHelper);
 
-            scene.add(new THREE.HemisphereLight(0x443333, 0x222233, 4));
+            scene.add(new THREE.AmbientLight(0xffffff, 1));
 
             const stats = Stats();
             stats.dom.style.position = "absolute";
@@ -110,19 +111,25 @@
             };
             window.addEventListener('resize', resizeViewport);
 
+            const mixer = new THREE.AnimationMixer(scene);
+
             // Register viewport
             viewports.set(viewportId, {
                 container: viewport,
                 scene,
                 renderer,
                 camera,
+                mixer,
                 resizeViewport
             });
 
+            const clock = new THREE.Clock();
             function animate() {
                 requestAnimationFrame(animate);
 
                 controls.update();
+
+                mixer.update(clock.getDelta());
 
                 renderer.render(scene, camera);
                 stats.update();
@@ -157,7 +164,84 @@
             }
         }
 
-        window.renderSkinnedMesh = (viewportId, joints, primitives, indices, positions, normals, uvs, weightIds, weights, textures) => {
+        window.renderSkinnedMeshFromGltf = (viewportId, gltfUrl) => {
+            const viewport = viewports.get(viewportId);
+            const loader = new GLTFLoader();
+
+            loader.load(gltfUrl, gltf => {
+                viewport.renderer.outputEncoding = THREE.sRGBEncoding;
+
+                // Add gltf stuff to scene
+                viewport.scene.add(gltf.scene);
+                viewport.scene.animations.push(...gltf.animations);
+
+                // GUI
+                const gui = new GUI({ container: document.getElementById(viewportId) });
+                viewport.gui = gui;
+
+                // Visualize skeleton
+                const skeletonHelper = new THREE.SkeletonHelper(viewport.scene);
+                gui.add({ "show skeleton": true }, "show skeleton").onChange(value => {
+                    skeletonHelper.visible = value;
+                });
+                viewport.scene.add(skeletonHelper);
+
+                // Materials
+                const materialsFolder = gui.addFolder("materials");
+                materialsFolder.open(false);
+                gltf.scene.children[0].children
+                    .filter(x => x.isSkinnedMesh)
+                    .forEach(skinnedMesh => {
+                        const materialFolder = materialsFolder.addFolder(skinnedMesh.material.name);
+                        materialFolder.open(false);
+
+                        materialFolder.add({ visible: true }, 'visible').onChange((value) => {
+                            skinnedMesh.visible = value;
+                        });
+
+                        const material = new THREE.MeshLambertMaterial();
+                        material.name = skinnedMesh.material.name;
+                        material.side = DoubleSide;
+                        material.vertexColors = false;
+
+                        material.map = skinnedMesh.material.map;
+                        material.map.flipY = false;
+
+                        skinnedMesh.material = material;
+                    });
+
+                // Animations GUI
+                const animationsFolder = gui.addFolder("animations");
+                animationsFolder.open(false);
+
+                gltf.animations.forEach(animation => {
+                    const action = viewport.mixer.clipAction(animation);
+
+                    const animationGui = animationsFolder.addFolder(animation.name);
+                    animationGui.open(false);
+                    animationGui.add({
+                        play: () => {
+                            viewport.mixer.stopAllAction();
+                            action.reset();
+                            action.play();
+                        }
+                    }, "play");
+                });
+            });
+        }
+
+        window.renderSkinnedMesh = (
+            viewportId,
+            joints,
+            primitives,
+            indices,
+            positions,
+            normals,
+            uvs,
+            weightIds,
+            weights,
+            textures
+        ) => {
             const viewport = viewports.get(viewportId);
             const geometry = new THREE.BufferGeometry();
 
