@@ -43,6 +43,39 @@ public class HashtableService
     {
         using HttpClient client = new();
 
+        Directory.CreateDirectory(HASHES_DIRECTORY);
+        
+        await InitializeHashtables(client);
+        InitializeBinHashtables();
+    }
+
+    private async Task InitializeHashtables(HttpClient client)
+    {
+        File.Open(GAME_HASHES_PATH, FileMode.OpenOrCreate).Dispose();
+        File.Open(LCU_HASHES_PATH, FileMode.OpenOrCreate).Dispose();
+
+        if(this.Config.SyncHashtables)
+            await SyncHashtables(client);
+
+        LoadHashtable(GAME_HASHES_PATH);
+        LoadHashtable(LCU_HASHES_PATH);
+    }
+
+    private void InitializeBinHashtables()
+    {
+        File.Open(BIN_FIELDS_PATH, FileMode.OpenOrCreate).Dispose();
+        File.Open(BIN_CLASSES_PATH, FileMode.OpenOrCreate).Dispose();
+        File.Open(BIN_HASHES_PATH, FileMode.OpenOrCreate).Dispose();
+        File.Open(BIN_OBJECTS_PATH, FileMode.OpenOrCreate).Dispose();
+
+        LoadBinHashtable(BIN_FIELDS_PATH, this.BinProperties);
+        LoadBinHashtable(BIN_CLASSES_PATH, this.BinClasses);
+        LoadBinHashtable(BIN_HASHES_PATH, this.BinHashes);
+        LoadBinHashtable(BIN_OBJECTS_PATH, this.BinObjects);
+    }
+
+    private async Task SyncHashtables(HttpClient client)
+    {
         GitHubClient github = new(new ProductHeaderValue("Obsidian"));
         IReadOnlyList<RepositoryContent> content = await github.Repository.Content.GetAllContents(
             "CommunityDragon",
@@ -62,28 +95,9 @@ public class HashtableService
         if (lcuHashesContent is null)
             throw new InvalidOperationException("CDTB repository does not contain hashes.lcu.txt");
 
-        Directory.CreateDirectory(HASHES_DIRECTORY);
 
         await SyncGameHashtable(client, gameHashesContent);
         await SyncLcuHashtable(client, lcuHashesContent);
-
-        LoadHashtable(GAME_HASHES_PATH);
-        LoadHashtable(LCU_HASHES_PATH);
-
-        InitializeBinHashtables(client);
-    }
-
-    private void InitializeBinHashtables(HttpClient client)
-    {
-        File.Open(BIN_FIELDS_PATH, FileMode.OpenOrCreate).Dispose();
-        File.Open(BIN_CLASSES_PATH, FileMode.OpenOrCreate).Dispose();
-        File.Open(BIN_HASHES_PATH, FileMode.OpenOrCreate).Dispose();
-        File.Open(BIN_OBJECTS_PATH, FileMode.OpenOrCreate).Dispose();
-
-        LoadBinHashtable(BIN_FIELDS_PATH, this.BinProperties);
-        LoadBinHashtable(BIN_CLASSES_PATH, this.BinClasses);
-        LoadBinHashtable(BIN_HASHES_PATH, this.BinHashes);
-        LoadBinHashtable(BIN_OBJECTS_PATH, this.BinObjects);
     }
 
     private async Task SyncGameHashtable(HttpClient client, RepositoryContent gameHashesContent)
@@ -121,7 +135,7 @@ public class HashtableService
         using StreamReader reader = new(hashtablePath);
         StringBuilder nameBuilder = new();
 
-        do
+        while (reader.EndOfStream is false)
         {
             string line = reader.ReadLine();
             string[] split = line.Split(' ');
@@ -132,7 +146,7 @@ public class HashtableService
             this.Hashes.TryAdd(pathHash, nameBuilder.ToString());
 
             nameBuilder.Clear();
-        } while (reader.EndOfStream is false);
+        }
     }
 
     private void LoadBinHashtable(string hashtablePath, Dictionary<uint, string> hashtable)
