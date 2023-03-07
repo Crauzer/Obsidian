@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Obsidian.Services;
+using Obsidian.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +36,8 @@ public class WadTabModel : IDisposable
         TraverseFlattenedItems()
             .Where(x => x.IsSelected && x is WadFileModel)
             .Select(x => x as WadFileModel);
+
+    public WadFileTextPreview TextPreview { get; set; }
 
     public bool IsDisposed { get; private set; }
 
@@ -193,5 +196,6 @@ public enum WadFilePreviewType
 {
     None,
     Image,
-    Viewport
+    Viewport,
+    Text
 }

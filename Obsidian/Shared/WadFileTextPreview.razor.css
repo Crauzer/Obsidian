@@ -1,0 +1,8 @@
+﻿.wad-file-preview-text {
+    width: 100%;
+    overflow: scroll;
+}
+
+.wad-file-preview-text-hidden {
+    display: none;
+}

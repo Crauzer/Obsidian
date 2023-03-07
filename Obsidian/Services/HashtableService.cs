@@ -3,7 +3,9 @@ using Obsidian.Data;
 using Octokit;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection.Metadata;
 using System.Text;
+using FileMode = System.IO.FileMode;
 
 namespace Obsidian.Services;
 
@@ -13,14 +15,24 @@ public class HashtableService
 
     public Dictionary<ulong, string> Hashes { get; private set; } = new();
 
+    public Dictionary<uint, string> BinClasses { get; private set; } = new();
+    public Dictionary<uint, string> BinProperties { get; private set; } = new();
+    public Dictionary<uint, string> BinHashes { get; private set; } = new();
+    public Dictionary<uint, string> BinObjects { get; private set; } = new();
+
     private const string GAME_HASHES_URL =
         "https://github.com/CommunityDragon/CDTB/raw/master/cdragontoolbox/hashes.game.txt";
     private const string LCU_HASHES_URL =
         "https://github.com/CommunityDragon/CDTB/raw/master/cdragontoolbox/hashes.lcu.txt";
 
     private const string HASHES_DIRECTORY = "hashes";
-    private const string GAME_HASHES_FILE = "hashes/hashes.game.txt";
-    private const string LCU_HASHES_FILE = "hashes/hashes.lcu.txt";
+    private const string GAME_HASHES_PATH = "hashes/hashes.game.txt";
+    private const string LCU_HASHES_PATH = "hashes/hashes.lcu.txt";
+
+    private const string BIN_FIELDS_PATH = "hashes/hashes.binfields.txt";
+    private const string BIN_CLASSES_PATH = "hashes/hashes.bintypes.txt";
+    private const string BIN_HASHES_PATH = "hashes/hashes.binhashes.txt";
+    private const string BIN_OBJECTS_PATH = "hashes/hashes.binentries.txt";
 
     public HashtableService(Config config)
     {
@@ -55,20 +67,35 @@ public class HashtableService
         await SyncGameHashtable(client, gameHashesContent);
         await SyncLcuHashtable(client, lcuHashesContent);
 
-        LoadHashtable(GAME_HASHES_FILE);
-        LoadHashtable(LCU_HASHES_FILE);
+        LoadHashtable(GAME_HASHES_PATH);
+        LoadHashtable(LCU_HASHES_PATH);
+
+        InitializeBinHashtables(client);
+    }
+
+    private void InitializeBinHashtables(HttpClient client)
+    {
+        File.Open(BIN_FIELDS_PATH, FileMode.OpenOrCreate).Dispose();
+        File.Open(BIN_CLASSES_PATH, FileMode.OpenOrCreate).Dispose();
+        File.Open(BIN_HASHES_PATH, FileMode.OpenOrCreate).Dispose();
+        File.Open(BIN_OBJECTS_PATH, FileMode.OpenOrCreate).Dispose();
+
+        LoadBinHashtable(BIN_FIELDS_PATH, this.BinProperties);
+        LoadBinHashtable(BIN_CLASSES_PATH, this.BinClasses);
+        LoadBinHashtable(BIN_HASHES_PATH, this.BinHashes);
+        LoadBinHashtable(BIN_OBJECTS_PATH, this.BinObjects);
     }
 
     private async Task SyncGameHashtable(HttpClient client, RepositoryContent gameHashesContent)
     {
         // Hashtable is up to date
         if (
-            File.Exists(GAME_HASHES_FILE) && this.Config.GameHashesChecksum == gameHashesContent.Sha
+            File.Exists(GAME_HASHES_PATH) && this.Config.GameHashesChecksum == gameHashesContent.Sha
         )
             return;
 
         using Stream fileContentStream = await client.GetStreamAsync(GAME_HASHES_URL);
-        using FileStream fileStream = File.Create(GAME_HASHES_FILE);
+        using FileStream fileStream = File.Create(GAME_HASHES_PATH);
 
         await fileContentStream.CopyToAsync(fileStream);
 
@@ -78,11 +105,11 @@ public class HashtableService
     private async Task SyncLcuHashtable(HttpClient client, RepositoryContent lcuHashesContent)
     {
         // Hashtable is up to date
-        if (File.Exists(LCU_HASHES_FILE) && this.Config.LcuHashesChecksum == lcuHashesContent.Sha)
+        if (File.Exists(LCU_HASHES_PATH) && this.Config.LcuHashesChecksum == lcuHashesContent.Sha)
             return;
 
         using Stream fileContentStream = await client.GetStreamAsync(LCU_HASHES_URL);
-        using FileStream fileStream = File.Create(LCU_HASHES_FILE);
+        using FileStream fileStream = File.Create(LCU_HASHES_PATH);
 
         await fileContentStream.CopyToAsync(fileStream);
 
@@ -108,9 +135,27 @@ public class HashtableService
         } while (reader.EndOfStream is false);
     }
 
-    public string GetChunkPath(WadChunk chunk) 
+    private void LoadBinHashtable(string hashtablePath, Dictionary<uint, string> hashtable)
     {
-        if(this.Hashes.TryGetValue(chunk.PathHash, out string existingPath))
+        using StreamReader reader = new(hashtablePath);
+        StringBuilder nameBuilder = new();
+
+        while (reader.EndOfStream is false)
+        {
+            string line = reader.ReadLine();
+            string[] split = line.Split(' ');
+
+            uint hash = uint.Parse(split[0], NumberStyles.HexNumber);
+            nameBuilder = nameBuilder.AppendJoin(' ', split.Skip(1));
+
+            hashtable.TryAdd(hash, nameBuilder.ToString());
+            nameBuilder.Clear();
+        }
+    }
+
+    public string GetChunkPath(WadChunk chunk)
+    {
+        if (this.Hashes.TryGetValue(chunk.PathHash, out string existingPath))
             return existingPath;
 
         return string.Format("{0:x16}", chunk.PathHash);

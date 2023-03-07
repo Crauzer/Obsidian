@@ -10,10 +10,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Shared\WadFileTextPreview.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Shared\WadFileTextPreview.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CodeBeam.MudExtensions" Version="6.2.7" />
     <PackageReference Include="FluentValidation" Version="11.5.0" />
-    <PackageReference Include="LeagueToolkit" Version="4.0.0-beta.15" />
-    <PackageReference Include="LeagueToolkit.IO.Extensions" Version="4.0.0-beta.15" />
+    <PackageReference Include="LeagueToolkit" Version="4.0.0-beta.17" />
+    <PackageReference Include="LeagueToolkit.IO.Extensions" Version="4.0.0-beta.17" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
     <PackageReference Include="MudBlazor" Version="6.1.9" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />

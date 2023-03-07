@@ -48,6 +48,17 @@ public class Config
     }
     private string _defaultExportDirectory;
 
+    public bool SyncBinHashtables
+    {
+        get => this._syncBinHashtables;
+        set
+        {
+            this._syncBinHashtables = value;
+            Save();
+        }
+    }
+    private bool _syncBinHashtables;
+
     private const string CONFIG_FILE = "config.json";
 
     public Config() { }
