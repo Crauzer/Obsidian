@@ -362,6 +362,8 @@ public partial class ExplorerPage : IDisposable
 
     private async Task PreviewPropertyBin(Stream stream)
     {
+        await this.ActiveTab.TextPreview.PreviewFile(stream);
+
         await SetCurrentPreviewType(WadFilePreviewType.Text);
     }
 

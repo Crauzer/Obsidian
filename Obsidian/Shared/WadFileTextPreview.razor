@@ -1,46 +1,52 @@
 ﻿@using CommunityToolkit.HighPerformance;
+@using LeagueToolkit.Core.Wad;
 @using LeagueToolkit.Toolkit.Ritobin;
 @using Obsidian.Data.Wad;
 @using System.Text;
+@using Obsidian.Services;
 
-<div style="overflow: scroll;">
+<div class="@(Enabled ? "wad-file-preview-text" : "wad-file-preview-text-hidden")">
     @if (_text.Value is not null)
     {
         <pre class="language-python">
         <code class="language-python" style="display: block; height: calc(100vh - 160px); width: 100%">
                 @_text
-                </code>
-            </pre>
+        </code>
+        </pre>
     }
 </div>
 
 @code {
     [Inject]
-    public IJSRuntime Js{ get; set; }
+    public IJSRuntime Js { get; set; }
+
+    [Inject]
+    public HashtableService Hashtable { get; set; }
 
     [Parameter]
-    public WadTabModel WadTab { get; set; }
+    public bool Enabled { get; set; }
 
     private MarkupString _text;
 
-    protected override async void OnInitialized()
+    public async Task PreviewFile(Stream stream)
     {
-        using Stream fileStream = this.WadTab.Wad.LoadChunkDecompressed(this.WadTab.SelectedFile.Chunk).AsStream();
         using MemoryStream textStream = new();
-        using RitobinWriter writer =
+        using (RitobinWriter writer =
             new(
                 textStream,
-                new Dictionary<uint, string>(),
-                new Dictionary<uint, string>(),
-                new Dictionary<uint, string>(),
-                new Dictionary<uint, string>()
-            );
-        writer.WritePropertyBin(new(fileStream));
+                this.Hashtable.BinObjects,
+                this.Hashtable.BinClasses,
+                this.Hashtable.BinProperties,
+                this.Hashtable.BinHashes
+            ))
+        {
+            writer.WritePropertyBin(new(stream));
+        }
 
         string previewText = Encoding.UTF8.GetString(textStream.ToArray());
 
         this._text = new(await this.Js.InvokeAsync<string>("highlightCodePython", previewText));
 
-        base.OnInitialized();
+        StateHasChanged();
     }
 }

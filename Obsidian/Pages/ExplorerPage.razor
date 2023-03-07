@@ -106,10 +106,8 @@
                                 {
                                     <WadFileViewport WadTab="wadTab" />
                                 }
-                                @if (wadTab.CurrentPreviewType is WadFilePreviewType.Text)
-                                {
-                                    <WadFileTextPreview WadTab="wadTab" />
-                                }
+                                <WadFileTextPreview Enabled="@(wadTab.CurrentPreviewType is WadFilePreviewType.Text)"
+                                                @ref="wadTab.TextPreview" />
                             </EndContent>
                         </MudSplitter>
                     </ChildContent>
