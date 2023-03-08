@@ -275,6 +275,7 @@ public partial class ExplorerPage : IDisposable
     {
         using Stream fileStream = this.ActiveTab.Wad.LoadChunkDecompressed(file.Chunk).AsStream();
         LeagueFileType fileType = LeagueFile.GetFileType(fileStream);
+        string extension = Path.GetExtension(file.Name);
 
         if (BinUtils.IsSkinPackage(file.Path))
         {
@@ -291,6 +292,14 @@ public partial class ExplorerPage : IDisposable
         else if (fileType is LeagueFileType.PropertyBin)
         {
             await PreviewPropertyBin(fileStream);
+        }
+        else if (extension is ".json")
+        {
+            await PreviewText(fileStream, "json");
+        }
+        else if (extension is ".js")
+        {
+            await PreviewText(fileStream, "javascript");
         }
         else
         {
@@ -402,10 +411,16 @@ public partial class ExplorerPage : IDisposable
 
     private async Task PreviewPropertyBin(Stream stream)
     {
-        // TODO: Fix performance
-        //await this.ActiveTab.TextPreview.PreviewFile(stream);
-
         await SetCurrentPreviewType(WadFilePreviewType.Text);
+
+        await this.ActiveTab.TextPreview.PreviewRitobin(stream);
+    }
+
+    private async Task PreviewText(Stream stream, string language)
+    {
+        await SetCurrentPreviewType(WadFilePreviewType.Text);
+
+        await this.ActiveTab.TextPreview.Preview(stream, language);
     }
 
     private async Task SetCurrentPreviewType(WadFilePreviewType previewType)

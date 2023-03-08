@@ -174,6 +174,8 @@ public class WadTabModel : IDisposable
 
     public string GetViewportContainerId() => $"{this.Id}_viewport_container";
 
+    public string GetCodeEditorId() => $"{this.Id}_codeEditor";
+
     public void Dispose()
     {
         Dispose(disposing: true);
