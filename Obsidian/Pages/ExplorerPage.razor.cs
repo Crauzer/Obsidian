@@ -271,6 +271,7 @@ public partial class ExplorerPage : IDisposable
         }
     }
 
+    // TODO: This function shouldn't be here
     private async Task PreviewSelectedFile(WadFileModel file)
     {
         using Stream fileStream = this.ActiveTab.Wad.LoadChunkDecompressed(file.Chunk).AsStream();
