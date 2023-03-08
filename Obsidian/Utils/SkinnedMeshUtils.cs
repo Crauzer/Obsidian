@@ -189,7 +189,7 @@ public static class SkinnedMeshUtils
                             primitive.Material,
                             CreateMaterialTextureImage(
                                 materialOverride.Material,
-                                materialOverride.Texture,
+                                defaultTexture,
                                 skinPackage,
                                 wad,
                                 metaEnvironment
