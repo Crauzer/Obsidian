@@ -32,7 +32,7 @@ using RigResource = LeagueToolkit.Core.Animation.RigResource;
 
 namespace Obsidian.Pages;
 
-public partial class ExplorerPage : IDisposable
+public partial class ExplorerPage
 {
     #region Injection
     [Inject]
@@ -48,15 +48,8 @@ public partial class ExplorerPage : IDisposable
     public ISnackbar Snackbar { get; set; }
 
     [Inject]
-    public HotKeys HotKeys { get; set; }
-
-    [Inject]
     public IJSRuntime JsRuntime { get; set; }
     #endregion
-
-    public HotKeysContext _hotKeysContext;
-
-    public WadFilter WadFilterComponent { get; set; }
 
     public List<WadTabModel> Tabs { get; set; } = new();
 
@@ -74,6 +67,7 @@ public partial class ExplorerPage : IDisposable
     // TODO: Asset loading should be moved into a new component
     private bool _isLoadingPreview = false;
 
+    #region Toolbar Events
     public async Task OpenWad()
     {
         CommonOpenFileDialog dialog = FileDialogUtils.CreateOpenWadDialog(
@@ -191,6 +185,7 @@ public partial class ExplorerPage : IDisposable
             ToggleLoadingHashtable(false);
         }
     }
+    #endregion
 
     private void ExtractFiles(IEnumerable<WadFileModel> fileItems, string extractionDirectory)
     {
@@ -399,6 +394,7 @@ public partial class ExplorerPage : IDisposable
 
         await SetCurrentPreviewType(WadFilePreviewType.Image);
     }
+
     private async Task PreviewImage(Stream imageStream)
     {
         await this.JsRuntime.InvokeVoidAsync(
@@ -467,23 +463,4 @@ public partial class ExplorerPage : IDisposable
     }
 
     public void RefreshState() => StateHasChanged();
-
-    #region Hotkey Handlers
-    private async ValueTask FocusWadFilter()
-    {
-        await this.WadFilterComponent.InputField.FocusAsync();
-    }
-    #endregion
-
-    protected override void OnInitialized()
-    {
-        this._hotKeysContext = this.HotKeys
-            .CreateContext()
-            .Add(ModCode.Ctrl, Code.F, FocusWadFilter, "Focus Wad Filter");
-    }
-
-    public void Dispose()
-    {
-        this._hotKeysContext?.Dispose();
-    }
 }

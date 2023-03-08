@@ -37,40 +37,11 @@
 
 <MudPaper>
     <MudPaper Elevation="25">
-        <MudToolBar Dense DisableGutters>
-            <MudMenu Dense Class="ml-4" Icon="@Icons.Material.TwoTone.Archive" Color="Color.Inherit"
-                     AnchorOrigin="Origin.BottomLeft" Size="Size.Medium">
-                <MudMenuItem Icon="@CustomIcons.Material.ArchiveEdit" IconColor="Color.Primary" IconSize="Size.Small"
-                             OnClick="OpenWad">
-                    Open
-                </MudMenuItem>
-                <MudDivider />
-                <MudMenuItem Icon="@CustomIcons.Material.ContentSaveAll" IconColor="Color.Primary" IconSize="Size.Small"
-                             Disabled="@(ActiveTab is null)"
-                             OnClick="@ExtractAll">
-                    Extract All
-                </MudMenuItem>
-                <MudMenuItem Icon="@CustomIcons.Material.ContentSave" IconColor="Color.Primary" IconSize="Size.Small"
-                             Disabled="@(ActiveTab?.CheckedFiles.Count() is (0 or null))"
-                             OnClick="@ExtractSelected">
-                    Extract Selected
-                </MudMenuItem>
-            </MudMenu>
-            <MudMenu Dense Class="ml-4" Icon="@CustomIcons.Material.Hexadecimal" Color="Color.Inherit"
-                     AnchorOrigin="Origin.BottomLeft" Size="Size.Medium">
-                <MudMenuItem Icon="@CustomIcons.Material.TableArrowUp" IconColor="Color.Primary" IconSize="Size.Small"
-                             OnClick="LoadHashtable">
-                    Load hashtable
-                </MudMenuItem>
-            </MudMenu>
-            <MudSpacer />
-            @if (ActiveTab is not null)
-            {
-                <MudStack AlignItems="AlignItems.Center" Style="width: 33%">
-                    <WadFilter FullWidth @ref="WadFilterComponent" @bind-Filter="ActiveTab.Filter" @bind-UseRegexFilter="ActiveTab.UseRegexFilter" />
-                </MudStack>
-            }
-        </MudToolBar>
+        <WadExplorerToolbar ActiveWad="ActiveTab"
+                            OnOpenWad="OpenWad"
+                            OnExtractAll="ExtractAll"
+                            OnExtractSelected="ExtractSelected"
+                            OnLoadHashtable="LoadHashtable" />
     </MudPaper>
     <MudDivider />
     <MudTabs @ref="_tabsComponent" @bind-ActivePanelIndex="ActiveTabId" Position="Position.Bottom" Elevation="6">
