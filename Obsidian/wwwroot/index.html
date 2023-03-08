@@ -61,12 +61,12 @@
           }
         }
     </script>
-    <script src="http://mrdoob.github.io/stats.js/build/stats.min.js"></script>
     <script type="module">
         import * as THREE from 'three';
         import { DoubleSide } from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+        import Stats from 'three/addons/libs/stats.module.js';
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
         const viewports = new Map();
