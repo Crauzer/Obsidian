@@ -37,7 +37,7 @@ public static class ImageUtils
         return mip.ToImage();
     }
 
-    public static Image<Rgba32> GetImageFromStream(Stream stream)
+    public static Image<Rgba32> GetImageFromTextureStream(Stream stream)
     {
         LeagueFileType fileType = LeagueFile.GetFileType(stream);
         if (fileType is (LeagueFileType.TextureDds or LeagueFileType.Texture))

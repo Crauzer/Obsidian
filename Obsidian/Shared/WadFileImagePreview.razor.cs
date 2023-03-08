@@ -37,7 +37,7 @@ public partial class WadFileImagePreview
         try
         {
             using Stream fileStream = this.WadTab.Wad.LoadChunkDecompressed(this.WadTab.SelectedFile.Chunk).AsStream();
-            Image<Rgba32> image = ImageUtils.GetImageFromStream(fileStream);
+            Image<Rgba32> image = ImageUtils.GetImageFromTextureStream(fileStream);
 
             image.SaveAsPng(dialog.FileName);
 

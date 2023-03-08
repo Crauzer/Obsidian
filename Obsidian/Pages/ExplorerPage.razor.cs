@@ -282,7 +282,11 @@ public partial class ExplorerPage : IDisposable
         }
         else if (fileType is (LeagueFileType.TextureDds or LeagueFileType.Texture))
         {
-            await PreviewImage(ImageUtils.GetImageFromStream(fileStream));
+            await PreviewImage(ImageUtils.GetImageFromTextureStream(fileStream));
+        }
+        else if (fileType is LeagueFileType.Png or LeagueFileType.Jpeg)
+        {
+            await PreviewImage(fileStream);
         }
         else if (fileType is LeagueFileType.PropertyBin)
         {
@@ -381,6 +385,16 @@ public partial class ExplorerPage : IDisposable
             "setImage",
             $"{this.ActiveTab.Id}_imagePreview",
             jsStream
+        );
+
+        await SetCurrentPreviewType(WadFilePreviewType.Image);
+    }
+    private async Task PreviewImage(Stream imageStream)
+    {
+        await this.JsRuntime.InvokeVoidAsync(
+            "setImage",
+            $"{this.ActiveTab.Id}_imagePreview",
+            new DotNetStreamReference(imageStream)
         );
 
         await SetCurrentPreviewType(WadFilePreviewType.Image);
