@@ -360,7 +360,7 @@ public partial class ExplorerPage
         }
         else
         {
-            await Three.CreateSkinnedMesh(
+            await Three.RenderSkinnedMesh(
                 this.JsRuntime,
                 this.ActiveTab.GetViewportContainerId(),
                 skinnedMesh,

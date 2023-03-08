@@ -14,7 +14,7 @@ public static class Three
     public static async Task InitializeViewport(IJSRuntime js, string viewportId) =>
         await js.InvokeVoidAsync("initThreeJsRenderer", viewportId);
 
-    public static async Task CreateSkinnedMesh(
+    public static async Task RenderSkinnedMesh(
         IJSRuntime js,
         string canvasId,
         SkinnedMesh skinnedMesh,
