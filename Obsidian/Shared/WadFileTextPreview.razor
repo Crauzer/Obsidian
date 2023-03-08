@@ -4,16 +4,20 @@
 @using Obsidian.Data.Wad;
 @using System.Text;
 @using Obsidian.Services;
+@using BlazorMonaco;
+@using BlazorMonaco.Editor;
+@using MonacoEditorGlobal = BlazorMonaco.Editor.Global;
 
-<div class="@(Enabled ? "wad-file-preview-text" : "wad-file-preview-text-hidden")">
-    @if (_text.Value is not null)
-    {
-        <pre class="language-python">
-        <code class="language-python" style="display: block; height: calc(100vh - 160px); width: 100%">
-                @_text
-        </code>
-        </pre>
+<style>
+    .monaco-editor-container {
+        height: 100%;
     }
+</style>
+
+<div class="@(_isEnabled ? "wad-file-preview-text" : "wad-file-preview-text-hidden")">
+    <StandaloneCodeEditor @ref="_codeEditor" Id="@WadTab.GetCodeEditorId()"
+                          ConstructionOptions="EditorConstructionOptions"
+                          OnDidInit="OnDidInit" />
 </div>
 
 @code {
@@ -24,11 +28,38 @@
     public HashtableService Hashtable { get; set; }
 
     [Parameter]
-    public bool Enabled { get; set; }
+    public WadTabModel WadTab { get; set; }
 
-    private MarkupString _text;
+    private bool _isEnabled => this.WadTab?.CurrentPreviewType is WadFilePreviewType.Text;
 
-    public async Task PreviewFile(Stream stream)
+    private StandaloneCodeEditor _codeEditor = null;
+
+    private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
+    {
+        return new StandaloneEditorConstructionOptions
+            {
+                Theme = "vs-dark",
+                AutomaticLayout = true,
+                Value = "",
+                ReadOnly = true,
+                CodeLens = true,
+            };
+    }
+
+    private async Task OnDidInit()
+    {
+        await this.Js.InvokeVoidAsync("registerRitobinLanguage");
+    }
+
+    public async Task Preview(Stream stream, string language)
+    {
+        using StreamReader reader = new(stream);
+
+        await this._codeEditor.SetValue(reader.ReadToEnd());
+        await MonacoEditorGlobal.SetModelLanguage(await this._codeEditor.GetModel(), language);
+    }
+
+    public async Task PreviewRitobin(Stream stream)
     {
         using MemoryStream textStream = new();
         using (RitobinWriter writer =
@@ -43,10 +74,10 @@
             writer.WritePropertyBin(new(stream));
         }
 
-        string previewText = Encoding.UTF8.GetString(textStream.ToArray());
+        textStream.Position = 0;
+        using StreamReader textReader = new(textStream);
 
-        this._text = new(await this.Js.InvokeAsync<string>("highlightCodePython", previewText));
-
-        StateHasChanged();
+        await this._codeEditor.SetValue(textReader.ReadToEnd());
+        await MonacoEditorGlobal.SetModelLanguage(await this._codeEditor.GetModel(), "ritobin");
     }
 }

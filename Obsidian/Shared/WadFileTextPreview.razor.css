@@ -6,3 +6,7 @@
 .wad-file-preview-text-hidden {
     display: none;
 }
+
+.wad-file-preview-monaco-editor {
+    height: 100%;
+}

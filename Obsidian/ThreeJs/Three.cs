@@ -6,7 +6,6 @@ using LeagueToolkit.IO.SimpleSkinFile;
 using Microsoft.JSInterop;
 using Obsidian.ThreeJs;
 using System.Numerics;
-using System.Windows.Controls;
 
 namespace Obsidian.BabylonJs;
 
