@@ -79,15 +79,17 @@
             scene.background = new THREE.Color("rgb(48, 44, 54)");
 
             const camera = new THREE.PerspectiveCamera(45, viewportRect.width / viewportRect.height, 2.5, 2500);
-            camera.position.x = 200;
-            camera.position.y = 200;
-
+            camera.position.y = 150;
+            camera.position.z = 500;
+            
             const renderer = new THREE.WebGLRenderer();
             renderer.setSize(viewportRect.width, viewportRect.height);
             viewport.appendChild(renderer.domElement);
 
             const controls = new OrbitControls(camera, renderer.domElement);
-
+            controls.target.set(0, 150, 0);
+            controls.update();
+            
             const gridHelper = new THREE.GridHelper(1000, 50, new THREE.Color("rgb(65, 168, 238)"), new THREE.Color("rgb(39, 68, 88)"));
             scene.add(gridHelper);
 
@@ -119,6 +121,7 @@
                 scene,
                 renderer,
                 camera,
+                stats,
                 mixer,
                 resizeViewport
             });
@@ -147,8 +150,14 @@
                 // De-register resize handler
                 window.removeEventListener('resize', viewport.resizeViewport);
 
+                // Destroy GUI
                 if (viewport.gui) {
                     viewport.gui.destroy();
+                }
+
+                // Destroy Stats
+                if (viewport.stats) {
+                    viewport.stats.dom.remove();
                 }
 
                 viewports.delete(viewportId);

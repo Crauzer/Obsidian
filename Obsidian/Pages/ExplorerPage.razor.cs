@@ -263,6 +263,7 @@ public partial class ExplorerPage : IDisposable
         catch (Exception exception)
         {
             SnackbarUtils.ShowSoftError(this.Snackbar, exception);
+            await SetCurrentPreviewType(WadFilePreviewType.None);
         }
         finally
         {
