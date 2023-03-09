@@ -74,53 +74,6 @@ public static class SkinnedMeshUtils
         return textures;
     }
 
-    public static IEnumerable<(string, IAnimationAsset)> LoadAnimationAssets(
-        SkinCharacterDataProperties characterData,
-        BinTree skinPackage,
-        WadFile wad,
-        MetaEnvironment metaEnvironment
-    )
-    {
-        string animationsPath = skinPackage.Dependencies.FirstOrDefault(
-            x => BinUtils.IsSkinAnimations(x)
-        );
-        if (string.IsNullOrEmpty(animationsPath))
-            yield break;
-
-        // Load animations bin
-        using Stream animationsStream = wad.LoadChunkDecompressed(animationsPath).AsStream();
-        BinTree animationsBin = new(animationsStream);
-
-        // Resolve animation graph data object
-        BinTreeObject animationGraphDataObject = animationsBin.Objects.GetValueOrDefault(
-            characterData.SkinAnimationProperties.Value.AnimationGraphData
-        );
-        if (animationGraphDataObject is null)
-            yield break;
-
-        // Serialize animation graph data
-        var animationGraphData = MetaSerializer.Deserialize<AnimationGraphData>(
-            metaEnvironment,
-            animationGraphDataObject
-        );
-
-        foreach (var (_, clipData) in animationGraphData.ClipDataMap)
-        {
-            if (clipData is not AtomicClipData atomicClipData)
-                continue;
-
-            string name = Path.GetFileNameWithoutExtension(
-                atomicClipData.AnimationResourceData.Value.AnimationFilePath
-            );
-            using Stream assetStream = wad.LoadChunkDecompressed(
-                    atomicClipData.AnimationResourceData.Value.AnimationFilePath
-                )
-                .AsStream();
-
-            yield return (name, AnimationAsset.Load(assetStream));
-        }
-    }
-
     private static async Task<string> CreateMaterialTextureImageBlob(
         MetaObjectLink materialLink,
         string fallbackTexture,
@@ -184,7 +137,7 @@ public static class SkinnedMeshUtils
                             primitive.Material,
                             ImageUtils.CreateTexturePngImage(defaultTexture, wad)
                         ),
-                    false
+                    false when string.IsNullOrEmpty(materialOverride.Texture)
                         => (
                             primitive.Material,
                             CreateMaterialTextureImage(
@@ -194,6 +147,11 @@ public static class SkinnedMeshUtils
                                 wad,
                                 metaEnvironment
                             )
+                        ),
+                    false
+                        => (
+                            primitive.Material,
+                            ImageUtils.CreateTexturePngImage(materialOverride.Texture, wad)
                         )
                 }
             );
@@ -255,5 +213,52 @@ public static class SkinnedMeshUtils
             true => fallbackTexturePath,
             false => diffuseSamplerDef.TextureName,
         };
+    }
+
+    public static IEnumerable<(string, IAnimationAsset)> LoadAnimationAssets(
+        SkinCharacterDataProperties characterData,
+        BinTree skinPackage,
+        WadFile wad,
+        MetaEnvironment metaEnvironment
+    )
+    {
+        string animationsPath = skinPackage.Dependencies.FirstOrDefault(
+            x => BinUtils.IsSkinAnimations(x)
+        );
+        if (string.IsNullOrEmpty(animationsPath))
+            yield break;
+
+        // Load animations bin
+        using Stream animationsStream = wad.LoadChunkDecompressed(animationsPath).AsStream();
+        BinTree animationsBin = new(animationsStream);
+
+        // Resolve animation graph data object
+        BinTreeObject animationGraphDataObject = animationsBin.Objects.GetValueOrDefault(
+            characterData.SkinAnimationProperties.Value.AnimationGraphData
+        );
+        if (animationGraphDataObject is null)
+            yield break;
+
+        // Serialize animation graph data
+        var animationGraphData = MetaSerializer.Deserialize<AnimationGraphData>(
+            metaEnvironment,
+            animationGraphDataObject
+        );
+
+        foreach (var (_, clipData) in animationGraphData.ClipDataMap)
+        {
+            if (clipData is not AtomicClipData atomicClipData)
+                continue;
+
+            string name = Path.GetFileNameWithoutExtension(
+                atomicClipData.AnimationResourceData.Value.AnimationFilePath
+            );
+            using Stream assetStream = wad.LoadChunkDecompressed(
+                    atomicClipData.AnimationResourceData.Value.AnimationFilePath
+                )
+                .AsStream();
+
+            yield return (name, AnimationAsset.Load(assetStream));
+        }
     }
 }
