@@ -47,11 +47,13 @@ public class WadTabModel : IDisposable
         this.Wad = wad;
         this.Hashtable = hashtable;
 
-        InitializeTree();
+        Rebuild();
     }
 
-    private void InitializeTree()
+    public void Rebuild()
     {
+        this.Items.Clear();
+
         foreach (var (chunkPathHash, chunk) in this.Wad.Chunks)
         {
             string path = this.Hashtable.GetChunkPath(chunk);

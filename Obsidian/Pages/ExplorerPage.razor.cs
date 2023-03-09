@@ -166,11 +166,21 @@ public partial class ExplorerPage
         ToggleLoadingHashtable(true);
         try
         {
-            await Task.Run(() =>
+            // Load hashtables
+            await InvokeAsync(() =>
             {
                 foreach (string hashtableFile in dialog.FileNames)
                 {
                     this.Hashtable.LoadHashtable(hashtableFile);
+                }
+            });
+
+            // Re-build trees
+            await InvokeAsync(() =>
+            {
+                foreach (WadTabModel wadTab in this.Tabs)
+                {
+                    wadTab.Rebuild();
                 }
             });
 
