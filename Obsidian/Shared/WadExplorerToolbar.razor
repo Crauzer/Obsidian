@@ -32,7 +32,8 @@
         <MudStack AlignItems="AlignItems.Center" Style="width: 33%">
             <WadFilter FullWidth
                    @ref="_wadFilterComponent"
-                   @bind-Filter="ActiveWad.Filter" @bind-UseRegexFilter="ActiveWad.UseRegexFilter" />
+                   Filter="@ActiveWad.Filter" UseRegexFilter="@ActiveWad.UseRegexFilter" 
+                   FilterChanged="OnFilterChanged" UseRegexFilterChanged="OnUseRegexFilterChanged" />
         </MudStack>
     }
 </MudToolBar>

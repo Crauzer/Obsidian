@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Obsidian.Data.Wad;
+using Obsidian.Pages;
 using Toolbelt.Blazor.HotKeys2;
 
 namespace Obsidian.Shared;
@@ -8,6 +9,9 @@ public partial class WadExplorerToolbar : IDisposable
 {
     [Inject]
     public HotKeys HotKeys { get; set; }
+
+    [CascadingParameter]
+    public ExplorerPage ExplorerPage { get; set; }
 
     [Parameter]
     public WadTabModel ActiveWad { get; set; }
@@ -27,6 +31,18 @@ public partial class WadExplorerToolbar : IDisposable
     private HotKeysContext _hotKeysContext;
 
     private WadFilter _wadFilterComponent;
+
+    private void OnFilterChanged(string value)
+    {
+        this.ActiveWad.Filter = value;
+        this.ExplorerPage.RefreshState();
+    }
+
+    private void OnUseRegexFilterChanged(bool value)
+    {
+        this.ActiveWad.UseRegexFilter = value;
+        this.ExplorerPage.RefreshState();
+    }
 
     private async ValueTask FocusWadFilter() =>
         await this._wadFilterComponent.InputField.FocusAsync();
