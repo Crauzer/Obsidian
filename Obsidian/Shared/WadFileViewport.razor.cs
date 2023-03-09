@@ -127,7 +127,12 @@ public partial class WadFileViewport
                 this.WadTab.Wad,
                 metaEnvironment
             ),
-            new List<(string, IAnimationAsset)>()
+            SkinnedMeshUtils.LoadAnimationAssets(
+                skinData,
+                skinPackage,
+                this.WadTab.Wad,
+                metaEnvironment
+            )
         );
     }
 
