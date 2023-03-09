@@ -7,6 +7,7 @@ using LeagueToolkit.Hashing;
 using LeagueToolkit.IO.SimpleSkinFile;
 using LeagueToolkit.Meta;
 using LeagueToolkit.Meta.Classes;
+using LeagueToolkit.Toolkit.Gltf;
 using LeagueToolkit.Utils;
 using Microsoft.AspNetCore.Components;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -59,14 +60,21 @@ public partial class WadFileViewport
                 .AsStream();
 
             LeagueFileType fileType = LeagueFile.GetFileType(fileStream);
-            if (BinUtils.IsSkinPackage(this.WadTab.SelectedFile.Path))
+
+            ModelRoot gltf = fileType switch
             {
-                CreateGltfFromSkinPackage(fileStream).Save(dialog.FileName);
-            }
-            else
-            {
-                throw new InvalidOperationException($"Cannot save fileType: {fileType} as glTF");
-            }
+                LeagueFileType.PropertyBin
+                    when BinUtils.IsSkinPackage(this.WadTab.SelectedFile.Path)
+                    => CreateGltfFromSkinPackage(fileStream),
+                LeagueFileType.StaticMeshAscii => StaticMesh.ReadAscii(fileStream).ToGltf(),
+                LeagueFileType.StaticMeshBinary => StaticMesh.ReadBinary(fileStream).ToGltf(),
+                _
+                    => throw new InvalidOperationException(
+                        $"Cannot save fileType: {fileType} as glTF"
+                    )
+            };
+
+            gltf.Save(dialog.FileName);
 
             this.Snackbar.Add($"Saved {this.WadTab.SelectedFile.Name} as glTF!", Severity.Success);
         }
