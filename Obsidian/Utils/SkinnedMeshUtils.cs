@@ -103,7 +103,7 @@ public static class SkinnedMeshUtils
                 wad
             );
 
-        return await ImageUtils.CreateImageBlobFromChunk(js, fallbackTexture, wad);
+        return fallbackTexture;
     }
 
     public static List<(string, Stream)> CollectMaterialTextures(
