@@ -4,6 +4,7 @@ namespace Obsidian.Data;
 
 public class Config
 {
+    #region Wad Hashtable Checksums
     public string GameHashesChecksum
     {
         get => this._gameHashesChecksum;
@@ -25,6 +26,53 @@ public class Config
         }
     }
     private string _lcuHashesChecksum;
+    #endregion
+
+    #region Bin Hashtable Checksums
+    public string BinFieldsHashesChecksum
+    {
+        get => this._binFieldsHashesChecksum;
+        set
+        {
+            this._binFieldsHashesChecksum = value;
+            Save();
+        }
+    }
+    private string _binFieldsHashesChecksum;
+
+    public string BinTypesHashesChecksum
+    {
+        get => this._binTypesHashesChecksum;
+        set
+        {
+            this._binTypesHashesChecksum = value;
+            Save();
+        }
+    }
+    private string _binTypesHashesChecksum;
+
+    public string BinHashesHashesChecksum
+    {
+        get => this._binHashesHashesChecksum;
+        set
+        {
+            this._binHashesHashesChecksum = value;
+            Save();
+        }
+    }
+    private string _binHashesHashesChecksum;
+
+    public string BinEntriesHashesChecksum
+    {
+        get => this._binEntriesHashesChecksum;
+        set
+        {
+            this._binEntriesHashesChecksum = value;
+            Save();
+        }
+    }
+    private string _binEntriesHashesChecksum;
+    #endregion
 
     public string GameDataDirectory 
     {
