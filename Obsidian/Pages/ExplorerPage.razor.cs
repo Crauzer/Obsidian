@@ -23,6 +23,7 @@ using Obsidian.Utils;
 using PhotinoNET;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -37,6 +38,9 @@ public partial class ExplorerPage
     #region Injection
     [Inject]
     public Config Config { get; set; }
+
+    [Inject]
+    public DiscordRichPresence RichPresence { get; set; }
 
     [Inject]
     public HashtableService Hashtable { get; set; }
@@ -54,7 +58,19 @@ public partial class ExplorerPage
     public List<WadTabModel> Tabs { get; set; } = new();
 
     public WadTabModel ActiveTab => this.Tabs.ElementAtOrDefault(this.ActiveTabId);
-    public int ActiveTabId { get; set; }
+    public int ActiveTabId
+    {
+        get => this._activeTabId;
+        set
+        {
+            this._activeTabId = value;
+            if (value is -1)
+                this.RichPresence.SetPresenceIdle();
+            else
+                this.RichPresence.SetPresenceViewing(this.ActiveTab.Name);
+        }
+    }
+    private int _activeTabId;
 
     private MudTabs _tabsComponent;
 

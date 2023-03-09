@@ -39,14 +39,16 @@
     <MudPaper Elevation="25">
         <CascadingValue Value="this">
             <WadExplorerToolbar ActiveWad="ActiveTab"
-                            OnOpenWad="OpenWad"
-                            OnExtractAll="ExtractAll"
-                            OnExtractSelected="ExtractSelected"
-                            OnLoadHashtable="LoadHashtable" />
+                                OnOpenWad="OpenWad"
+                                OnExtractAll="ExtractAll"
+                                OnExtractSelected="ExtractSelected"
+                                OnLoadHashtable="LoadHashtable" />
         </CascadingValue>
     </MudPaper>
     <MudDivider />
-    <MudTabs @ref="_tabsComponent" @bind-ActivePanelIndex="ActiveTabId" Position="Position.Bottom" Elevation="6">
+    <MudTabs @ref="_tabsComponent"
+             @bind-ActivePanelIndex="ActiveTabId"
+             Position="Position.Bottom" Elevation="6">
         <ChildContent>
             @foreach (WadTabModel wadTab in this.Tabs)
             {
