@@ -266,6 +266,7 @@ public partial class ExplorerPage
         }
     }
 
+    #region Preview
     // TODO: This function shouldn't be here
     private async Task PreviewSelectedFile(WadFileModel file)
     {
@@ -276,6 +277,13 @@ public partial class ExplorerPage
         if (BinUtils.IsSkinPackage(file.Path))
         {
             await PreviewSkinPackage(fileStream);
+        }
+        else if (fileType is LeagueFileType.StaticMeshBinary or LeagueFileType.StaticMeshAscii)
+        {
+            await PreviewStaticMesh(
+                fileStream,
+                isAscii: fileType is LeagueFileType.StaticMeshAscii
+            );
         }
         else if (fileType is (LeagueFileType.TextureDds or LeagueFileType.Texture))
         {
@@ -333,8 +341,8 @@ public partial class ExplorerPage
         using SkinnedMesh skinnedMesh = SkinnedMesh.ReadFromSimpleSkin(simpleSkinStream);
         RigResource skeleton = new(skeletonStream);
 
-        // Make sure viewport is created
         await SetCurrentPreviewType(WadFilePreviewType.Viewport);
+        await Task.Delay(25);
 
         if (this.Config.LoadSkinnedMeshAnimations)
         {
@@ -375,6 +383,24 @@ public partial class ExplorerPage
                 )
             );
         }
+    }
+
+    private async Task PreviewStaticMesh(Stream stream, bool isAscii)
+    {
+        await SetCurrentPreviewType(WadFilePreviewType.Viewport);
+        await Task.Delay(25);
+
+        StaticMesh staticMesh = isAscii switch
+        {
+            true => StaticMesh.ReadAscii(stream),
+            false => StaticMesh.ReadBinary(stream),
+        };
+
+        await Three.RenderStaticMesh(
+            this.JsRuntime,
+            this.ActiveTab.GetViewportContainerId(),
+            staticMesh
+        );
     }
 
     private async Task PreviewImage(Image<Rgba32> image)
@@ -431,6 +457,7 @@ public partial class ExplorerPage
         this.ActiveTab.CurrentPreviewType = previewType;
         StateHasChanged();
     }
+    #endregion
 
     private async Task OnDimensionChanged(double dimension)
     {

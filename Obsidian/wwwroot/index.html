@@ -324,6 +324,39 @@
             viewport.scene.add(skeletonHelper);
         }
 
+        window.renderStaticMesh = (
+            viewportId,
+            positions,
+            uvs
+        ) => {
+            const viewport = viewports.get(viewportId);
+            const geometry = new THREE.BufferGeometry();
+
+            // Set vertex data
+            geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+            geometry.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
+
+            // Create material
+            const material = new THREE.MeshBasicMaterial(
+                {
+                    name: "staticmesh",
+                    side: THREE.DoubleSide,
+                    color: new THREE.Color("rgb(127, 127, 127)"),
+                    polygonOffset: true,
+                    polygonOffsetFactor: 1,
+                    polygonOffsetUnits: 1
+                });
+
+            const mesh = new THREE.Mesh(geometry, material);
+            viewport.scene.add(mesh);
+
+            const wireframe = new THREE.WireframeGeometry(geometry);
+            const line = new THREE.LineSegments(wireframe);
+            line.material.color.setHex(0x222266);
+
+            viewport.scene.add(line);
+        }
+
         function createBones(joints, skeletonRoot) {
             const createdBones = [];
 

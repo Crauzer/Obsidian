@@ -16,7 +16,7 @@ public static class Three
 
     public static async Task RenderSkinnedMesh(
         IJSRuntime js,
-        string canvasId,
+        string viewportId,
         SkinnedMesh skinnedMesh,
         RigResource skeleton,
         IReadOnlyDictionary<string, string> textures
@@ -43,10 +43,10 @@ public static class Three
 
         ThreeBone[] bones = CreateBones(skeleton.Joints);
 
-        await InitializeViewport(js, canvasId);
+        await InitializeViewport(js, viewportId);
         await js.InvokeVoidAsync(
             "renderSkinnedMesh",
-            canvasId,
+            viewportId,
             bones,
             skinnedMesh.Ranges,
             indices,
@@ -84,8 +84,39 @@ public static class Three
         await js.InvokeVoidAsync("renderSkinnedMeshFromGltf", viewportId, gltfBlob);
     }
 
-    public static async Task ResizeEngine(IJSRuntime js, string canvasId) =>
-        await js.InvokeVoidAsync("resizeBabylonEngine", canvasId);
+    public static async Task RenderStaticMesh(
+        IJSRuntime js,
+        string viewportId,
+        StaticMesh staticMesh
+    )
+    {
+        IEnumerable<ushort> indices = TraverseIndices(staticMesh.Faces);
+        float[] vertices = FlattenVector3Collection(indices.Select(x => staticMesh.Vertices[x]))
+            .ToArray();
+        float[] uvs = FlattenVector2Collection(TraverseUvs(staticMesh.Faces)).ToArray();
+
+        await InitializeViewport(js, viewportId);
+        await js.InvokeVoidAsync("renderStaticMesh", viewportId, vertices, uvs);
+
+        static IEnumerable<ushort> TraverseIndices(IEnumerable<StaticMeshFace> faces)
+        {
+            foreach (StaticMeshFace face in faces)
+            {
+                yield return face.VertexId0;
+                yield return face.VertexId1;
+                yield return face.VertexId2;
+            }
+        }
+        static IEnumerable<Vector2> TraverseUvs(IEnumerable<StaticMeshFace> faces)
+        {
+            foreach (StaticMeshFace face in faces)
+            {
+                yield return face.UV0;
+                yield return face.UV1;
+                yield return face.UV2;
+            }
+        }
+    }
 
     private static ThreeBone[] CreateBones(IEnumerable<Joint> joints) =>
         joints
@@ -301,6 +332,15 @@ public static class Three
         }
 
         return data;
+    }
+
+    private static IEnumerable<float> FlattenVector2Collection(IEnumerable<Vector2> collection)
+    {
+        foreach (Vector2 value in collection)
+        {
+            yield return value.X;
+            yield return value.Y;
+        }
     }
 
     private static IEnumerable<float> FlattenVector3Collection(IEnumerable<Vector3> collection)
