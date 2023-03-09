@@ -13,6 +13,9 @@
   </a>
 </p>
 
+# [Wiki](https://github.com/Crauzer/Obsidian/wiki)
+The wiki contains all documentation and info about Obsidian and how it works.
+
 ![image](https://user-images.githubusercontent.com/18646077/221690473-c5d590bd-2e27-41d2-9c86-b1164500b054.png)
 
 ## Discord
