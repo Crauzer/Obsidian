@@ -107,6 +107,17 @@ public class Config
     }
     private bool _syncHashtables = true;
 
+    public bool IsRichPresenceEnabled 
+    {
+        get => this._isRichPresenceEnabled;
+        set
+        {
+            this._isRichPresenceEnabled = value;
+            Save();
+        }
+    }
+    private bool _isRichPresenceEnabled = true;
+
     public bool LoadSkinnedMeshAnimations
     {
         get => this._loadSkinnedMeshAnimations;

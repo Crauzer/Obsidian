@@ -22,7 +22,7 @@ public class Program
         builder.RootComponents.Add<App>("app");
 
         builder.Services.AddSingleton(Config.Load());
-        builder.Services.AddSingleton(new DiscordRichPresence());
+        builder.Services.AddSingleton<DiscordRichPresence>();
         builder.Services.AddScoped<HashtableService>();
         builder.Services.AddMudServices(config =>
         {

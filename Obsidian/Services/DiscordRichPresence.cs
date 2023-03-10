@@ -1,5 +1,6 @@
 ﻿using DiscordRPC;
 using DiscordRPC.Logging;
+using Obsidian.Data;
 
 namespace Obsidian.Services;
 
@@ -9,8 +10,11 @@ public sealed class DiscordRichPresence : IDisposable
 
     private readonly DateTime _startTime;
 
-    public DiscordRichPresence()
+    private readonly Config _config;
+
+    public DiscordRichPresence(Config config)
     {
+        this._config = config;
         this._startTime = DateTime.UtcNow;
 
         this._client = new("747894440105869413")
@@ -18,14 +22,15 @@ public sealed class DiscordRichPresence : IDisposable
             Logger = new ConsoleLogger() { Level = LogLevel.Warning }
         };
 
-        //Connect to the RPC
-        this._client.Initialize();
-
-        SetPresenceIdle();
+        if (this._config.IsRichPresenceEnabled)
+        {
+            this._client.Initialize();
+            SetPresenceIdle();
+        }
     }
 
     public void SetPresenceIdle() =>
-        this._client.SetPresence(
+        SetPresence(
             new()
             {
                 Timestamps = new(this._startTime),
@@ -41,7 +46,7 @@ public sealed class DiscordRichPresence : IDisposable
         );
 
     public void SetPresenceViewing(string name) =>
-        this._client.SetPresence(
+        SetPresence(
             new()
             {
                 Timestamps = new(this._startTime),
@@ -56,6 +61,12 @@ public sealed class DiscordRichPresence : IDisposable
                 }
             }
         );
+
+    public void SetPresence(RichPresence presence)
+    {
+        if (this._config.IsRichPresenceEnabled)
+            this._client.SetPresence(presence);
+    }
 
     public void Dispose()
     {
