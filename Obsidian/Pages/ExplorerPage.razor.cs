@@ -277,7 +277,19 @@ public partial class ExplorerPage
             return;
         }
 
-        ToggleLoadingPreview(true);
+        // Defer showing the loader to prevent UI blinking for fast previews
+        CancellationTokenSource tokenSource = new();
+        Task.Delay(100)
+            .ContinueWith(
+                async (_) =>
+                {
+                    tokenSource.Token.ThrowIfCancellationRequested();
+
+                    await InvokeAsync(() => ToggleLoadingPreview(true));
+                }
+            )
+            .AndForget();
+
         try
         {
             await PreviewSelectedFile(this.ActiveTab.SelectedFile);
@@ -289,6 +301,9 @@ public partial class ExplorerPage
         }
         finally
         {
+            tokenSource.Cancel();
+            tokenSource.Dispose();
+
             ToggleLoadingPreview(false);
         }
     }
