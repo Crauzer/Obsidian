@@ -1,4 +1,8 @@
 ﻿@using Obsidian.Data;
+@using Obsidian.Utils;
+@using Octokit;
+@using System.Reflection;
+@using Semver;
 @inherits LayoutComponentBase
 
 <style>
@@ -40,6 +44,13 @@
                       Elevation="6"
                       ObjectFit="ObjectFit.ScaleDown"
                       Src="images/obsidian_logonew_256.png" Alt="Obsidian logo" />
+            @if (string.IsNullOrEmpty(this.UpdateUrl) is false)
+            {
+                <MudTooltip Text="Update available!" Color="Color.Dark" Placement="Placement.Right">
+                    <MudIconButton Icon="@Icons.Material.TwoTone.Download" Color="Color.Info" Size="Size.Medium"
+                               OnClick="GoToNewRelease" />
+                </MudTooltip>
+            }
             <MudSpacer />
             <MudStack AlignItems="AlignItems.Center">
                 <MudTooltip Text="Settings" Color="Color.Dark" Placement="Placement.Right">
@@ -71,6 +82,9 @@
 @code {
     [Inject] public IDialogService DialogService { get; set; }
     [Inject] public IJSRuntime JS { get; set; }
+    [Inject] public ISnackbar Snackbar { get; set; }
+
+    public string UpdateUrl { get; set; }
 
     private bool _isLoadingHashtable;
 
@@ -97,5 +111,44 @@
     private async Task GoToGithub()
     {
         await this.JS.InvokeVoidAsync("useCmd", @"explorer ""https://github.com/Crauzer/Obsidian""");
+    }
+
+    private async Task GoToNewRelease()
+    {
+        await this.JS.InvokeVoidAsync("useCmd", @$"explorer ""{this.UpdateUrl}""");
+    }
+
+    private async Task CheckForUpdate()
+    {
+        try
+        {
+            GitHubClient gitClient = new GitHubClient(new ProductHeaderValue("Obsidian"));
+            IReadOnlyList<Release> releases = await gitClient.Repository.Release.GetAll("Crauzer", "Obsidian");
+            Release newestRelease = releases[0];
+
+            Version assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version;
+
+            SemVersion assemblySemver = SemVersion.FromVersion(assemblyVersion);
+            SemVersion latestReleaseSemver = SemVersion.Parse(newestRelease.TagName, SemVersionStyles.Strict);
+
+            if (latestReleaseSemver.IsPrerelease is false
+                && latestReleaseSemver.ComparePrecedenceTo(assemblySemver) > 0
+            )
+            {
+                this.UpdateUrl = newestRelease.HtmlUrl;
+            }
+        }
+        catch (Exception exception)
+        {
+            SnackbarUtils.ShowSoftError(this.Snackbar, exception);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await CheckForUpdate();
+
+        await base.OnAfterRenderAsync(firstRender);
     }
 }
