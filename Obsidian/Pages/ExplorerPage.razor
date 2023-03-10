@@ -62,17 +62,11 @@
                         <MudSplitter EnableSlide DisableMargin @ref="_splitter" Sensitivity="2.5f" DimensionChanged="OnDimensionChanged">
                             <StartContent>
                                 <div style="position: relative; width: 100%">
-                                    <CascadingValue Value="this">
-                                        <CascadingValue Value="JsRuntime">
-                                            <CascadingValue Value="ActiveTab">
-                                                <TreeView ItemsFlat="@GetVisibleItemsForActiveTab()" Height="calc(100vh - 109px)" ItemSize="44f">
-                                                    <ItemTemplate>
-                                                        <TreeWadItem Item="@context" />
-                                                    </ItemTemplate>
-                                                </TreeView>
-                                            </CascadingValue>
-                                        </CascadingValue>
-                                    </CascadingValue>
+                                    <TreeView ItemsFlat="@GetVisibleItemsForActiveTab()" Height="calc(100vh - 109px)" ItemSize="44f">
+                                        <ItemTemplate>
+                                            <TreeWadItem Item="@context" Root="this" WadTab="wadTab" />
+                                        </ItemTemplate>
+                                    </TreeView>
                                 </div>
                             </StartContent>
                             <EndContent>

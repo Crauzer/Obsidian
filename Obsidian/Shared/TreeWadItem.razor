@@ -101,14 +101,14 @@
 </div>
 
 @code {
-    [CascadingParameter]
+    [Inject]
+    public IJSRuntime JsRuntime { get; set; }
+
+    [Parameter]
     public ExplorerPage Root { get; set; }
 
-    [CascadingParameter]
+    [Parameter]
     public WadTabModel WadTab { get; set; }
-
-    [CascadingParameter]
-    public IJSRuntime JsRuntime { get; set; }
 
     [Parameter]
     public WadItemModel Item { get; set; }
