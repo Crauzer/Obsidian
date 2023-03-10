@@ -29,7 +29,7 @@
         }
 </style>
 
-<MudThemeProvider IsDarkMode Theme="AppTheme.Theme" />
+<MudThemeProvider IsDarkMode Theme="Theme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 <HashtableProvider OnLoadingStart="OnHashtableLoadingStart" OnLoadingFinished="OnHashtableLoadingFinished" />
@@ -83,6 +83,8 @@
     [Inject] public IDialogService DialogService { get; set; }
     [Inject] public IJSRuntime JS { get; set; }
     [Inject] public ISnackbar Snackbar { get; set; }
+
+    public AppTheme Theme { get; } = new();
 
     public string UpdateUrl { get; set; }
 

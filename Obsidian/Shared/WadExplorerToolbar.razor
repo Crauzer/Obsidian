@@ -6,6 +6,7 @@
         <MudMenuItem Icon="@CustomIcons.Material.ArchiveEdit" IconColor="Color.Primary" IconSize="Size.Small"
                      OnClick="OnOpenWad">
             Open
+            <MudText Style="@($"float: right; color: {Theme.PaletteDark.TextSecondary}")" Typo="Typo.caption">Ctrl O</MudText>
         </MudMenuItem>
         <MudDivider />
         <MudMenuItem Icon="@CustomIcons.Material.ContentSaveAll" IconColor="Color.Primary" IconSize="Size.Small"
@@ -32,7 +33,7 @@
         <MudStack AlignItems="AlignItems.Center" Style="width: 33%">
             <WadFilter FullWidth
                    @ref="_wadFilterComponent"
-                   Filter="@ActiveWad.Filter" UseRegexFilter="@ActiveWad.UseRegexFilter" 
+                   Filter="@ActiveWad.Filter" UseRegexFilter="@ActiveWad.UseRegexFilter"
                    FilterChanged="OnFilterChanged" UseRegexFilterChanged="OnUseRegexFilterChanged" />
         </MudStack>
     }

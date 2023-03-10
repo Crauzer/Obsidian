@@ -2,27 +2,26 @@
 
 namespace Obsidian;
 
-public static class AppTheme
+public class AppTheme : MudTheme
 {
-    public static readonly MudTheme Theme =
-        new()
+    public AppTheme() 
+    {
+        this.Palette = new Palette()
         {
-            Palette = new Palette()
-            {
-                Primary = Colors.Red.Accent2,
-                AppbarBackground = "#712b36",
-                DrawerBackground = "#712b36"
-            },
-            PaletteDark = new PaletteDark()
-            {
-                Primary = Colors.Red.Accent2,
-                AppbarBackground = "#712b36",
-                DrawerBackground = "#712b36"
-            },
-            LayoutProperties = new LayoutProperties() { DefaultBorderRadius = "8px" },
-            Typography = new Typography()
-            {
-                Default = new Default() { FontFamily = new[] { "Fira Sans" } }
-            }
+            Primary = Colors.Red.Accent2,
+            AppbarBackground = "#712b36",
+            DrawerBackground = "#712b36"
         };
+        this.PaletteDark = new PaletteDark()
+        {
+            Primary = Colors.Red.Accent2,
+            AppbarBackground = "#712b36",
+            DrawerBackground = "#712b36"
+        };
+        this.LayoutProperties = new LayoutProperties() { DefaultBorderRadius = "8px" };
+        this.Typography = new Typography()
+        {
+            Default = new Default() { FontFamily = new[] { "Fira Sans" } }
+        };
+    }
 }

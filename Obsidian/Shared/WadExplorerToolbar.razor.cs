@@ -32,6 +32,8 @@ public partial class WadExplorerToolbar : IDisposable
 
     private WadFilter _wadFilterComponent;
 
+    public AppTheme Theme { get; } = new();
+
     private void OnFilterChanged(string value)
     {
         this.ActiveWad.Filter = value;
@@ -51,7 +53,8 @@ public partial class WadExplorerToolbar : IDisposable
     {
         this._hotKeysContext = this.HotKeys
             .CreateContext()
-            .Add(ModCode.Ctrl, Code.F, FocusWadFilter, "Focus Wad Filter");
+            .Add(ModCode.Ctrl, Code.F, FocusWadFilter, "Focus Wad Filter")
+            .Add(ModCode.Ctrl, Code.O, async () => await OnOpenWad.InvokeAsync(), "Open Wad");
     }
 
     public void Dispose()
