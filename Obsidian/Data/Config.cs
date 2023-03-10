@@ -107,17 +107,6 @@ public class Config
     }
     private bool _syncHashtables = true;
 
-    public bool SyncBinHashtables
-    {
-        get => this._syncBinHashtables;
-        set
-        {
-            this._syncBinHashtables = value;
-            Save();
-        }
-    }
-    private bool _syncBinHashtables;
-
     public bool LoadSkinnedMeshAnimations
     {
         get => this._loadSkinnedMeshAnimations;
