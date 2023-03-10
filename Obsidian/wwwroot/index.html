@@ -357,6 +357,38 @@
             viewport.scene.add(line);
         }
 
+        window.renderEnvironmentAsset = (viewportId, meshes) => {
+            const viewport = viewports.get(viewportId);
+
+            viewport.camera.near = 10;
+            viewport.camera.far = 100000;
+
+            
+            meshes.forEach(mesh => {
+                const geometry = new THREE.BufferGeometry();
+
+                geometry.setIndex(mesh.indices);
+                
+                // Set vertex data
+                geometry.setAttribute("position", new THREE.Float32BufferAttribute(mesh.positions, 3));
+                if (mesh.normals) {
+                    geometry.setAttribute("normal", new THREE.Float32BufferAttribute(mesh.normals, 3));
+                }
+                if (mesh.uvs) {
+                    geometry.setAttribute("uv", new THREE.Float32BufferAttribute(mesh.uvs, 2));
+                }
+
+                // Create material
+                const material = new THREE.MeshStandardMaterial(
+                    {
+                        name: mesh.name,
+                        color: new THREE.Color("rgb(127, 127, 127)")
+                    });
+
+                viewport.scene.add(new THREE.Mesh(geometry, material));
+            });
+        }
+
         function createBones(joints, skeletonRoot) {
             const createdBones = [];
 

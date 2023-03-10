@@ -1,11 +1,14 @@
 ﻿using LeagueToolkit.Core.Animation;
+using LeagueToolkit.Core.Environment;
 using LeagueToolkit.Core.Memory;
 using LeagueToolkit.Core.Mesh;
 using LeagueToolkit.Hashing;
 using LeagueToolkit.IO.SimpleSkinFile;
 using Microsoft.JSInterop;
 using Obsidian.ThreeJs;
+using Obsidian.ThreeJs.EnvironmentAsset;
 using System.Numerics;
+using System.Security.Cryptography;
 
 namespace Obsidian.BabylonJs;
 
@@ -116,6 +119,55 @@ public static class Three
                 yield return face.UV2;
             }
         }
+    }
+
+    public static async Task RenderEnvironmentAsset(
+        IJSRuntime js,
+        string viewportId,
+        EnvironmentAsset environmentAsset
+    )
+    {
+        ThreeEnvironmentAssetMesh[] threeMeshes = environmentAsset.Meshes
+            .Select(mesh =>
+            {
+                float[] positions = FlattenVector3Collection(
+                        mesh.VerticesView.GetAccessor(ElementName.Position).AsVector3Array()
+                    )
+                    .ToArray();
+
+                float[] normals = mesh.VerticesView.TryGetAccessor(
+                    ElementName.Normal,
+                    out var normalsAccessor
+                ) switch
+                {
+                    true => FlattenVector3Collection(normalsAccessor.AsVector3Array()).ToArray(),
+                    false => null
+                };
+
+                float[] uvs = mesh.VerticesView.TryGetAccessor(
+                    ElementName.Texcoord0,
+                    out var uvsAccessor
+                ) switch
+                {
+                    true => FlattenVector2Collection(uvsAccessor.AsVector2Array()).ToArray(),
+                    false => null
+                };
+
+                return new ThreeEnvironmentAssetMesh()
+                {
+                    Name = mesh.Name,
+                    
+                    Indices = mesh.Indices.ToArray(),
+
+                    Positions = positions,
+                    Normals = normals,
+                    Uvs = uvs
+                };
+            })
+            .ToArray();
+
+        await InitializeViewport(js, viewportId);
+        await js.InvokeVoidAsync("renderEnvironmentAsset", viewportId, threeMeshes);
     }
 
     private static ThreeBone[] CreateBones(IEnumerable<Joint> joints) =>

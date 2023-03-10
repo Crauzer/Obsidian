@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.HighPerformance;
+using LeagueToolkit.Core.Environment;
 using LeagueToolkit.Core.Mesh;
 using LeagueToolkit.Core.Meta;
 using LeagueToolkit.Core.Renderer;
@@ -311,6 +312,11 @@ public partial class ExplorerPage
                 isAscii: fileType is LeagueFileType.StaticMeshAscii
             );
         }
+        else if (fileType is LeagueFileType.MapGeometry)
+        {
+            // TODO
+            //await PreviewMapGeometry(fileStream);
+        }
         else if (fileType is (LeagueFileType.TextureDds or LeagueFileType.Texture))
         {
             await PreviewImage(ImageUtils.GetImageFromTextureStream(fileStream));
@@ -426,6 +432,18 @@ public partial class ExplorerPage
             this.JsRuntime,
             this.ActiveTab.GetViewportContainerId(),
             staticMesh
+        );
+    }
+
+    private async Task PreviewMapGeometry(Stream stream)
+    {
+        await SetCurrentPreviewType(WadFilePreviewType.Viewport);
+        await Task.Delay(25);
+
+        await Three.RenderEnvironmentAsset(
+            this.JsRuntime,
+            this.ActiveTab.GetViewportContainerId(),
+            new(stream)
         );
     }
 
