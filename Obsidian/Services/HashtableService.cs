@@ -1,4 +1,6 @@
-﻿using LeagueToolkit.Core.Wad;
+﻿using CommunityToolkit.HighPerformance;
+using LeagueToolkit.Core.Wad;
+using LeagueToolkit.Utils;
 using Obsidian.Data;
 using Octokit;
 using Serilog;
@@ -235,5 +237,21 @@ public class HashtableService
             return existingPath;
 
         return string.Format("{0:x16}", chunk.PathHash);
+    }
+
+    public bool TryGetChunkPath(WadChunk chunk, out string path) =>
+        this.Hashes.TryGetValue(chunk.PathHash, out path);
+
+    public string GuessChunkPath(WadChunk chunk, WadFile wad)
+    {
+        using Stream stream = wad.LoadChunkDecompressed(chunk).AsStream();
+
+        string extension = LeagueFile.GetExtension(LeagueFile.GetFileType(stream));
+
+        return string.IsNullOrEmpty(extension) switch
+        {
+            true => string.Format("{0:x16}", chunk.PathHash),
+            false => string.Format("{0:x16}.{1}", chunk.PathHash, extension),
+        };
     }
 }

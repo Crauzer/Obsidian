@@ -59,7 +59,11 @@ public class WadTabModel : IDisposable
 
         foreach (var (_, chunk) in this.Wad.Chunks)
         {
-            string path = this.Hashtable.GetChunkPath(chunk);
+            string path = this.Hashtable.TryGetChunkPath(chunk, out path) switch
+            {
+                true => path,
+                false => this.Hashtable.GuessChunkPath(chunk, this.Wad),
+            };
             string[] pathComponents = path.Split('/');
 
             if (pathComponents.Length is 1)
