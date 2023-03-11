@@ -1,6 +1,7 @@
 ﻿using LeagueToolkit.Core.Wad;
 using Obsidian.Data;
 using Octokit;
+using Serilog;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection.Metadata;
@@ -51,6 +52,8 @@ public class HashtableService
 
     private async Task InitializeHashtables(HttpClient client)
     {
+        Log.Information("Initializing hashtables");
+
         File.Open(GAME_HASHES_PATH, FileMode.OpenOrCreate).Dispose();
         File.Open(LCU_HASHES_PATH, FileMode.OpenOrCreate).Dispose();
 
@@ -79,6 +82,8 @@ public class HashtableService
 
     private async Task SyncHashtables(HttpClient client)
     {
+        Log.Information("Syncing WAD hashtables");
+
         GitHubClient github = new(new ProductHeaderValue("Obsidian"));
         IReadOnlyList<RepositoryContent> content = await github.Repository.Content.GetAllContents(
             "CommunityDragon",
@@ -107,6 +112,8 @@ public class HashtableService
 
     private async Task SyncBinHashtables(HttpClient client)
     {
+        Log.Information("Syncing BIN hashtables");
+
         GitHubClient github = new(new ProductHeaderValue("Obsidian"));
         IReadOnlyList<RepositoryContent> content = await github.Repository.Content.GetAllContents(
             "CommunityDragon",
@@ -149,7 +156,7 @@ public class HashtableService
         );
     }
 
-    private async Task<string> SyncHashtable(
+    private static async Task<string> SyncHashtable(
         HttpClient client,
         RepositoryContent content,
         string url,
@@ -160,6 +167,8 @@ public class HashtableService
         // Hashtable is up to date
         if (checksum == content.Sha)
             return checksum;
+
+        Log.Information($"Downloading hashtable: {path} from {url}");
 
         using Stream fileContentStream = await client.GetStreamAsync(url);
         using FileStream fileStream = File.Create(path);

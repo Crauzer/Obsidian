@@ -22,6 +22,7 @@ using Obsidian.Services;
 using Obsidian.Shared;
 using Obsidian.Utils;
 using PhotinoNET;
+using Serilog;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
@@ -93,6 +94,7 @@ public partial class ExplorerPage
         if (dialog.ShowDialog(this.Window.WindowHandle) is CommonFileDialogResult.Cancel)
             return;
 
+        Log.Information("Opening WAD files: {FileNames}", dialog.FileNames);
         this._isLoadingWadFile = true;
         StateHasChanged();
         try
@@ -124,6 +126,7 @@ public partial class ExplorerPage
             .Where(x => x is WadFileModel)
             .Select(x => x as WadFileModel);
 
+        Log.Information($"Extracting all chunks from {this.ActiveTab.Name}");
         ToggleExporting(true);
         try
         {
@@ -154,6 +157,7 @@ public partial class ExplorerPage
 
         IEnumerable<WadFileModel> fileItems = this.ActiveTab.CheckedFiles;
 
+        Log.Information($"Extracting selected chunks from {this.ActiveTab.Name}");
         ToggleExporting(true);
         try
         {
@@ -180,6 +184,7 @@ public partial class ExplorerPage
         if (dialog.ShowDialog(this.Window.WindowHandle) is not CommonFileDialogResult.Ok)
             return;
 
+        Log.Information("Loading external hashtables: {Hashtables}", dialog.FileNames);
         ToggleLoadingHashtable(true);
         try
         {
@@ -193,6 +198,7 @@ public partial class ExplorerPage
             });
 
             // Re-build trees
+            Log.Information("Re-building file trees");
             await InvokeAsync(() =>
             {
                 foreach (WadTabModel wadTab in this.Tabs)
@@ -360,6 +366,8 @@ public partial class ExplorerPage
 
     private async Task PreviewSkinPackage(Stream stream)
     {
+        Log.Information("Previewing skin package");
+
         BinTree skinPackage = new(stream);
         MetaEnvironment metaEnvironment = BinUtils.CreateMetaEnvironment();
 
@@ -434,6 +442,8 @@ public partial class ExplorerPage
 
     private async Task PreviewStaticMesh(Stream stream, bool isAscii)
     {
+        Log.Information("Previewing static mesh");
+
         await SetCurrentPreviewType(WadFilePreviewType.Viewport);
         await Task.Delay(25);
 
@@ -452,6 +462,8 @@ public partial class ExplorerPage
 
     private async Task PreviewMapGeometry(Stream stream)
     {
+        Log.Information("Previewing map geometry");
+
         await SetCurrentPreviewType(WadFilePreviewType.Viewport);
         await Task.Delay(25);
 
@@ -464,6 +476,8 @@ public partial class ExplorerPage
 
     private async Task PreviewImage(Image<Rgba32> image)
     {
+        Log.Information("Previewing image");
+
         MemoryStream imageStream = new();
 
         await image.SaveAsPngAsync(imageStream);
@@ -482,6 +496,8 @@ public partial class ExplorerPage
 
     private async Task PreviewImage(Stream imageStream)
     {
+        Log.Information("Previewing image from stream");
+
         await this.JsRuntime.InvokeVoidAsync(
             "setImage",
             $"{this.ActiveTab.Id}_imagePreview",
@@ -493,6 +509,8 @@ public partial class ExplorerPage
 
     private async Task PreviewPropertyBin(Stream stream)
     {
+        Log.Information("Previewing property bin");
+
         await SetCurrentPreviewType(WadFilePreviewType.Text);
 
         await this.ActiveTab.TextPreview.PreviewRitobin(stream);
@@ -500,6 +518,8 @@ public partial class ExplorerPage
 
     private async Task PreviewText(Stream stream, string language)
     {
+        Log.Information($"Previewing {language} text");
+
         await SetCurrentPreviewType(WadFilePreviewType.Text);
 
         await this.ActiveTab.TextPreview.Preview(stream, language);

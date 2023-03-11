@@ -5,6 +5,7 @@ using MudBlazor;
 using Obsidian.Data.Wad;
 using Obsidian.Utils;
 using PhotinoNET;
+using Serilog;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
@@ -33,6 +34,7 @@ public partial class WadFileImagePreview
         if (dialog.ShowDialog(this.Window.WindowHandle) is not CommonFileDialogResult.Ok)
             return;
 
+        Log.Information($"Saving {this.WadTab.SelectedFile.Path} as PNG to {dialog.FileName}");
         ToggleIsSavingAsPng(true);
         try
         {

@@ -3,6 +3,7 @@
 @using Obsidian.Data;
 @using Obsidian.Pages;
 @using Obsidian.Utils;
+@using Serilog;
 
 <div class="tree-view-item-wrapper cursor-pointer @(Item.IsSelected ? "tree-view-item-wrapper-selected" : "")"
      style="height: 44px"
@@ -171,6 +172,7 @@
         if (dialog.ShowDialog(this.Root.Window.WindowHandle) is not CommonFileDialogResult.Ok)
             return;
 
+        Log.Information($"Saving {fileItem.Path} to {dialog.FileName}");
         this.Root.ToggleExporting(true);
         try
         {

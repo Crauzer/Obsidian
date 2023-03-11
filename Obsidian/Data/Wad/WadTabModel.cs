@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Obsidian.Services;
 using Obsidian.Shared;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,9 +53,11 @@ public class WadTabModel : IDisposable
 
     public void Rebuild()
     {
+        Log.Information($"Re-building file tree for {this.Name}");
+
         this.Items.Clear();
 
-        foreach (var (chunkPathHash, chunk) in this.Wad.Chunks)
+        foreach (var (_, chunk) in this.Wad.Chunks)
         {
             string path = this.Hashtable.GetChunkPath(chunk);
             string[] pathComponents = path.Split('/');
@@ -90,6 +93,8 @@ public class WadTabModel : IDisposable
 
     private void SortItems()
     {
+        Log.Information($"Sorting file tree for {this.Name}");
+
         this.Items = new(this.Items.OrderBy(x => x));
 
         foreach (WadItemModel item in this.Items)

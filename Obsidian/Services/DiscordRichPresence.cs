@@ -1,6 +1,7 @@
 ﻿using DiscordRPC;
 using DiscordRPC.Logging;
 using Obsidian.Data;
+using Serilog;
 
 namespace Obsidian.Services;
 
@@ -24,6 +25,8 @@ public sealed class DiscordRichPresence : IDisposable
 
         if (this._config.IsRichPresenceEnabled)
         {
+            Log.Information("Initializing Discord Rich Presence");
+
             this._client.Initialize();
             SetPresenceIdle();
         }

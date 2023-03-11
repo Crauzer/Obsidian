@@ -15,6 +15,7 @@ using MudBlazor;
 using Obsidian.Data.Wad;
 using Obsidian.Utils;
 using PhotinoNET;
+using Serilog;
 using SharpGLTF.Schema2;
 using RigResource = LeagueToolkit.Core.Animation.RigResource;
 using Texture = LeagueToolkit.Core.Renderer.Texture;
@@ -52,6 +53,7 @@ public partial class WadFileViewport
         if (dialog.ShowDialog(this.Window.WindowHandle) is not CommonFileDialogResult.Ok)
             return;
 
+        Log.Information($"Saving {this.WadTab.SelectedFile.Path} as glTF to {dialog.FileName}");
         ToggleIsSavingAsGltf(true);
         try
         {

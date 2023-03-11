@@ -3,6 +3,7 @@
 @using Octokit;
 @using System.Reflection;
 @using Semver;
+@using Serilog;
 @inherits LayoutComponentBase
 
 <style>
@@ -122,6 +123,7 @@
 
     private async Task CheckForUpdate()
     {
+        Log.Information("Checking for new update");
         try
         {
             GitHubClient gitClient = new GitHubClient(new ProductHeaderValue("Obsidian"));
@@ -137,6 +139,7 @@
                 && latestReleaseSemver.ComparePrecedenceTo(assemblySemver) > 0
             )
             {
+                Log.Information($"Found new update: {latestReleaseSemver}");
                 this.UpdateUrl = newestRelease.HtmlUrl;
             }
         }
