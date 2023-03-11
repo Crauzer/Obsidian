@@ -134,6 +134,9 @@
 
     private async Task OnRowClick(MouseEventArgs e)
     {
+        if (this.Item == this.WadTab.SelectedFile)
+            return;
+
         foreach (WadItemModel item in this.WadTab.TraverseFlattenedItems())
             item.IsSelected = false;
 
