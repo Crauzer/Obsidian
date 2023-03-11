@@ -66,6 +66,8 @@ public class HashtableService
 
     private async Task InitializeBinHashtables(HttpClient client)
     {
+        Log.Information("Initializing BIN hashtables");
+
         File.Open(BIN_FIELDS_PATH, FileMode.OpenOrCreate).Dispose();
         File.Open(BIN_CLASSES_PATH, FileMode.OpenOrCreate).Dispose();
         File.Open(BIN_HASHES_PATH, FileMode.OpenOrCreate).Dispose();
