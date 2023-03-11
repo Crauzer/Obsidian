@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Obsidian.Data;
+using MudBlazor;
 using Obsidian.Services;
-using Octokit;
+using Obsidian.Utils;
 
 namespace Obsidian.Shared;
 
 public partial class HashtableProvider : ComponentBase
 {
+    [Inject]
+    public ISnackbar Snackbar { get; set; }
+
     [Inject]
     public HashtableService Hashtable { get; set; }
 
@@ -17,13 +20,24 @@ public partial class HashtableProvider : ComponentBase
     public EventCallback OnLoadingFinished { get; set; }
 
     protected override void OnInitialized() => base.OnInitialized();
-    protected override async Task OnAfterRenderAsync(bool firstRender) 
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender is false)
             return;
 
         await this.OnLoadingStart.InvokeAsync();
-        await this.Hashtable.Initialize();
-        await this.OnLoadingFinished.InvokeAsync();
+        try
+        {
+            await this.Hashtable.Initialize();
+        }
+        catch (Exception exception)
+        {
+            SnackbarUtils.ShowHardError(this.Snackbar, exception);
+        }
+        finally
+        {
+            await this.OnLoadingFinished.InvokeAsync();
+        }
     }
 }
