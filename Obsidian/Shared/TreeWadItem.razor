@@ -82,14 +82,7 @@
                                      Color="Color.Primary" Size="Size.Small" />
                     </td>
                     <td style="text-align: center; width: 24px">
-                        @if (Item.Type is WadItemType.File)
-                        {
-                            <MudIcon Class="d-block" Icon="@Icons.Custom.FileFormats.FileDocument" Size="Size.Small" Color="Color.Inherit" />
-                        }
-                        else if (Item.Type is WadItemType.Folder)
-                        {
-                            <MudIcon Class="d-block" Icon="@Icons.Material.TwoTone.Folder" Size="Size.Small" Color="Color.Inherit" />
-                        }
+                        <MudIcon Class="d-block" Icon="@Item.Icon" Size="Size.Small" Color="Color.Inherit" />
                     </td>
                     <td class="tree-view-item-name">
                         <MudHighlighter Class="mud-primary-text" Style="background-color: transparent; font-weight: bold;"

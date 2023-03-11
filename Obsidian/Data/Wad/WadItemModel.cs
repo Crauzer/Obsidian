@@ -1,5 +1,9 @@
-﻿using System.Diagnostics;
+﻿using LeagueToolkit.Utils;
+using MudBlazor;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
+using PathIO = System.IO.Path;
+
 
 namespace Obsidian.Data.Wad;
 
@@ -38,6 +42,8 @@ public abstract class WadItemModel : IComparable<WadItemModel>
             return string.Join('/', this.Parent.Path, this.Name);
         }
     }
+
+    public string Icon => GetIcon();
 
     public bool IsSelected { get; set; }
     public bool IsChecked { get; set; }
@@ -148,6 +154,34 @@ public abstract class WadItemModel : IComparable<WadItemModel>
                 ),
             false => item.Path.Contains(filter, StringComparison.InvariantCultureIgnoreCase)
         };
+
+    public string GetIcon()
+    {
+        if (this.Type is WadItemType.Folder)
+            return Icons.Material.TwoTone.Folder;
+
+        LeagueFileType fileType = LeagueFile.GetFileType(PathIO.GetExtension(this.Name));
+        return fileType switch
+        {
+            LeagueFileType.Animation => Icons.Material.TwoTone.Animation,
+            LeagueFileType.Jpeg => Icons.Material.TwoTone.Image,
+            LeagueFileType.MapGeometry => CustomIcons.Material.ImageFilterHdr,
+            LeagueFileType.Png => Icons.Material.TwoTone.Image,
+            LeagueFileType.PropertyBin => CustomIcons.Material.CodeBracesBox,
+            LeagueFileType.PropertyBinOverride => CustomIcons.Material.CodeBracesBox,
+            LeagueFileType.RiotStringTable => Icons.Material.TwoTone.Translate,
+            LeagueFileType.SimpleSkin => CustomIcons.Material.Cube,
+            LeagueFileType.Skeleton => CustomIcons.Material.Bone,
+            LeagueFileType.StaticMeshAscii => CustomIcons.Material.Cube,
+            LeagueFileType.StaticMeshBinary => CustomIcons.Material.Cube,
+            LeagueFileType.Texture => Icons.Material.TwoTone.Image,
+            LeagueFileType.TextureDds => Icons.Material.TwoTone.Image,
+            LeagueFileType.WorldGeometry => CustomIcons.Material.ImageFilterHdr,
+            LeagueFileType.WwiseBank => CustomIcons.Material.VolumeHigh,
+            LeagueFileType.WwisePackage => CustomIcons.Material.AccountVoice,
+            _ => Icons.Custom.FileFormats.FileDocument,
+        };
+    }
 
     public int CompareTo(WadItemModel other) =>
         (this, other) switch
