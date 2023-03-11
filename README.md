@@ -13,6 +13,7 @@
   </a>
 </p>
 
+# [How to Install](https://github.com/Crauzer/Obsidian/wiki/How-to-Install)
 # [Wiki](https://github.com/Crauzer/Obsidian/wiki)
 The wiki contains all documentation and info about Obsidian and how it works.
 
