@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.HighPerformance;
+using LeagueToolkit.Utils;
 using Microsoft.AspNetCore.Components;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using MudBlazor;
@@ -13,8 +14,11 @@ namespace Obsidian.Shared;
 
 public partial class WadFileImagePreview
 {
-    [Inject] public PhotinoWindow Window { get; set; }
-    [Inject] public ISnackbar Snackbar { get; set; }
+    [Inject]
+    public PhotinoWindow Window { get; set; }
+
+    [Inject]
+    public ISnackbar Snackbar { get; set; }
 
     [Parameter]
     public WadTabModel WadTab { get; set; }
@@ -38,8 +42,22 @@ public partial class WadFileImagePreview
         ToggleIsSavingAsPng(true);
         try
         {
-            using Stream fileStream = this.WadTab.Wad.LoadChunkDecompressed(this.WadTab.SelectedFile.Chunk).AsStream();
-            Image<Rgba32> image = ImageUtils.GetImageFromTextureStream(fileStream);
+            using Stream fileStream = this.WadTab.Wad
+                .LoadChunkDecompressed(this.WadTab.SelectedFile.Chunk)
+                .AsStream();
+            LeagueFileType fileType = LeagueFile.GetFileType(fileStream);
+
+            Image<Rgba32> image = fileType switch
+            {
+                LeagueFileType.Texture
+                or LeagueFileType.TextureDds
+                    => ImageUtils.GetImageFromTextureStream(fileStream),
+                LeagueFileType.Png or LeagueFileType.Jpeg => Image.Load<Rgba32>(fileStream),
+                _
+                    => throw new InvalidDataException(
+                        $"Failed to create Image for fileType: {fileType}"
+                    )
+            };
 
             image.SaveAsPng(dialog.FileName);
 
@@ -54,8 +72,6 @@ public partial class WadFileImagePreview
             ToggleIsSavingAsPng(false);
         }
     }
-
-
 
     private void ToggleIsSavingAsPng(bool value)
     {
