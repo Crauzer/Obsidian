@@ -17,6 +17,9 @@ public static class Three
     public static async Task InitializeViewport(IJSRuntime js, string viewportId) =>
         await js.InvokeVoidAsync("initThreeJsRenderer", viewportId);
 
+    public static async Task DestroyViewport(IJSRuntime js, string viewportId) =>
+        await js.InvokeVoidAsync("destroyThreeJsRenderer", viewportId);
+
     public static async Task RenderSkinnedMesh(
         IJSRuntime js,
         string viewportId,
@@ -46,6 +49,7 @@ public static class Three
 
         ThreeBone[] bones = CreateBones(skeleton.Joints);
 
+        await DestroyViewport(js, viewportId);
         await InitializeViewport(js, viewportId);
         await js.InvokeVoidAsync(
             "renderSkinnedMesh",
@@ -83,6 +87,7 @@ public static class Three
             new DotNetStreamReference(gltfStream)
         );
 
+        await DestroyViewport(js, viewportId);
         await InitializeViewport(js, viewportId);
         await js.InvokeVoidAsync("renderSkinnedMeshFromGltf", viewportId, gltfBlob);
     }
@@ -98,6 +103,7 @@ public static class Three
             .ToArray();
         float[] uvs = FlattenVector2Collection(TraverseUvs(staticMesh.Faces)).ToArray();
 
+        await DestroyViewport(js, viewportId);
         await InitializeViewport(js, viewportId);
         await js.InvokeVoidAsync("renderStaticMesh", viewportId, vertices, uvs);
 
@@ -166,6 +172,7 @@ public static class Three
             })
             .ToArray();
 
+        await DestroyViewport(js, viewportId);
         await InitializeViewport(js, viewportId);
         await js.InvokeVoidAsync("renderEnvironmentAsset", viewportId, threeMeshes);
     }

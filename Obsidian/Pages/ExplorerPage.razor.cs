@@ -26,6 +26,7 @@ using Serilog;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
+using System.Collections.Concurrent;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -35,7 +36,7 @@ using RigResource = LeagueToolkit.Core.Animation.RigResource;
 
 namespace Obsidian.Pages;
 
-public partial class ExplorerPage
+public partial class ExplorerPage : IDisposable
 {
     #region Injection
     [Inject]
@@ -77,6 +78,10 @@ public partial class ExplorerPage
     private MudTabs _tabsComponent;
 
     private MudSplitter _splitter;
+
+    private readonly ConcurrentQueue<Task> _previewQueue = new();
+
+    private readonly System.Timers.Timer _previewTimer = new(250);
 
     private bool _isLoadingWadFile = false;
     private bool _isExportingFiles = false;
@@ -284,34 +289,19 @@ public partial class ExplorerPage
         }
 
         // Defer showing the loader to prevent UI blinking for fast previews
-        CancellationTokenSource tokenSource = new();
-        Task.Delay(100)
-            .ContinueWith(
-                async (_) =>
-                {
-                    tokenSource.Token.ThrowIfCancellationRequested();
+        ////CancellationTokenSource tokenSource = new();
+        ////Task.Delay(100)
+        ////    .ContinueWith(
+        ////        async (_) =>
+        ////        {
+        ////            tokenSource.Token.ThrowIfCancellationRequested();
+        ////
+        ////            await InvokeAsync(() => ToggleLoadingPreview(true));
+        ////        }
+        ////    )
+        ////    .AndForget();
 
-                    await InvokeAsync(() => ToggleLoadingPreview(true));
-                }
-            )
-            .AndForget();
-
-        try
-        {
-            await PreviewSelectedFile(this.ActiveTab.SelectedFile);
-        }
-        catch (Exception exception)
-        {
-            SnackbarUtils.ShowSoftError(this.Snackbar, exception);
-            await SetCurrentPreviewType(WadFilePreviewType.None);
-        }
-        finally
-        {
-            tokenSource.Cancel();
-            tokenSource.Dispose();
-
-            ToggleLoadingPreview(false);
-        }
+        this._previewQueue.Enqueue(PreviewSelectedFile(this.ActiveTab.SelectedFile));
     }
 
     #region Preview
@@ -538,6 +528,26 @@ public partial class ExplorerPage
     }
     #endregion
 
+    private async Task HandlePreviewTaskAsync(Task previewTask)
+    {
+        // Hide the preview if the selected file is null
+        if (this.ActiveTab.SelectedFile is null)
+        {
+            await SetCurrentPreviewType(WadFilePreviewType.None);
+            return;
+        }
+
+        try
+        {
+            await previewTask;
+        }
+        catch (Exception exception)
+        {
+            SnackbarUtils.ShowSoftError(this.Snackbar, exception);
+            await SetCurrentPreviewType(WadFilePreviewType.None);
+        }
+    }
+
     private async Task OnDimensionChanged(double dimension)
     {
         if (
@@ -562,11 +572,46 @@ public partial class ExplorerPage
         StateHasChanged();
     }
 
-    public void ToggleLoadingPreview(bool value)
+    private void ToggleLoadingPreview(bool value)
     {
         this._isLoadingPreview = value;
         StateHasChanged();
     }
 
     public void RefreshState() => StateHasChanged();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        this._previewTimer.Elapsed += (sender, eventArgs) => OnPreviewCallback();
+        this._previewTimer.Start();
+    }
+
+    private void OnPreviewCallback()
+    {
+        _ = InvokeAsync(async () =>
+        {
+            if (this.ActiveTab is null)
+                return;
+
+            if (this._previewQueue.TryDequeue(out Task previewTask) is false)
+                return;
+
+            this._previewQueue.Clear();
+
+            ToggleLoadingPreview(true);
+            await Task.Delay(10);
+
+            await HandlePreviewTaskAsync(previewTask);
+
+            ToggleLoadingPreview(false);
+            await Task.Delay(10);
+        });
+    }
+
+    public void Dispose()
+    {
+        this._previewTimer?.Dispose();
+    }
 }
