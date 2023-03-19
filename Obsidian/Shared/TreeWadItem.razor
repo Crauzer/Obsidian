@@ -65,7 +65,7 @@
                     @onclick="OnRowClick">
                     @for (int i = 0; i < Item.Depth; i++)
                     {
-                        <td class="tree-view-item-childrenLine"/>
+                        <td class="tree-view-item-childrenLine" />
                     }
                     <td style="vertical-align: middle; width: 20px">
                         @if (Item.Type is WadItemType.Folder)
@@ -77,8 +77,10 @@
                     </td>
                     <td style="width: 44px">
                         <MudCheckBox StopClickPropagation
+                                     T="bool"
                                      Style="height: 44px"
-                                     @bind-Checked="IsChecked"
+                                     Checked="IsChecked"
+                                     CheckedChanged="OnCheckedChanged"
                                      Color="Color.Primary" Size="Size.Small" />
                     </td>
                     <td style="text-align: center; width: 24px">
@@ -117,11 +119,7 @@
 
             // Update children checked state
             this.Item.IsChecked = value;
-            if (this.Item.Items is not null)
-                foreach (WadItemModel item in this.Item.TraverseFlattenedItems())
-                    item.IsChecked = value;
-
-            this.Root.RefreshState();
+            this.Item.CheckItemTree(value);
         }
     }
 
@@ -129,6 +127,37 @@
     {
         if (this.Item == this.WadTab.SelectedFile)
             return;
+
+        WadItemModel selectedItem = this.WadTab.TraverseFlattenedItems().Where(x => x.IsSelected).FirstOrDefault();
+
+        if (e.ShiftKey && selectedItem is not null)
+        {
+            List<WadItemModel> items = this.WadTab.TraverseFlattenedVisibleItems().ToList();
+            int targetIndex = items.IndexOf(this.Item);
+            int currentIndex = items.IndexOf(selectedItem);
+
+            if (currentIndex is not -1)
+            {
+                (int startIndex, int endIndex) = (targetIndex) switch
+                {
+                    _ when targetIndex > currentIndex => (currentIndex, targetIndex),
+                    _ when targetIndex < currentIndex => (targetIndex, currentIndex)
+                };
+
+                IEnumerable<WadItemModel> itemsToSelect = items.Skip(startIndex).Take(endIndex - startIndex + 1);
+                foreach (WadItemModel itemToSelect in itemsToSelect)
+                {
+                    itemToSelect.IsChecked = !itemToSelect.IsChecked;
+                    if (itemToSelect.IsExpanded is false)
+                        itemToSelect.CheckItemTree(itemToSelect.IsChecked);
+
+                }
+
+                this.Root.RefreshState();
+            }
+
+            return;
+        }
 
         foreach (WadItemModel item in this.WadTab.TraverseFlattenedItems())
             item.IsSelected = false;
@@ -141,6 +170,13 @@
     {
         if (this.Item is WadFolderModel folder)
             OnToggleExpand();
+    }
+
+    private void OnCheckedChanged(bool value)
+    {
+        this.IsChecked = value;
+
+        this.Root.RefreshState();
     }
 
     private void OnToggleExpand()
