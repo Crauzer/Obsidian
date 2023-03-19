@@ -155,6 +155,13 @@ public abstract class WadItemModel : IComparable<WadItemModel>
             false => item.Path.Contains(filter, StringComparison.InvariantCultureIgnoreCase)
         };
 
+    public void CheckItemTree(bool value)
+    {
+        if (this.Items is not null)
+            foreach (WadItemModel item in TraverseFlattenedItems())
+                item.IsChecked = value;
+    }
+
     public string GetIcon()
     {
         if (this.Type is WadItemType.Folder)
