@@ -146,7 +146,9 @@
     private void OnRowDoubleClick(MouseEventArgs e)
     {
         if (this.Item is WadFolderModel folder)
-            OnToggleExpand();
+            ToggleExpand();
+
+        this.Root.RefreshState();
     }
 
     private void OnCheckedChanged(bool value)
@@ -156,10 +158,22 @@
         this.Root.RefreshState();
     }
 
-    private void OnToggleExpand()
+    private void OnToggleExpand(MouseEventArgs e)
+    {
+        ToggleExpand();
+
+        if (e.ShiftKey)
+        {
+            foreach (WadItemModel item in this.Item.TraverseFlattenedItems())
+                item.IsExpanded = this.Item.IsExpanded;
+        }
+
+        this.Root.RefreshState();
+    }
+
+    private void ToggleExpand()
     {
         this.Item.IsExpanded = !this.Item.IsExpanded;
-        this.Root.RefreshState();
     }
 
     private async Task CopyNameToClipboard()
