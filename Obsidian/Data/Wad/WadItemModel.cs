@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using PathIO = System.IO.Path;
 
-
 namespace Obsidian.Data.Wad;
 
 [DebuggerDisplay("{Name}")]
@@ -50,8 +49,6 @@ public abstract class WadItemModel : IComparable<WadItemModel>
     public bool IsExpanded { get; set; }
 
     public HashSet<WadItemModel> Items { get; protected set; }
-
-    public void UpdateSelectedItems() { }
 
     public void SortItems()
     {
