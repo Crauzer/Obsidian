@@ -128,42 +128,19 @@
         if (this.Item == this.WadTab.SelectedFile)
             return;
 
-        WadItemModel selectedItem = this.WadTab.TraverseFlattenedItems().Where(x => x.IsSelected).FirstOrDefault();
-
-        if (e.ShiftKey && selectedItem is not null)
+        if (e.ShiftKey)
         {
-            List<WadItemModel> items = this.WadTab.TraverseFlattenedVisibleItems().ToList();
-            int targetIndex = items.IndexOf(this.Item);
-            int currentIndex = items.IndexOf(selectedItem);
-
-            if (currentIndex is not -1)
-            {
-                (int startIndex, int endIndex) = (targetIndex) switch
-                {
-                    _ when targetIndex > currentIndex => (currentIndex, targetIndex),
-                    _ when targetIndex < currentIndex => (targetIndex, currentIndex)
-                };
-
-                IEnumerable<WadItemModel> itemsToSelect = items.Skip(startIndex).Take(endIndex - startIndex + 1);
-                foreach (WadItemModel itemToSelect in itemsToSelect)
-                {
-                    itemToSelect.IsChecked = !itemToSelect.IsChecked;
-                    if (itemToSelect.IsExpanded is false)
-                        itemToSelect.CheckItemTree(itemToSelect.IsChecked);
-
-                }
-
-                this.Root.RefreshState();
-            }
-
-            return;
+            SelectMultiple();
         }
-
-        foreach (WadItemModel item in this.WadTab.TraverseFlattenedItems())
-            item.IsSelected = false;
-
-        this.Item.IsSelected = true;
-        await this.Root.UpdateSelectedFile();
+        else if (e.CtrlKey)
+        {
+            this.IsChecked = !this.IsChecked;
+        }
+        else
+        {
+            SelectItem();
+            await this.Root.UpdateSelectedFile();
+        }
     }
 
     private void OnRowDoubleClick(MouseEventArgs e)
@@ -193,6 +170,43 @@
     private async Task CopyPathToClipboard()
     {
         await this.JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", this.Item.Path);
+    }
+
+    private void SelectItem()
+    {
+        foreach (WadItemModel item in this.WadTab.TraverseFlattenedItems())
+            item.IsSelected = false;
+
+        this.Item.IsSelected = true;
+    }
+
+    private void SelectMultiple()
+    {
+        WadItemModel selectedItem = this.WadTab.TraverseFlattenedItems().Where(x => x.IsSelected).FirstOrDefault();
+        List<WadItemModel> items = this.WadTab.TraverseFlattenedVisibleItems().ToList();
+        int targetIndex = items.IndexOf(this.Item);
+        int currentIndex = items.IndexOf(selectedItem);
+
+        if (currentIndex is not -1)
+        {
+            (int startIndex, int endIndex) = (targetIndex) switch
+            {
+                _ when targetIndex > currentIndex => (currentIndex, targetIndex),
+                _ when targetIndex < currentIndex => (targetIndex, currentIndex),
+                _ => (0, 0)
+            };
+
+            IEnumerable<WadItemModel> itemsToSelect = items.Skip(startIndex).Take(endIndex - startIndex + 1);
+            foreach (WadItemModel itemToSelect in itemsToSelect)
+            {
+                itemToSelect.IsChecked = !itemToSelect.IsChecked;
+                if (itemToSelect.IsExpanded is false)
+                    itemToSelect.CheckItemTree(itemToSelect.IsChecked);
+
+            }
+
+            this.Root.RefreshState();
+        }
     }
 
     private void Save()
