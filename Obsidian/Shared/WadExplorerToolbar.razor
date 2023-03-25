@@ -10,12 +10,11 @@
         </MudMenuItem>
         <MudDivider />
         <MudMenuItem Icon="@CustomIcons.Material.ContentSaveAll" IconColor="Color.Primary" IconSize="Size.Small"
-                     Disabled="@(ActiveWad is null)"
                      OnClick="OnExtractAll">
             Extract All
         </MudMenuItem>
         <MudMenuItem Icon="@CustomIcons.Material.ContentSave" IconColor="Color.Primary" IconSize="Size.Small"
-                     Disabled="@(ActiveWad?.CheckedFiles.Count() is (0 or null))"
+                     Disabled="@(WadTree.CheckedFiles.Count() is 0)"
                      OnClick="OnExtractSelected">
             Extract Selected
         </MudMenuItem>
@@ -28,13 +27,10 @@
         </MudMenuItem>
     </MudMenu>
     <MudSpacer />
-    @if (ActiveWad is not null)
-    {
-        <MudStack AlignItems="AlignItems.Center" Style="width: 33%">
-            <WadFilter FullWidth
+    <MudStack AlignItems="AlignItems.Center" Style="width: 33%">
+        <WadFilter FullWidth
                    @ref="_wadFilterComponent"
-                   Filter="@ActiveWad.Filter" UseRegexFilter="@ActiveWad.UseRegexFilter"
+                   Filter="@WadTree.Filter" UseRegexFilter="@WadTree.UseRegexFilter"
                    FilterChanged="OnFilterChanged" UseRegexFilterChanged="OnUseRegexFilterChanged" />
-        </MudStack>
-    }
+    </MudStack>
 </MudToolBar>

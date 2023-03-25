@@ -20,16 +20,12 @@
                 <MudText Typo="Typo.subtitle2">Copy Name</MudText>
             </MudMenuItem>
             <MudDivider />
-            @if (this.Item.Type is WadItemType.File)
+            @if (this.Item.Type is WadTreeItemType.File)
             {
                 <MudMenuItem Icon="@CustomIcons.Material.ContentSave" IconSize="Size.Small" IconColor="Color.Primary"
                          OnClick="@Save">
                     <MudText Typo="Typo.subtitle2">Save</MudText>
                 </MudMenuItem>
-            }
-            else
-            {
-
             }
             <MudDivider />
             <MudMenuItem Icon="@Icons.Material.TwoTone.Code" IconSize="Size.Small" IconColor="Color.Primary">
@@ -42,7 +38,7 @@
                             <MudText Typo="Typo.subtitle2">
                                 @Item.Path
                             </MudText>
-                            @if (Item is WadFileModel file)
+                            @if (Item is WadTreeFileModel file)
                             {
                                 <MudText Typo="Typo.subtitle2">
                                     XXHash: @string.Format("{0:x16}", file.Chunk.PathHash)
@@ -68,7 +64,7 @@
                         <td class="tree-view-item-childrenLine" />
                     }
                     <td style="vertical-align: middle; width: 20px">
-                        @if (Item.Type is WadItemType.Folder)
+                        @if (Item.Type is WadTreeItemType.Directory)
                         {
                             <MudIconButton Icon="@(Item.IsExpanded ? Icons.Material.TwoTone.KeyboardArrowDown : Icons.Material.TwoTone.KeyboardArrowRight)"
                                        Color="Color.Inherit" Size="Size.Small"
@@ -79,8 +75,8 @@
                         <MudCheckBox StopClickPropagation
                                      T="bool"
                                      Style="height: 44px"
-                                     Checked="IsChecked"
-                                     CheckedChanged="OnCheckedChanged"
+                                     Checked="@IsChecked"
+                                     CheckedChanged="@OnCheckedChanged"
                                      Color="Color.Primary" Size="Size.Small" />
                     </td>
                     <td style="text-align: center; width: 24px">
@@ -88,164 +84,10 @@
                     </td>
                     <td class="tree-view-item-name">
                         <MudHighlighter Class="mud-primary-text" Style="background-color: transparent; font-weight: bold;"
-                                        Text="@Item.Name" HighlightedText="@WadTab.Filter" />
+                                        Text="@Item.Name" HighlightedText="@WadTree.Filter" />
                     </td>
                 </tr>
             </table>
         </ActivatorContent>
     </MudMenu>
 </div>
-
-@code {
-    [Inject]
-    public IJSRuntime JsRuntime { get; set; }
-
-    [Parameter]
-    public ExplorerPage Root { get; set; }
-
-    [Parameter]
-    public WadTabModel WadTab { get; set; }
-
-    [Parameter]
-    public WadItemModel Item { get; set; }
-
-    public bool IsChecked
-    {
-        get => this.Item.IsChecked;
-        set
-        {
-            if (this.Item.IsChecked == value)
-                return;
-
-            // Update children checked state
-            this.Item.IsChecked = value;
-            this.Item.CheckItemTree(value);
-        }
-    }
-
-    private async Task OnRowClick(MouseEventArgs e)
-    {
-        if (this.Item == this.WadTab.SelectedFile)
-            return;
-
-        if (e.ShiftKey)
-        {
-            SelectMultiple();
-        }
-        else if (e.CtrlKey)
-        {
-            this.IsChecked = !this.IsChecked;
-        }
-        else
-        {
-            SelectItem();
-            await this.Root.UpdateSelectedFile();
-        }
-    }
-
-    private void OnRowDoubleClick(MouseEventArgs e)
-    {
-        if (this.Item is WadFolderModel folder)
-            ToggleExpand();
-
-        this.Root.RefreshState();
-    }
-
-    private void OnCheckedChanged(bool value)
-    {
-        this.IsChecked = value;
-
-        this.Root.RefreshState();
-    }
-
-    private void OnToggleExpand(MouseEventArgs e)
-    {
-        ToggleExpand();
-
-        if (e.ShiftKey)
-        {
-            foreach (WadItemModel item in this.Item.TraverseFlattenedItems())
-                item.IsExpanded = this.Item.IsExpanded;
-        }
-
-        this.Root.RefreshState();
-    }
-
-    private void ToggleExpand()
-    {
-        this.Item.IsExpanded = !this.Item.IsExpanded;
-    }
-
-    private async Task CopyNameToClipboard()
-    {
-        await this.JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", this.Item.Name);
-    }
-
-    private async Task CopyPathToClipboard()
-    {
-        await this.JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", this.Item.Path);
-    }
-
-    private void SelectItem()
-    {
-        foreach (WadItemModel item in this.WadTab.TraverseFlattenedItems())
-            item.IsSelected = false;
-
-        this.Item.IsSelected = true;
-    }
-
-    private void SelectMultiple()
-    {
-        WadItemModel selectedItem = this.WadTab.TraverseFlattenedItems().Where(x => x.IsSelected).FirstOrDefault();
-        List<WadItemModel> items = this.WadTab.TraverseFlattenedVisibleItems().ToList();
-        int targetIndex = items.IndexOf(this.Item);
-        int currentIndex = items.IndexOf(selectedItem);
-
-        if (currentIndex is not -1)
-        {
-            (int startIndex, int endIndex) = (targetIndex) switch
-            {
-                _ when targetIndex > currentIndex => (currentIndex, targetIndex),
-                _ when targetIndex < currentIndex => (targetIndex, currentIndex),
-                _ => (0, 0)
-            };
-
-            IEnumerable<WadItemModel> itemsToSelect = items.Skip(startIndex).Take(endIndex - startIndex + 1);
-            foreach (WadItemModel itemToSelect in itemsToSelect)
-            {
-                itemToSelect.IsChecked = !itemToSelect.IsChecked;
-                if (itemToSelect.IsExpanded is false)
-                    itemToSelect.CheckItemTree(itemToSelect.IsChecked);
-
-            }
-
-            this.Root.RefreshState();
-        }
-    }
-
-    private void Save()
-    {
-        if (this.Item is not WadFileModel fileItem)
-            return;
-
-        CommonSaveFileDialog dialog = new("Save") { DefaultFileName = fileItem.Name };
-        if (dialog.ShowDialog(this.Root.Window.WindowHandle) is not CommonFileDialogResult.Ok)
-            return;
-
-        Log.Information($"Saving {fileItem.Path} to {dialog.FileName}");
-        this.Root.ToggleExporting(true);
-        try
-        {
-            WadUtils.SaveChunk(this.WadTab.Wad, fileItem.Chunk, dialog.FileName);
-            this.Root.Snackbar.Add($"Saved {fileItem.Name}", Severity.Success);
-        }
-        catch (Exception exception)
-        {
-            SnackbarUtils.ShowHardError(this.Root.Snackbar, exception);
-        }
-        finally
-        {
-            this.Root.ToggleExporting(false);
-        }
-    }
-}

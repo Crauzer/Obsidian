@@ -1,4 +1,5 @@
 ﻿@using Obsidian.Data;
+@using Obsidian.Utils;
 
 <MudMenu PositionAtCurser Dense
          Class="ma-auto"
@@ -12,7 +13,7 @@
     </ChildContent>
     <ActivatorContent>
         <div style="margin: auto;">
-            <MudImage ObjectFit="ObjectFit.Contain" id="@($"{WadTab.Id}_imagePreview")" Style="max-height: 70vh;" />
+            <MudImage ObjectFit="ObjectFit.Contain" id="@WadPreviewUtils.IMAGE_PREVIEW_ID" Style="max-height: 70vh;" />
         </div>
     </ActivatorContent>
 </MudMenu>

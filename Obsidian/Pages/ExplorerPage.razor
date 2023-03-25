@@ -1,6 +1,7 @@
 ﻿@page "/explorer"
 @using LeagueToolkit.Core.Wad;
 @using Microsoft.WindowsAPICodePack.Dialogs;
+@using Obsidian.Data.FileTree;
 @using Obsidian.Data.Wad;
 @using Obsidian.Data;
 @using Obsidian.Services;
@@ -38,7 +39,7 @@
 <MudPaper>
     <MudPaper Elevation="25">
         <CascadingValue Value="this">
-            <WadExplorerToolbar ActiveWad="ActiveTab"
+            <WadExplorerToolbar WadTree="WadTree"
                                 OnOpenWad="OpenWad"
                                 OnExtractAll="ExtractAll"
                                 OnExtractSelected="ExtractSelected"
@@ -46,49 +47,28 @@
         </CascadingValue>
     </MudPaper>
     <MudDivider />
-    <MudTabs @ref="_tabsComponent"
-             @bind-ActivePanelIndex="ActiveTabId"
-             Position="Position.Bottom" Elevation="6">
-        <ChildContent>
-            @foreach (WadTabModel wadTab in this.Tabs)
+    <MudSplitter EnableSlide DisableMargin @ref="_splitter" Sensitivity="2.5f" DimensionChanged="OnDimensionChanged">
+        <StartContent>
+            <div style="position: relative; width: 100%">
+                <TreeView TItem="WadTreeItemModel"
+                          ItemsFlat="@GetVisibleItemsForWadTree()"
+                          Height="calc(100vh - 109px)" ItemSize="44f">
+                    <ItemTemplate>
+                        <TreeWadItem Item="@context" Root="this" WadTree="WadTree" />
+                    </ItemTemplate>
+                </TreeView>
+            </div>
+        </StartContent>
+        <EndContent>
+            <WadFileImagePreview />
+            @if (WadTree.CurrentPreviewType is WadFilePreviewType.Viewport)
             {
-                <MudTabPanel Text="@wadTab.Name" Tag="@wadTab.Id">
-                    <TabWrapperContent>
-                        <div class="wad-tab-header-wrapper">
-                            @context
-                        </div>
-                    </TabWrapperContent>
-                    <ChildContent>
-                        <MudSplitter EnableSlide DisableMargin @ref="_splitter" Sensitivity="2.5f" DimensionChanged="OnDimensionChanged">
-                            <StartContent>
-                                <div style="position: relative; width: 100%">
-                                    <TreeView ItemsFlat="@GetVisibleItemsForActiveTab()" Height="calc(100vh - 109px)" ItemSize="44f">
-                                        <ItemTemplate>
-                                            <TreeWadItem Item="@context" Root="this" WadTab="wadTab" />
-                                        </ItemTemplate>
-                                    </TreeView>
-                                </div>
-                            </StartContent>
-                            <EndContent>
-                                <WadFileImagePreview WadTab="wadTab" />
-                                @if (wadTab.CurrentPreviewType is WadFilePreviewType.Viewport)
-                                {
-                                    <WadFileViewport WadTab="wadTab" />
-                                }
-                                <WadFileTextPreview @ref="wadTab.TextPreview" WadTab="wadTab" />
-                            </EndContent>
-                        </MudSplitter>
-                    </ChildContent>
-                </MudTabPanel>
+                <WadFileViewport WadTree="WadTree" />
             }
-        </ChildContent>
-        <TabPanelHeader>
-            <MudIconButton DisableRipple
-                           Class="ml-1 wad-tab-close-button" Color="Color.Inherit" Icon="@Icons.Material.TwoTone.Close"
-                           Size="Size.Medium"
-                           OnClick="(_) => RemoveWadTab(context)" />
-        </TabPanelHeader>
-    </MudTabs>
+            <WadFileTextPreview @ref="WadTree.TextPreview" WadTree="WadTree" />
+        </EndContent>
+    </MudSplitter>
+
 
     <MudOverlay DarkBackground Visible="_isLoadingWadFile" ZIndex="9999">
         <MudProgressCircular Indeterminate Color="Color.Primary" />

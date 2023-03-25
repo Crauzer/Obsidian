@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Obsidian", "Obsidian\Obsidi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{60E03993-5762-413C-8C5F-94CB4E64062D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Obsidian.Tests", "Obsidian.Tests\Obsidian.Tests.csproj", "{974A96E5-DCED-4A1A-BBA4-940B4E517421}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Obsidian.Tests", "Obsidian.Tests\Obsidian.Tests.csproj", "{974A96E5-DCED-4A1A-BBA4-940B4E517421}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

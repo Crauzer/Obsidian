@@ -1,37 +1,27 @@
 ﻿using CommunityToolkit.HighPerformance;
-using LeagueToolkit.Core.Environment;
 using LeagueToolkit.Core.Mesh;
 using LeagueToolkit.Core.Meta;
-using LeagueToolkit.Core.Renderer;
 using LeagueToolkit.Core.Wad;
 using LeagueToolkit.Hashing;
 using LeagueToolkit.Meta;
 using LeagueToolkit.Meta.Classes;
-using LeagueToolkit.Toolkit.Ritobin;
 using LeagueToolkit.Utils;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using MudBlazor;
 using MudExtensions;
 using Obsidian.BabylonJs;
 using Obsidian.Data;
+using Obsidian.Data.FileTree;
 using Obsidian.Data.Wad;
 using Obsidian.Services;
-using Obsidian.Shared;
 using Obsidian.Utils;
 using PhotinoNET;
 using Serilog;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using System;
 using System.Collections.Concurrent;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Windows.Forms;
-using Toolbelt.Blazor.HotKeys2;
 using RigResource = LeagueToolkit.Core.Animation.RigResource;
 
 namespace Obsidian.Pages;
@@ -58,24 +48,9 @@ public partial class ExplorerPage : IDisposable
     public IJSRuntime JsRuntime { get; set; }
     #endregion
 
-    public List<WadTabModel> Tabs { get; set; } = new();
+    public FileTreeModel GameFileTree { get; set; }
 
-    public WadTabModel ActiveTab => this.Tabs.ElementAtOrDefault(this.ActiveTabId);
-    public int ActiveTabId
-    {
-        get => this._activeTabId;
-        set
-        {
-            this._activeTabId = value;
-            if (value is -1)
-                this.RichPresence.SetPresenceIdle();
-            else
-                this.RichPresence.SetPresenceViewing(this.ActiveTab.Name);
-        }
-    }
-    private int _activeTabId;
-
-    private MudTabs _tabsComponent;
+    public WadTreeModel WadTree { get; set; }
 
     private MudSplitter _splitter;
 
@@ -91,32 +66,7 @@ public partial class ExplorerPage : IDisposable
     private bool _isLoadingPreview = false;
 
     #region Toolbar Events
-    public async Task OpenWad()
-    {
-        CommonOpenFileDialog dialog = FileDialogUtils.CreateOpenWadDialog(
-            this.Config.GameDataDirectory
-        );
-        if (dialog.ShowDialog(this.Window.WindowHandle) is CommonFileDialogResult.Cancel)
-            return;
-
-        Log.Information("Opening WAD files: {FileNames}", dialog.FileNames);
-        this._isLoadingWadFile = true;
-        StateHasChanged();
-        try
-        {
-            await Task.Run(() => OpenWadFiles(dialog.FileNames));
-            this.Snackbar.Add("Successfully opened Wad archives!", Severity.Success);
-        }
-        catch (Exception exception)
-        {
-            SnackbarUtils.ShowHardError(this.Snackbar, exception);
-        }
-        finally
-        {
-            this._isLoadingWadFile = false;
-            StateHasChanged();
-        }
-    }
+    public async Task OpenWad() { }
 
     public async Task ExtractAll()
     {
@@ -126,12 +76,12 @@ public partial class ExplorerPage : IDisposable
         if (dialog.ShowDialog(this.Window.WindowHandle) is not CommonFileDialogResult.Ok)
             return;
 
-        IEnumerable<WadFileModel> fileItems = this.ActiveTab
+        IEnumerable<WadTreeFileModel> fileItems = this.WadTree
             .TraverseFlattenedItems()
-            .Where(x => x is WadFileModel)
-            .Select(x => x as WadFileModel);
+            .Where(x => x is WadTreeFileModel)
+            .Select(x => x as WadTreeFileModel);
 
-        Log.Information($"Extracting all chunks from {this.ActiveTab.Name}");
+        Log.Information($"Extracting all chunks");
         ToggleExporting(true);
         try
         {
@@ -160,9 +110,9 @@ public partial class ExplorerPage : IDisposable
         if (dialog.ShowDialog(this.Window.WindowHandle) is not CommonFileDialogResult.Ok)
             return;
 
-        IEnumerable<WadFileModel> fileItems = this.ActiveTab.CheckedFiles;
+        IEnumerable<WadTreeFileModel> fileItems = this.WadTree.CheckedFiles;
 
-        Log.Information($"Extracting selected chunks from {this.ActiveTab.Name}");
+        Log.Information($"Extracting selected chunks");
         ToggleExporting(true);
         try
         {
@@ -204,12 +154,8 @@ public partial class ExplorerPage : IDisposable
 
             // Re-build trees
             Log.Information("Re-building file trees");
-            await InvokeAsync(() =>
-            {
-                foreach (WadTabModel wadTab in this.Tabs)
-                {
-                    wadTab.Rebuild();
-                }
+            await InvokeAsync(() => {
+                // TODO
             });
 
             this.Snackbar.Add("Successfully loaded hashtables!", Severity.Success);
@@ -225,50 +171,24 @@ public partial class ExplorerPage : IDisposable
     }
     #endregion
 
-    private void ExtractFiles(IEnumerable<WadFileModel> fileItems, string extractionDirectory)
+    private void ExtractFiles(IEnumerable<WadTreeFileModel> fileItems, string extractionDirectory)
     {
-        WadFile wad = this.ActiveTab.Wad;
-        foreach (WadFileModel fileItem in fileItems)
-            Utils.WadUtils.SaveChunk(wad, fileItem.Chunk, fileItem.Path, extractionDirectory);
-    }
-
-    private void OpenWadFiles(IEnumerable<string> wadPaths)
-    {
-        foreach (string wadPath in wadPaths)
-        {
-            FileStream wadFileStream = File.OpenRead(wadPath);
-            WadFile wad = new(wadFileStream);
-
-            this.Tabs.Add(new(Path.GetFileName(wadPath), wad, this.Hashtable));
-        }
-
-        // Set opened wad as active
-        this.ActiveTabId = this.Tabs.Count - 1;
-    }
-
-    private async Task RemoveWadTab(MudTabPanel tabPanel)
-    {
-        if (tabPanel.Tag is not Guid tabId)
-            return;
-
-        WadTabModel tab = this.Tabs.FirstOrDefault(x => x.Id == tabId);
-        if (tab is not null)
-        {
-            await this.JsRuntime.InvokeVoidAsync(
-                "destroyThreeJsRenderer",
-                tab.GetViewportContainerId()
+        foreach (WadTreeFileModel fileItem in fileItems)
+            Utils.WadUtils.SaveChunk(
+                fileItem.Wad,
+                fileItem.Chunk,
+                fileItem.Path,
+                extractionDirectory
             );
-
-            tab.Wad.Dispose();
-            this.Tabs.Remove(tab);
-        }
     }
 
-    public List<WadItemModel> GetVisibleItemsForActiveTab()
+    public List<WadTreeItemModel> GetVisibleItemsForWadTree()
     {
         try
         {
-            return this.ActiveTab?.GetFlattenedItems() ?? new();
+            return this.WadTree
+                .TraverseFlattenedVisibleItems(this.WadTree.Filter, this.WadTree.UseRegexFilter)
+                .ToList();
         }
         catch (Exception exception)
         {
@@ -282,7 +202,7 @@ public partial class ExplorerPage : IDisposable
     public async Task UpdateSelectedFile()
     {
         // Hide the preview if the selected file is null
-        if (this.ActiveTab.SelectedFile is null)
+        if (this.WadTree.SelectedFile is null)
         {
             await SetCurrentPreviewType(WadFilePreviewType.None);
             return;
@@ -301,20 +221,20 @@ public partial class ExplorerPage : IDisposable
         ////    )
         ////    .AndForget();
 
-        this._previewQueue.Enqueue(PreviewSelectedFile(this.ActiveTab.SelectedFile));
+        this._previewQueue.Enqueue(PreviewSelectedFile(this.WadTree.SelectedFile));
     }
 
     #region Preview
     // TODO: This function shouldn't be here
-    private async Task PreviewSelectedFile(WadFileModel file)
+    private async Task PreviewSelectedFile(WadTreeFileModel file)
     {
-        using Stream fileStream = this.ActiveTab.Wad.LoadChunkDecompressed(file.Chunk).AsStream();
+        using Stream fileStream = file.Wad.LoadChunkDecompressed(file.Chunk).AsStream();
         LeagueFileType fileType = LeagueFile.GetFileType(fileStream);
         string extension = Path.GetExtension(file.Name);
 
         if (BinUtils.IsSkinPackage(file.Path))
         {
-            await PreviewSkinPackage(fileStream);
+            await PreviewSkinPackage(file.Wad, fileStream);
         }
         else if (fileType is LeagueFileType.StaticMeshBinary or LeagueFileType.StaticMeshAscii)
         {
@@ -354,7 +274,7 @@ public partial class ExplorerPage : IDisposable
         }
     }
 
-    private async Task PreviewSkinPackage(Stream stream)
+    private async Task PreviewSkinPackage(WadFile wad, Stream stream)
     {
         Log.Information("Previewing skin package");
 
@@ -376,12 +296,8 @@ public partial class ExplorerPage : IDisposable
         );
         SkinMeshDataProperties meshData = skinData.SkinMeshProperties;
 
-        using Stream simpleSkinStream = this.ActiveTab.Wad
-            .LoadChunkDecompressed(meshData.SimpleSkin)
-            .AsStream();
-        using Stream skeletonStream = this.ActiveTab.Wad
-            .LoadChunkDecompressed(meshData.Skeleton)
-            .AsStream();
+        using Stream simpleSkinStream = wad.LoadChunkDecompressed(meshData.SimpleSkin).AsStream();
+        using Stream skeletonStream = wad.LoadChunkDecompressed(meshData.Skeleton).AsStream();
 
         using SkinnedMesh skinnedMesh = SkinnedMesh.ReadFromSimpleSkin(simpleSkinStream);
         RigResource skeleton = new(skeletonStream);
@@ -393,29 +309,24 @@ public partial class ExplorerPage : IDisposable
         {
             await Three.RenderSkinnedMeshFromGltf(
                 this.JsRuntime,
-                this.ActiveTab.GetViewportContainerId(),
+                WadPreviewUtils.VIEWPORT_CONTAINER_ID,
                 skinnedMesh,
                 skeleton,
                 SkinnedMeshUtils.CollectMaterialTextures(
                     skinnedMesh,
                     meshData,
                     skinPackage,
-                    this.ActiveTab.Wad,
+                    wad,
                     metaEnvironment
                 ),
-                SkinnedMeshUtils.LoadAnimationAssets(
-                    skinData,
-                    skinPackage,
-                    this.ActiveTab.Wad,
-                    metaEnvironment
-                )
+                SkinnedMeshUtils.LoadAnimationAssets(skinData, skinPackage, wad, metaEnvironment)
             );
         }
         else
         {
             await Three.RenderSkinnedMesh(
                 this.JsRuntime,
-                this.ActiveTab.GetViewportContainerId(),
+                WadPreviewUtils.VIEWPORT_CONTAINER_ID,
                 skinnedMesh,
                 skeleton,
                 await SkinnedMeshUtils.CreateTextureImages(
@@ -423,7 +334,7 @@ public partial class ExplorerPage : IDisposable
                     skinnedMesh,
                     meshData,
                     skinPackage,
-                    this.ActiveTab.Wad,
+                    wad,
                     metaEnvironment
                 )
             );
@@ -445,7 +356,7 @@ public partial class ExplorerPage : IDisposable
 
         await Three.RenderStaticMesh(
             this.JsRuntime,
-            this.ActiveTab.GetViewportContainerId(),
+            WadPreviewUtils.VIEWPORT_CONTAINER_ID,
             staticMesh
         );
     }
@@ -459,7 +370,7 @@ public partial class ExplorerPage : IDisposable
 
         await Three.RenderEnvironmentAsset(
             this.JsRuntime,
-            this.ActiveTab.GetViewportContainerId(),
+            WadPreviewUtils.VIEWPORT_CONTAINER_ID,
             new(stream)
         );
     }
@@ -477,7 +388,7 @@ public partial class ExplorerPage : IDisposable
 
         await this.JsRuntime.InvokeVoidAsync(
             "setImage",
-            $"{this.ActiveTab.Id}_imagePreview",
+            WadPreviewUtils.IMAGE_PREVIEW_ID,
             jsStream
         );
 
@@ -490,7 +401,7 @@ public partial class ExplorerPage : IDisposable
 
         await this.JsRuntime.InvokeVoidAsync(
             "setImage",
-            $"{this.ActiveTab.Id}_imagePreview",
+            WadPreviewUtils.IMAGE_PREVIEW_ID,
             new DotNetStreamReference(imageStream)
         );
 
@@ -503,7 +414,7 @@ public partial class ExplorerPage : IDisposable
 
         await SetCurrentPreviewType(WadFilePreviewType.Text);
 
-        await this.ActiveTab.TextPreview.PreviewRitobin(stream);
+        await this.WadTree.TextPreview.PreviewRitobin(stream);
     }
 
     private async Task PreviewText(Stream stream, string language)
@@ -512,18 +423,18 @@ public partial class ExplorerPage : IDisposable
 
         await SetCurrentPreviewType(WadFilePreviewType.Text);
 
-        await this.ActiveTab.TextPreview.Preview(stream, language);
+        await this.WadTree.TextPreview.Preview(stream, language);
     }
 
     private async Task SetCurrentPreviewType(WadFilePreviewType previewType)
     {
-        if (this.ActiveTab.CurrentPreviewType is WadFilePreviewType.Viewport)
+        if (this.WadTree.CurrentPreviewType is WadFilePreviewType.Viewport)
             await this.JsRuntime.InvokeVoidAsync(
                 "destroyThreeJsRenderer",
-                this.ActiveTab.GetViewportContainerId()
+                WadPreviewUtils.VIEWPORT_CONTAINER_ID
             );
 
-        this.ActiveTab.CurrentPreviewType = previewType;
+        this.WadTree.CurrentPreviewType = previewType;
         StateHasChanged();
     }
     #endregion
@@ -531,7 +442,7 @@ public partial class ExplorerPage : IDisposable
     private async Task HandlePreviewTaskAsync(Task previewTask)
     {
         // Hide the preview if the selected file is null
-        if (this.ActiveTab.SelectedFile is null)
+        if (this.WadTree.SelectedFile is null)
         {
             await SetCurrentPreviewType(WadFilePreviewType.None);
             return;
@@ -550,13 +461,10 @@ public partial class ExplorerPage : IDisposable
 
     private async Task OnDimensionChanged(double dimension)
     {
-        if (
-            this.ActiveTab is not null
-            && this.ActiveTab.CurrentPreviewType is WadFilePreviewType.Viewport
-        )
+        if (this.WadTree.CurrentPreviewType is WadFilePreviewType.Viewport)
             await this.JsRuntime.InvokeVoidAsync(
                 "resizeViewport",
-                this.ActiveTab.GetViewportContainerId()
+                WadPreviewUtils.VIEWPORT_CONTAINER_ID
             );
     }
 
@@ -582,19 +490,26 @@ public partial class ExplorerPage : IDisposable
 
     protected override void OnInitialized()
     {
-        base.OnInitialized();
+        this.WadTree = new(
+            this.Hashtable,
+            this.Config,
+            Directory.EnumerateFiles(
+                this.Config.GameDataDirectory,
+                "*.wad.client",
+                SearchOption.AllDirectories
+            )
+        );
 
         this._previewTimer.Elapsed += (sender, eventArgs) => OnPreviewCallback();
         this._previewTimer.Start();
+
+        base.OnInitialized();
     }
 
     private void OnPreviewCallback()
     {
         _ = InvokeAsync(async () =>
         {
-            if (this.ActiveTab is null)
-                return;
-
             if (this._previewQueue.TryDequeue(out Task previewTask) is false)
                 return;
 

@@ -31,9 +31,9 @@ public partial class WadFileViewport
     public ISnackbar Snackbar { get; set; }
 
     [Parameter]
-    public WadTabModel WadTab { get; set; }
+    public WadTreeModel WadTree { get; set; }
 
-    private bool _isEnabled => this.WadTab.CurrentPreviewType is WadFilePreviewType.Viewport;
+    private bool _isEnabled => this.WadTree.CurrentPreviewType is WadFilePreviewType.Viewport;
 
     private bool _isSavingAsGltf;
 
@@ -46,19 +46,19 @@ public partial class WadFileViewport
     public void SaveAsGltf()
     {
         CommonSaveFileDialog dialog =
-            new() { DefaultFileName = Path.ChangeExtension(this.WadTab.SelectedFile.Name, "glb") };
+            new() { DefaultFileName = Path.ChangeExtension(this.WadTree.SelectedFile.Name, "glb") };
         foreach (CommonFileDialogFilter filter in FileDialogUtils.CreateGltfFilters())
             dialog.Filters.Add(filter);
 
         if (dialog.ShowDialog(this.Window.WindowHandle) is not CommonFileDialogResult.Ok)
             return;
 
-        Log.Information($"Saving {this.WadTab.SelectedFile.Path} as glTF to {dialog.FileName}");
+        Log.Information($"Saving {this.WadTree.SelectedFile.Path} as glTF to {dialog.FileName}");
         ToggleIsSavingAsGltf(true);
         try
         {
-            using Stream fileStream = this.WadTab.Wad
-                .LoadChunkDecompressed(this.WadTab.SelectedFile.Chunk)
+            using Stream fileStream = this.WadTree.SelectedFile.Wad
+                .LoadChunkDecompressed(this.WadTree.SelectedFile.Chunk)
                 .AsStream();
 
             LeagueFileType fileType = LeagueFile.GetFileType(fileStream);
@@ -66,8 +66,8 @@ public partial class WadFileViewport
             ModelRoot gltf = fileType switch
             {
                 LeagueFileType.PropertyBin
-                    when BinUtils.IsSkinPackage(this.WadTab.SelectedFile.Path)
-                    => CreateGltfFromSkinPackage(fileStream),
+                    when BinUtils.IsSkinPackage(this.WadTree.SelectedFile.Path)
+                    => CreateGltfFromSkinPackage(this.WadTree.SelectedFile.Wad, fileStream),
                 LeagueFileType.StaticMeshAscii => StaticMesh.ReadAscii(fileStream).ToGltf(),
                 LeagueFileType.StaticMeshBinary => StaticMesh.ReadBinary(fileStream).ToGltf(),
                 _
@@ -78,7 +78,7 @@ public partial class WadFileViewport
 
             gltf.Save(dialog.FileName);
 
-            this.Snackbar.Add($"Saved {this.WadTab.SelectedFile.Name} as glTF!", Severity.Success);
+            this.Snackbar.Add($"Saved {this.WadTree.SelectedFile.Name} as glTF!", Severity.Success);
         }
         catch (Exception exception)
         {
@@ -90,7 +90,7 @@ public partial class WadFileViewport
         }
     }
 
-    private ModelRoot CreateGltfFromSkinPackage(Stream stream)
+    private ModelRoot CreateGltfFromSkinPackage(WadFile wad, Stream stream)
     {
         BinTree skinPackage = new(stream);
         MetaEnvironment metaEnvironment = BinUtils.CreateMetaEnvironment();
@@ -110,12 +110,8 @@ public partial class WadFileViewport
         );
         SkinMeshDataProperties meshData = skinData.SkinMeshProperties;
 
-        using Stream simpleSkinStream = this.WadTab.Wad
-            .LoadChunkDecompressed(meshData.SimpleSkin)
-            .AsStream();
-        using Stream skeletonStream = this.WadTab.Wad
-            .LoadChunkDecompressed(meshData.Skeleton)
-            .AsStream();
+        using Stream simpleSkinStream = wad.LoadChunkDecompressed(meshData.SimpleSkin).AsStream();
+        using Stream skeletonStream = wad.LoadChunkDecompressed(meshData.Skeleton).AsStream();
 
         using SkinnedMesh skinnedMesh = SkinnedMesh.ReadFromSimpleSkin(simpleSkinStream);
         RigResource skeleton = new(skeletonStream);
@@ -126,15 +122,10 @@ public partial class WadFileViewport
                 skinnedMesh,
                 meshData,
                 skinPackage,
-                this.WadTab.Wad,
+                wad,
                 metaEnvironment
             ),
-            SkinnedMeshUtils.LoadAnimationAssets(
-                skinData,
-                skinPackage,
-                this.WadTab.Wad,
-                metaEnvironment
-            )
+            SkinnedMeshUtils.LoadAnimationAssets(skinData, skinPackage, wad, metaEnvironment)
         );
     }
 

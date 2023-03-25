@@ -14,7 +14,7 @@ public partial class WadExplorerToolbar : IDisposable
     public ExplorerPage ExplorerPage { get; set; }
 
     [Parameter]
-    public WadTabModel ActiveWad { get; set; }
+    public WadTreeModel WadTree { get; set; }
 
     [Parameter]
     public EventCallback OnOpenWad { get; set; }
@@ -36,13 +36,13 @@ public partial class WadExplorerToolbar : IDisposable
 
     private void OnFilterChanged(string value)
     {
-        this.ActiveWad.Filter = value;
+        this.WadTree.Filter = value;
         this.ExplorerPage.RefreshState();
     }
 
     private void OnUseRegexFilterChanged(bool value)
     {
-        this.ActiveWad.UseRegexFilter = value;
+        this.WadTree.UseRegexFilter = value;
         this.ExplorerPage.RefreshState();
     }
 

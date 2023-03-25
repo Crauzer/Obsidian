@@ -7,6 +7,7 @@
 @using BlazorMonaco;
 @using BlazorMonaco.Editor;
 @using MonacoEditorGlobal = BlazorMonaco.Editor.Global;
+@using Obsidian.Utils;
 
 <style>
     .monaco-editor-container {
@@ -15,7 +16,7 @@
 </style>
 
 <div class="@(_isEnabled ? "wad-file-preview-text" : "wad-file-preview-text-hidden")">
-    <StandaloneCodeEditor @ref="_codeEditor" Id="@WadTab.GetCodeEditorId()"
+    <StandaloneCodeEditor @ref="_codeEditor" Id="@WadPreviewUtils.CODE_EDITOR_ID"
                           ConstructionOptions="EditorConstructionOptions"
                           OnDidInit="OnDidInit" />
 </div>
@@ -28,9 +29,9 @@
     public HashtableService Hashtable { get; set; }
 
     [Parameter]
-    public WadTabModel WadTab { get; set; }
+    public WadTreeModel WadTree { get; set; }
 
-    private bool _isEnabled => this.WadTab?.CurrentPreviewType is WadFilePreviewType.Text;
+    private bool _isEnabled => this.WadTree.CurrentPreviewType is WadFilePreviewType.Text;
 
     private StandaloneCodeEditor _codeEditor = null;
 

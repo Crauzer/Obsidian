@@ -1,4 +1,5 @@
 ﻿@using Obsidian.Data;
+@using Obsidian.Utils;
 
 <style>
     .wad-file-preview-viewport {
@@ -60,7 +61,7 @@
             </MudButton>
         </div>
     </div>
-    <div id="@($"{WadTab.Id}_viewport_container")" class="wad-file-render-canvas-wrapper">
+    <div id="@WadPreviewUtils.VIEWPORT_CONTAINER_ID" class="wad-file-render-canvas-wrapper">
         @*<canvas id="@($"{WadTab.Id}_renderCanvas")" class="wad-file-render-canvas" />*@
     </div>
     <MudOverlay Absolute DarkBackground Visible="_isSavingAsGltf" ZIndex="9999">
