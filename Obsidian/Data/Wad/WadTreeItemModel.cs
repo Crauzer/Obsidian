@@ -9,7 +9,11 @@ using PathIO = System.IO.Path;
 namespace Obsidian.Data.Wad;
 
 [DebuggerDisplay("{Name}")]
-public class WadTreeItemModel : IWadTreePathable, IWadTreeParent, IComparable<WadTreeItemModel>
+public class WadTreeItemModel
+    : IWadTreePathable,
+        IWadTreeParent,
+        IComparable<WadTreeItemModel>,
+        IEquatable<WadTreeItemModel>
 {
     public WadTreeItemType Type =>
         this.Items switch
@@ -28,11 +32,25 @@ public class WadTreeItemModel : IWadTreePathable, IWadTreeParent, IComparable<Wa
 
     public string Icon => GetIcon();
 
+    public bool IsHighlighted => this.IsWadArchive;
+
     public bool IsSelected { get; set; }
     public bool IsChecked { get; set; }
     public bool IsExpanded { get; set; }
 
     public HashSet<WadTreeItemModel> Items { get; protected set; } = new();
+
+    public bool IsWadArchive
+    {
+        get
+        {
+            string extension = PathIO.GetExtension(this.Name);
+
+            return extension.Contains("wad")
+                || extension.Contains("client")
+                || extension.Contains("server");
+        }
+    }
 
     public WadTreeItemModel(IWadTreePathable parent, string name)
     {
@@ -69,10 +87,14 @@ public class WadTreeItemModel : IWadTreePathable, IWadTreeParent, IComparable<Wa
 
     public string GetIcon()
     {
+        string extension = PathIO.GetExtension(this.Name);
+        if (this.IsWadArchive)
+            return Icons.Material.TwoTone.Archive;
+
         if (this.Type is WadTreeItemType.Directory)
             return Icons.Material.TwoTone.Folder;
 
-        LeagueFileType fileType = LeagueFile.GetFileType(PathIO.GetExtension(this.Name));
+        LeagueFileType fileType = LeagueFile.GetFileType(extension);
         return fileType switch
         {
             LeagueFileType.Animation => Icons.Material.TwoTone.Animation,
@@ -89,19 +111,59 @@ public class WadTreeItemModel : IWadTreePathable, IWadTreeParent, IComparable<Wa
             LeagueFileType.Texture => Icons.Material.TwoTone.Image,
             LeagueFileType.TextureDds => Icons.Material.TwoTone.Image,
             LeagueFileType.WorldGeometry => CustomIcons.Material.ImageFilterHdr,
+            LeagueFileType.WadArchive => Icons.Material.TwoTone.Archive,
             LeagueFileType.WwiseBank => CustomIcons.Material.VolumeHigh,
             LeagueFileType.WwisePackage => CustomIcons.Material.AccountVoice,
             _ => Icons.Custom.FileFormats.FileDocument,
         };
     }
 
+    // beautiful
     public int CompareTo(WadTreeItemModel other) =>
-        (this.Type, other.Type) switch
+        (this.IsWadArchive, other.IsWadArchive) switch
         {
-            (WadTreeItemType.Directory, WadTreeItemType.File) => -1,
-            (WadTreeItemType.File, WadTreeItemType.Directory) => 1,
-            _ => this.Name.CompareTo(other.Name)
+            (true, true) => this.Name.CompareTo(other?.Name),
+            (true, false) => 1,
+            (false, true) => -1,
+            (false, false)
+                => (this.Type, other?.Type) switch
+                {
+                    (WadTreeItemType.Directory, WadTreeItemType.File) => -1,
+                    (WadTreeItemType.File, WadTreeItemType.Directory) => 1,
+                    _ => this.Name.CompareTo(other?.Name)
+                }
         };
+
+    public bool Equals(WadTreeItemModel other) => this.Id == other?.Id;
+
+    public override bool Equals(object obj) =>
+        obj switch
+        {
+            WadTreeItemModel item => Equals(item),
+            _ => false
+        };
+
+    public override int GetHashCode() => this.Id.GetHashCode();
+
+    #region Operator overloads
+    public static bool operator ==(WadTreeItemModel left, WadTreeItemModel right) =>
+        left.Equals(right);
+
+    public static bool operator !=(WadTreeItemModel left, WadTreeItemModel right) =>
+        !left.Equals(right);
+
+    public static bool operator <(WadTreeItemModel left, WadTreeItemModel right) =>
+        left.CompareTo(right) < 0;
+
+    public static bool operator <=(WadTreeItemModel left, WadTreeItemModel right) =>
+        left.CompareTo(right) <= 0;
+
+    public static bool operator >(WadTreeItemModel left, WadTreeItemModel right) =>
+        left.CompareTo(right) > 0;
+
+    public static bool operator >=(WadTreeItemModel left, WadTreeItemModel right) =>
+        left.CompareTo(right) >= 0;
+    #endregion
 }
 
 public enum WadTreeItemType

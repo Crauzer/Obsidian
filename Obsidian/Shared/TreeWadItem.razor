@@ -80,7 +80,7 @@
                                      Color="Color.Primary" Size="Size.Small" />
                     </td>
                     <td style="text-align: center; width: 24px">
-                        <MudIcon Class="d-block" Icon="@Item.Icon" Size="Size.Small" Color="Color.Inherit" />
+                        <MudIcon Class="d-block" Icon="@Item.Icon" Size="Size.Small" Color="@(Item.IsHighlighted ? Color.Primary : Color.Inherit)" />
                     </td>
                     <td class="tree-view-item-name">
                         <MudHighlighter Class="mud-primary-text" Style="background-color: transparent; font-weight: bold;"
