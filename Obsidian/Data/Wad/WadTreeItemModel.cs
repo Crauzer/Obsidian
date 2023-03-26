@@ -40,8 +40,6 @@ public class WadTreeItemModel : IWadTreePathable, IWadTreeParent, IComparable<Wa
         this.Name = name;
     }
 
-    
-
     public void AddWadFile(IEnumerable<string> pathComponents, WadFile wad, WadChunk chunk)
     {
         // File belongs to this folder

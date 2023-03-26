@@ -62,11 +62,15 @@ public class WadTreeModel : IWadTreeParent, IDisposable
         {
             // Re-build file-system tree
             CreateFileSystemTreeForWadFile(
-                PathIO.GetRelativePath(this.Config.GameDataDirectory, wadFilePath)
+                PathIO
+                    .GetRelativePath(this.Config.GameDataDirectory, wadFilePath)
+                    .Replace(PathIO.DirectorySeparatorChar, '/')
             );
             CreateTreeForWadFile(
                 new(wadFilePath),
-                PathIO.GetRelativePath(this.Config.GameDataDirectory, wadFilePath)
+                PathIO
+                    .GetRelativePath(this.Config.GameDataDirectory, wadFilePath)
+                    .Replace(PathIO.DirectorySeparatorChar, '/')
             );
         }
 
@@ -75,16 +79,9 @@ public class WadTreeModel : IWadTreeParent, IDisposable
 
     private void CreateFileSystemTreeForWadFile(string wadFile)
     {
-        string[] pathComponents = wadFile.Split(PathIO.DirectorySeparatorChar);
+        string[] pathComponents = wadFile.Split('/');
 
-        if (pathComponents.Length is 1)
-        {
-            this.Items.Add(new(null, wadFile));
-        }
-        else
-        {
-            this.AddFsFile(pathComponents);
-        }
+        this.AddFsFile(pathComponents);
     }
 
     private void CreateTreeForWadFile(WadFile wad, string wadFilePath)
@@ -107,9 +104,7 @@ public class WadTreeModel : IWadTreeParent, IDisposable
             if (pathComponents.Length is 1)
                 wadFileItem.Items.Add(new WadTreeFileModel(wadFileItem, path, wad, chunk));
             else
-                wadFileItem
-                    .PrepareDirectory(pathComponents)
-                    .AddWadFile(pathComponents.Skip(1), wad, chunk);
+                wadFileItem.AddWadFile(pathComponents, wad, chunk);
         }
     }
 
