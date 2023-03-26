@@ -13,7 +13,6 @@ using MudBlazor;
 using MudExtensions;
 using Obsidian.BabylonJs;
 using Obsidian.Data;
-using Obsidian.Data.FileTree;
 using Obsidian.Data.Wad;
 using Obsidian.Services;
 using Obsidian.Utils;
@@ -47,8 +46,6 @@ public partial class ExplorerPage : IDisposable
     [Inject]
     public IJSRuntime JsRuntime { get; set; }
     #endregion
-
-    public FileTreeModel GameFileTree { get; set; }
 
     public WadTreeModel WadTree { get; set; }
 
