@@ -24,7 +24,7 @@ public class WadTreeItemModel : IWadTreePathable, IWadTreeParent, IComparable<Wa
 
     public Guid Id { get; } = Guid.NewGuid();
     public string Name { get; set; }
-    public string Path => this.GetPath();
+    public string Path { get; }
 
     public string Icon => GetIcon();
 
@@ -38,29 +38,12 @@ public class WadTreeItemModel : IWadTreePathable, IWadTreeParent, IComparable<Wa
     {
         this.Parent = parent;
         this.Name = name;
-    }
 
-    public void AddWadFile(IEnumerable<string> pathComponents, WadFile wad, WadChunk chunk)
-    {
-        // File belongs to this folder
-        if (pathComponents.Count() is 1)
+        this.Path = parent switch
         {
-            this.Items.Add(new WadTreeFileModel(this, pathComponents.First(), wad, chunk));
-            return;
-        }
-
-        string folderName = pathComponents.First();
-        WadTreeItemModel directory = this.Items.FirstOrDefault(
-            x => x.Type is WadTreeItemType.Directory && x.Name == folderName
-        );
-
-        if (directory is null)
-        {
-            directory = new(this, folderName);
-            this.Items.Add(directory);
-        }
-
-        directory.AddWadFile(pathComponents.Skip(1), wad, chunk);
+            null or WadTreeModel => name,
+            _ => string.Join('/', parent.Path, name)
+        };
     }
 
     public void SortItems()

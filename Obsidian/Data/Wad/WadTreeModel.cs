@@ -60,12 +60,6 @@ public class WadTreeModel : IWadTreeParent, IDisposable
 
         foreach (string wadFilePath in wadFiles)
         {
-            // Re-build file-system tree
-            CreateFileSystemTreeForWadFile(
-                PathIO
-                    .GetRelativePath(this.Config.GameDataDirectory, wadFilePath)
-                    .Replace(PathIO.DirectorySeparatorChar, '/')
-            );
             CreateTreeForWadFile(
                 new(wadFilePath),
                 PathIO
@@ -86,13 +80,6 @@ public class WadTreeModel : IWadTreeParent, IDisposable
 
     private void CreateTreeForWadFile(WadFile wad, string wadFilePath)
     {
-        WadTreeItemModel wadFileItem = this.FindItemOrDefault(wadFilePath);
-        if (wadFileItem is null)
-        {
-            Log.Error("Failed to find wad file item for: {WadFilePath}", wadFilePath);
-            return;
-        }
-
         foreach (var (_, chunk) in wad.Chunks)
         {
             string path = this.Hashtable.TryGetChunkPath(chunk, out path) switch
@@ -100,11 +87,8 @@ public class WadTreeModel : IWadTreeParent, IDisposable
                 true => path,
                 false => this.Hashtable.GuessChunkPath(chunk, wad),
             };
-            string[] pathComponents = path.Split('/');
-            if (pathComponents.Length is 1)
-                wadFileItem.Items.Add(new WadTreeFileModel(wadFileItem, path, wad, chunk));
-            else
-                wadFileItem.AddWadFile(pathComponents, wad, chunk);
+
+            this.AddWadFile(string.Join('/', wadFilePath, path).Split('/'), wad, chunk);
         }
     }
 

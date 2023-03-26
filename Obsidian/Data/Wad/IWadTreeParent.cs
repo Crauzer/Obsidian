@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using LeagueToolkit.Core.Wad;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 namespace Obsidian.Data.Wad;
@@ -54,6 +55,34 @@ public static class IWadTreeParentExtensions
         }
 
         directory.AddFsFile(pathComponents.Skip(1));
+    }
+
+    public static void AddWadFile(
+        this IWadTreeParent parent,
+        IEnumerable<string> pathComponents,
+        WadFile wad,
+        WadChunk chunk
+    )
+    {
+        // File belongs to this folder
+        if (pathComponents.Count() is 1)
+        {
+            parent.Items.Add(new WadTreeFileModel(parent, pathComponents.First(), wad, chunk));
+            return;
+        }
+
+        string folderName = pathComponents.First();
+        WadTreeItemModel directory = parent.Items.FirstOrDefault(
+            x => x.Type is WadTreeItemType.Directory && x.Name == folderName
+        );
+
+        if (directory is null)
+        {
+            directory = new(parent, folderName);
+            parent.Items.Add(directory);
+        }
+
+        directory.AddWadFile(pathComponents.Skip(1), wad, chunk);
     }
 
     public static WadTreeItemModel FindItemOrDefault(this IWadTreeParent parent, string path) =>
