@@ -71,13 +71,6 @@ public class WadTreeModel : IWadTreeParent, IDisposable
         SortItems();
     }
 
-    private void CreateFileSystemTreeForWadFile(string wadFile)
-    {
-        string[] pathComponents = wadFile.Split('/');
-
-        this.AddFsFile(pathComponents);
-    }
-
     private void CreateTreeForWadFile(WadFile wad, string wadFilePath)
     {
         foreach (var (_, chunk) in wad.Chunks)
