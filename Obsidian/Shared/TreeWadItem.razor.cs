@@ -43,7 +43,7 @@ public partial class TreeWadItem
 
     private async Task OnRowClick(MouseEventArgs e)
     {
-        if (this.Item == this.WadTree.SelectedFile)
+        if (this.Item.IsSelected)
             return;
 
         if (e.ShiftKey)

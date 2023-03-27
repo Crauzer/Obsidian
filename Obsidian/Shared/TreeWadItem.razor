@@ -6,7 +6,7 @@
 @using Serilog;
 
 <div class="tree-view-item-wrapper cursor-pointer @(Item.IsSelected ? "tree-view-item-wrapper-selected" : "")"
-     style="height: 44px"
+     style="height: 36px"
      @ondblclick="OnRowDoubleClick" @ondblclick:stopPropagation @ondblclick:preventDefault>
     <MudMenu Dense PositionAtCurser
              FullWidth="false" ActivationEvent="MouseEvent.RightClick" Size="Size.Small">
@@ -56,7 +56,7 @@
             </MudMenuItem>
         </ChildContent>
         <ActivatorContent>
-            <table class="tree-view-item" style="height: 44px;">
+            <table class="tree-view-item" style="height: 36px;">
                 <tr @key="Item.Id"
                     @onclick="OnRowClick">
                     @for (int i = 0; i < Item.Depth; i++)
@@ -71,10 +71,10 @@
                                        OnClick="@OnToggleExpand" @ondblclick:stopPropagation />
                         }
                     </td>
-                    <td style="width: 44px">
+                    <td style="width: 28px">
                         <MudCheckBox StopClickPropagation
+                                     Dense
                                      T="bool"
-                                     Style="height: 44px"
                                      Checked="@IsChecked"
                                      CheckedChanged="@OnCheckedChanged"
                                      Color="Color.Primary" Size="Size.Small" />
