@@ -51,15 +51,21 @@
                  Sensitivity="2.5f"
                  Dimension="_splitterDimension" DimensionChanged="OnDimensionChanged">
         <StartContent>
-            <div style="position: relative; width: 100%">
-                <TreeView TItem="WadTreeItemModel"
-                          ItemsFlat="@GetVisibleItemsForWadTree()"
-                          Height="calc(100vh - 109px)" ItemSize="36f">
-                    <ItemTemplate>
-                        <TreeWadItem Item="@context" Root="this" WadTree="WadTree" />
-                    </ItemTemplate>
-                </TreeView>
-            </div>
+            <MudStack Spacing="1">
+                <WadFilter FullWidth
+                           @ref="_wadFilterComponent"
+                           Filter="@WadTree.Filter" UseRegexFilter="@WadTree.UseRegexFilter"
+                           FilterChanged="OnFilterChanged" UseRegexFilterChanged="OnUseRegexFilterChanged" />
+                <div class="mt-2" style="position: relative; width: 100%">
+                    <TreeView TItem="WadTreeItemModel"
+                              ItemsFlat="@GetVisibleItemsForWadTree()"
+                              Height="calc(100vh - 149px)" ItemSize="36f">
+                        <ItemTemplate>
+                            <TreeWadItem Item="@context" Root="this" WadTree="WadTree" />
+                        </ItemTemplate>
+                    </TreeView>
+                </div>
+            </MudStack>
         </StartContent>
         <EndContent>
             @if(WadTree.CurrentPreviewType is WadFilePreviewType.Image)

@@ -26,11 +26,4 @@
             Load hashtable
         </MudMenuItem>
     </MudMenu>
-    <MudSpacer />
-    <MudStack AlignItems="AlignItems.Center" Style="width: 33%">
-        <WadFilter FullWidth
-                   @ref="_wadFilterComponent"
-                   Filter="@WadTree.Filter" UseRegexFilter="@WadTree.UseRegexFilter"
-                   FilterChanged="OnFilterChanged" UseRegexFilterChanged="OnUseRegexFilterChanged" />
-    </MudStack>
 </MudToolBar>

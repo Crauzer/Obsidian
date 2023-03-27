@@ -30,30 +30,12 @@ public partial class WadExplorerToolbar : IDisposable
 
     private HotKeysContext _hotKeysContext;
 
-    private WadFilter _wadFilterComponent;
-
     public AppTheme Theme { get; } = new();
-
-    private void OnFilterChanged(string value)
-    {
-        this.WadTree.Filter = value;
-        this.ExplorerPage.RefreshState();
-    }
-
-    private void OnUseRegexFilterChanged(bool value)
-    {
-        this.WadTree.UseRegexFilter = value;
-        this.ExplorerPage.RefreshState();
-    }
-
-    private async ValueTask FocusWadFilter() =>
-        await this._wadFilterComponent.InputField.FocusAsync();
 
     protected override void OnInitialized()
     {
         this._hotKeysContext = this.HotKeys
             .CreateContext()
-            .Add(ModCode.Ctrl, Code.F, FocusWadFilter, "Focus Wad Filter")
             .Add(ModCode.Ctrl, Code.O, async () => await OnOpenWad.InvokeAsync(), "Open Wad");
     }
 

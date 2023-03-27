@@ -15,12 +15,14 @@ using Obsidian.BabylonJs;
 using Obsidian.Data;
 using Obsidian.Data.Wad;
 using Obsidian.Services;
+using Obsidian.Shared;
 using Obsidian.Utils;
 using PhotinoNET;
 using Serilog;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Collections.Concurrent;
+using Toolbelt.Blazor.HotKeys2;
 using RigResource = LeagueToolkit.Core.Animation.RigResource;
 
 namespace Obsidian.Pages;
@@ -44,10 +46,15 @@ public partial class ExplorerPage : IDisposable
     public ISnackbar Snackbar { get; set; }
 
     [Inject]
+    public HotKeys HotKeys { get; set; }
+
+    [Inject]
     public IJSRuntime JsRuntime { get; set; }
     #endregion
 
     public WadTreeModel WadTree { get; set; }
+
+    private WadFilter _wadFilterComponent;
 
     private MudSplitter _splitter;
     private double _splitterDimension = 20;
@@ -55,6 +62,8 @@ public partial class ExplorerPage : IDisposable
     private readonly ConcurrentQueue<Task> _previewQueue = new();
 
     private readonly System.Timers.Timer _previewTimer = new(250);
+
+    private HotKeysContext _hotKeysContext;
 
     private bool _isLoadingWadFile = false;
     private bool _isExportingFiles = false;
@@ -502,6 +511,21 @@ public partial class ExplorerPage : IDisposable
             );
     }
 
+    private void OnFilterChanged(string value)
+    {
+        this.WadTree.Filter = value;
+        this.RefreshState();
+    }
+
+    private void OnUseRegexFilterChanged(bool value)
+    {
+        this.WadTree.UseRegexFilter = value;
+        this.RefreshState();
+    }
+
+    private async ValueTask FocusWadFilter() =>
+        await this._wadFilterComponent.InputField.FocusAsync();
+
     public void ToggleExporting(bool isExporting)
     {
         this._isExportingFiles = isExporting;
@@ -524,6 +548,10 @@ public partial class ExplorerPage : IDisposable
 
     protected override void OnInitialized()
     {
+        this._hotKeysContext = this.HotKeys
+            .CreateContext()
+            .Add(ModCode.Ctrl, Code.F, FocusWadFilter, "Focus Wad Filter");
+
         this.WadTree = new(
             this.Hashtable,
             this.Config,
@@ -561,6 +589,7 @@ public partial class ExplorerPage : IDisposable
 
     public void Dispose()
     {
+        this._hotKeysContext?.Dispose();
         this._previewTimer?.Dispose();
     }
 }
