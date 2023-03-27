@@ -64,7 +64,42 @@ public partial class ExplorerPage : IDisposable
     private bool _isLoadingPreview = false;
 
     #region Toolbar Events
-    public async Task OpenWad() { }
+    public async Task OpenWad()
+    {
+        CommonOpenFileDialog dialog = FileDialogUtils.CreateOpenWadDialog(
+            this.Config.GameDataDirectory
+        );
+        if (dialog.ShowDialog(this.Window.WindowHandle) is CommonFileDialogResult.Cancel)
+            return;
+
+        Log.Information("Opening WAD files: {FileNames}", dialog.FileNames);
+        this._isLoadingWadFile = true;
+        StateHasChanged();
+        try
+        {
+            await Task.Run(() =>
+            {
+                foreach(string wadPath in dialog.FileNames)
+                {
+                    FileStream wadFileStream = File.OpenRead(wadPath);
+                    WadFile wad = new(wadFileStream);
+
+                    this.WadTree.CreateTreeForWadFile(wad, Path.GetFileName(wadPath));
+                }
+            });
+
+            this.Snackbar.Add("Successfully opened Wad archives!", Severity.Success);
+        }
+        catch (Exception exception)
+        {
+            SnackbarUtils.ShowHardError(this.Snackbar, exception);
+        }
+        finally
+        {
+            this._isLoadingWadFile = false;
+            StateHasChanged();
+        }
+    }
 
     public async Task ExtractAll()
     {

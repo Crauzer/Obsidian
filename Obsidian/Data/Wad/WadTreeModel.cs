@@ -71,7 +71,7 @@ public class WadTreeModel : IWadTreeParent, IDisposable
         SortItems();
     }
 
-    private void CreateTreeForWadFile(WadFile wad, string wadFilePath)
+    public void CreateTreeForWadFile(WadFile wad, string wadFilePath)
     {
         foreach (var (_, chunk) in wad.Chunks)
         {
@@ -85,7 +85,7 @@ public class WadTreeModel : IWadTreeParent, IDisposable
         }
     }
 
-    private void SortItems()
+    public void SortItems()
     {
         Log.Information($"Sorting wad tree");
 
