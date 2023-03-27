@@ -50,6 +50,7 @@ public partial class ExplorerPage : IDisposable
     public WadTreeModel WadTree { get; set; }
 
     private MudSplitter _splitter;
+    private double _splitterDimension = 20;
 
     private readonly ConcurrentQueue<Task> _previewQueue = new();
 
@@ -458,6 +459,8 @@ public partial class ExplorerPage : IDisposable
 
     private async Task OnDimensionChanged(double dimension)
     {
+        this._splitterDimension = dimension;
+
         if (this.WadTree.CurrentPreviewType is WadFilePreviewType.Viewport)
             await this.JsRuntime.InvokeVoidAsync(
                 "resizeViewport",

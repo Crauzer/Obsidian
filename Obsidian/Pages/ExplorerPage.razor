@@ -46,7 +46,10 @@
         </CascadingValue>
     </MudPaper>
     <MudDivider />
-    <MudSplitter EnableSlide DisableMargin @ref="_splitter" Sensitivity="2.5f" DimensionChanged="OnDimensionChanged">
+    <MudSplitter EnableSlide DisableMargin
+                 @ref="_splitter"
+                 Sensitivity="2.5f"
+                 Dimension="_splitterDimension" DimensionChanged="OnDimensionChanged">
         <StartContent>
             <div style="position: relative; width: 100%">
                 <TreeView TItem="WadTreeItemModel"

@@ -26,8 +26,6 @@ public partial class WadFileImagePreview
     [Parameter]
     public EventCallback OnSavingAsPng { get; set; }
 
-    private bool _isEnabled => this.WadTree?.CurrentPreviewType is WadFilePreviewType.Image;
-
     private bool _isSavingAsPng;
 
     private void SaveAsPng()
