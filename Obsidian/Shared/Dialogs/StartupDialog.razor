@@ -1,0 +1,63 @@
+﻿@using Microsoft.WindowsAPICodePack.Dialogs;
+@using Obsidian.Data;
+@using PhotinoNET;
+
+<MudDialog DisableSidePadding>
+    <TitleContent>
+        <MudStack Row AlignItems="AlignItems.Center">
+            <MudIcon Icon="@CustomIcons.Material.FolderWrench" Size="Size.Large" Color="Color.Primary" />
+            <MudText Typo="Typo.h4">
+                Configure
+            </MudText>
+        </MudStack>
+    </TitleContent>
+    <DialogContent>
+        <MudStack Spacing="2">
+            <MudAlert Severity="Severity.Info" Variant="Variant.Filled">
+                It looks like this is your first time running Obsidian, please select your game data directory.
+            </MudAlert>
+            <DirectoryInput Directory="@Config.GameDataDirectory"
+                            OnClearDirectory="@(_ => Config.GameDataDirectory = null)"
+                            OnSelectDirectory="SelectGameDataDirectory">
+                <DescriptionContent>
+                    <MudText>
+                        This is the FINAL assets directory of the game.
+                    </MudText>
+                    <MudText>
+                        Example: C:\Riot Games\League of Legends\Game\DATA\FINAL
+                    </MudText>
+                </DescriptionContent>
+            </DirectoryInput>
+        </MudStack>
+
+    </DialogContent>
+</MudDialog>
+
+@code {
+    [Inject] public PhotinoWindow Window { get; set; }
+    [Inject] public Config Config { get; set; }
+
+    [CascadingParameter] MudDialogInstance Dialog { get; set; }
+
+    private DialogOptions _options = new()
+        {
+            CloseButton = false,
+            CloseOnEscapeKey = false,
+            DisableBackdropClick = true,
+            MaxWidth = MaxWidth.Large
+        };
+
+    public void SelectGameDataDirectory()
+    {
+        CommonOpenFileDialog dialog = new() { IsFolderPicker = true };
+
+        if (dialog.ShowDialog(this.Window.WindowHandle) is CommonFileDialogResult.Ok)
+            this.Config.GameDataDirectory = dialog.FileName;
+    }
+
+    protected override void OnInitialized()
+    {
+        this.Dialog.SetOptions(this._options);
+        base.OnInitialized();
+    }
+}

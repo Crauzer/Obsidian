@@ -15,15 +15,25 @@
             <MudGrid Spacing="2">
                 <MudItem xs="12">
                     <DirectoryInput Directory="@Config.GameDataDirectory"
-                                    Description="This is the default directory that will be used for opening Wad archives"
                                     OnClearDirectory="@(_ => Config.GameDataDirectory = null)"
-                                    OnSelectDirectory="SelectGameDataDirectory" />
+                                    OnSelectDirectory="SelectGameDataDirectory">
+                        <DescriptionContent>
+                            <MudText>
+                                This is the default directory that will be used for opening Wad archives
+                            </MudText>
+                        </DescriptionContent>
+                    </DirectoryInput>
                 </MudItem>
                 <MudItem xs="12">
                     <DirectoryInput Directory="@Config.DefaultExtractDirectory"
-                                    Description="This is the default directory that will be used for exporting files"
                                     OnClearDirectory="@(_ => Config.DefaultExtractDirectory = null)"
-                                    OnSelectDirectory="SelectDefaultExportDirectory" />
+                                    OnSelectDirectory="SelectDefaultExportDirectory">
+                        <DescriptionContent>
+                            <MudText>
+                                This is the default directory that will be used for exporting files
+                            </MudText>
+                        </DescriptionContent>
+                    </DirectoryInput>
                 </MudItem>
                 <MudItem xs="12">
                     <MudTooltip Arrow Text="Whether to update hashtables from CDragon on startup"

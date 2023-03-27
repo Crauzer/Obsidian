@@ -14,7 +14,7 @@
     </MudField>
     <MudAlert Dense Severity="Severity.Info" Style="border-top-left-radius: 0px; border-top-right-radius: 0px;">
         <MudText>
-            @Description
+            @DescriptionContent
         </MudText>
     </MudAlert>
 </MudStack>
@@ -24,7 +24,7 @@
     public string Directory { get; set; }
 
     [Parameter]
-    public string Description { get; set; }
+    public RenderFragment DescriptionContent { get; set; }
 
     [Parameter]
     public EventCallback OnClearDirectory { get; set; }
