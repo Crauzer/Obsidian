@@ -384,13 +384,12 @@ public partial class ExplorerPage : IDisposable
 
         DotNetStreamReference jsStream = new(imageStream);
 
+        await SetCurrentPreviewType(WadFilePreviewType.Image);
         await this.JsRuntime.InvokeVoidAsync(
             "setImage",
             WadPreviewUtils.IMAGE_PREVIEW_ID,
             jsStream
         );
-
-        await SetCurrentPreviewType(WadFilePreviewType.Image);
     }
 
     private async Task PreviewImage(Stream imageStream)

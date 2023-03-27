@@ -62,8 +62,11 @@
             </div>
         </StartContent>
         <EndContent>
-            <WadFileImagePreview />
-            @if (WadTree.CurrentPreviewType is WadFilePreviewType.Viewport)
+            @if(WadTree.CurrentPreviewType is WadFilePreviewType.Image)
+            {
+                <WadFileImagePreview WadTree="WadTree"/>
+            }
+            else if (WadTree.CurrentPreviewType is WadFilePreviewType.Viewport)
             {
                 <WadFileViewport WadTree="WadTree" />
             }
