@@ -425,6 +425,8 @@ public partial class WadExplorer : IDisposable
         DotNetStreamReference jsStream = new(imageStream);
 
         await SetCurrentPreviewType(WadFilePreviewType.Image);
+        await Task.Delay(25);
+
         await this.JsRuntime.InvokeVoidAsync(
             "setImage",
             WadPreviewUtils.IMAGE_PREVIEW_ID,
