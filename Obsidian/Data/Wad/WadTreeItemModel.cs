@@ -20,7 +20,7 @@ public class WadTreeItemModel
         {
             { Count: 0 } => WadTreeItemType.File,
             { Count: > 0 } => WadTreeItemType.Directory,
-            _ => throw new InvalidOperationException("Invalid file tree item type")
+            _ => throw new InvalidOperationException("Invalid wad tree item type")
         };
 
     public IWadTreePathable Parent { get; protected set; }
