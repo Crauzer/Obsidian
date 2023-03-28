@@ -57,7 +57,7 @@ public partial class ExplorerPage : IDisposable
     private WadFilter _wadFilterComponent;
 
     private MudSplitter _splitter;
-    private double _splitterDimension = 20;
+    private double _splitterDimension = 30;
 
     private readonly ConcurrentQueue<Task> _previewQueue = new();
 
@@ -241,10 +241,10 @@ public partial class ExplorerPage : IDisposable
     }
 
     // TODO: Refactor this to be an event from the tree view itself
-    public async Task UpdateSelectedFile()
+    public async Task UpdateSelectedFile(WadTreeItemModel item)
     {
         // Hide the preview if the selected file is null
-        if (this.WadTree.SelectedFile is null)
+        if (item is not WadTreeFileModel fileItem)
         {
             await SetCurrentPreviewType(WadFilePreviewType.None);
             return;
@@ -263,7 +263,7 @@ public partial class ExplorerPage : IDisposable
         ////    )
         ////    .AndForget();
 
-        this._previewQueue.Enqueue(PreviewSelectedFile(this.WadTree.SelectedFile));
+        this._previewQueue.Enqueue(PreviewSelectedFile(fileItem));
     }
 
     #region Preview

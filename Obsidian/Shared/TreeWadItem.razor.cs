@@ -57,7 +57,7 @@ public partial class TreeWadItem
         else
         {
             SelectItem();
-            await this.Root.UpdateSelectedFile();
+            await this.Root.UpdateSelectedFile(this.Item);
         }
 
         await this.OnSelect.InvokeAsync(this);
