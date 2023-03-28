@@ -1,7 +1,7 @@
 ﻿@using Obsidian.Data;
 
 <MudToolBar Dense DisableGutters>
-    <MudMenu Dense Class="ml-4" Icon="@Icons.Material.TwoTone.Archive" Color="Color.Inherit"
+    <MudMenu Dense Class="ml-4" Label="File" Color="Color.Inherit"
              AnchorOrigin="Origin.BottomLeft" Size="Size.Medium">
         <MudMenuItem Icon="@CustomIcons.Material.ArchiveEdit" IconColor="Color.Primary" IconSize="Size.Small"
                      OnClick="OnOpenWad">
@@ -19,7 +19,7 @@
             Extract Selected
         </MudMenuItem>
     </MudMenu>
-    <MudMenu Dense Class="ml-4" Icon="@CustomIcons.Material.Hexadecimal" Color="Color.Inherit"
+    <MudMenu Dense Class="ml-4" Label="Hashtable" Color="Color.Inherit"
              AnchorOrigin="Origin.BottomLeft" Size="Size.Medium">
         <MudMenuItem Icon="@CustomIcons.Material.TableArrowUp" IconColor="Color.Primary" IconSize="Size.Small"
                      OnClick="OnLoadHashtable">
