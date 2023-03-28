@@ -14,7 +14,7 @@
             Extract All
         </MudMenuItem>
         <MudMenuItem Icon="@CustomIcons.Material.ContentSave" IconColor="Color.Primary" IconSize="Size.Small"
-                     Disabled="@(WadTree.CheckedFiles.Count() is 0)"
+                     Disabled="@(WadTree?.CheckedFiles?.Count() is 0 or null)"
                      OnClick="OnExtractSelected">
             Extract Selected
         </MudMenuItem>

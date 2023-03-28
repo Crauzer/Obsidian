@@ -16,7 +16,7 @@ public partial class TreeWadItem
     public IJSRuntime JsRuntime { get; set; }
 
     [Parameter]
-    public ExplorerPage Root { get; set; }
+    public WadExplorer Explorer { get; set; }
 
     [Parameter]
     public WadTreeModel WadTree { get; set; }
@@ -57,7 +57,7 @@ public partial class TreeWadItem
         else
         {
             SelectItem();
-            await this.Root.UpdateSelectedFile(this.Item);
+            await this.Explorer.UpdateSelectedFile(this.Item);
         }
 
         await this.OnSelect.InvokeAsync(this);
@@ -68,14 +68,14 @@ public partial class TreeWadItem
         if (this.Item.Type is WadTreeItemType.Directory)
             ToggleExpand();
 
-        this.Root.RefreshState();
+        this.Explorer.RefreshState();
     }
 
     private void OnCheckedChanged(bool value)
     {
         this.IsChecked = value;
 
-        this.Root.RefreshState();
+        this.Explorer.RefreshState();
     }
 
     private void OnToggleExpand(MouseEventArgs e)
@@ -88,7 +88,7 @@ public partial class TreeWadItem
                 item.IsExpanded = this.Item.IsExpanded;
         }
 
-        this.Root.RefreshState();
+        this.Explorer.RefreshState();
     }
 
     private void ToggleExpand()
@@ -145,7 +145,7 @@ public partial class TreeWadItem
                     itemToSelect.CheckItemTree(itemToSelect.IsChecked);
             }
 
-            this.Root.RefreshState();
+            this.Explorer.RefreshState();
         }
     }
 
@@ -155,23 +155,23 @@ public partial class TreeWadItem
             return;
 
         CommonSaveFileDialog dialog = new("Save") { DefaultFileName = fileItem.Name };
-        if (dialog.ShowDialog(this.Root.Window.WindowHandle) is not CommonFileDialogResult.Ok)
+        if (dialog.ShowDialog(this.Explorer.Window.WindowHandle) is not CommonFileDialogResult.Ok)
             return;
 
         Log.Information($"Saving {fileItem.Path} to {dialog.FileName}");
-        this.Root.ToggleExporting(true);
+        this.Explorer.ToggleExporting(true);
         try
         {
             WadUtils.SaveChunk(fileItem.Wad, fileItem.Chunk, dialog.FileName);
-            this.Root.Snackbar.Add($"Saved {fileItem.Name}", Severity.Success);
+            this.Explorer.Snackbar.Add($"Saved {fileItem.Name}", Severity.Success);
         }
         catch (Exception exception)
         {
-            SnackbarUtils.ShowHardError(this.Root.Snackbar, exception);
+            SnackbarUtils.ShowHardError(this.Explorer.Snackbar, exception);
         }
         finally
         {
-            this.Root.ToggleExporting(false);
+            this.Explorer.ToggleExporting(false);
         }
     }
 }
