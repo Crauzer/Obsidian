@@ -285,11 +285,6 @@ public partial class ExplorerPage : IDisposable
                 isAscii: fileType is LeagueFileType.StaticMeshAscii
             );
         }
-        else if (fileType is LeagueFileType.MapGeometry)
-        {
-            // TODO
-            //await PreviewMapGeometry(fileStream);
-        }
         else if (fileType is (LeagueFileType.TextureDds or LeagueFileType.Texture))
         {
             await PreviewImage(ImageUtils.GetImageFromTextureStream(fileStream));
