@@ -21,29 +21,27 @@ public partial class WadFileImagePreview
     public ISnackbar Snackbar { get; set; }
 
     [Parameter]
-    public WadTabModel WadTab { get; set; }
+    public WadTreeModel WadTree { get; set; }
 
     [Parameter]
     public EventCallback OnSavingAsPng { get; set; }
-
-    private bool _isEnabled => this.WadTab.CurrentPreviewType is WadFilePreviewType.Image;
 
     private bool _isSavingAsPng;
 
     private void SaveAsPng()
     {
-        CommonSaveFileDialog dialog = new() { DefaultFileName = this.WadTab.SelectedFile.Name };
+        CommonSaveFileDialog dialog = new() { DefaultFileName = this.WadTree.SelectedFile.Name };
         dialog.Filters.Add(new("Image", "png"));
 
         if (dialog.ShowDialog(this.Window.WindowHandle) is not CommonFileDialogResult.Ok)
             return;
 
-        Log.Information($"Saving {this.WadTab.SelectedFile.Path} as PNG to {dialog.FileName}");
+        Log.Information($"Saving {this.WadTree.SelectedFile.Path} as PNG to {dialog.FileName}");
         ToggleIsSavingAsPng(true);
         try
         {
-            using Stream fileStream = this.WadTab.Wad
-                .LoadChunkDecompressed(this.WadTab.SelectedFile.Chunk)
+            using Stream fileStream = this.WadTree.SelectedFile.Wad
+                .LoadChunkDecompressed(this.WadTree.SelectedFile.Chunk)
                 .AsStream();
             LeagueFileType fileType = LeagueFile.GetFileType(fileStream);
 
@@ -61,7 +59,7 @@ public partial class WadFileImagePreview
 
             image.SaveAsPng(dialog.FileName);
 
-            this.Snackbar.Add($"Saved {this.WadTab.SelectedFile.Name} as PNG!", Severity.Success);
+            this.Snackbar.Add($"Saved {this.WadTree.SelectedFile.Name} as PNG!", Severity.Success);
         }
         catch (Exception exception)
         {

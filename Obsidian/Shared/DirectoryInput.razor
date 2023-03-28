@@ -1,0 +1,34 @@
+﻿<MudStack Spacing="0">
+    <MudField FullWidth Label="Game Data" Variant="Variant.Filled">
+        <MudStack Row AlignItems="AlignItems.Center">
+            <MudIconButton Icon="@Icons.Material.TwoTone.FolderOpen"
+                           Variant="Variant.Filled" Color="Color.Primary"
+                           OnClick="OnSelectDirectory" />
+            @if (string.IsNullOrEmpty(Directory) is false)
+            {
+                <MudText Class="flex-grow-1">@Directory</MudText>
+                <MudIconButton Icon="@Icons.Material.TwoTone.Close" Size="Size.Small"
+                           OnClick="@OnClearDirectory" />
+            }
+        </MudStack>
+    </MudField>
+    <MudAlert Dense Severity="Severity.Info" Style="border-top-left-radius: 0px; border-top-right-radius: 0px;">
+        <MudText>
+            @DescriptionContent
+        </MudText>
+    </MudAlert>
+</MudStack>
+
+@code {
+    [Parameter]
+    public string Directory { get; set; }
+
+    [Parameter]
+    public RenderFragment DescriptionContent { get; set; }
+
+    [Parameter]
+    public EventCallback OnClearDirectory { get; set; }
+
+    [Parameter]
+    public EventCallback OnSelectDirectory { get; set; }
+}

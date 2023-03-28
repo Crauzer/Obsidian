@@ -14,45 +14,26 @@
         <MudContainer Style="width: 60vw; height: 75vh; overflow-y: scroll;">
             <MudGrid Spacing="2">
                 <MudItem xs="12">
-
-                    <MudField FullWidth Label="Game Data" Variant="Variant.Filled">
-                        <MudStack Row AlignItems="AlignItems.Center">
-                            <MudIconButton Icon="@Icons.Material.TwoTone.FolderOpen"
-                                           Variant="Variant.Filled" Color="Color.Primary"
-                                           OnClick="SelectGameDataDirectory" />
-                            @if (string.IsNullOrEmpty(Config.GameDataDirectory) is false)
-                            {
-                                <MudText Class="flex-grow-1">@Config.GameDataDirectory</MudText>
-                                <MudIconButton Icon="@Icons.Material.TwoTone.Close" Size="Size.Small"
-                                           OnClick="@(_ => this.Config.GameDataDirectory = null)" />
-                            }
-                        </MudStack>
-                    </MudField>
-                    <MudAlert Dense Severity="Severity.Info" Style="border-top-left-radius: 0px; border-top-right-radius: 0px;">
-                        <MudText>
-                            This is the default directory that will be used for opening Wad archives
-                        </MudText>
-                    </MudAlert>
+                    <DirectoryInput Directory="@Config.GameDataDirectory"
+                                    OnClearDirectory="@(_ => Config.GameDataDirectory = null)"
+                                    OnSelectDirectory="SelectGameDataDirectory">
+                        <DescriptionContent>
+                            <MudText>
+                                This is the default directory that will be used for opening Wad archives
+                            </MudText>
+                        </DescriptionContent>
+                    </DirectoryInput>
                 </MudItem>
                 <MudItem xs="12">
-                    <MudField FullWidth Label="Default Export directory" Variant="Variant.Filled">
-                        <MudStack Row AlignItems="AlignItems.Center">
-                            <MudIconButton Icon="@Icons.Material.TwoTone.FolderOpen"
-                                           Variant="Variant.Filled" Color="Color.Primary"
-                                           OnClick="SelectDefaultExportDirectory" />
-                            @if (string.IsNullOrEmpty(Config.DefaultExtractDirectory) is false)
-                            {
-                                <MudText Class="flex-grow-1">@Config.DefaultExtractDirectory</MudText>
-                                <MudIconButton Icon="@Icons.Material.TwoTone.Close" Size="Size.Small"
-                                           OnClick="@(_ => this.Config.DefaultExtractDirectory = null)" />
-                            }
-                        </MudStack>
-                    </MudField>
-                    <MudAlert Dense Severity="Severity.Info" Style="border-top-left-radius: 0px; border-top-right-radius: 0px;">
-                        <MudText>
-                            This is the default directory that will be used for exporting files
-                        </MudText>
-                    </MudAlert>
+                    <DirectoryInput Directory="@Config.DefaultExtractDirectory"
+                                    OnClearDirectory="@(_ => Config.DefaultExtractDirectory = null)"
+                                    OnSelectDirectory="SelectDefaultExportDirectory">
+                        <DescriptionContent>
+                            <MudText>
+                                This is the default directory that will be used for exporting files
+                            </MudText>
+                        </DescriptionContent>
+                    </DirectoryInput>
                 </MudItem>
                 <MudItem xs="12">
                     <MudTooltip Arrow Text="Whether to update hashtables from CDragon on startup"

@@ -70,7 +70,10 @@
         </MudStack>
     </MudDrawer>
     <MudMainContent Class="main-content-vertical">
-        @Body
+        @if(_isHashtableLoaded)
+        {
+            @Body
+        }
     </MudMainContent>
     <MudOverlay DarkBackground Visible="_isLoadingHashtable" ZIndex="9999">
         <MudStack AlignItems="AlignItems.Center">
@@ -90,6 +93,7 @@
     public string UpdateUrl { get; set; }
 
     private bool _isLoadingHashtable;
+    private bool _isHashtableLoaded;
 
     private void OnHashtableLoadingStart()
     {
@@ -99,6 +103,7 @@
     private void OnHashtableLoadingFinished()
     {
         this._isLoadingHashtable = false;
+        this._isHashtableLoaded = true;
     }
 
     private void OpenSettings()

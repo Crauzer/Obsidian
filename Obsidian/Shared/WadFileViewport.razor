@@ -1,4 +1,5 @@
 ﻿@using Obsidian.Data;
+@using Obsidian.Utils;
 
 <style>
     .wad-file-preview-viewport {
@@ -12,21 +13,21 @@
 
     .wad-file-render-canvas {
         width: 50vw;
-        height: calc(100vh - 123px);
+        height: calc(100vh - 83px);
         aspect-ratio: 1;
         touch-action: none;
     }
 
     .wad-file-render-canvas-wrapper {
         width: 100%;
-        height: calc(100vh - 123px);
+        height: calc(100vh - 83px);
     }
 
         .wad-file-render-canvas-wrapper > .lil-gui {
             position: absolute;
             top: 0px;
             right: 0px;
-            max-height: calc(100vh - 123px); 
+            max-height: calc(100vh - 83px); 
         }
 
     .wad-file-render-canvas-content {
@@ -60,7 +61,7 @@
             </MudButton>
         </div>
     </div>
-    <div id="@($"{WadTab.Id}_viewport_container")" class="wad-file-render-canvas-wrapper">
+    <div id="@WadPreviewUtils.VIEWPORT_CONTAINER_ID" class="wad-file-render-canvas-wrapper">
         @*<canvas id="@($"{WadTab.Id}_renderCanvas")" class="wad-file-render-canvas" />*@
     </div>
     <MudOverlay Absolute DarkBackground Visible="_isSavingAsGltf" ZIndex="9999">

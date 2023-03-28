@@ -7,16 +7,14 @@
     <MudTooltip Text="Regex" Color="Color.Dark">
         @if (UseRegexFilter)
         {
-            <MudIconButton Class="mt-1"
+            <MudIconButton Class="mt-1 ml-1 mr-1"
                        Icon="@CustomIcons.Material.CodeJson" Size="Size.Small" Color="Color.Primary"
-                       Variant="Variant.Filled"
                        OnClick="ToggleRegex" />
         }
         else
         {
-            <MudIconButton Class="mt-1"
+            <MudIconButton Class="mt-1 ml-1 mr-1"
                        Icon="@CustomIcons.Material.CodeJson" Size="Size.Small" Color="Color.Inherit"
-                       Variant="Variant.Filled"
                        OnClick="ToggleRegex" />
         }
     </MudTooltip>
@@ -28,7 +26,8 @@
                 <MudChip Class="rounded ma-0" Size="Size.Small" Text="F" />
             </MudStack>
         </MudStack>
-        <MudTextField T="string" @ref="InputField"
+        <MudTextField Margin="Margin.Dense"
+                      T="string" @ref="InputField"
                       Class="mt-0 mud-elevation-2"
                       Variant="Variant.Filled"
                       DebounceInterval="500"

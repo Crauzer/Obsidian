@@ -1,7 +1,7 @@
 ﻿@using Obsidian.Data;
 
 <MudToolBar Dense DisableGutters>
-    <MudMenu Dense Class="ml-4" Icon="@Icons.Material.TwoTone.Archive" Color="Color.Inherit"
+    <MudMenu Dense Class="ml-4" Label="File" Color="Color.Inherit"
              AnchorOrigin="Origin.BottomLeft" Size="Size.Medium">
         <MudMenuItem Icon="@CustomIcons.Material.ArchiveEdit" IconColor="Color.Primary" IconSize="Size.Small"
                      OnClick="OnOpenWad">
@@ -10,31 +10,20 @@
         </MudMenuItem>
         <MudDivider />
         <MudMenuItem Icon="@CustomIcons.Material.ContentSaveAll" IconColor="Color.Primary" IconSize="Size.Small"
-                     Disabled="@(ActiveWad is null)"
                      OnClick="OnExtractAll">
             Extract All
         </MudMenuItem>
         <MudMenuItem Icon="@CustomIcons.Material.ContentSave" IconColor="Color.Primary" IconSize="Size.Small"
-                     Disabled="@(ActiveWad?.CheckedFiles.Count() is (0 or null))"
+                     Disabled="@(WadTree?.CheckedFiles?.Count() is 0 or null)"
                      OnClick="OnExtractSelected">
             Extract Selected
         </MudMenuItem>
     </MudMenu>
-    <MudMenu Dense Class="ml-4" Icon="@CustomIcons.Material.Hexadecimal" Color="Color.Inherit"
+    <MudMenu Dense Class="ml-4" Label="Hashtable" Color="Color.Inherit"
              AnchorOrigin="Origin.BottomLeft" Size="Size.Medium">
         <MudMenuItem Icon="@CustomIcons.Material.TableArrowUp" IconColor="Color.Primary" IconSize="Size.Small"
                      OnClick="OnLoadHashtable">
             Load hashtable
         </MudMenuItem>
     </MudMenu>
-    <MudSpacer />
-    @if (ActiveWad is not null)
-    {
-        <MudStack AlignItems="AlignItems.Center" Style="width: 33%">
-            <WadFilter FullWidth
-                   @ref="_wadFilterComponent"
-                   Filter="@ActiveWad.Filter" UseRegexFilter="@ActiveWad.UseRegexFilter"
-                   FilterChanged="OnFilterChanged" UseRegexFilterChanged="OnUseRegexFilterChanged" />
-        </MudStack>
-    }
 </MudToolBar>

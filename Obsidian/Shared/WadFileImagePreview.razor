@@ -1,8 +1,10 @@
 ﻿@using Obsidian.Data;
+@using Obsidian.Data.Wad;
+@using Obsidian.Utils;
 
 <MudMenu PositionAtCurser Dense
          Class="ma-auto"
-         Style="@(_isEnabled ? "" : "display: none;")"
+         Style="@(WadTree.CurrentPreviewType is WadFilePreviewType.Image ? "" : "display: none;")"
          ActivationEvent="MouseEvent.RightClick">
     <ChildContent>
         <MudMenuItem Icon="@CustomIcons.Material.ContentSave" IconColor="Color.Primary" IconSize="Size.Small"
@@ -12,7 +14,7 @@
     </ChildContent>
     <ActivatorContent>
         <div style="margin: auto;">
-            <MudImage ObjectFit="ObjectFit.Contain" id="@($"{WadTab.Id}_imagePreview")" Style="max-height: 70vh;" />
+            <MudImage ObjectFit="ObjectFit.Contain" id="@WadPreviewUtils.IMAGE_PREVIEW_ID" Style="max-height: 70vh;" />
         </div>
     </ActivatorContent>
 </MudMenu>
