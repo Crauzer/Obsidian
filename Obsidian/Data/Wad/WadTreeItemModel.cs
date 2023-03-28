@@ -38,7 +38,7 @@ public class WadTreeItemModel
     public bool IsChecked { get; set; }
     public bool IsExpanded { get; set; }
 
-    public HashSet<WadTreeItemModel> Items { get; protected set; } = new();
+    public Dictionary<string, WadTreeItemModel> Items { get; protected set; } = new();
 
     public bool IsWadArchive
     {
@@ -69,9 +69,9 @@ public class WadTreeItemModel
         if (this.Items is null)
             return;
 
-        this.Items = new(this.Items.OrderBy(x => x));
+        this.Items = new(this.Items.OrderBy(x => x.Value));
 
-        foreach (WadTreeItemModel item in this.Items)
+        foreach (var (_, item) in this.Items)
         {
             if (item.Type is WadTreeItemType.Directory)
                 item.SortItems();

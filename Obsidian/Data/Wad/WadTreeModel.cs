@@ -22,7 +22,7 @@ public class WadTreeModel : IWadTreeParent, IDisposable
 
     public WadFilePreviewType CurrentPreviewType { get; set; }
 
-    public HashSet<WadTreeItemModel> Items { get; set; } = new();
+    public Dictionary<string, WadTreeItemModel> Items { get; set; } = new();
 
     public IEnumerable<WadTreeFileModel> CheckedFiles =>
         this.TraverseFlattenedCheckedItems()
@@ -73,6 +73,8 @@ public class WadTreeModel : IWadTreeParent, IDisposable
 
     public void CreateTreeForWadFile(WadFile wad, string wadFilePath)
     {
+        IEnumerable<string> wadFilePathComponents = wadFilePath.Split('/');
+
         foreach (var (_, chunk) in wad.Chunks)
         {
             string path = this.Hashtable.TryGetChunkPath(chunk, out path) switch
@@ -81,7 +83,7 @@ public class WadTreeModel : IWadTreeParent, IDisposable
                 false => this.Hashtable.GuessChunkPath(chunk, wad),
             };
 
-            this.AddWadFile(string.Join('/', wadFilePath, path).Split('/'), wad, chunk);
+            this.AddWadFile(wadFilePathComponents.Concat(path.Split('/')), wad, chunk);
         }
     }
 
@@ -89,9 +91,9 @@ public class WadTreeModel : IWadTreeParent, IDisposable
     {
         Log.Information($"Sorting wad tree");
 
-        this.Items = new(this.Items.OrderBy(x => x));
+        this.Items = new(this.Items.OrderBy(x => x.Value));
 
-        foreach (WadTreeItemModel item in this.Items)
+        foreach (var (_, item) in this.Items)
         {
             if (item.Type is WadTreeItemType.Directory)
                 item.SortItems();

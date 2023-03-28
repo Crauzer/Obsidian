@@ -6,7 +6,7 @@ namespace Obsidian.Data.Wad;
 
 public interface IWadTreeParent : IWadTreePathable
 {
-    HashSet<WadTreeItemModel> Items { get; }
+    Dictionary<string, WadTreeItemModel> Items { get; }
 }
 
 public static class IWadTreeParentExtensions
@@ -17,14 +17,13 @@ public static class IWadTreeParentExtensions
     )
     {
         string folderName = pathComponents.First();
-        WadTreeItemModel directory = parent.Items.FirstOrDefault(
-            x => x.Type is WadTreeItemType.Directory && x.Name == folderName
-        );
 
+        WadTreeItemModel directory = parent.Items.GetValueOrDefault(folderName);
         directory ??= new(null, folderName);
+
         if (pathComponents.Count() is 1)
         {
-            parent.Items.Add(directory);
+            parent.Items.Add(directory.Name, directory);
         }
         else
         {
@@ -39,19 +38,18 @@ public static class IWadTreeParentExtensions
         // File belongs to this folder
         if (pathComponents.Count() is 1)
         {
-            parent.Items.Add(new WadTreeItemModel(parent, pathComponents.First()));
+            string name = pathComponents.First();
+            parent.Items.Add(name, new WadTreeItemModel(parent, name));
             return;
         }
 
         string directoryName = pathComponents.First();
-        WadTreeItemModel directory = parent.Items.FirstOrDefault(
-            x => x.Type is WadTreeItemType.Directory && x.Name == directoryName
-        );
+        WadTreeItemModel directory = parent.Items.GetValueOrDefault(directoryName);
 
         if (directory is null)
         {
             directory = new(parent, directoryName);
-            parent.Items.Add(directory);
+            parent.Items.Add(directory.Name, directory);
         }
 
         directory.AddFsFile(pathComponents.Skip(1));
@@ -67,19 +65,18 @@ public static class IWadTreeParentExtensions
         // File belongs to this folder
         if (pathComponents.Count() is 1)
         {
-            parent.Items.Add(new WadTreeFileModel(parent, pathComponents.First(), wad, chunk));
+            string name = pathComponents.First();
+            parent.Items.Add(name, new WadTreeFileModel(parent, name, wad, chunk));
             return;
         }
 
         string folderName = pathComponents.First();
-        WadTreeItemModel directory = parent.Items.FirstOrDefault(
-            x => x.Type is WadTreeItemType.Directory && x.Name == folderName
-        );
+        WadTreeItemModel directory = parent.Items.GetValueOrDefault(folderName);
 
         if (directory is null)
         {
             directory = new(parent, folderName);
-            parent.Items.Add(directory);
+            parent.Items.Add(directory.Name, directory);
         }
 
         directory.AddWadFile(pathComponents.Skip(1), wad, chunk);
@@ -93,7 +90,7 @@ public static class IWadTreeParentExtensions
         if (parent.Items is null)
             yield break;
 
-        foreach (WadTreeItemModel item in parent.Items)
+        foreach (var (_, item) in parent.Items)
         {
             yield return item;
 
@@ -109,7 +106,7 @@ public static class IWadTreeParentExtensions
         if (parent.Items is null)
             yield break;
 
-        foreach (WadTreeItemModel item in parent.Items)
+        foreach (var (_, item) in parent.Items)
         {
             if (item.IsChecked)
                 yield return item;
@@ -128,7 +125,7 @@ public static class IWadTreeParentExtensions
         if (parent.Items is null)
             yield break;
 
-        foreach (WadTreeItemModel item in parent.Items)
+        foreach (var (_, item) in parent.Items)
         {
             if (!string.IsNullOrEmpty(filter))
             {
