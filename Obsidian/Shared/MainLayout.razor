@@ -1,4 +1,5 @@
 ﻿@using Obsidian.Data;
+@using Obsidian.Shared.Dialogs;
 @using Obsidian.Utils;
 @using Octokit;
 @using System.Reflection;
@@ -70,7 +71,7 @@
         </MudStack>
     </MudDrawer>
     <MudMainContent Class="main-content-vertical">
-        @if(_isHashtableLoaded)
+        @if (_isReady)
         {
             @Body
         }
@@ -84,8 +85,9 @@
 </MudLayout>
 
 @code {
+    [Inject] public Config Config { get; set; }
     [Inject] public IDialogService DialogService { get; set; }
-    [Inject] public IJSRuntime JS { get; set; }
+    [Inject] public IJSRuntime Js { get; set; }
     [Inject] public ISnackbar Snackbar { get; set; }
 
     public AppTheme Theme { get; } = new();
@@ -93,17 +95,21 @@
     public string UpdateUrl { get; set; }
 
     private bool _isLoadingHashtable;
-    private bool _isHashtableLoaded;
+    private bool _isReady;
 
     private void OnHashtableLoadingStart()
     {
         this._isLoadingHashtable = true;
     }
 
-    private void OnHashtableLoadingFinished()
+    private async Task OnHashtableLoadingFinished()
     {
         this._isLoadingHashtable = false;
-        this._isHashtableLoaded = true;
+
+        if (string.IsNullOrEmpty(this.Config.GameDataDirectory))
+            await this.DialogService.Show<StartupDialog>().Result;
+
+        this._isReady = true;
     }
 
     private void OpenSettings()
@@ -113,17 +119,17 @@
 
     private async Task SubmitBugReport()
     {
-        await this.JS.InvokeVoidAsync("useCmd", @"explorer ""https://github.com/Crauzer/Obsidian/issues/new?assignees=&labels=bug%2C+triage&template=bug_report.md&title=%5BBUG%5D+%2A%2ABug+report+title+here%2A%2A""");
+        await this.Js.InvokeVoidAsync("useCmd", @"explorer ""https://github.com/Crauzer/Obsidian/issues/new?assignees=&labels=bug%2C+triage&template=bug_report.md&title=%5BBUG%5D+%2A%2ABug+report+title+here%2A%2A""");
     }
 
     private async Task GoToGithub()
     {
-        await this.JS.InvokeVoidAsync("useCmd", @"explorer ""https://github.com/Crauzer/Obsidian""");
+        await this.Js.InvokeVoidAsync("useCmd", @"explorer ""https://github.com/Crauzer/Obsidian""");
     }
 
     private async Task GoToNewRelease()
     {
-        await this.JS.InvokeVoidAsync("useCmd", @$"explorer ""{this.UpdateUrl}""");
+        await this.Js.InvokeVoidAsync("useCmd", @$"explorer ""{this.UpdateUrl}""");
     }
 
     private async Task CheckForUpdate()

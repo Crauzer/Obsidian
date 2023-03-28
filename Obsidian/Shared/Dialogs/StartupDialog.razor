@@ -6,30 +6,44 @@
     <TitleContent>
         <MudStack Row AlignItems="AlignItems.Center">
             <MudIcon Icon="@CustomIcons.Material.FolderWrench" Size="Size.Large" Color="Color.Primary" />
-            <MudText Typo="Typo.h4">
+            <MudText Typo="Typo.h5">
                 Configure
             </MudText>
+            <MudSpacer />
+            <MudButton OnClick="@(_ => Dialog.Close())">
+                Skip
+            </MudButton>
         </MudStack>
     </TitleContent>
     <DialogContent>
-        <MudStack Spacing="2">
-            <MudAlert Severity="Severity.Info" Variant="Variant.Filled">
-                It looks like this is your first time running Obsidian, please select your game data directory.
-            </MudAlert>
-            <DirectoryInput Directory="@Config.GameDataDirectory"
-                            OnClearDirectory="@(_ => Config.GameDataDirectory = null)"
-                            OnSelectDirectory="SelectGameDataDirectory">
-                <DescriptionContent>
-                    <MudText>
-                        This is the FINAL assets directory of the game.
-                    </MudText>
-                    <MudText>
-                        Example: C:\Riot Games\League of Legends\Game\DATA\FINAL
-                    </MudText>
-                </DescriptionContent>
-            </DirectoryInput>
-        </MudStack>
+        <MudContainer Style="width: 40vw; overflow-y: scroll;">
+            <MudStack Spacing="2">
+                <MudAlert Severity="Severity.Info" Variant="Variant.Text">
+                    It looks like this is your first time running Obsidian, please select your game data directory.
+                </MudAlert>
+                <DirectoryInput Directory="@Config.GameDataDirectory"
+                                OnClearDirectory="@(_ => Config.GameDataDirectory = null)"
+                                OnSelectDirectory="SelectGameDataDirectory">
+                    <DescriptionContent>
+                        <MudText Typo="Typo.body2">
+                            This is the FINAL assets directory of the game.
+                        </MudText>
+                        <MudText Typo="Typo.body2">
+                            Example: C:\Riot Games\League of Legends\Game\DATA\FINAL
+                        </MudText>
+                    </DescriptionContent>
+                </DirectoryInput>
+                @if (string.IsNullOrEmpty(Config.GameDataDirectory) is false)
+                {
+                    <MudButton Class="mx-auto mt-2"
+                           Variant="Variant.Filled" Color="Color.Primary"
+                           OnClick="@(_ => Dialog.Close())">
+                        Ok
+                    </MudButton>
+                }
+            </MudStack>
 
+        </MudContainer>
     </DialogContent>
 </MudDialog>
 

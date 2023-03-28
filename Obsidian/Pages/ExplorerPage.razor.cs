@@ -38,15 +38,20 @@ public partial class ExplorerPage
             {
                 await Task.Run(() =>
                 {
-                    this.WadTree = new(
-                        this.Hashtable,
-                        this.Config,
-                        Directory.EnumerateFiles(
-                            this.Config.GameDataDirectory,
-                            "*.wad.client",
-                            SearchOption.AllDirectories
-                        )
-                    );
+                    this.WadTree = string.IsNullOrEmpty(this.Config.GameDataDirectory) switch
+                    {
+                        true => new(this.Hashtable, this.Config, Array.Empty<string>()),
+                        false
+                            => new(
+                                this.Hashtable,
+                                this.Config,
+                                Directory.EnumerateFiles(
+                                    this.Config.GameDataDirectory,
+                                    "*.wad.client",
+                                    SearchOption.AllDirectories
+                                )
+                            )
+                    };
                 });
                 StateHasChanged();
             }
