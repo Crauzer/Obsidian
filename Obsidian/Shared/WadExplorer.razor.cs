@@ -522,12 +522,6 @@ public partial class WadExplorer : IDisposable
     private async ValueTask FocusWadFilter() =>
         await this._wadFilterComponent.InputField.FocusAsync();
 
-    public void ToggleLoadingIndex(bool value)
-    {
-        this._isLoadingIndex = value;
-        StateHasChanged();
-    }
-
     public void ToggleExporting(bool isExporting)
     {
         this._isExportingFiles = isExporting;
