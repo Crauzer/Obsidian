@@ -7,6 +7,8 @@ public interface IWadTreePathable
 
     string Name { get; }
     string Path { get; }
+
+    public bool IsWadArchive { get; }
 }
 
 public static class IWadTreePathableExtensions

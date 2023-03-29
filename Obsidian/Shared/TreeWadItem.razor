@@ -27,6 +27,13 @@
                     <MudText Typo="Typo.subtitle2">Save</MudText>
                 </MudMenuItem>
             }
+            @if (this.Item.IsWadArchive)
+            {
+                <MudMenuItem Icon="@Icons.Material.TwoTone.Delete" IconSize="Size.Small" IconColor="Color.Primary"
+                         OnClick="@Delete">
+                    <MudText Typo="Typo.subtitle2">Delete</MudText>
+                </MudMenuItem>
+            }
             <MudDivider />
             <MudMenuItem Icon="@Icons.Material.TwoTone.Code" IconSize="Size.Small" IconColor="Color.Primary">
                 <MudTooltip Delay="150" Placement="Placement.Right" Color="Color.Dark">

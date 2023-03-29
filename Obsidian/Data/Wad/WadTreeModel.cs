@@ -16,6 +16,7 @@ public class WadTreeModel : IWadTreeParent, IDisposable
     public int Depth => 0;
     public string Name => string.Empty;
     public string Path => string.Empty;
+    public bool IsWadArchive => false;
 
     public bool UseRegexFilter { get; set; }
     public string Filter { get; set; }

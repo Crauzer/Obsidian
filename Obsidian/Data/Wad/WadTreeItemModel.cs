@@ -59,7 +59,7 @@ public class WadTreeItemModel
 
         this.Path = parent switch
         {
-            null or WadTreeModel => name,
+            null or WadTreeModel or { IsWadArchive: true } => name,
             _ => string.Join('/', parent.Path, name)
         };
     }
