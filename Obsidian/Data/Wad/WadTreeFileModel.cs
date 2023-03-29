@@ -9,7 +9,7 @@ public sealed class WadTreeFileModel : WadTreeItemModel
     public WadChunk Chunk { get; }
     public WadFile Wad { get; }
 
-    public WadTreeFileModel(IWadTreePathable parent, string name, WadFile wad, WadChunk chunk)
+    public WadTreeFileModel(IWadTreeParent parent, string name, WadFile wad, WadChunk chunk)
         : base(parent, name)
     {
         this.Chunk = chunk;

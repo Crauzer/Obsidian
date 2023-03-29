@@ -23,7 +23,7 @@ public class WadTreeItemModel
             _ => throw new InvalidOperationException("Invalid wad tree item type")
         };
 
-    public IWadTreePathable Parent { get; protected set; }
+    public IWadTreeParent Parent { get; protected set; }
     public int Depth => this.GetDepth();
 
     public Guid Id { get; } = Guid.NewGuid();
@@ -52,7 +52,7 @@ public class WadTreeItemModel
         }
     }
 
-    public WadTreeItemModel(IWadTreePathable parent, string name)
+    public WadTreeItemModel(IWadTreeParent parent, string name)
     {
         this.Parent = parent;
         this.Name = name;

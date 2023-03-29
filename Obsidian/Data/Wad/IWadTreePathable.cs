@@ -2,7 +2,7 @@
 
 public interface IWadTreePathable
 {
-    IWadTreePathable Parent { get; }
+    IWadTreeParent Parent { get; }
     int Depth { get; }
 
     string Name { get; }

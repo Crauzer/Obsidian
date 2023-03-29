@@ -12,7 +12,7 @@ public class WadTreeModel : IWadTreeParent, IDisposable
     public HashtableService Hashtable { get; }
     public Config Config { get; }
 
-    public IWadTreePathable Parent => null;
+    public IWadTreeParent Parent => null;
     public int Depth => 0;
     public string Name => string.Empty;
     public string Path => string.Empty;

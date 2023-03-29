@@ -177,5 +177,9 @@ public partial class TreeWadItem
         }
     }
 
-    private void Delete() { }
+    private void Delete()
+    {
+        this.Item.Parent.Items.Remove(this.Item.Name);
+        this.Explorer.RefreshState();
+    }
 }
