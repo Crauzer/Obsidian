@@ -126,27 +126,29 @@ public partial class TreeWadItem
         int targetIndex = items.IndexOf(this.Item);
         int currentIndex = items.IndexOf(selectedItem);
 
-        if (currentIndex is not -1)
+        if (currentIndex is -1)
+            return;
+
+        // Get range of items to select
+        (int startIndex, int endIndex) = (targetIndex) switch
         {
-            (int startIndex, int endIndex) = (targetIndex) switch
-            {
-                _ when targetIndex > currentIndex => (currentIndex, targetIndex),
-                _ when targetIndex < currentIndex => (targetIndex, currentIndex),
-                _ => (0, 0)
-            };
+            _ when targetIndex > currentIndex => (currentIndex, targetIndex),
+            _ when targetIndex < currentIndex => (targetIndex, currentIndex),
+            _ => (0, 0)
+        };
 
-            IEnumerable<WadTreeItemModel> itemsToSelect = items
-                .Skip(startIndex)
-                .Take(endIndex - startIndex + 1);
-            foreach (WadTreeItemModel itemToSelect in itemsToSelect)
-            {
-                itemToSelect.IsChecked = !itemToSelect.IsChecked;
-                if (itemToSelect.IsExpanded is false)
-                    itemToSelect.CheckItemTree(itemToSelect.IsChecked);
-            }
-
-            this.Explorer.RefreshState();
+        // Traverse over items and select them
+        IEnumerable<WadTreeItemModel> itemsToSelect = items
+            .Skip(startIndex)
+            .Take(endIndex - startIndex + 1);
+        foreach (WadTreeItemModel itemToSelect in itemsToSelect)
+        {
+            itemToSelect.IsChecked = !itemToSelect.IsChecked;
+            if (itemToSelect.IsExpanded is false)
+                itemToSelect.CheckItemTree(itemToSelect.IsChecked);
         }
+
+        this.Explorer.RefreshState();
     }
 
     private void Save()
@@ -174,4 +176,6 @@ public partial class TreeWadItem
             this.Explorer.ToggleExporting(false);
         }
     }
+
+    private void Delete() { }
 }
