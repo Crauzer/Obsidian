@@ -55,6 +55,7 @@ public partial class WadExplorer : IDisposable
     public WadTreeModel WadTree { get; set; }
 
     private WadFilter _wadFilterComponent;
+    private WadFileTextPreview _textPreview;
 
     private MudSplitter _splitter;
     private double _splitterDimension = 30;
@@ -452,8 +453,7 @@ public partial class WadExplorer : IDisposable
         Log.Information("Previewing property bin");
 
         await SetCurrentPreviewType(WadFilePreviewType.Text);
-
-        await this.WadTree.TextPreview.PreviewRitobin(stream);
+        await this._textPreview.PreviewRitobin(stream);
     }
 
     private async Task PreviewText(Stream stream, string language)
@@ -461,8 +461,7 @@ public partial class WadExplorer : IDisposable
         Log.Information($"Previewing {language} text");
 
         await SetCurrentPreviewType(WadFilePreviewType.Text);
-
-        await this.WadTree.TextPreview.Preview(stream, language);
+        await this._textPreview.Preview(stream, language);
     }
 
     private async Task SetCurrentPreviewType(WadFilePreviewType previewType)

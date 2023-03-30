@@ -39,8 +39,6 @@ public class WadTreeModel : IWadTreeParent, IDisposable
 
     private Dictionary<string, WadFile> _mountedWadFiles = new();
 
-    public WadFileTextPreview TextPreview { get; set; }
-
     public bool IsDisposed { get; private set; }
 
     public WadTreeModel(HashtableService hashtable, Config config, IEnumerable<string> wadFiles)
@@ -100,7 +98,7 @@ public class WadTreeModel : IWadTreeParent, IDisposable
                 item.SortItems();
         }
     }
-
+     
     public void Dispose()
     {
         Dispose(disposing: true);

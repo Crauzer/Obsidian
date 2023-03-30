@@ -47,11 +47,11 @@
     <MudDivider />
     <MudSplitter EnableSlide DisableMargin
                  @ref="_splitter"
-                 Style="height: 100%;"
+                 Style="height: 100%"
                  Sensitivity="2.5f"
                  Dimension="_splitterDimension" DimensionChanged="OnDimensionChanged">
         <StartContent>
-            <MudStack Class="relative" Style="width: 100%"
+            <MudStack Class="relative" Style="width: 100%; height: 100%;"
                       Spacing="1">
                 @if (WadTree is not null)
                 {
@@ -73,7 +73,7 @@
                 {
                     <MudOverlay Absolute DarkBackground Visible>
                         <MudProgressLinear Rounded Indeterminate
-                                       Class="my-6" Style="width: 100px"
+                                       Class="my-6" Style="width: 100px;"
                                        Color="Color.Primary" Size="Size.Small" />
                         <MudText Class="unselectable-text" Align="Align.Center" Typo="Typo.body2">
                             Indexing...
@@ -93,7 +93,7 @@
                 {
                     <WadFileViewport WadTree="WadTree" />
                 }
-                <WadFileTextPreview @ref="WadTree.TextPreview" WadTree="WadTree" />
+                <WadFileTextPreview @ref="_textPreview" WadTree="WadTree" />
             }
         </EndContent>
     </MudSplitter>

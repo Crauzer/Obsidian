@@ -1,5 +1,5 @@
 ﻿<MudStack Spacing="0">
-    <MudField FullWidth Label="Game Data" Variant="Variant.Filled">
+    <MudField FullWidth Label="@Label" Variant="Variant.Filled">
         <MudStack Row AlignItems="AlignItems.Center">
             <MudIconButton Icon="@Icons.Material.TwoTone.FolderOpen"
                            Variant="Variant.Filled" Color="Color.Primary"
@@ -12,14 +12,20 @@
             }
         </MudStack>
     </MudField>
-    <MudAlert Dense Severity="Severity.Info" Style="border-top-left-radius: 0px; border-top-right-radius: 0px;">
-        <MudText>
-            @DescriptionContent
-        </MudText>
-    </MudAlert>
+    @if (DescriptionContent is not null)
+    {
+        <MudAlert Dense Severity="Severity.Info" Style="border-top-left-radius: 0px; border-top-right-radius: 0px;">
+            <MudText>
+                @DescriptionContent
+            </MudText>
+        </MudAlert>
+    }
 </MudStack>
 
 @code {
+    [Parameter]
+    public string Label { get; set; }
+
     [Parameter]
     public string Directory { get; set; }
 

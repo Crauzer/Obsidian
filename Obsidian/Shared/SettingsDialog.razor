@@ -14,7 +14,8 @@
         <MudContainer Style="width: 60vw; height: 75vh; overflow-y: scroll;">
             <MudGrid Spacing="2">
                 <MudItem xs="12">
-                    <DirectoryInput Directory="@Config.GameDataDirectory"
+                    <DirectoryInput Label="Game Data"
+                        Directory="@Config.GameDataDirectory"
                                     OnClearDirectory="@(_ => Config.GameDataDirectory = null)"
                                     OnSelectDirectory="SelectGameDataDirectory">
                         <DescriptionContent>
@@ -25,7 +26,8 @@
                     </DirectoryInput>
                 </MudItem>
                 <MudItem xs="12">
-                    <DirectoryInput Directory="@Config.DefaultExtractDirectory"
+                    <DirectoryInput Label="Default Extract Directory"
+                        Directory="@Config.DefaultExtractDirectory"
                                     OnClearDirectory="@(_ => Config.DefaultExtractDirectory = null)"
                                     OnSelectDirectory="SelectDefaultExportDirectory">
                         <DescriptionContent>
@@ -67,6 +69,7 @@
 @code {
     [Inject] public PhotinoWindow Window { get; set; }
     [Inject] public Config Config { get; set; }
+    [Inject] public ISnackbar Snackbar { get; set; }
 
     [CascadingParameter] MudDialogInstance Dialog { get; set; }
 
@@ -76,8 +79,14 @@
     {
         CommonOpenFileDialog dialog = new() { IsFolderPicker = true };
 
-        if (dialog.ShowDialog(this.Window.WindowHandle) is CommonFileDialogResult.Ok)
-            this.Config.GameDataDirectory = dialog.FileName;
+        if (dialog.ShowDialog(this.Window.WindowHandle) is not CommonFileDialogResult.Ok)
+            return;
+
+        this.Config.GameDataDirectory = dialog.FileName;
+        this.Snackbar.Add("Please restart Obsidian to fully apply changes!", Severity.Warning, x =>
+        {
+            x.RequireInteraction = true;
+        });
     }
     public void SelectDefaultExportDirectory()
     {
