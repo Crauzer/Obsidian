@@ -34,7 +34,7 @@
     }
 </style>
 
-<MudPaper Style="height: 100%">
+<MudPaper Style="height: calc(100vh - 50px)">
     <MudPaper Elevation="25">
         <CascadingValue Value="this">
             <WadExplorerToolbar WadTree="WadTree"
@@ -51,7 +51,8 @@
                  Sensitivity="2.5f"
                  Dimension="_splitterDimension" DimensionChanged="OnDimensionChanged">
         <StartContent>
-            <MudStack Class="relative" Style="width: 100%; height: 100%;"
+            <MudStack Class="relative"
+                      Style="width: 100%"
                       Spacing="1">
                 @if (WadTree is not null)
                 {
@@ -62,7 +63,7 @@
                     <div class="mt-2" style="width: 100%">
                         <TreeView TItem="WadTreeItemModel"
                               ItemsFlat="@GetVisibleItemsForWadTree()"
-                              Height="calc(100vh - 119px)" ItemSize="36f">
+                              Height="calc(100vh - 161px)" ItemSize="36f">
                             <ItemTemplate>
                                 <TreeWadItem Item="@context" Explorer="this" WadTree="WadTree" />
                             </ItemTemplate>
@@ -85,15 +86,20 @@
         <EndContent>
             @if (WadTree is not null)
             {
-                @if (WadTree.CurrentPreviewType is WadFilePreviewType.Image)
-                {
-                    <WadFileImagePreview WadTree="WadTree" />
-                }
-                else if (WadTree.CurrentPreviewType is WadFilePreviewType.Viewport)
-                {
-                    <WadFileViewport WadTree="WadTree" />
-                }
-                <WadFileTextPreview @ref="_textPreview" WadTree="WadTree" />
+                <div style="position: relative; height: 100%; width: 100%">
+                    @if (WadTree.CurrentPreviewType is WadFilePreviewType.Image)
+                    {
+                        <WadFileImagePreview WadTree="WadTree" />
+                    }
+                    else if (WadTree.CurrentPreviewType is WadFilePreviewType.Viewport)
+                    {
+                        <WadFileViewport WadTree="WadTree" />
+                    }
+                    <WadFileTextPreview @ref="_textPreview" WadTree="WadTree" />
+                    <MudOverlay DarkBackground Absolute Visible="_isLoadingPreview" ZIndex="9999">
+                        <MudProgressCircular Indeterminate Color="Color.Primary" />
+                    </MudOverlay>
+                </div>
             }
         </EndContent>
     </MudSplitter>
@@ -115,7 +121,5 @@
                            Class="my-6" Style="width: 500px"
                            Color="Color.Primary" Size="Size.Large" />
     </MudOverlay>
-    <MudOverlay DarkBackground Visible="_isLoadingPreview" ZIndex="9999">
-        <MudProgressCircular Indeterminate Color="Color.Primary" />
-    </MudOverlay>
+
 </MudPaper>
