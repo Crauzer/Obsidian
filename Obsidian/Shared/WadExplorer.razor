@@ -34,7 +34,7 @@
     }
 </style>
 
-<MudPaper Style="height: calc(100vh - 50px)">
+<MudPaper>
     <MudPaper Elevation="25">
         <CascadingValue Value="this">
             <WadExplorerToolbar WadTree="WadTree"
@@ -47,7 +47,7 @@
     <MudDivider />
     <MudSplitter EnableSlide DisableMargin
                  @ref="_splitter"
-                 Style="height: 100%"
+                 Style="height: calc(100vh - 50px)"
                  Sensitivity="2.5f"
                  Dimension="_splitterDimension" DimensionChanged="OnDimensionChanged">
         <StartContent>
@@ -63,7 +63,7 @@
                     <div class="mt-2" style="width: 100%">
                         <TreeView TItem="WadTreeItemModel"
                               ItemsFlat="@GetVisibleItemsForWadTree()"
-                              Height="calc(100vh - 161px)" ItemSize="36f">
+                              Height="calc(100vh - 112px)" ItemSize="36f">
                             <ItemTemplate>
                                 <TreeWadItem Item="@context" Explorer="this" WadTree="WadTree" />
                             </ItemTemplate>
@@ -86,7 +86,7 @@
         <EndContent>
             @if (WadTree is not null)
             {
-                <div style="position: relative; height: 100%; width: 100%">
+                <MudStack Class="relative" Style="height: 100%; width: 100%">
                     @if (WadTree.CurrentPreviewType is WadFilePreviewType.Image)
                     {
                         <WadFileImagePreview WadTree="WadTree" />
@@ -99,7 +99,7 @@
                     <MudOverlay DarkBackground Absolute Visible="_isLoadingPreview" ZIndex="9999">
                         <MudProgressCircular Indeterminate Color="Color.Primary" />
                     </MudOverlay>
-                </div>
+                </MudStack>
             }
         </EndContent>
     </MudSplitter>
