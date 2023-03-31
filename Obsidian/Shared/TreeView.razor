@@ -31,7 +31,7 @@
 </style>
 
 <div style="@_style">
-    <Virtualize Items="@ItemsFlat" OverscanCount="10" ItemSize="@ItemSize" Context="item">
+    <Virtualize Items="@ItemsFlat" OverscanCount="@OverscanCount" ItemSize="@ItemSize" Context="item">
         <ItemContent>
             <div @onclick="@((e) => OnItemClick(e, item))">
                 @ItemTemplate(item)

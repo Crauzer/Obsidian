@@ -29,6 +29,9 @@ public partial class TreeView<TItem>
     public float ItemSize { get; set; } = 50f;
 
     [Parameter]
+    public int OverscanCount { get; set; } = 5;
+
+    [Parameter]
     public string Height { get; set; }
 
     [Parameter]

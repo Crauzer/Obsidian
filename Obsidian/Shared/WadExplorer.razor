@@ -63,7 +63,9 @@
                     <div class="mt-2" style="width: 100%">
                         <TreeView TItem="WadTreeItemModel"
                               ItemsFlat="@GetVisibleItemsForWadTree()"
-                              Height="calc(100vh - 112px)" ItemSize="36f">
+                              Height="calc(100vh - 112px)"
+                              OverscanCount="25"
+                              ItemSize="36f">
                             <ItemTemplate>
                                 <TreeWadItem Item="@context" Explorer="this" WadTree="WadTree" />
                             </ItemTemplate>

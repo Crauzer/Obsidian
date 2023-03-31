@@ -11,13 +11,6 @@
         display: none;
     }
 
-    .wad-file-render-canvas {
-        width: 50vw;
-        height: calc(100vh - 58px);
-        aspect-ratio: 1;
-        touch-action: none;
-    }
-
     .wad-file-render-canvas-wrapper {
         width: 100%;
         height: calc(100vh - 58px);
@@ -27,7 +20,7 @@
             position: absolute;
             top: 0px;
             right: 0px;
-            max-height: calc(100vh - 58px); 
+            max-height: calc(100vh - 58px);
         }
 
     .wad-file-render-canvas-content {
@@ -37,7 +30,7 @@
         flex-direction: column;
         width: 128px;
         height: 100%;
-     }
+    }
 
     .wad-file-render-canvas-content-wrapper {
         position: absolute;
@@ -61,9 +54,7 @@
             </MudButton>
         </div>
     </div>
-    <div id="@WadPreviewUtils.VIEWPORT_CONTAINER_ID" class="wad-file-render-canvas-wrapper">
-        @*<canvas id="@($"{WadTab.Id}_renderCanvas")" class="wad-file-render-canvas" />*@
-    </div>
+    <div id="@WadPreviewUtils.VIEWPORT_CONTAINER_ID" class="wad-file-render-canvas-wrapper"></div>
     <MudOverlay Absolute DarkBackground Visible="_isSavingAsGltf" ZIndex="9999">
         <MudProgressLinear Rounded Indeterminate
                            Class="my-6" Style="width: 500px"
