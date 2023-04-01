@@ -423,7 +423,12 @@ public partial class WadExplorer : IDisposable
         await image.SaveAsPngAsync(imageStream);
         imageStream.Position = 0;
 
-        DotNetStreamReference jsStream = new(imageStream);
+        await PreviewImage(imageStream);
+    }
+
+    private async Task PreviewImage(Stream imageStream)
+    {
+        Log.Information("Previewing image from stream");
 
         await SetCurrentPreviewType(WadFilePreviewType.Image);
         await Task.Delay(25);
@@ -431,21 +436,8 @@ public partial class WadExplorer : IDisposable
         await this.JsRuntime.InvokeVoidAsync(
             "setImage",
             WadPreviewUtils.IMAGE_PREVIEW_ID,
-            jsStream
-        );
-    }
-
-    private async Task PreviewImage(Stream imageStream)
-    {
-        Log.Information("Previewing image from stream");
-
-        await this.JsRuntime.InvokeVoidAsync(
-            "setImage",
-            WadPreviewUtils.IMAGE_PREVIEW_ID,
             new DotNetStreamReference(imageStream)
         );
-
-        await SetCurrentPreviewType(WadFilePreviewType.Image);
     }
 
     private async Task PreviewPropertyBin(Stream stream)
@@ -565,12 +557,10 @@ public partial class WadExplorer : IDisposable
             this._previewQueue.Clear();
 
             ToggleLoadingPreview(true);
-            await Task.Delay(10);
 
             await HandlePreviewTaskAsync(previewTask);
 
             ToggleLoadingPreview(false);
-            await Task.Delay(10);
         });
     }
 
