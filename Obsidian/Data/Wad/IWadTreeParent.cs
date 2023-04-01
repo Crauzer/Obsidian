@@ -1,5 +1,4 @@
 ﻿using LeagueToolkit.Core.Wad;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 namespace Obsidian.Data.Wad;
