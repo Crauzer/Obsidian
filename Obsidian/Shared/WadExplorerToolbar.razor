@@ -3,13 +3,15 @@
 <MudToolBar Dense DisableGutters>
     <MudMenu Dense Class="ml-4" Label="File" Color="Color.Inherit"
              AnchorOrigin="Origin.BottomLeft" Size="Size.Medium">
-        <MudMenuItem Icon="@CustomIcons.Material.ArchiveEdit" IconColor="Color.Primary" IconSize="Size.Small"
+        <MudMenuItem Disabled="@(WadTree is null)"
+                     Icon="@CustomIcons.Material.ArchiveEdit" IconColor="Color.Primary" IconSize="Size.Small"
                      OnClick="OnOpenWad">
             Open
             <MudText Style="@($"float: right; color: {Theme.PaletteDark.TextSecondary}")" Typo="Typo.caption">Ctrl O</MudText>
         </MudMenuItem>
         <MudDivider />
-        <MudMenuItem Icon="@CustomIcons.Material.ContentSaveAll" IconColor="Color.Primary" IconSize="Size.Small"
+        <MudMenuItem Disabled="@(WadTree is null)"
+                     Icon="@CustomIcons.Material.ContentSaveAll" IconColor="Color.Primary" IconSize="Size.Small"
                      OnClick="OnExtractAll">
             Extract All
         </MudMenuItem>
