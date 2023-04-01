@@ -45,11 +45,13 @@ public partial class ExplorerPage
                             => new(
                                 this.Hashtable,
                                 this.Config,
-                                Directory.EnumerateFiles(
-                                    this.Config.GameDataDirectory,
-                                    "*.wad.client",
-                                    SearchOption.AllDirectories
-                                )
+                                Directory
+                                    .EnumerateFiles(
+                                        this.Config.GameDataDirectory,
+                                        "*.*",
+                                        SearchOption.AllDirectories
+                                    )
+                                    .Where(x => x.Contains(".wad"))
                             )
                     };
                 });
