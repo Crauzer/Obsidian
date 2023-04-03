@@ -244,9 +244,13 @@ public class HashtableService
 
     public string GuessChunkPath(WadChunk chunk, WadFile wad)
     {
-        using Stream stream = wad.LoadChunkDecompressed(chunk).AsStream();
+        string extension = null;
+        if (chunk.Compression is not WadChunkCompression.Satellite)
+        {
+            using Stream stream = wad.LoadChunkDecompressed(chunk).AsStream();
 
-        string extension = LeagueFile.GetExtension(LeagueFile.GetFileType(stream));
+            extension = LeagueFile.GetExtension(LeagueFile.GetFileType(stream));
+        }
 
         return string.IsNullOrEmpty(extension) switch
         {
