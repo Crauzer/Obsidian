@@ -52,7 +52,9 @@ public partial class ExplorerPage
     {
         await InvokeAsync(() =>
         {
+            this.WadTree.Dispose();
             this.WadTree = null;
+
             StateHasChanged();
         });
 

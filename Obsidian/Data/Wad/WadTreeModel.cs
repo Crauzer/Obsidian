@@ -37,7 +37,7 @@ public class WadTreeModel : IWadTreeParent, IDisposable
             .Where(x => x.IsSelected && x is WadTreeFileModel)
             .Select(x => x as WadTreeFileModel);
 
-    private Dictionary<string, WadFile> _mountedWadFiles = new();
+    private readonly Dictionary<string, WadFile> _mountedWadFiles = new();
 
     public bool IsDisposed { get; private set; }
 
@@ -48,23 +48,16 @@ public class WadTreeModel : IWadTreeParent, IDisposable
         this.Hashtable = hashtable;
         this.Config = config;
 
-        Build(wadFiles);
-    }
-
-    private void Build(IEnumerable<string> wadFiles)
-    {
-        Log.Information($"Building wad tree");
-
-        this.Items.Clear();
-
         foreach (string wadFilePath in wadFiles)
         {
-            CreateTreeForWadFile(
-                new(wadFilePath),
-                PathIO
-                    .GetRelativePath(this.Config.GameDataDirectory, wadFilePath)
-                    .Replace(PathIO.DirectorySeparatorChar, '/')
-            );
+            WadFile wad = new(wadFilePath);
+            string relativeWadPath = PathIO
+                .GetRelativePath(this.Config.GameDataDirectory, wadFilePath)
+                .Replace(PathIO.DirectorySeparatorChar, '/');
+
+            this._mountedWadFiles.Add(relativeWadPath, wad);
+
+            CreateTreeForWadFile(new(wadFilePath), relativeWadPath);
         }
 
         SortItems();
@@ -98,7 +91,7 @@ public class WadTreeModel : IWadTreeParent, IDisposable
                 item.SortItems();
         }
     }
-     
+
     public void Dispose()
     {
         Dispose(disposing: true);
@@ -111,12 +104,8 @@ public class WadTreeModel : IWadTreeParent, IDisposable
             return;
 
         if (disposing)
-        {
             foreach (var (_, wad) in this._mountedWadFiles)
-            {
                 wad?.Dispose();
-            }
-        }
 
         this.IsDisposed = true;
     }
