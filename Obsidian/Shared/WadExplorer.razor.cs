@@ -54,6 +54,9 @@ public partial class WadExplorer : IDisposable
     [Parameter]
     public WadTreeModel WadTree { get; set; }
 
+    [Parameter]
+    public EventCallback RebuildWadTree { get; set; }
+
     private WadFilter _wadFilterComponent;
     private WadFileTextPreview _textPreview;
 
@@ -196,11 +199,9 @@ public partial class WadExplorer : IDisposable
                 }
             });
 
-            // Re-build trees
-            Log.Information("Re-building file trees");
-            await InvokeAsync(() => {
-                // TODO
-            });
+            // Re-build tree
+            this.WadTree = null;
+            await this.RebuildWadTree.InvokeAsync();
 
             this.Snackbar.Add("Successfully loaded hashtables!", Severity.Success);
         }

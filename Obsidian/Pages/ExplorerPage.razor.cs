@@ -30,6 +30,42 @@ public partial class ExplorerPage
 
     public WadTreeModel WadTree { get; set; }
 
+    private WadTreeModel CreateWadTree() =>
+        string.IsNullOrEmpty(this.Config.GameDataDirectory) switch
+        {
+            true => new(this.Hashtable, this.Config, Array.Empty<string>()),
+            false
+                => new(
+                    this.Hashtable,
+                    this.Config,
+                    Directory
+                        .EnumerateFiles(
+                            this.Config.GameDataDirectory,
+                            "*.*",
+                            SearchOption.AllDirectories
+                        )
+                        .Where(x => x.EndsWith(".wad") || x.EndsWith(".wad.client"))
+                )
+        };
+
+    private async Task RebuildWadTree()
+    {
+        await InvokeAsync(() =>
+        {
+            this.WadTree = null;
+            StateHasChanged();
+        });
+
+        await InvokeAsync(async () =>
+        {
+            await Task.Run(() =>
+            {
+                this.WadTree = CreateWadTree();
+            });
+            StateHasChanged();
+        });
+    }
+
     protected override void OnInitialized()
     {
         _ = InvokeAsync(async () =>
@@ -38,22 +74,7 @@ public partial class ExplorerPage
             {
                 await Task.Run(() =>
                 {
-                    this.WadTree = string.IsNullOrEmpty(this.Config.GameDataDirectory) switch
-                    {
-                        true => new(this.Hashtable, this.Config, Array.Empty<string>()),
-                        false
-                            => new(
-                                this.Hashtable,
-                                this.Config,
-                                Directory
-                                    .EnumerateFiles(
-                                        this.Config.GameDataDirectory,
-                                        "*.*",
-                                        SearchOption.AllDirectories
-                                    )
-                                    .Where(x => x.EndsWith(".wad") || x.EndsWith(".wad.client"))
-                            )
-                    };
+                    this.WadTree = CreateWadTree();
                 });
                 StateHasChanged();
             }
