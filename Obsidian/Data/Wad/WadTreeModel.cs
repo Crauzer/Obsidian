@@ -57,7 +57,7 @@ public class WadTreeModel : IWadTreeParent, IDisposable
 
             this._mountedWadFiles.Add(relativeWadPath, wad);
 
-            CreateTreeForWadFile(new(wadFilePath), relativeWadPath);
+            CreateTreeForWadFile(wad, relativeWadPath);
         }
 
         SortItems();
