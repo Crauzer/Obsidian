@@ -51,7 +51,7 @@ public partial class ExplorerPage
                                         "*.*",
                                         SearchOption.AllDirectories
                                     )
-                                    .Where(x => x.Contains(".wad"))
+                                    .Where(x => x.EndsWith(".wad") || x.EndsWith(".wad.client"))
                             )
                     };
                 });

@@ -79,7 +79,7 @@ public class WadTreeModel : IWadTreeParent, IDisposable
             string path = this.Hashtable.TryGetChunkPath(chunk, out path) switch
             {
                 true => path,
-                false => this.Hashtable.GuessChunkPath(chunk, wad),
+                false => HashtableService.GuessChunkPath(chunk, wad),
             };
 
             this.AddWadFile(wadFilePathComponents.Concat(path.Split('/')), wad, chunk);
