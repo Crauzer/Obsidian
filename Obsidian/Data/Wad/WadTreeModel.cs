@@ -48,10 +48,10 @@ public class WadTreeModel : IWadTreeParent, IDisposable
         this.Hashtable = hashtable;
         this.Config = config;
 
-        Rebuild(wadFiles);
+        Build(wadFiles);
     }
 
-    private void Rebuild(IEnumerable<string> wadFiles)
+    private void Build(IEnumerable<string> wadFiles)
     {
         Log.Information($"Re-building wad tree");
 
