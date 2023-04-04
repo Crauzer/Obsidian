@@ -50,17 +50,29 @@ public class WadTreeModel : IWadTreeParent, IDisposable
 
         foreach (string wadFilePath in wadFiles)
         {
-            WadFile wad = new(wadFilePath);
-            string relativeWadPath = PathIO
-                .GetRelativePath(this.Config.GameDataDirectory, wadFilePath)
-                .Replace(PathIO.DirectorySeparatorChar, '/');
-
-            this._mountedWadFiles.Add(relativeWadPath, wad);
-
-            CreateTreeForWadFile(wad, relativeWadPath);
+            try
+            {
+                MountWadFile(wadFilePath);
+            }
+            catch (Exception exception)
+            {
+                Log.Error(exception, "Failed to mount Wad file: {WadFile}", wadFilePath);
+            }
         }
 
         SortItems();
+    }
+
+    private void MountWadFile(string path)
+    {
+        WadFile wad = new(path);
+        string relativeWadPath = PathIO
+            .GetRelativePath(this.Config.GameDataDirectory, path)
+            .Replace(PathIO.DirectorySeparatorChar, '/');
+
+        this._mountedWadFiles.Add(relativeWadPath, wad);
+
+        CreateTreeForWadFile(wad, relativeWadPath);
     }
 
     public void CreateTreeForWadFile(WadFile wad, string wadFilePath)
