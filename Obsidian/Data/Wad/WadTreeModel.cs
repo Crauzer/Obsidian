@@ -53,7 +53,7 @@ public class WadTreeModel : IWadTreeParent, IDisposable
 
     private void Build(IEnumerable<string> wadFiles)
     {
-        Log.Information($"Re-building wad tree");
+        Log.Information($"Building wad tree");
 
         this.Items.Clear();
 
