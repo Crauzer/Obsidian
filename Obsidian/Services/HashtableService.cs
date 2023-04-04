@@ -242,20 +242,25 @@ public class HashtableService
     public bool TryGetChunkPath(WadChunk chunk, out string path) =>
         this.Hashes.TryGetValue(chunk.PathHash, out path);
 
-    public string GuessChunkPath(WadChunk chunk, WadFile wad)
+    public static string GuessChunkPath(WadChunk chunk, WadFile wad)
     {
-        string extension = null;
-        if (chunk.Compression is not WadChunkCompression.Satellite)
+        string extension = chunk.Compression switch
         {
-            using Stream stream = wad.LoadChunkDecompressed(chunk).AsStream();
-
-            extension = LeagueFile.GetExtension(LeagueFile.GetFileType(stream));
-        }
+            WadChunkCompression.Satellite => null,
+            _ => GuessChunkExtension(chunk, wad)
+        };
 
         return string.IsNullOrEmpty(extension) switch
         {
             true => string.Format("{0:x16}", chunk.PathHash),
             false => string.Format("{0:x16}.{1}", chunk.PathHash, extension),
         };
+
+        static string GuessChunkExtension(WadChunk chunk, WadFile wad)
+        {
+            using Stream stream = wad.LoadChunkDecompressed(chunk).AsStream();
+
+            return LeagueFile.GetExtension(LeagueFile.GetFileType(stream));
+        }
     }
 }
