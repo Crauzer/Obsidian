@@ -69,10 +69,8 @@ public partial class WadExplorer : IDisposable
 
     private HotKeysContext _hotKeysContext;
 
-    private bool _isLoadingIndex = true;
     private bool _isLoadingWadFile = false;
     private bool _isExportingFiles = false;
-    private bool _isLoadingHashtable = false;
 
     // TODO: Asset loading should be moved into a new component
     private bool _isLoadingPreview = false;
@@ -187,7 +185,6 @@ public partial class WadExplorer : IDisposable
             return;
 
         Log.Information("Loading external hashtables: {Hashtables}", dialog.FileNames);
-        ToggleLoadingHashtable(true);
         try
         {
             // Load hashtables
@@ -200,7 +197,6 @@ public partial class WadExplorer : IDisposable
             });
 
             // Re-build tree
-            this.WadTree = null;
             await this.RebuildWadTree.InvokeAsync();
 
             this.Snackbar.Add("Successfully loaded hashtables!", Severity.Success);
@@ -208,10 +204,6 @@ public partial class WadExplorer : IDisposable
         catch (Exception exception)
         {
             SnackbarUtils.ShowHardError(this.Snackbar, exception);
-        }
-        finally
-        {
-            ToggleLoadingHashtable(false);
         }
     }
     #endregion
@@ -519,12 +511,6 @@ public partial class WadExplorer : IDisposable
     public void ToggleExporting(bool isExporting)
     {
         this._isExportingFiles = isExporting;
-        StateHasChanged();
-    }
-
-    public void ToggleLoadingHashtable(bool value)
-    {
-        this._isLoadingHashtable = value;
         StateHasChanged();
     }
 
