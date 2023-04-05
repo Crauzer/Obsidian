@@ -32,28 +32,6 @@ public static class IWadTreeParentExtensions
         return directory;
     }
 
-    public static void AddFsFile(this IWadTreeParent parent, IEnumerable<string> pathComponents)
-    {
-        // File belongs to this folder
-        if (pathComponents.Count() is 1)
-        {
-            string name = pathComponents.First();
-            parent.Items.Add(name, new WadTreeItemModel(parent, name));
-            return;
-        }
-
-        string directoryName = pathComponents.First();
-        WadTreeItemModel directory = parent.Items.GetValueOrDefault(directoryName);
-
-        if (directory is null)
-        {
-            directory = new(parent, directoryName);
-            parent.Items.Add(directory.Name, directory);
-        }
-
-        directory.AddFsFile(pathComponents.Skip(1));
-    }
-
     public static void AddWadFile(
         this IWadTreeParent parent,
         IEnumerable<string> pathComponents,
