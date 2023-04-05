@@ -10,28 +10,6 @@ public interface IWadTreeParent : IWadTreePathable
 
 public static class IWadTreeParentExtensions
 {
-    public static WadTreeItemModel PrepareDirectory(
-        this IWadTreeParent parent,
-        IEnumerable<string> pathComponents
-    )
-    {
-        string folderName = pathComponents.First();
-
-        WadTreeItemModel directory = parent.Items.GetValueOrDefault(folderName);
-        directory ??= new(null, folderName);
-
-        if (pathComponents.Count() is 1)
-        {
-            parent.Items.Add(directory.Name, directory);
-        }
-        else
-        {
-            directory.PrepareDirectory(pathComponents.Skip(1));
-        }
-
-        return directory;
-    }
-
     public static void AddWadFile(
         this IWadTreeParent parent,
         IEnumerable<string> pathComponents,
@@ -58,9 +36,6 @@ public static class IWadTreeParentExtensions
 
         directory.AddWadFile(pathComponents.Skip(1), wad, chunk);
     }
-
-    public static WadTreeItemModel FindItemOrDefault(this IWadTreeParent parent, string path) =>
-        parent.TraverseFlattenedItems().FirstOrDefault(x => x.Path == path);
 
     public static IEnumerable<WadTreeItemModel> TraverseFlattenedItems(this IWadTreeParent parent)
     {
