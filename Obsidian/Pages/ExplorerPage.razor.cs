@@ -30,12 +30,19 @@ public partial class ExplorerPage
 
     public WadTreeModel WadTree { get; set; }
 
-    private WadTreeModel CreateWadTree() =>
-        string.IsNullOrEmpty(this.Config.GameDataDirectory) switch
+    private WadTreeModel CreateWadTree()
+    {
+        return string.IsNullOrEmpty(this.Config.GameDataDirectory) switch
         {
-            true => new(this.Hashtable, this.Config, Array.Empty<string>()),
-            false
-                => new(
+            true => CreateEmptyWadTree(),
+            false => TryCreateWadTree()
+        };
+
+        WadTreeModel TryCreateWadTree()
+        {
+            try
+            {
+                return new(
                     this.Hashtable,
                     this.Config,
                     Directory
@@ -45,8 +52,22 @@ public partial class ExplorerPage
                             SearchOption.AllDirectories
                         )
                         .Where(x => x.EndsWith(".wad") || x.EndsWith(".wad.client"))
-                )
-        };
+                );
+            }
+            catch (Exception exception)
+            {
+                SnackbarUtils.ShowHardError(
+                    this.Snackbar,
+                    new InvalidOperationException("Failed to create wad tree", exception)
+                );
+
+                return CreateEmptyWadTree();
+            }
+        }
+    }
+
+    private WadTreeModel CreateEmptyWadTree() =>
+        new(this.Hashtable, this.Config, Array.Empty<string>());
 
     private async Task RebuildWadTree()
     {
