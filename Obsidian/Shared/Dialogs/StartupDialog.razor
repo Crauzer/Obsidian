@@ -10,7 +10,7 @@
                 Configure
             </MudText>
             <MudSpacer />
-            <MudButton OnClick="@(_ => Dialog.Close())">
+            <MudButton OnClick="@Skip">
                 Skip
             </MudButton>
         </MudStack>
@@ -18,19 +18,12 @@
     <DialogContent>
         <MudContainer Style="width: 40vw; overflow-y: scroll;">
             <MudStack Spacing="2">
-                <MudAlert Severity="Severity.Info" Variant="Variant.Text">
-                    It looks like this is your first time running Obsidian, please select your game data directory.
-                </MudAlert>
-                <DirectoryInput Directory="@Config.GameDataDirectory"
+                <DirectoryInput Label="League of Legends directory"
+                                Directory="@Config.GameDataDirectory"
                                 OnClearDirectory="@(_ => Config.GameDataDirectory = null)"
                                 OnSelectDirectory="SelectGameDataDirectory">
                     <DescriptionContent>
-                        <MudText Typo="Typo.body2">
-                            This is the FINAL assets directory of the game.
-                        </MudText>
-                        <MudText Typo="Typo.body2">
-                            Example: C:\Riot Games\League of Legends\Game\DATA\FINAL
-                        </MudText>
+                        It looks like this is your first time running Obsidian, please select your League of Legends directory.
                     </DescriptionContent>
                 </DirectoryInput>
                 @if (string.IsNullOrEmpty(Config.GameDataDirectory) is false)
@@ -67,6 +60,12 @@
 
         if (dialog.ShowDialog(this.Window.WindowHandle) is CommonFileDialogResult.Ok)
             this.Config.GameDataDirectory = dialog.FileName;
+    }
+
+    private void Skip()
+    {
+        this.Config.DoNotRequireGameDirectory = true;
+        this.Dialog.Close();
     }
 
     protected override void OnInitialized()

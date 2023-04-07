@@ -106,7 +106,7 @@
     {
         this._isLoadingHashtable = false;
 
-        if (string.IsNullOrEmpty(this.Config.GameDataDirectory))
+        if (string.IsNullOrEmpty(this.Config.GameDataDirectory) && !this.Config.DoNotRequireGameDirectory)
             await this.DialogService.Show<StartupDialog>().Result;
 
         this._isReady = true;

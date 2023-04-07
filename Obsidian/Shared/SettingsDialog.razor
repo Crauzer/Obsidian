@@ -14,20 +14,14 @@
         <MudContainer Style="width: 60vw; height: 75vh; overflow-y: scroll;">
             <MudGrid Spacing="2">
                 <MudItem xs="12">
-                    <DirectoryInput Label="Game Data"
-                        Directory="@Config.GameDataDirectory"
-                                    OnClearDirectory="@(_ => Config.GameDataDirectory = null)"
-                                    OnSelectDirectory="SelectGameDataDirectory">
-                        <DescriptionContent>
-                            <MudText>
-                                This is the default directory that will be used for opening Wad archives
-                            </MudText>
-                        </DescriptionContent>
-                    </DirectoryInput>
+                    <DirectoryInput Label="League of Legends directory"
+                                    Directory="@Config.GameDataDirectory"
+                                    OnClearDirectory="@(_ => SetGameDataDirectory(null))"
+                                    OnSelectDirectory="SelectGameDataDirectory" />
                 </MudItem>
                 <MudItem xs="12">
                     <DirectoryInput Label="Default Extract Directory"
-                        Directory="@Config.DefaultExtractDirectory"
+                                    Directory="@Config.DefaultExtractDirectory"
                                     OnClearDirectory="@(_ => Config.DefaultExtractDirectory = null)"
                                     OnSelectDirectory="SelectDefaultExportDirectory">
                         <DescriptionContent>
@@ -82,11 +76,7 @@
         if (dialog.ShowDialog(this.Window.WindowHandle) is not CommonFileDialogResult.Ok)
             return;
 
-        this.Config.GameDataDirectory = dialog.FileName;
-        this.Snackbar.Add("Please restart Obsidian to fully apply changes!", Severity.Warning, x =>
-        {
-            x.RequireInteraction = true;
-        });
+        SetGameDataDirectory(dialog.FileName);
     }
     public void SelectDefaultExportDirectory()
     {
@@ -94,6 +84,15 @@
 
         if (dialog.ShowDialog(this.Window.WindowHandle) is CommonFileDialogResult.Ok)
             this.Config.DefaultExtractDirectory = dialog.FileName;
+    }
+
+    private void SetGameDataDirectory(string value)
+    {
+        this.Config.GameDataDirectory = value;
+        this.Snackbar.Add("Please restart Obsidian to fully apply changes!", Severity.Warning, x =>
+        {
+            x.RequireInteraction = true;
+        });
     }
 
     protected override void OnInitialized()

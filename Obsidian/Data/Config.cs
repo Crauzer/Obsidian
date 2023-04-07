@@ -74,6 +74,17 @@ public class Config
     private string _binEntriesHashesChecksum;
     #endregion
 
+    public bool DoNotRequireGameDirectory
+    {
+        get => this._doNotRequireGameDirectory;
+        set
+        {
+            this._doNotRequireGameDirectory = value;
+            Save();
+        }
+    }
+    private bool _doNotRequireGameDirectory;
+
     public string GameDataDirectory 
     {
         get => this._gameDataDirectory;
