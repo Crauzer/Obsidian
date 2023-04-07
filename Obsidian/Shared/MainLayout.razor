@@ -67,6 +67,9 @@
                     <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Size="Size.Medium"
                                    OnClick="GoToGithub" />
                 </MudTooltip>
+                <MudText Typo="Typo.body2">
+                    @Version
+                </MudText>
             </MudStack>
         </MudStack>
     </MudDrawer>
@@ -93,6 +96,8 @@
     public AppTheme Theme { get; } = new();
 
     public string UpdateUrl { get; set; }
+
+    public string Version => SemVersion.FromVersion(Assembly.GetExecutingAssembly().GetName().Version).ToString();
 
     private bool _isLoadingHashtable;
     private bool _isReady;
