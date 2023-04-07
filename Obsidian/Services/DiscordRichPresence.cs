@@ -37,30 +37,10 @@ public sealed class DiscordRichPresence : IDisposable
             new()
             {
                 Timestamps = new(this._startTime),
-                State = "Idling",
                 Assets = new()
                 {
                     LargeImageKey = "obsidian_logo",
-                    SmallImageKey = "idle",
                     LargeImageText = "Obsidian",
-                    SmallImageText = "Idling"
-                }
-            }
-        );
-
-    public void SetPresenceViewing(string name) =>
-        SetPresence(
-            new()
-            {
-                Timestamps = new(this._startTime),
-                State = "Viewing",
-                Details = name,
-                Assets = new()
-                {
-                    LargeImageKey = "obsidian_logo",
-                    SmallImageKey = "viewing",
-                    LargeImageText = "Obsidian",
-                    SmallImageText = "Viewing"
                 }
             }
         );
