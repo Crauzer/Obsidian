@@ -496,6 +496,8 @@ public partial class WadExplorer : IDisposable
             item.IsExpanded = true;
     }
 
+    private Task OnRefreshTree() => this.RebuildWadTree.InvokeAsync();
+
     private async Task OnShouldPreviewSelectedItemsChanged(bool value)
     {
         this.Config.ShouldPreviewSelectedItems = value;

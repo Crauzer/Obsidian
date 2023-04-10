@@ -52,7 +52,7 @@
                  Dimension="_splitterDimension" DimensionChanged="OnDimensionChanged">
         <StartContent>
             <MudStack Class="relative"
-                      Style="width: 100%"   
+                      Style="width: 100%"
                       Spacing="0">
                 @if (WadTree is not null)
                 {
@@ -72,6 +72,13 @@
                                            Variant="Variant.Text"
                                            OnClick="@OnExpandAll" />
                             </MudTooltip>
+                            <MudDivider Vertical FlexItem/>
+                            <MudTooltip Text="Refresh" Color="Color.Dark">
+                                <MudIconButton Icon="@CustomIcons.Material.Refresh"
+                                           Size="Size.Small"
+                                           Variant="Variant.Text"
+                                           OnClick="@OnRefreshTree" />
+                            </MudTooltip>
                             <MudSpacer />
                             <MudTooltip Text="Preview selected items" Color="Color.Dark">
 
@@ -86,14 +93,14 @@
                                                  Variant="Variant.Text" />
                             </MudTooltip>
                         </MudStack>
-                        <MudDivider/>
+                        <MudDivider />
                         <WadFilter FullWidth
                                @ref="_wadFilterComponent"
                                Filter="@WadTree.Filter" UseRegexFilter="@WadTree.UseRegexFilter"
                                FilterChanged="OnFilterChanged" UseRegexFilterChanged="OnUseRegexFilterChanged" />
                     </MudPaper>
 
-                    
+
                     <div style="width: 100%">
                         <TreeView TItem="WadTreeItemModel"
                               ItemsFlat="@GetVisibleItemsForWadTree()"
