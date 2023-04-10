@@ -245,19 +245,6 @@ public partial class WadExplorer : IDisposable
             return;
         }
 
-        // Defer showing the loader to prevent UI blinking for fast previews
-        ////CancellationTokenSource tokenSource = new();
-        ////Task.Delay(100)
-        ////    .ContinueWith(
-        ////        async (_) =>
-        ////        {
-        ////            tokenSource.Token.ThrowIfCancellationRequested();
-        ////
-        ////            await InvokeAsync(() => ToggleLoadingPreview(true));
-        ////        }
-        ////    )
-        ////    .AndForget();
-
         if(this.Config.ShouldPreviewSelectedItems)
             this._previewQueue.Enqueue(PreviewSelectedFile(fileItem));
     }
