@@ -52,35 +52,52 @@
                  Dimension="_splitterDimension" DimensionChanged="OnDimensionChanged">
         <StartContent>
             <MudStack Class="relative"
-                      Style="width: 100%"
-                      Spacing="1">
+                      Style="width: 100%"   
+                      Spacing="0">
                 @if (WadTree is not null)
                 {
-                    <MudStack Row
-                          Class="mx-1"
-                          Spacing="2">
-                        <MudSpacer />
-                        <MudTooltip Text="Preview selected items" Color="Color.Dark">
+                    <MudPaper Square Class="mud-background relative" Elevation="2">
+                        <MudStack Row
+                              Class="mx-1 my-1"
+                              Spacing="2">
+                            <MudTooltip Text="Collapse All" Color="Color.Dark">
+                                <MudIconButton Icon="@CustomIcons.Material.CollapseAll"
+                                           Size="Size.Small"
+                                           Variant="Variant.Text"
+                                           OnClick="@OnCollapseAll" />
+                            </MudTooltip>
+                            <MudTooltip Text="Expand All" Color="Color.Dark">
+                                <MudIconButton Icon="@CustomIcons.Material.ExpandAll"
+                                           Size="Size.Small"
+                                           Variant="Variant.Text"
+                                           OnClick="@OnExpandAll" />
+                            </MudTooltip>
+                            <MudSpacer />
+                            <MudTooltip Text="Preview selected items" Color="Color.Dark">
 
-                            <MudToggleIconButton Toggled="@Config.ShouldPreviewSelectedItems"
-                                             ToggledChanged="@OnShouldPreviewSelectedItemsChanged"
-                                             Icon="@CustomIcons.Material.EyeRefresh"
-                                             ToggledIcon="@CustomIcons.Material.EyeRefresh"
-                                             Size="Size.Small"
-                                             ToggledSize="Size.Small"
-                                             Color="Color.Default"
-                                             ToggledColor="Color.Primary"
-                                             Variant="Variant.Text" />
-                        </MudTooltip>
-                    </MudStack>
-                    <WadFilter FullWidth
-                           @ref="_wadFilterComponent"
-                           Filter="@WadTree.Filter" UseRegexFilter="@WadTree.UseRegexFilter"
-                           FilterChanged="OnFilterChanged" UseRegexFilterChanged="OnUseRegexFilterChanged" />
-                    <div class="mt-2" style="width: 100%">
+                                <MudToggleIconButton Toggled="@Config.ShouldPreviewSelectedItems"
+                                                 ToggledChanged="@OnShouldPreviewSelectedItemsChanged"
+                                                 Icon="@CustomIcons.Material.EyeRefresh"
+                                                 ToggledIcon="@CustomIcons.Material.EyeRefresh"
+                                                 Size="Size.Small"
+                                                 ToggledSize="Size.Small"
+                                                 Color="Color.Default"
+                                                 ToggledColor="Color.Primary"
+                                                 Variant="Variant.Text" />
+                            </MudTooltip>
+                        </MudStack>
+                        <MudDivider/>
+                        <WadFilter FullWidth
+                               @ref="_wadFilterComponent"
+                               Filter="@WadTree.Filter" UseRegexFilter="@WadTree.UseRegexFilter"
+                               FilterChanged="OnFilterChanged" UseRegexFilterChanged="OnUseRegexFilterChanged" />
+                    </MudPaper>
+
+                    
+                    <div style="width: 100%">
                         <TreeView TItem="WadTreeItemModel"
                               ItemsFlat="@GetVisibleItemsForWadTree()"
-                              Height="calc(100vh - 142px)"
+                              Height="calc(100vh - 136px)"
                               OverscanCount="25"
                               ItemSize="36f">
                             <ItemTemplate>

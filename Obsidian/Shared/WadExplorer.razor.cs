@@ -245,7 +245,7 @@ public partial class WadExplorer : IDisposable
             return;
         }
 
-        if(this.Config.ShouldPreviewSelectedItems)
+        if (this.Config.ShouldPreviewSelectedItems)
             this._previewQueue.Enqueue(PreviewSelectedFile(fileItem));
     }
 
@@ -478,6 +478,22 @@ public partial class WadExplorer : IDisposable
                 "resizeViewport",
                 WadPreviewUtils.VIEWPORT_CONTAINER_ID
             );
+    }
+
+    private void OnCollapseAll()
+    {
+        foreach (WadTreeItemModel item in this.WadTree.TraverseFlattenedItems())
+            item.IsExpanded = false;
+    }
+
+    private void OnExpandAll()
+    {
+        foreach (
+            WadTreeItemModel item in this.WadTree
+                .TraverseFlattenedItems()
+                .Where(x => x.Type is WadTreeItemType.Directory)
+        )
+            item.IsExpanded = true;
     }
 
     private async Task OnShouldPreviewSelectedItemsChanged(bool value)
