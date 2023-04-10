@@ -258,7 +258,8 @@ public partial class WadExplorer : IDisposable
         ////    )
         ////    .AndForget();
 
-        this._previewQueue.Enqueue(PreviewSelectedFile(fileItem));
+        if(this.Config.ShouldPreviewSelectedItems)
+            this._previewQueue.Enqueue(PreviewSelectedFile(fileItem));
     }
 
     #region Preview
@@ -424,7 +425,6 @@ public partial class WadExplorer : IDisposable
         Log.Information("Previewing image from stream");
 
         await SetCurrentPreviewType(WadFilePreviewType.Image);
-        await Task.Delay(25);
 
         await this.JsRuntime.InvokeVoidAsync(
             "setImage",
@@ -491,6 +491,13 @@ public partial class WadExplorer : IDisposable
                 "resizeViewport",
                 WadPreviewUtils.VIEWPORT_CONTAINER_ID
             );
+    }
+
+    private async Task OnShouldPreviewSelectedItemsChanged(bool value)
+    {
+        this.Config.ShouldPreviewSelectedItems = value;
+
+        await SetCurrentPreviewType(WadFilePreviewType.None);
     }
 
     private void OnFilterChanged(string value)

@@ -21,6 +21,9 @@ public partial class WadFileImagePreview
     public ISnackbar Snackbar { get; set; }
 
     [Parameter]
+    public bool Hidden { get; set; }
+
+    [Parameter]
     public WadTreeModel WadTree { get; set; }
 
     [Parameter]

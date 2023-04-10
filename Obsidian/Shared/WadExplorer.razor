@@ -56,6 +56,23 @@
                       Spacing="1">
                 @if (WadTree is not null)
                 {
+                    <MudStack Row
+                          Class="mx-1"
+                          Spacing="2">
+                        <MudSpacer />
+                        <MudTooltip Text="Preview selected items" Color="Color.Dark">
+
+                            <MudToggleIconButton Toggled="@Config.ShouldPreviewSelectedItems"
+                                             ToggledChanged="@OnShouldPreviewSelectedItemsChanged"
+                                             Icon="@CustomIcons.Material.EyeRefresh"
+                                             ToggledIcon="@CustomIcons.Material.EyeRefresh"
+                                             Size="Size.Small"
+                                             ToggledSize="Size.Small"
+                                             Color="Color.Default"
+                                             ToggledColor="Color.Primary"
+                                             Variant="Variant.Text" />
+                        </MudTooltip>
+                    </MudStack>
                     <WadFilter FullWidth
                            @ref="_wadFilterComponent"
                            Filter="@WadTree.Filter" UseRegexFilter="@WadTree.UseRegexFilter"
@@ -63,7 +80,7 @@
                     <div class="mt-2" style="width: 100%">
                         <TreeView TItem="WadTreeItemModel"
                               ItemsFlat="@GetVisibleItemsForWadTree()"
-                              Height="calc(100vh - 112px)"
+                              Height="calc(100vh - 142px)"
                               OverscanCount="25"
                               ItemSize="36f">
                             <ItemTemplate>
@@ -89,11 +106,8 @@
             @if (WadTree is not null)
             {
                 <MudStack Class="relative" Style="height: 100%; width: 100%">
-                    @if (WadTree.CurrentPreviewType is WadFilePreviewType.Image)
-                    {
-                        <WadFileImagePreview WadTree="WadTree" />
-                    }
-                    else if (WadTree.CurrentPreviewType is WadFilePreviewType.Viewport)
+                    <WadFileImagePreview Hidden="WadTree.CurrentPreviewType is not WadFilePreviewType.Image" WadTree="WadTree" />
+                    @if (WadTree.CurrentPreviewType is WadFilePreviewType.Viewport)
                     {
                         <WadFileViewport WadTree="WadTree" />
                     }
