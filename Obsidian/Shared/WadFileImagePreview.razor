@@ -4,7 +4,7 @@
 
 <MudMenu PositionAtCurser Dense
          Class="ma-auto"
-         Style="@(WadTree.CurrentPreviewType is WadFilePreviewType.Image ? "" : "display: none;")"
+         Style="@(Hidden ? "display: none;" : "")"
          ActivationEvent="MouseEvent.RightClick">
     <ChildContent>
         <MudMenuItem Icon="@CustomIcons.Material.ContentSave" IconColor="Color.Primary" IconSize="Size.Small"

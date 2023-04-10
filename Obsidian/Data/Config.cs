@@ -140,6 +140,17 @@ public class Config
     }
     private bool _loadSkinnedMeshAnimations = false;
 
+    public bool ShouldPreviewSelectedItems
+    {
+        get => this._shouldPreviewSelectedItems;
+        set
+        {
+            this._shouldPreviewSelectedItems = value;
+            Save();
+        }
+    }
+    public bool _shouldPreviewSelectedItems = true;
+
     private const string CONFIG_FILE = "config.json";
 
     public Config() { }
