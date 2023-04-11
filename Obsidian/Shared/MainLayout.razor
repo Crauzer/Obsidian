@@ -69,7 +69,7 @@
                                    OnClick="GoToGithub" />
                 </MudTooltip>
                 <MudText Typo="Typo.body2">
-                    @DisplayVersion
+                    @Program.VERSION.ToString()
                 </MudText>
             </MudStack>
         </MudStack>
@@ -97,8 +97,6 @@
     public AppTheme Theme { get; } = new();
 
     public string UpdateUrl { get; set; }
-
-    public string DisplayVersion => SemVersion.FromVersion(Version.Parse(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion)).ToString();
 
     private bool _isLoadingHashtable;
     private bool _isReady;
@@ -147,12 +145,10 @@
             IReadOnlyList<Release> releases = await gitClient.Repository.Release.GetAll("Crauzer", "Obsidian");
             Release newestRelease = releases[0];
 
-            FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
-            SemVersion assemblySemver = SemVersion.FromVersion(Version.Parse(versionInfo.FileVersion));
             SemVersion latestReleaseSemver = SemVersion.Parse(newestRelease.TagName, SemVersionStyles.Strict);
 
             if (latestReleaseSemver.IsPrerelease is false
-                && latestReleaseSemver.ComparePrecedenceTo(assemblySemver) > 0
+                && latestReleaseSemver.ComparePrecedenceTo(Program.VERSION) > 0
             )
             {
                 Log.Information($"Found new update: {latestReleaseSemver}");

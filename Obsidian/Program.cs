@@ -1,5 +1,4 @@
-﻿using DiscordRPC;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using MudBlazor;
 using MudBlazor.Services;
 using Obsidian.Data;
@@ -8,23 +7,20 @@ using Photino.Blazor;
 using PhotinoAPI;
 using Semver;
 using Serilog;
-using System.Reflection;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 namespace Obsidian;
 
 public class Program
 {
+    public static readonly SemVersion VERSION = SemVersion.Parse("5.1.2", SemVersionStyles.Strict);
+
     [STAThread]
     static void Main(string[] args)
     {
         InitializeLogger();
 
-        SemVersion version = SemVersion.FromVersion(
-            Assembly.GetExecutingAssembly().GetName().Version
-        );
-        Log.Information($"Version: {version}");
-
+        Log.Information($"Version: {VERSION}");
         Log.Information("Building app");
 
         PhotinoBlazorAppBuilder builder = PhotinoBlazorAppBuilder.CreateDefault(args);
