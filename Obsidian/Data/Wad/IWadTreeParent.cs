@@ -26,12 +26,15 @@ public static class IWadTreeParentExtensions
         }
 
         string folderName = pathComponents.First();
-        WadTreeItemModel directory = parent.Items.GetValueOrDefault(folderName);
-
-        if (directory is null)
+        WadTreeItemModel directory = null;
+        lock (parent)
         {
-            directory = new(parent, folderName);
-            parent.Items.Add(directory.Name, directory);
+            directory = parent.Items.GetValueOrDefault(folderName);
+            if (directory is null)
+            {
+                directory = new(parent, folderName);
+                parent.Items.Add(directory.Name, directory);
+            }
         }
 
         directory.AddWadFile(pathComponents.Skip(1), wad, chunk);
