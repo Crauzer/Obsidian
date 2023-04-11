@@ -5,6 +5,7 @@
 @using System.Reflection;
 @using Semver;
 @using Serilog;
+@using System.Diagnostics;
 @inherits LayoutComponentBase
 
 <style>
@@ -68,7 +69,7 @@
                                    OnClick="GoToGithub" />
                 </MudTooltip>
                 <MudText Typo="Typo.body2">
-                    @Version
+                    @DisplayVersion
                 </MudText>
             </MudStack>
         </MudStack>
@@ -97,7 +98,7 @@
 
     public string UpdateUrl { get; set; }
 
-    public string Version => SemVersion.FromVersion(Assembly.GetExecutingAssembly().GetName().Version).ToString();
+    public string DisplayVersion => SemVersion.FromVersion(Version.Parse(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion)).ToString();
 
     private bool _isLoadingHashtable;
     private bool _isReady;
@@ -146,9 +147,8 @@
             IReadOnlyList<Release> releases = await gitClient.Repository.Release.GetAll("Crauzer", "Obsidian");
             Release newestRelease = releases[0];
 
-            Version assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version;
-
-            SemVersion assemblySemver = SemVersion.FromVersion(assemblyVersion);
+            FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
+            SemVersion assemblySemver = SemVersion.FromVersion(Version.Parse(versionInfo.FileVersion));
             SemVersion latestReleaseSemver = SemVersion.Parse(newestRelease.TagName, SemVersionStyles.Strict);
 
             if (latestReleaseSemver.IsPrerelease is false
