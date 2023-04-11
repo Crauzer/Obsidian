@@ -5,6 +5,7 @@ using Obsidian.Data;
 using Obsidian.Data.Wad;
 using Obsidian.Services;
 using Obsidian.Utils;
+using Serilog;
 using Toolbelt.Blazor.HotKeys2;
 
 namespace Obsidian.Pages;
@@ -32,6 +33,8 @@ public partial class ExplorerPage
 
     private WadTreeModel CreateWadTree()
     {
+        Log.Information("Re-building Wad tree");
+
         return string.IsNullOrEmpty(this.Config.GameDataDirectory) switch
         {
             true => CreateEmptyWadTree(),
