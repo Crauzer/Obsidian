@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.HighPerformance.Helpers;
 using LeagueToolkit.Core.Wad;
 using Obsidian.Services;
 using Obsidian.Shared;
@@ -48,7 +49,7 @@ public class WadTreeModel : IWadTreeParent, IDisposable
         this.Hashtable = hashtable;
         this.Config = config;
 
-        foreach (string wadFilePath in wadFiles)
+        Parallel.ForEach(wadFiles, wadFilePath =>
         {
             try
             {
@@ -58,7 +59,7 @@ public class WadTreeModel : IWadTreeParent, IDisposable
             {
                 Log.Error(exception, "Failed to mount Wad file: {WadFile}", wadFilePath);
             }
-        }
+        });
 
         SortItems();
     }
