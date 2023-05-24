@@ -23,7 +23,19 @@ public class WadTreeItemModel
     public int Depth => this.GetDepth();
 
     public Guid Id { get; } = Guid.NewGuid();
-    public string Name { get; set; }
+
+    private string _name;
+    public string Name {
+        get => this._name;
+        set {
+            this._name = value;
+
+            this.IsWadArchive = this._name.EndsWith(".wad", StringComparison.OrdinalIgnoreCase)
+                                || this._name.EndsWith(".wad.client", StringComparison.OrdinalIgnoreCase)
+                                || this._name.EndsWith(".wad.mobile", StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
     public string Path { get; }
 
     public string Icon => GetIcon();
@@ -34,17 +46,9 @@ public class WadTreeItemModel
     public bool IsChecked { get; set; }
     public bool IsExpanded { get; set; }
 
-    public Dictionary<string, WadTreeItemModel> Items { get; protected set; } = new();
+    public List<WadTreeItemModel> Items { get; protected set; } = new();
 
-    public bool IsWadArchive {
-        get {
-            string extension = PathIO.GetExtension(this.Name);
-
-            return extension.Contains("wad")
-                || extension.Contains("client")
-                || extension.Contains("server");
-        }
-    }
+    public bool IsWadArchive { get; private set; }
 
     public WadTreeItemModel(IWadTreeParent parent, string name) {
         this.Parent = parent;
@@ -60,11 +64,10 @@ public class WadTreeItemModel
         if (this.Items is null)
             return;
 
-        this.Items = new(this.Items.OrderBy(x => x.Value));
+        this.Items.Sort();
 
-        foreach (var (_, item) in this.Items) {
-            if (item.Type is WadTreeItemType.Directory)
-                item.SortItems();
+        foreach (WadTreeItemModel item in this.Items.Where(item => item.Type is WadTreeItemType.Directory)) {
+            item.SortItems();
         }
     }
 

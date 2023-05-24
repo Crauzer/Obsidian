@@ -152,7 +152,7 @@ public partial class TreeWadItem {
     }
 
     private void Delete() {
-        this.Item.Parent.Items.Remove(this.Item.Name);
+        this.Item.Parent.Items.Remove(this.Item);
         this.Explorer.RefreshState();
     }
 }

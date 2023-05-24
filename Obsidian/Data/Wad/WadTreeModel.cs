@@ -23,12 +23,11 @@ public class WadTreeModel : IWadTreeParent, IDisposable {
 
     public WadFilePreviewType CurrentPreviewType { get; set; }
 
-    public Dictionary<string, WadTreeItemModel> Items { get; set; } = new();
+    public List<WadTreeItemModel> Items { get; set; } = new();
 
     public IEnumerable<WadTreeFileModel> CheckedFiles =>
         this.TraverseFlattenedCheckedItems()
-            .Where(x => x is WadTreeFileModel)
-            .Select(x => x as WadTreeFileModel);
+            .OfType<WadTreeFileModel>();
 
     public WadTreeFileModel SelectedFile => this.SelectedFiles.FirstOrDefault();
 
@@ -69,8 +68,15 @@ public class WadTreeModel : IWadTreeParent, IDisposable {
         CreateTreeForWadFile(wad, relativeWadPath);
     }
 
-    public void CreateTreeForWadFile(WadFile wad, string wadFilePath) {
+    public void CreateTreeForWadFile(WadFile wad, string wadFilePath, bool allowDuplicate = false) {
         IEnumerable<string> wadFilePathComponents = wadFilePath.Split('/');
+        IWadTreeParent wadParent = this;
+        if (allowDuplicate) {
+            var wadItem = new WadTreeItemModel(this, wadFilePathComponents.First());
+            this.Items.Add(wadItem);
+            wadParent = wadItem;
+            wadFilePathComponents = wadFilePathComponents.Skip(1);
+        }
 
         foreach (var (_, chunk) in wad.Chunks) {
             string path = this.Hashtable.TryGetChunkPath(chunk, out path) switch {
@@ -78,18 +84,17 @@ public class WadTreeModel : IWadTreeParent, IDisposable {
                 false => HashtableService.GuessChunkPath(chunk, wad),
             };
 
-            this.AddWadFile(wadFilePathComponents.Concat(path.Split('/')), wad, chunk);
+            wadParent.AddWadFile(wadFilePathComponents.Concat(path.Split('/')), wad, chunk);
         }
     }
 
     public void SortItems() {
-        Log.Information($"Sorting wad tree");
+        Log.Information("Sorting wad tree");
 
-        this.Items = new(this.Items.OrderBy(x => x.Value));
+        this.Items.Sort();
 
-        foreach (var (_, item) in this.Items) {
-            if (item.Type is WadTreeItemType.Directory)
-                item.SortItems();
+        foreach (WadTreeItemModel item in this.Items.Where(item => item.Type is WadTreeItemType.Directory)) {
+            item.SortItems();
         }
     }
 
