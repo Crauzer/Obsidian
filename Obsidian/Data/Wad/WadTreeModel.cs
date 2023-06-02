@@ -49,7 +49,7 @@ public class WadTreeModel : IWadTreeParent, IDisposable
         this.Hashtable = hashtable;
         this.Config = config;
 
-        Parallel.ForEach(wadFiles, wadFilePath =>
+        foreach(string wadFilePath in wadFiles)
         {
             try
             {
@@ -59,7 +59,7 @@ public class WadTreeModel : IWadTreeParent, IDisposable
             {
                 Log.Error(exception, "Failed to mount Wad file: {WadFile}", wadFilePath);
             }
-        });
+        }
 
         SortItems();
     }
