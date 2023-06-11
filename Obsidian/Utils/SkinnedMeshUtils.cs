@@ -63,7 +63,7 @@ public static class SkinnedMeshUtils
 
             textures[materialOverride.Submesh] = await CreateMaterialTextureImageBlob(
                 materialOverride.Material,
-                defaultTexture,
+                meshData.Texture,
                 skinPackage,
                 wad,
                 metaEnvironment,
