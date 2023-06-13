@@ -15,9 +15,11 @@ namespace Obsidian;
 public class Program
 {
     public static readonly SemVersion VERSION = SemVersion.FromVersion(
-        Attribute.GetCustomAttribute(typeof(Program).Assembly, typeof(AssemblyFileVersionAttribute)) is AssemblyFileVersionAttribute fileVersion
-            ? Version.Parse(fileVersion.Version)
-            : typeof(Program).Assembly.GetName().Version
+        Attribute.GetCustomAttribute(typeof(Program).Assembly, typeof(AssemblyFileVersionAttribute)) switch
+        {
+            AssemblyFileVersionAttribute fileVersion => Version.Parse(fileVersion.Version),
+            _ => typeof(Program).Assembly.GetName().Version
+        }
     );
 
     [STAThread]
