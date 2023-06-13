@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using MudBlazor;
 using MudBlazor.Services;
 using Obsidian.Data;
@@ -13,7 +14,11 @@ namespace Obsidian;
 
 public class Program
 {
-    public static readonly SemVersion VERSION = SemVersion.Parse("5.1.2", SemVersionStyles.Strict);
+    public static readonly SemVersion VERSION = SemVersion.FromVersion(
+        Attribute.GetCustomAttribute(typeof(Program).Assembly, typeof(AssemblyFileVersionAttribute)) is AssemblyFileVersionAttribute fileVersion
+            ? Version.Parse(fileVersion.Version)
+            : typeof(Program).Assembly.GetName().Version
+    );
 
     [STAThread]
     static void Main(string[] args)
