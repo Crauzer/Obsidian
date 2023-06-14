@@ -170,7 +170,10 @@ public class HashtableService
     {
         // Hashtable is up to date
         if (checksum == content.Sha)
+        {
+            Log.Information($"{path} is up to date");
             return checksum;
+        }
 
         Log.Information($"Downloading hashtable: {path} from {url}");
 
