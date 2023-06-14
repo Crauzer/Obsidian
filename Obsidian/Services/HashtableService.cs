@@ -193,7 +193,7 @@ public class HashtableService {
         }
     }
 
-    private void LoadBinHashtable(string hashtablePath, Dictionary<uint, string> hashtable) {
+    private static void LoadBinHashtable(string hashtablePath, Dictionary<uint, string> hashtable) {
         using StreamReader reader = new(hashtablePath);
         StringBuilder nameBuilder = new();
 
@@ -209,7 +209,7 @@ public class HashtableService {
         }
     }
 
-    private RepositoryContent GetRepositoryContent(
+    private static RepositoryContent GetRepositoryContent(
         IReadOnlyList<RepositoryContent> content,
         string name
     ) {
