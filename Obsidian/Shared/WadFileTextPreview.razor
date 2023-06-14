@@ -62,23 +62,16 @@
 
     public async Task PreviewRitobin(Stream stream)
     {
-        using MemoryStream textStream = new();
-        using (RitobinWriter writer =
+        using RitobinWriter writer =
             new(
-                textStream,
                 this.Hashtable.BinObjects,
                 this.Hashtable.BinClasses,
                 this.Hashtable.BinProperties,
-                this.Hashtable.BinHashes
-            ))
-        {
-            writer.WritePropertyBin(new(stream));
-        }
+                this.Hashtable.BinHashes,
+                this.Hashtable.Hashes
+            );
 
-        textStream.Position = 0;
-        using StreamReader textReader = new(textStream);
-
-        await this._codeEditor.SetValue(textReader.ReadToEnd());
+        await this._codeEditor.SetValue(writer.WritePropertyBin(new(stream)));
         await MonacoEditorGlobal.SetModelLanguage(await this._codeEditor.GetModel(), "ritobin");
     }
 }
