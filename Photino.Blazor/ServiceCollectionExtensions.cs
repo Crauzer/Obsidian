@@ -1,42 +1,35 @@
-using System;
-using System.IO;
-using System.Net.Http;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using PhotinoNET;
+using System;
+using System.IO;
+using System.Net.Http;
 
-namespace Photino.Blazor
-{
-    public static class ServiceCollectionExtensions
-    {
-        public static IServiceCollection AddBlazorDesktop(this IServiceCollection services)
-        {
+namespace Photino.Blazor {
+    public static class ServiceCollectionExtensions {
+        public static IServiceCollection AddBlazorDesktop(this IServiceCollection services) {
             services
                 .AddOptions<PhotinoBlazorAppConfiguration>()
-                .Configure(opts =>
-                {
+                .Configure(opts => {
                     opts.AppBaseUri = new Uri(PhotinoWebViewManager.AppBaseUri);
                     opts.HostPage = "index.html";
                 });
 
             return services
-                .AddScoped(sp =>
-                {
+                .AddScoped(sp => {
                     var handler = sp.GetService<PhotinoHttpHandler>();
                     return new HttpClient(handler) { BaseAddress = new Uri(PhotinoWebViewManager.AppBaseUri) };
                 })
-                .AddSingleton(sp =>
-                {
+                .AddSingleton(sp => {
                     var manager = sp.GetService<PhotinoWebViewManager>();
                     var store = sp.GetService<JSComponentConfigurationStore>();
 
                     return new BlazorWindowRootComponents(manager, store);
                 })
                 .AddSingleton<Dispatcher, PhotinoDispatcher>()
-                .AddSingleton<IFileProvider>(_ =>
-                {
+                .AddSingleton<IFileProvider>(_ => {
                     var root = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot");
                     return new PhysicalFileProvider(root);
                 })

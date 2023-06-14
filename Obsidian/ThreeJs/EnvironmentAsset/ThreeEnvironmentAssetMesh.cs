@@ -1,7 +1,6 @@
 ﻿namespace Obsidian.ThreeJs.EnvironmentAsset;
 
-public struct ThreeEnvironmentAssetMesh
-{
+public struct ThreeEnvironmentAssetMesh {
     public string Name { get; set; }
 
     public uint[] Indices { get; set; }

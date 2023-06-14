@@ -18,10 +18,8 @@ using System.Threading.Tasks;
 
 namespace Obsidian.Utils;
 
-public static class ImageUtils
-{
-    public static MemoryStream ConvertTextureToPng(Texture texture)
-    {
+public static class ImageUtils {
+    public static MemoryStream ConvertTextureToPng(Texture texture) {
         Image<Rgba32> image = ConvertTextureToImage(texture);
         MemoryStream imageStream = new();
 
@@ -31,25 +29,21 @@ public static class ImageUtils
         return imageStream;
     }
 
-    public static Image<Rgba32> ConvertTextureToImage(Texture texture)
-    {
+    public static Image<Rgba32> ConvertTextureToImage(Texture texture) {
         ReadOnlyMemory2D<ColorRgba32> mip = texture.Mips[0];
         return mip.ToImage();
     }
 
-    public static Image<Rgba32> GetImageFromTextureStream(Stream stream)
-    {
+    public static Image<Rgba32> GetImageFromTextureStream(Stream stream) {
         LeagueFileType fileType = LeagueFile.GetFileType(stream);
-        if (fileType is (LeagueFileType.TextureDds or LeagueFileType.Texture))
-        {
+        if (fileType is (LeagueFileType.TextureDds or LeagueFileType.Texture)) {
             return ConvertTextureToImage(Texture.Load(stream));
         }
 
         throw new InvalidDataException($"Failed to create Image for fileType: {fileType}");
     }
 
-    public static Stream CreateTexturePngImage(string path, WadFile wad)
-    {
+    public static Stream CreateTexturePngImage(string path, WadFile wad) {
         using Stream fallbackTextureStream = wad.LoadChunkDecompressed(path).AsStream();
         return ConvertTextureToPng(Texture.Load(fallbackTextureStream));
     }
@@ -58,16 +52,14 @@ public static class ImageUtils
         IJSRuntime js,
         string path,
         WadFile wad
-    )
-    {
+    ) {
         using Stream textureStream = wad.LoadChunkDecompressed(path).AsStream();
         MemoryStream textureImageStream = ConvertTextureToPng(Texture.Load(textureStream));
 
         return await CreateImageBlobFromStream(js, textureImageStream);
     }
 
-    public static async Task<string> CreateImageBlobFromStream(IJSRuntime js, Stream stream)
-    {
+    public static async Task<string> CreateImageBlobFromStream(IJSRuntime js, Stream stream) {
         DotNetStreamReference jsStream = new(stream);
 
         return await js.InvokeAsync<string>("createBlobFromStream", jsStream);

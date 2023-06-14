@@ -9,8 +9,7 @@ using System.Threading.Tasks;
 
 namespace Obsidian.Shared;
 
-public partial class TreeView<TItem>
-{
+public partial class TreeView<TItem> {
     private string _style =>
         new StyleBuilder()
             .AddStyle("height", this.Height, !string.IsNullOrEmpty(this.Height))

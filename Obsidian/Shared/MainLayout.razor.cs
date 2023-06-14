@@ -10,8 +10,7 @@ using Serilog;
 
 namespace Obsidian.Shared;
 
-public partial class MainLayout
-{
+public partial class MainLayout {
     [Inject]
     public Config Config { get; set; }
 
@@ -33,8 +32,7 @@ public partial class MainLayout
 
     private void OnHashtableLoadingStart() => this._isLoadingHashtable = true;
 
-    private async Task OnHashtableLoadingFinished()
-    {
+    private async Task OnHashtableLoadingFinished() {
         this._isLoadingHashtable = false;
 
         if (
@@ -63,11 +61,9 @@ public partial class MainLayout
     private async Task GoToNewRelease() =>
         await this.Js.InvokeVoidAsync("useCmd", @$"explorer ""{this.UpdateUrl}""");
 
-    private async Task CheckForUpdate()
-    {
+    private async Task CheckForUpdate() {
         Log.Information("Checking for new update");
-        try
-        {
+        try {
             GitHubClient gitClient = new(new ProductHeaderValue("Obsidian"));
             IReadOnlyList<Release> releases = await gitClient.Repository.Release.GetAll(
                 "Crauzer",
@@ -83,20 +79,16 @@ public partial class MainLayout
             if (
                 latestReleaseSemver.IsPrerelease is false
                 && latestReleaseSemver.ComparePrecedenceTo(Program.VERSION) > 0
-            )
-            {
+            ) {
                 Log.Information($"Found new update: {latestReleaseSemver}");
                 this.UpdateUrl = newestRelease.HtmlUrl;
             }
-        }
-        catch (Exception exception)
-        {
+        } catch (Exception exception) {
             SnackbarUtils.ShowSoftError(this.Snackbar, exception);
         }
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
         if (firstRender)
             await CheckForUpdate();
 

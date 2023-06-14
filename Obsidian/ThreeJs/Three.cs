@@ -12,8 +12,7 @@ using System.Security.Cryptography;
 
 namespace Obsidian.BabylonJs;
 
-public static class Three
-{
+public static class Three {
     public static async Task InitializeViewport(IJSRuntime js, string viewportId) =>
         await js.InvokeVoidAsync("initThreeJsRenderer", viewportId);
 
@@ -26,8 +25,7 @@ public static class Three
         SkinnedMesh skinnedMesh,
         RigResource skeleton,
         IReadOnlyDictionary<string, string> textures
-    )
-    {
+    ) {
         // Create vertex data for babylon
         float[] positions = CreateVector3Data(
             skinnedMesh.VerticesView.GetAccessor(ElementName.Position).AsVector3Array()
@@ -73,11 +71,9 @@ public static class Three
         RigResource skeleton,
         IEnumerable<(string, Stream)> textures,
         IEnumerable<(string, IAnimationAsset)> animations
-    )
-    {
+    ) {
         MemoryStream gltfStream = new();
-        await Task.Run(() =>
-        {
+        await Task.Run(() => {
             skinnedMesh.ToGltf(skeleton, textures, animations).WriteGLB(gltfStream);
             gltfStream.Position = 0;
         });
@@ -96,8 +92,7 @@ public static class Three
         IJSRuntime js,
         string viewportId,
         StaticMesh staticMesh
-    )
-    {
+    ) {
         IEnumerable<ushort> indices = TraverseIndices(staticMesh.Faces);
         float[] vertices = FlattenVector3Collection(indices.Select(x => staticMesh.Vertices[x]))
             .ToArray();
@@ -107,19 +102,15 @@ public static class Three
         await InitializeViewport(js, viewportId);
         await js.InvokeVoidAsync("renderStaticMesh", viewportId, vertices, uvs);
 
-        static IEnumerable<ushort> TraverseIndices(IEnumerable<StaticMeshFace> faces)
-        {
-            foreach (StaticMeshFace face in faces)
-            {
+        static IEnumerable<ushort> TraverseIndices(IEnumerable<StaticMeshFace> faces) {
+            foreach (StaticMeshFace face in faces) {
                 yield return face.VertexId0;
                 yield return face.VertexId1;
                 yield return face.VertexId2;
             }
         }
-        static IEnumerable<Vector2> TraverseUvs(IEnumerable<StaticMeshFace> faces)
-        {
-            foreach (StaticMeshFace face in faces)
-            {
+        static IEnumerable<Vector2> TraverseUvs(IEnumerable<StaticMeshFace> faces) {
+            foreach (StaticMeshFace face in faces) {
                 yield return face.UV0;
                 yield return face.UV1;
                 yield return face.UV2;
@@ -131,11 +122,9 @@ public static class Three
         IJSRuntime js,
         string viewportId,
         EnvironmentAsset environmentAsset
-    )
-    {
+    ) {
         ThreeEnvironmentAssetMesh[] threeMeshes = environmentAsset.Meshes
-            .Select(mesh =>
-            {
+            .Select(mesh => {
                 float[] positions = FlattenVector3Collection(
                         mesh.VerticesView.GetAccessor(ElementName.Position).AsVector3Array()
                     )
@@ -144,8 +133,7 @@ public static class Three
                 float[] normals = mesh.VerticesView.TryGetAccessor(
                     ElementName.Normal,
                     out var normalsAccessor
-                ) switch
-                {
+                ) switch {
                     true => FlattenVector3Collection(normalsAccessor.AsVector3Array()).ToArray(),
                     false => null
                 };
@@ -153,16 +141,14 @@ public static class Three
                 float[] uvs = mesh.VerticesView.TryGetAccessor(
                     ElementName.Texcoord0,
                     out var uvsAccessor
-                ) switch
-                {
+                ) switch {
                     true => FlattenVector2Collection(uvsAccessor.AsVector2Array()).ToArray(),
                     false => null
                 };
 
-                return new ThreeEnvironmentAssetMesh()
-                {
+                return new ThreeEnvironmentAssetMesh() {
                     Name = mesh.Name,
-                    
+
                     Indices = mesh.Indices.ToArray(),
 
                     Positions = positions,
@@ -181,8 +167,7 @@ public static class Three
         joints
             .Select(
                 x =>
-                    new ThreeBone
-                    {
+                    new ThreeBone {
                         Name = x.Name,
                         Id = x.Id,
                         ParentId = x.ParentId,
@@ -199,8 +184,7 @@ public static class Three
     private static ThreeAnimation[] CreateAnimations(
         IEnumerable<(string Name, IAnimationAsset Asset)> animations,
         RigResource skeleton
-    )
-    {
+    ) {
         return animations.Select(x => CreateAnimation(x.Name, x.Asset, skeleton)).ToArray();
     }
 
@@ -208,8 +192,7 @@ public static class Three
         string name,
         IAnimationAsset asset,
         RigResource skeleton
-    )
-    {
+    ) {
         int frameCount = (int)(asset.Fps * asset.Duration);
         float frameDuration = 1 / asset.Fps;
 
@@ -229,14 +212,12 @@ public static class Three
         CreateEmptyVector3Tracks(jointTranslations, frameCount, skeleton);
         CreateEmptyVector3Tracks(jointScales, frameCount, skeleton);
 
-        for (int frameId = 0; frameId < frameCount; frameId++)
-        {
+        for (int frameId = 0; frameId < frameCount; frameId++) {
             float frameTime = frameId * frameDuration;
 
             asset.Evaluate(frameTime, pose);
 
-            foreach (var (jointHash, transform) in pose)
-            {
+            foreach (var (jointHash, transform) in pose) {
                 if (!jointRotations.ContainsKey(jointHash))
                     jointRotations.Add(jointHash, new (float, Quaternion)[frameCount]);
                 jointRotations[jointHash][frameId] = (frameTime, transform.Rotation);
@@ -252,36 +233,31 @@ public static class Three
         }
 
         Dictionary<string, ThreeAnimationClip> clips = new();
-        foreach (var (jointHash, jointName) in jointNames)
-        {
+        foreach (var (jointHash, jointName) in jointNames) {
             ThreeAnimationTrack translationTrack = new();
             ThreeAnimationTrack rotationTrack = new();
             ThreeAnimationTrack scaleTrack = new();
 
-            if (jointTranslations.TryGetValue(jointHash, out var translations))
-            {
+            if (jointTranslations.TryGetValue(jointHash, out var translations)) {
                 translationTrack.KeyTimes = translations.Select(x => x.Item1).ToArray();
                 translationTrack.Values = FlattenVector3Collection(
                         translations.Select(x => x.Item2)
                     )
                     .ToArray();
             }
-            if (jointRotations.TryGetValue(jointHash, out var rotations))
-            {
+            if (jointRotations.TryGetValue(jointHash, out var rotations)) {
                 rotationTrack.KeyTimes = rotations.Select(x => x.Item1).ToArray();
                 rotationTrack.Values = FlattenQuaternionCollection(rotations.Select(x => x.Item2))
                     .ToArray();
             }
-            if (jointScales.TryGetValue(jointHash, out var scales))
-            {
+            if (jointScales.TryGetValue(jointHash, out var scales)) {
                 scaleTrack.KeyTimes = scales.Select(x => x.Item1).ToArray();
                 scaleTrack.Values = FlattenVector3Collection(scales.Select(x => x.Item2)).ToArray();
             }
 
             clips.Add(
                 jointName,
-                new()
-                {
+                new() {
                     JointName = jointName,
                     Translations = translationTrack,
                     Rotations = rotationTrack,
@@ -297,8 +273,7 @@ public static class Three
         Dictionary<uint, (float, Vector3)[]> tracks,
         int frameCount,
         RigResource skeleton
-    )
-    {
+    ) {
         foreach (Joint joint in skeleton.Joints)
             tracks.Add(Elf.HashLower(joint.Name), new (float, Vector3)[frameCount]);
     }
@@ -307,18 +282,15 @@ public static class Three
         Dictionary<uint, (float, Quaternion)[]> tracks,
         int frameCount,
         RigResource skeleton
-    )
-    {
+    ) {
         foreach (Joint joint in skeleton.Joints)
             tracks.Add(Elf.HashLower(joint.Name), new (float, Quaternion)[frameCount]);
     }
 
-    private static float[] CreateVector2Data(IReadOnlyList<Vector2> array)
-    {
+    private static float[] CreateVector2Data(IReadOnlyList<Vector2> array) {
         int dataOffset = 0;
         var data = new float[array.Count * 2];
-        for (int i = 0; i < array.Count; i++)
-        {
+        for (int i = 0; i < array.Count; i++) {
             data[dataOffset + 0] = array[i].X;
             data[dataOffset + 1] = array[i].Y;
 
@@ -328,12 +300,10 @@ public static class Three
         return data;
     }
 
-    private static float[] CreateVector3Data(IReadOnlyList<Vector3> array)
-    {
+    private static float[] CreateVector3Data(IReadOnlyList<Vector3> array) {
         int dataOffset = 0;
         var data = new float[array.Count * 3];
-        for (int i = 0; i < array.Count; i++)
-        {
+        for (int i = 0; i < array.Count; i++) {
             data[dataOffset + 0] = array[i].X;
             data[dataOffset + 1] = array[i].Y;
             data[dataOffset + 2] = array[i].Z;
@@ -344,12 +314,10 @@ public static class Three
         return data;
     }
 
-    private static float[] CreateVector4Data(IReadOnlyList<Vector4> array)
-    {
+    private static float[] CreateVector4Data(IReadOnlyList<Vector4> array) {
         int dataOffset = 0;
         var data = new float[array.Count * 4];
-        for (int i = 0; i < array.Count; i++)
-        {
+        for (int i = 0; i < array.Count; i++) {
             data[dataOffset + 0] = array[i].X;
             data[dataOffset + 1] = array[i].Y;
             data[dataOffset + 2] = array[i].Z;
@@ -361,12 +329,10 @@ public static class Three
         return data;
     }
 
-    private static int[] CreateXyzwU8Data(IReadOnlyList<(byte X, byte Y, byte Z, byte W)> array)
-    {
+    private static int[] CreateXyzwU8Data(IReadOnlyList<(byte X, byte Y, byte Z, byte W)> array) {
         int dataOffset = 0;
         var data = new int[array.Count * 4];
-        for (int i = 0; i < array.Count; i++)
-        {
+        for (int i = 0; i < array.Count; i++) {
             data[dataOffset + 0] = array[i].X;
             data[dataOffset + 1] = array[i].Y;
             data[dataOffset + 2] = array[i].Z;
@@ -378,12 +344,10 @@ public static class Three
         return data;
     }
 
-    private static float[] CreateUvData(IReadOnlyList<Vector2> array)
-    {
+    private static float[] CreateUvData(IReadOnlyList<Vector2> array) {
         int dataOffset = 0;
         var data = new float[array.Count * 2];
-        for (int i = 0; i < array.Count; i++)
-        {
+        for (int i = 0; i < array.Count; i++) {
             data[dataOffset + 0] = array[i].X;
             data[dataOffset + 1] = 1 - array[i].Y; // babylon uses bottom left as origin
 
@@ -393,19 +357,15 @@ public static class Three
         return data;
     }
 
-    private static IEnumerable<float> FlattenVector2Collection(IEnumerable<Vector2> collection)
-    {
-        foreach (Vector2 value in collection)
-        {
+    private static IEnumerable<float> FlattenVector2Collection(IEnumerable<Vector2> collection) {
+        foreach (Vector2 value in collection) {
             yield return value.X;
             yield return value.Y;
         }
     }
 
-    private static IEnumerable<float> FlattenVector3Collection(IEnumerable<Vector3> collection)
-    {
-        foreach (Vector3 value in collection)
-        {
+    private static IEnumerable<float> FlattenVector3Collection(IEnumerable<Vector3> collection) {
+        foreach (Vector3 value in collection) {
             yield return value.X;
             yield return value.Y;
             yield return value.Z;
@@ -414,10 +374,8 @@ public static class Three
 
     private static IEnumerable<float> FlattenQuaternionCollection(
         IEnumerable<Quaternion> collection
-    )
-    {
-        foreach (Quaternion value in collection)
-        {
+    ) {
+        foreach (Quaternion value in collection) {
             yield return value.X;
             yield return value.Y;
             yield return value.Z;

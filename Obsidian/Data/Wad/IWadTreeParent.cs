@@ -3,23 +3,19 @@ using System.Text.RegularExpressions;
 
 namespace Obsidian.Data.Wad;
 
-public interface IWadTreeParent : IWadTreePathable
-{
+public interface IWadTreeParent : IWadTreePathable {
     Dictionary<string, WadTreeItemModel> Items { get; }
 }
 
-public static class IWadTreeParentExtensions
-{
+public static class IWadTreeParentExtensions {
     public static void AddWadFile(
         this IWadTreeParent parent,
         IEnumerable<string> pathComponents,
         WadFile wad,
         WadChunk chunk
-    )
-    {
+    ) {
         // File belongs to this folder
-        if (pathComponents.Count() is 1)
-        {
+        if (pathComponents.Count() is 1) {
             string name = pathComponents.First();
             parent.Items.Add(name, new WadTreeFileModel(parent, name, wad, chunk));
             return;
@@ -27,11 +23,9 @@ public static class IWadTreeParentExtensions
 
         string folderName = pathComponents.First();
         WadTreeItemModel directory = null;
-        lock (parent)
-        {
+        lock (parent) {
             directory = parent.Items.GetValueOrDefault(folderName);
-            if (directory is null)
-            {
+            if (directory is null) {
                 directory = new(parent, folderName);
                 parent.Items.Add(directory.Name, directory);
             }
@@ -40,13 +34,11 @@ public static class IWadTreeParentExtensions
         directory.AddWadFile(pathComponents.Skip(1), wad, chunk);
     }
 
-    public static IEnumerable<WadTreeItemModel> TraverseFlattenedItems(this IWadTreeParent parent)
-    {
+    public static IEnumerable<WadTreeItemModel> TraverseFlattenedItems(this IWadTreeParent parent) {
         if (parent.Items is null)
             yield break;
 
-        foreach (var (_, item) in parent.Items)
-        {
+        foreach (var (_, item) in parent.Items) {
             yield return item;
 
             foreach (WadTreeItemModel itemItem in item.TraverseFlattenedItems())
@@ -56,13 +48,11 @@ public static class IWadTreeParentExtensions
 
     public static IEnumerable<WadTreeItemModel> TraverseFlattenedCheckedItems(
         this IWadTreeParent parent
-    )
-    {
+    ) {
         if (parent.Items is null)
             yield break;
 
-        foreach (var (_, item) in parent.Items)
-        {
+        foreach (var (_, item) in parent.Items) {
             if (item.IsChecked)
                 yield return item;
 
@@ -75,18 +65,14 @@ public static class IWadTreeParentExtensions
         this IWadTreeParent parent,
         string filter,
         bool useRegex = false
-    )
-    {
+    ) {
         if (parent.Items is null)
             yield break;
 
-        foreach (var (_, item) in parent.Items)
-        {
-            if (!string.IsNullOrEmpty(filter))
-            {
+        foreach (var (_, item) in parent.Items) {
+            if (!string.IsNullOrEmpty(filter)) {
                 // If the current item is a file we check if it matches the filter
-                if (item is WadTreeFileModel && DoesMatchFilter(item, filter, useRegex))
-                {
+                if (item is WadTreeFileModel && DoesMatchFilter(item, filter, useRegex)) {
                     yield return item;
                     continue;
                 }
@@ -106,9 +92,7 @@ public static class IWadTreeParentExtensions
                 if (item.IsExpanded)
                     foreach (WadTreeItemModel itemItem in filteredItems)
                         yield return itemItem;
-            }
-            else
-            {
+            } else {
                 // root items are always visible
                 yield return item;
 
@@ -120,8 +104,7 @@ public static class IWadTreeParentExtensions
     }
 
     public static bool DoesMatchFilter(WadTreeItemModel item, string filter, bool useRegex) =>
-        useRegex switch
-        {
+        useRegex switch {
             true
                 => Regex.IsMatch(
                     item.Path,

@@ -4,8 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace Obsidian.Utils;
 
-public static partial class BinUtils
-{
+public static partial class BinUtils {
     public static MetaEnvironment CreateMetaEnvironment() =>
         MetaEnvironment.Create(
             Assembly.Load("LeagueToolkit.Meta.Classes").ExportedTypes.Where(x => x.IsClass)

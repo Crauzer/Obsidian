@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using MudBlazor;
 using MudBlazor.Services;
 using Obsidian.Data;
@@ -8,23 +7,21 @@ using Photino.Blazor;
 using PhotinoAPI;
 using Semver;
 using Serilog;
+using System.Reflection;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 namespace Obsidian;
 
-public class Program
-{
+public class Program {
     public static readonly SemVersion VERSION = SemVersion.FromVersion(
-        Attribute.GetCustomAttribute(typeof(Program).Assembly, typeof(AssemblyFileVersionAttribute)) switch
-        {
+        Attribute.GetCustomAttribute(typeof(Program).Assembly, typeof(AssemblyFileVersionAttribute)) switch {
             AssemblyFileVersionAttribute fileVersion => Version.Parse(fileVersion.Version),
             _ => typeof(Program).Assembly.GetName().Version
         }
     );
 
     [STAThread]
-    static void Main(string[] args)
-    {
+    static void Main(string[] args) {
         InitializeLogger();
 
         Log.Information($"Version: {VERSION}");
@@ -38,8 +35,7 @@ public class Program
         builder.Services.AddSingleton(Config.Load());
         builder.Services.AddSingleton<DiscordRichPresence>();
         builder.Services.AddScoped<HashtableService>();
-        builder.Services.AddMudServices(config =>
-        {
+        builder.Services.AddMudServices(config => {
             config.SnackbarConfiguration.PreventDuplicates = true;
             config.SnackbarConfiguration.ShowCloseIcon = true;
             config.SnackbarConfiguration.VisibleStateDuration = 3000;
@@ -66,8 +62,7 @@ public class Program
 
         app.MainWindow.SetDevToolsEnabled(true);
 
-        AppDomain.CurrentDomain.UnhandledException += (sender, error) =>
-        {
+        AppDomain.CurrentDomain.UnhandledException += (sender, error) => {
             app.MainWindow.OpenAlertWindow("Fatal exception", error.ExceptionObject.ToString());
 
             Log.Fatal($"Fatal error: {error.ExceptionObject}");
@@ -77,8 +72,7 @@ public class Program
         app.Run();
     }
 
-    private static void InitializeLogger()
-    {
+    private static void InitializeLogger() {
         Directory.CreateDirectory("logs");
 
         string timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");

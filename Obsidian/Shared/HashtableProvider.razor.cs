@@ -5,8 +5,7 @@ using Obsidian.Utils;
 
 namespace Obsidian.Shared;
 
-public partial class HashtableProvider : ComponentBase
-{
+public partial class HashtableProvider : ComponentBase {
     [Inject]
     public ISnackbar Snackbar { get; set; }
 
@@ -21,22 +20,16 @@ public partial class HashtableProvider : ComponentBase
 
     protected override void OnInitialized() => base.OnInitialized();
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
         if (firstRender is false)
             return;
 
         await this.OnLoadingStart.InvokeAsync();
-        try
-        {
+        try {
             await this.Hashtable.Initialize();
-        }
-        catch (Exception exception)
-        {
+        } catch (Exception exception) {
             SnackbarUtils.ShowHardError(this.Snackbar, exception);
-        }
-        finally
-        {
+        } finally {
             await this.OnLoadingFinished.InvokeAsync();
         }
     }

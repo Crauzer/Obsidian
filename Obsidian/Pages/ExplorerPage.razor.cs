@@ -10,8 +10,7 @@ using Toolbelt.Blazor.HotKeys2;
 
 namespace Obsidian.Pages;
 
-public partial class ExplorerPage
-{
+public partial class ExplorerPage {
     #region Injection
     [Inject]
     public Config Config { get; set; }
@@ -31,20 +30,16 @@ public partial class ExplorerPage
 
     public WadTreeModel WadTree { get; set; }
 
-    private WadTreeModel CreateWadTree()
-    {
+    private WadTreeModel CreateWadTree() {
         Log.Information("Re-building Wad tree");
 
-        return string.IsNullOrEmpty(this.Config.GameDataDirectory) switch
-        {
+        return string.IsNullOrEmpty(this.Config.GameDataDirectory) switch {
             true => CreateEmptyWadTree(),
             false => TryCreateWadTree()
         };
 
-        WadTreeModel TryCreateWadTree()
-        {
-            try
-            {
+        WadTreeModel TryCreateWadTree() {
+            try {
                 return new(
                     this.Hashtable,
                     this.Config,
@@ -56,9 +51,7 @@ public partial class ExplorerPage
                         )
                         .Where(x => x.EndsWith(".wad") || x.EndsWith(".wad.client"))
                 );
-            }
-            catch (Exception exception)
-            {
+            } catch (Exception exception) {
                 SnackbarUtils.ShowHardError(
                     this.Snackbar,
                     new InvalidOperationException("Failed to create wad tree", exception)
@@ -72,40 +65,30 @@ public partial class ExplorerPage
     private WadTreeModel CreateEmptyWadTree() =>
         new(this.Hashtable, this.Config, Array.Empty<string>());
 
-    private async Task RebuildWadTree()
-    {
-        await InvokeAsync(() =>
-        {
+    private async Task RebuildWadTree() {
+        await InvokeAsync(() => {
             this.WadTree.Dispose();
             this.WadTree = null;
 
             StateHasChanged();
         });
 
-        await InvokeAsync(async () =>
-        {
-            await Task.Run(() =>
-            {
+        await InvokeAsync(async () => {
+            await Task.Run(() => {
                 this.WadTree = CreateWadTree();
             });
             StateHasChanged();
         });
     }
 
-    protected override void OnInitialized()
-    {
-        _ = InvokeAsync(async () =>
-        {
-            try
-            {
-                await Task.Run(() =>
-                {
+    protected override void OnInitialized() {
+        _ = InvokeAsync(async () => {
+            try {
+                await Task.Run(() => {
                     this.WadTree = CreateWadTree();
                 });
                 StateHasChanged();
-            }
-            catch (Exception exception)
-            {
+            } catch (Exception exception) {
                 SnackbarUtils.ShowHardError(this.Snackbar, exception);
             }
         });

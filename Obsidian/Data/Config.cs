@@ -2,25 +2,20 @@
 
 namespace Obsidian.Data;
 
-public class Config
-{
+public class Config {
     #region Wad Hashtable Checksums
-    public string GameHashesChecksum
-    {
+    public string GameHashesChecksum {
         get => this._gameHashesChecksum;
-        set
-        {
+        set {
             this._gameHashesChecksum = value;
             Save();
         }
     }
     private string _gameHashesChecksum;
 
-    public string LcuHashesChecksum
-    {
+    public string LcuHashesChecksum {
         get => this._lcuHashesChecksum;
-        set
-        {
+        set {
             this._lcuHashesChecksum = value;
             Save();
         }
@@ -29,44 +24,36 @@ public class Config
     #endregion
 
     #region Bin Hashtable Checksums
-    public string BinFieldsHashesChecksum
-    {
+    public string BinFieldsHashesChecksum {
         get => this._binFieldsHashesChecksum;
-        set
-        {
+        set {
             this._binFieldsHashesChecksum = value;
             Save();
         }
     }
     private string _binFieldsHashesChecksum;
 
-    public string BinTypesHashesChecksum
-    {
+    public string BinTypesHashesChecksum {
         get => this._binTypesHashesChecksum;
-        set
-        {
+        set {
             this._binTypesHashesChecksum = value;
             Save();
         }
     }
     private string _binTypesHashesChecksum;
 
-    public string BinHashesHashesChecksum
-    {
+    public string BinHashesHashesChecksum {
         get => this._binHashesHashesChecksum;
-        set
-        {
+        set {
             this._binHashesHashesChecksum = value;
             Save();
         }
     }
     private string _binHashesHashesChecksum;
 
-    public string BinEntriesHashesChecksum
-    {
+    public string BinEntriesHashesChecksum {
         get => this._binEntriesHashesChecksum;
-        set
-        {
+        set {
             this._binEntriesHashesChecksum = value;
             Save();
         }
@@ -74,77 +61,63 @@ public class Config
     private string _binEntriesHashesChecksum;
     #endregion
 
-    public bool DoNotRequireGameDirectory
-    {
+    public bool DoNotRequireGameDirectory {
         get => this._doNotRequireGameDirectory;
-        set
-        {
+        set {
             this._doNotRequireGameDirectory = value;
             Save();
         }
     }
     private bool _doNotRequireGameDirectory;
 
-    public string GameDataDirectory 
-    {
+    public string GameDataDirectory {
         get => this._gameDataDirectory;
-        set
-        {
+        set {
             this._gameDataDirectory = value;
             Save();
         }
     }
     private string _gameDataDirectory;
 
-    public string DefaultExtractDirectory
-    {
+    public string DefaultExtractDirectory {
         get => this._defaultExportDirectory;
-        set
-        {
+        set {
             this._defaultExportDirectory = value;
             Save();
         }
     }
     private string _defaultExportDirectory;
 
-    public bool SyncHashtables 
-    {
+    public bool SyncHashtables {
         get => this._syncHashtables;
-        set
-        {
+        set {
             this._syncHashtables = value;
             Save();
         }
     }
     private bool _syncHashtables = true;
 
-    public bool IsRichPresenceEnabled 
-    {
+    public bool IsRichPresenceEnabled {
         get => this._isRichPresenceEnabled;
-        set
-        {
+        set {
             this._isRichPresenceEnabled = value;
             Save();
         }
     }
     private bool _isRichPresenceEnabled = true;
 
-    public bool LoadSkinnedMeshAnimations
-    {
+    public bool LoadSkinnedMeshAnimations {
         get => this._loadSkinnedMeshAnimations;
-        set
-        {
+        set {
             this._loadSkinnedMeshAnimations = value;
             Save();
         }
     }
     private bool _loadSkinnedMeshAnimations = false;
 
-    public bool ShouldPreviewSelectedItems
-    {
+    public bool ShouldPreviewSelectedItems {
         get => this._shouldPreviewSelectedItems;
-        set
-        {
+        set {
             this._shouldPreviewSelectedItems = value;
             Save();
         }
@@ -155,8 +128,7 @@ public class Config
 
     public Config() { }
 
-    public static Config Load()
-    {
+    public static Config Load() {
         if (File.Exists(CONFIG_FILE) is false)
             return new();
 
@@ -165,11 +137,9 @@ public class Config
         return JsonSerializer.Deserialize<Config>(configStream);
     }
 
-    public void Save()
-    {
+    public void Save() {
         // this is an ugly as fuck hack but it works so idc
-        try
-        {
+        try {
             File.WriteAllText(
                 CONFIG_FILE,
                 JsonSerializer.Serialize(
@@ -177,7 +147,6 @@ public class Config
                     new JsonSerializerOptions() { AllowTrailingCommas = true, WriteIndented = true }
                 )
             );
-        }
-        catch (Exception) { }
+        } catch (Exception) { }
     }
 }

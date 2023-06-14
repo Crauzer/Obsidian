@@ -12,8 +12,7 @@ using SixLabors.ImageSharp.PixelFormats;
 
 namespace Obsidian.Shared;
 
-public partial class WadFileImagePreview
-{
+public partial class WadFileImagePreview {
     [Inject]
     public PhotinoWindow Window { get; set; }
 
@@ -31,8 +30,7 @@ public partial class WadFileImagePreview
 
     private bool _isSavingAsPng;
 
-    private void SaveAsPng()
-    {
+    private void SaveAsPng() {
         CommonSaveFileDialog dialog = new() { DefaultFileName = this.WadTree.SelectedFile.Name };
         dialog.Filters.Add(new("Image", "png"));
 
@@ -41,15 +39,13 @@ public partial class WadFileImagePreview
 
         Log.Information($"Saving {this.WadTree.SelectedFile.Path} as PNG to {dialog.FileName}");
         ToggleIsSavingAsPng(true);
-        try
-        {
+        try {
             using Stream fileStream = this.WadTree.SelectedFile.Wad
                 .LoadChunkDecompressed(this.WadTree.SelectedFile.Chunk)
                 .AsStream();
             LeagueFileType fileType = LeagueFile.GetFileType(fileStream);
 
-            Image<Rgba32> image = fileType switch
-            {
+            Image<Rgba32> image = fileType switch {
                 LeagueFileType.Texture
                 or LeagueFileType.TextureDds
                     => ImageUtils.GetImageFromTextureStream(fileStream),
@@ -63,19 +59,14 @@ public partial class WadFileImagePreview
             image.SaveAsPng(dialog.FileName);
 
             this.Snackbar.Add($"Saved {this.WadTree.SelectedFile.Name} as PNG!", Severity.Success);
-        }
-        catch (Exception exception)
-        {
+        } catch (Exception exception) {
             SnackbarUtils.ShowHardError(this.Snackbar, exception);
-        }
-        finally
-        {
+        } finally {
             ToggleIsSavingAsPng(false);
         }
     }
 
-    private void ToggleIsSavingAsPng(bool value)
-    {
+    private void ToggleIsSavingAsPng(bool value) {
         this._isSavingAsPng = value;
         StateHasChanged();
     }

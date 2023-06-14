@@ -12,8 +12,7 @@ using FileMode = System.IO.FileMode;
 
 namespace Obsidian.Services;
 
-public class HashtableService
-{
+public class HashtableService {
     public Config Config { get; }
 
     public Dictionary<ulong, string> Hashes { get; private set; } = new();
@@ -37,13 +36,11 @@ public class HashtableService
     private const string BIN_HASHES_PATH = "hashes/hashes.binhashes.txt";
     private const string BIN_OBJECTS_PATH = "hashes/hashes.binentries.txt";
 
-    public HashtableService(Config config)
-    {
+    public HashtableService(Config config) {
         this.Config = config;
     }
 
-    public async Task Initialize()
-    {
+    public async Task Initialize() {
         using HttpClient client = new();
 
         Directory.CreateDirectory(HASHES_DIRECTORY);
@@ -52,8 +49,7 @@ public class HashtableService
         await InitializeBinHashtables(client);
     }
 
-    private async Task InitializeHashtables(HttpClient client)
-    {
+    private async Task InitializeHashtables(HttpClient client) {
         Log.Information("Initializing hashtables");
 
         File.Open(GAME_HASHES_PATH, FileMode.OpenOrCreate).Dispose();
@@ -66,8 +62,7 @@ public class HashtableService
         LoadHashtable(LCU_HASHES_PATH);
     }
 
-    private async Task InitializeBinHashtables(HttpClient client)
-    {
+    private async Task InitializeBinHashtables(HttpClient client) {
         Log.Information("Initializing BIN hashtables");
 
         File.Open(BIN_FIELDS_PATH, FileMode.OpenOrCreate).Dispose();
@@ -84,8 +79,7 @@ public class HashtableService
         LoadBinHashtable(BIN_OBJECTS_PATH, this.BinObjects);
     }
 
-    private async Task SyncHashtables(HttpClient client)
-    {
+    private async Task SyncHashtables(HttpClient client) {
         Log.Information("Syncing WAD hashtables");
 
         GitHubClient github = new(new ProductHeaderValue("Obsidian"));
@@ -114,8 +108,7 @@ public class HashtableService
         );
     }
 
-    private async Task SyncBinHashtables(HttpClient client)
-    {
+    private async Task SyncBinHashtables(HttpClient client) {
         Log.Information("Syncing BIN hashtables");
 
         GitHubClient github = new(new ProductHeaderValue("Obsidian"));
@@ -166,11 +159,9 @@ public class HashtableService
         string url,
         string path,
         string checksum
-    )
-    {
+    ) {
         // Hashtable is up to date
-        if (checksum == content.Sha)
-        {
+        if (checksum == content.Sha) {
             Log.Information($"{path} is up to date");
             return checksum;
         }
@@ -185,13 +176,11 @@ public class HashtableService
         return content.Sha;
     }
 
-    public void LoadHashtable(string hashtablePath)
-    {
+    public void LoadHashtable(string hashtablePath) {
         using StreamReader reader = new(hashtablePath);
         StringBuilder nameBuilder = new();
 
-        while (reader.EndOfStream is false)
-        {
+        while (reader.EndOfStream is false) {
             string line = reader.ReadLine();
             string[] split = line.Split(' ');
 
@@ -204,13 +193,11 @@ public class HashtableService
         }
     }
 
-    private void LoadBinHashtable(string hashtablePath, Dictionary<uint, string> hashtable)
-    {
+    private void LoadBinHashtable(string hashtablePath, Dictionary<uint, string> hashtable) {
         using StreamReader reader = new(hashtablePath);
         StringBuilder nameBuilder = new();
 
-        while (reader.EndOfStream is false)
-        {
+        while (reader.EndOfStream is false) {
             string line = reader.ReadLine();
             string[] split = line.Split(' ');
 
@@ -225,8 +212,7 @@ public class HashtableService
     private RepositoryContent GetRepositoryContent(
         IReadOnlyList<RepositoryContent> content,
         string name
-    )
-    {
+    ) {
         RepositoryContent foundContent = content.FirstOrDefault(x => x.Name == name);
         if (foundContent is null)
             throw new InvalidOperationException($"Failed to find {name} in repository");
@@ -234,8 +220,7 @@ public class HashtableService
         return foundContent;
     }
 
-    public string GetChunkPath(WadChunk chunk)
-    {
+    public string GetChunkPath(WadChunk chunk) {
         if (this.Hashes.TryGetValue(chunk.PathHash, out string existingPath))
             return existingPath;
 
@@ -245,22 +230,18 @@ public class HashtableService
     public bool TryGetChunkPath(WadChunk chunk, out string path) =>
         this.Hashes.TryGetValue(chunk.PathHash, out path);
 
-    public static string GuessChunkPath(WadChunk chunk, WadFile wad)
-    {
-        string extension = chunk.Compression switch
-        {
+    public static string GuessChunkPath(WadChunk chunk, WadFile wad) {
+        string extension = chunk.Compression switch {
             WadChunkCompression.Satellite => null,
             _ => GuessChunkExtension(chunk, wad)
         };
 
-        return string.IsNullOrEmpty(extension) switch
-        {
+        return string.IsNullOrEmpty(extension) switch {
             true => string.Format("{0:x16}", chunk.PathHash),
             false => string.Format("{0:x16}.{1}", chunk.PathHash, extension),
         };
 
-        static string GuessChunkExtension(WadChunk chunk, WadFile wad)
-        {
+        static string GuessChunkExtension(WadChunk chunk, WadFile wad) {
             using Stream stream = wad.LoadChunkDecompressed(chunk).AsStream();
 
             return LeagueFile.GetExtension(LeagueFile.GetFileType(stream));

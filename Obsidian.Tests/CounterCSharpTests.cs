@@ -1,14 +1,11 @@
-namespace Obsidian.Tests
-{
+namespace Obsidian.Tests {
     /// <summary>
     /// These tests are written entirely in C#.
     /// Learn more at https://bunit.dev/docs/getting-started/writing-tests.html#creating-basic-tests-in-cs-files
     /// </summary>
-    public class CounterCSharpTests : TestContext
-    {
+    public class CounterCSharpTests : TestContext {
         [Fact]
-        public void CounterStartsAtZero()
-        {
+        public void CounterStartsAtZero() {
             // Arrange
             var cut = RenderComponent<Counter>();
 
@@ -17,8 +14,7 @@ namespace Obsidian.Tests
         }
 
         [Fact]
-        public void ClickingButtonIncrementsCounter()
-        {
+        public void ClickingButtonIncrementsCounter() {
             // Arrange
             var cut = RenderComponent<Counter>();
 

@@ -3,10 +3,8 @@ using PhotinoNET;
 using System;
 using System.IO;
 
-namespace Photino.Blazor
-{
-    public class PhotinoBlazorApp
-    {
+namespace Photino.Blazor {
+    public class PhotinoBlazorApp {
         /// <summary>
         /// Gets configuration for the service provider.
         /// </summary>
@@ -17,8 +15,7 @@ namespace Photino.Blazor
         /// </summary>
         public BlazorWindowRootComponents RootComponents { get; private set; }
 
-        internal void Initialize(IServiceProvider services, RootComponentList rootComponents)
-        {
+        internal void Initialize(IServiceProvider services, RootComponentList rootComponents) {
             Services = services;
             RootComponents = Services.GetService<BlazorWindowRootComponents>();
             MainWindow = Services.GetService<PhotinoWindow>();
@@ -34,8 +31,7 @@ namespace Photino.Blazor
 
             MainWindow.RegisterCustomSchemeHandler(PhotinoWebViewManager.BlazorAppScheme, HandleWebRequest);
 
-            foreach(var component in rootComponents)
-            {
+            foreach (var component in rootComponents) {
                 RootComponents.Add(component.Item1, component.Item2);
             }
         }
@@ -44,8 +40,7 @@ namespace Photino.Blazor
 
         public PhotinoWebViewManager WindowManager { get; private set; }
 
-        public void Run()
-        {
+        public void Run() {
             WindowManager.Navigate("/");
             MainWindow.WaitForClose();
         }

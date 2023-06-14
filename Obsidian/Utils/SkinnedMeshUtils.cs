@@ -1,21 +1,20 @@
-﻿using LeagueToolkit.Core.Mesh;
+﻿using CommunityToolkit.HighPerformance;
+using LeagueToolkit.Core.Animation;
+using LeagueToolkit.Core.Mesh;
 using LeagueToolkit.Core.Meta;
 using LeagueToolkit.Core.Wad;
-using LeagueToolkit.Meta.Classes;
 using LeagueToolkit.Meta;
+using LeagueToolkit.Meta.Classes;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LeagueToolkit.Core.Animation;
-using CommunityToolkit.HighPerformance;
 
 namespace Obsidian.Utils;
 
-public static class SkinnedMeshUtils
-{
+public static class SkinnedMeshUtils {
     private static readonly string[] DIFFUSE_SAMPLERS = new[]
     {
         "DiffuseTexture",
@@ -29,8 +28,7 @@ public static class SkinnedMeshUtils
         BinTree skinPackage,
         WadFile wad,
         MetaEnvironment metaEnvironment
-    )
-    {
+    ) {
         string defaultTexture = await CreateMaterialTextureImageBlob(
             meshData.Material,
             meshData.Texture,
@@ -46,13 +44,11 @@ public static class SkinnedMeshUtils
 
         foreach (
             SkinMeshDataProperties_MaterialOverride materialOverride in meshData.MaterialOverride
-        )
-        {
+        ) {
             if (textures.ContainsKey(materialOverride.Submesh) is false)
                 continue;
 
-            if (string.IsNullOrEmpty(materialOverride.Texture) is false)
-            {
+            if (string.IsNullOrEmpty(materialOverride.Texture) is false) {
                 textures[materialOverride.Submesh] = await ImageUtils.CreateImageBlobFromChunk(
                     js,
                     materialOverride.Texture,
@@ -81,8 +77,7 @@ public static class SkinnedMeshUtils
         WadFile wad,
         MetaEnvironment metaEnvironment,
         IJSRuntime js
-    )
-    {
+    ) {
         BinTreeObject materialDefObject = skinPackage.Objects.GetValueOrDefault(materialLink);
         if (materialDefObject is null)
             return await ImageUtils.CreateImageBlobFromChunk(js, fallbackTexture, wad);
@@ -112,8 +107,7 @@ public static class SkinnedMeshUtils
         BinTree skinPackage,
         WadFile wad,
         MetaEnvironment metaEnvironment
-    )
-    {
+    ) {
         string defaultTexture = ResolveMaterialTexturePath(
             meshData.Material,
             meshData.Texture,
@@ -122,16 +116,14 @@ public static class SkinnedMeshUtils
         );
         List<(string, Stream)> textures = new();
 
-        foreach (SkinnedMeshRange primitive in skinnedMesh.Ranges)
-        {
+        foreach (SkinnedMeshRange primitive in skinnedMesh.Ranges) {
             SkinMeshDataProperties_MaterialOverride materialOverride =
                 meshData.MaterialOverride.FirstOrDefault(
                     x => x.Value.Submesh == primitive.Material
                 );
 
             textures.Add(
-                (materialOverride is null) switch
-                {
+                (materialOverride is null) switch {
                     true
                         => (
                             primitive.Material,
@@ -166,8 +158,7 @@ public static class SkinnedMeshUtils
         BinTree skinPackage,
         WadFile wad,
         MetaEnvironment metaEnvironment
-    )
-    {
+    ) {
         BinTreeObject materialDefObject = skinPackage.Objects.GetValueOrDefault(materialLink);
         if (materialDefObject is null)
             return ImageUtils.CreateTexturePngImage(fallbackTexturePath, wad);
@@ -181,8 +172,7 @@ public static class SkinnedMeshUtils
         );
         diffuseSamplerDef ??= new();
 
-        return string.IsNullOrEmpty(diffuseSamplerDef.TextureName) switch
-        {
+        return string.IsNullOrEmpty(diffuseSamplerDef.TextureName) switch {
             true => ImageUtils.CreateTexturePngImage(fallbackTexturePath, wad),
             false => ImageUtils.CreateTexturePngImage(diffuseSamplerDef.TextureName, wad),
         };
@@ -193,8 +183,7 @@ public static class SkinnedMeshUtils
         string fallbackTexturePath,
         BinTree skinPackage,
         MetaEnvironment metaEnvironment
-    )
-    {
+    ) {
         BinTreeObject materialDefObject = skinPackage.Objects.GetValueOrDefault(materialLink);
         if (materialDefObject is null)
             return fallbackTexturePath;
@@ -208,8 +197,7 @@ public static class SkinnedMeshUtils
         );
         diffuseSamplerDef ??= new();
 
-        return string.IsNullOrEmpty(diffuseSamplerDef.TextureName) switch
-        {
+        return string.IsNullOrEmpty(diffuseSamplerDef.TextureName) switch {
             true => fallbackTexturePath,
             false => diffuseSamplerDef.TextureName,
         };
@@ -220,8 +208,7 @@ public static class SkinnedMeshUtils
         BinTree skinPackage,
         WadFile wad,
         MetaEnvironment metaEnvironment
-    )
-    {
+    ) {
         string animationsPath = skinPackage.Dependencies.FirstOrDefault(
             x => BinUtils.IsSkinAnimations(x)
         );
@@ -245,8 +232,7 @@ public static class SkinnedMeshUtils
             animationGraphDataObject
         );
 
-        foreach (var (_, clipData) in animationGraphData.ClipDataMap)
-        {
+        foreach (var (_, clipData) in animationGraphData.ClipDataMap) {
             if (clipData is not AtomicClipData atomicClipData)
                 continue;
 

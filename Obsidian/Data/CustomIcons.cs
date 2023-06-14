@@ -1,9 +1,7 @@
 ﻿namespace Obsidian.Data;
 
-public static class CustomIcons
-{
-    public static class Material
-    {
+public static class CustomIcons {
+    public static class Material {
         public static readonly string AccountVoice = @"<svg xmlns=""http://www.w3.org/2000/svg"" viewBox=""0 0 24 24""><title>account-voice</title><path d=""M9,5A4,4 0 0,1 13,9A4,4 0 0,1 9,13A4,4 0 0,1 5,9A4,4 0 0,1 9,5M9,15C11.67,15 17,16.34 17,19V21H1V19C1,16.34 6.33,15 9,15M16.76,5.36C18.78,7.56 18.78,10.61 16.76,12.63L15.08,10.94C15.92,9.76 15.92,8.23 15.08,7.05L16.76,5.36M20.07,2C24,6.05 23.97,12.11 20.07,16L18.44,14.37C21.21,11.19 21.21,6.65 18.44,3.63L20.07,2Z"" /></svg>";
         public static readonly string Alert = @"<svg xmlns=""http://www.w3.org/2000/svg"" viewBox=""0 0 24 24""><title>alert</title><path d=""M13 14H11V9H13M13 18H11V16H13M1 21H23L12 2L1 21Z"" /></svg>";
         public static readonly string Archive = @"<svg xmlns=""http://www.w3.org/2000/svg"" viewBox=""0 0 24 24""><title>archive</title><path d=""M3,3H21V7H3V3M4,8H20V21H4V8M9.5,11A0.5,0.5 0 0,0 9,11.5V13H15V11.5A0.5,0.5 0 0,0 14.5,11H9.5Z"" /></svg>";

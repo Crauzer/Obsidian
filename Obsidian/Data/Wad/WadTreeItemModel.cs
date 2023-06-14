@@ -13,13 +13,9 @@ public class WadTreeItemModel
     : IWadTreePathable,
         IWadTreeParent,
         IComparable<WadTreeItemModel>,
-        IEquatable<WadTreeItemModel>
-{
+        IEquatable<WadTreeItemModel> {
     public WadTreeItemType Type =>
-        this.Items switch
-        {
-            { Count: 0 } => WadTreeItemType.File,
-            { Count: > 0 } => WadTreeItemType.Directory,
+        this.Items switch { { Count: 0 } => WadTreeItemType.File, { Count: > 0 } => WadTreeItemType.Directory,
             _ => throw new InvalidOperationException("Invalid wad tree item type")
         };
 
@@ -40,10 +36,8 @@ public class WadTreeItemModel
 
     public Dictionary<string, WadTreeItemModel> Items { get; protected set; } = new();
 
-    public bool IsWadArchive
-    {
-        get
-        {
+    public bool IsWadArchive {
+        get {
             string extension = PathIO.GetExtension(this.Name);
 
             return extension.Contains("wad")
@@ -52,41 +46,35 @@ public class WadTreeItemModel
         }
     }
 
-    public WadTreeItemModel(IWadTreeParent parent, string name)
-    {
+    public WadTreeItemModel(IWadTreeParent parent, string name) {
         this.Parent = parent;
         this.Name = name;
 
-        this.Path = parent switch
-        {
+        this.Path = parent switch {
             null or WadTreeModel or { IsWadArchive: true } => name,
             _ => string.Join('/', parent.Path, name)
         };
     }
 
-    public void SortItems()
-    {
+    public void SortItems() {
         if (this.Items is null)
             return;
 
         this.Items = new(this.Items.OrderBy(x => x.Value));
 
-        foreach (var (_, item) in this.Items)
-        {
+        foreach (var (_, item) in this.Items) {
             if (item.Type is WadTreeItemType.Directory)
                 item.SortItems();
         }
     }
 
-    public void CheckItemTree(bool value)
-    {
+    public void CheckItemTree(bool value) {
         if (this.Items is not null)
             foreach (WadTreeItemModel item in this.TraverseFlattenedItems())
                 item.IsChecked = value;
     }
 
-    public string GetIcon()
-    {
+    public string GetIcon() {
         string extension = PathIO.GetExtension(this.Name);
         if (this.IsWadArchive)
             return Icons.Material.TwoTone.Archive;
@@ -95,8 +83,7 @@ public class WadTreeItemModel
             return Icons.Material.TwoTone.Folder;
 
         LeagueFileType fileType = LeagueFile.GetFileType(extension);
-        return fileType switch
-        {
+        return fileType switch {
             LeagueFileType.Animation => Icons.Material.TwoTone.Animation,
             LeagueFileType.Jpeg => Icons.Material.TwoTone.Image,
             LeagueFileType.MapGeometry => CustomIcons.Material.ImageFilterHdr,
@@ -120,14 +107,12 @@ public class WadTreeItemModel
 
     // beautiful
     public int CompareTo(WadTreeItemModel other) =>
-        (this.IsWadArchive, other.IsWadArchive) switch
-        {
+        (this.IsWadArchive, other.IsWadArchive) switch {
             (true, true) => this.Name.CompareTo(other?.Name),
             (true, false) => 1,
             (false, true) => -1,
             (false, false)
-                => (this.Type, other?.Type) switch
-                {
+                => (this.Type, other?.Type) switch {
                     (WadTreeItemType.Directory, WadTreeItemType.File) => -1,
                     (WadTreeItemType.File, WadTreeItemType.Directory) => 1,
                     _ => this.Name.CompareTo(other?.Name)
@@ -137,8 +122,7 @@ public class WadTreeItemModel
     public bool Equals(WadTreeItemModel other) => this.Id == other?.Id;
 
     public override bool Equals(object obj) =>
-        obj switch
-        {
+        obj switch {
             WadTreeItemModel item => Equals(item),
             _ => false
         };
@@ -166,8 +150,7 @@ public class WadTreeItemModel
     #endregion
 }
 
-public enum WadTreeItemType
-{
+public enum WadTreeItemType {
     File,
     Directory
 }

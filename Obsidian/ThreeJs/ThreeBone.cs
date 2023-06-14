@@ -2,8 +2,7 @@
 
 namespace Obsidian.BabylonJs;
 
-public struct ThreeBone
-{
+public struct ThreeBone {
     public string Name { get; set; }
 
     public int Id { get; set; }

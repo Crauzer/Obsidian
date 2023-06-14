@@ -4,18 +4,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Photino.Blazor
-{
-    public class PhotinoBlazorAppBuilder
-    {
-        internal PhotinoBlazorAppBuilder()
-        {
+namespace Photino.Blazor {
+    public class PhotinoBlazorAppBuilder {
+        internal PhotinoBlazorAppBuilder() {
             RootComponents = new RootComponentList();
             Services = new ServiceCollection();
         }
 
-        public static PhotinoBlazorAppBuilder CreateDefault(string[] args = default)
-        {
+        public static PhotinoBlazorAppBuilder CreateDefault(string[] args = default) {
             // We don't use the args for anything right now, but we want to accept them
             // here so that it shows up this way in the project templates.
             // var jsRuntime = DefaultWebAssemblyJSRuntime.Instance;
@@ -33,8 +29,7 @@ namespace Photino.Blazor
 
         public IServiceCollection Services { get; }
 
-        public PhotinoBlazorApp Build(Action<IServiceProvider> serviceProviderOptions = null)
-        {
+        public PhotinoBlazorApp Build(Action<IServiceProvider> serviceProviderOptions = null) {
             // register root components with DI container
             // Services.AddSingleton(RootComponents);
 
@@ -48,22 +43,18 @@ namespace Photino.Blazor
         }
     }
 
-    public class RootComponentList : IEnumerable<(Type, string)>
-    {
+    public class RootComponentList : IEnumerable<(Type, string)> {
         private readonly List<(Type componentType, string domElementSelector)> components = new List<(Type componentType, string domElementSelector)>();
 
-        public void Add<TComponent>(string selector) where TComponent : IComponent
-        {
+        public void Add<TComponent>(string selector) where TComponent : IComponent {
             components.Add((typeof(TComponent), selector));
         }
 
-        public IEnumerator<(Type, string)> GetEnumerator()
-        {
+        public IEnumerator<(Type, string)> GetEnumerator() {
             return components.GetEnumerator();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
+        IEnumerator IEnumerable.GetEnumerator() {
             return components.GetEnumerator();
         }
     }

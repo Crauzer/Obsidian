@@ -22,8 +22,7 @@ using Texture = LeagueToolkit.Core.Renderer.Texture;
 
 namespace Obsidian.Shared;
 
-public partial class WadFileViewport
-{
+public partial class WadFileViewport {
     [Inject]
     public PhotinoWindow Window { get; set; }
 
@@ -43,8 +42,7 @@ public partial class WadFileViewport
         "Diffuse_Texture"
     };
 
-    public void SaveAsGltf()
-    {
+    public void SaveAsGltf() {
         CommonSaveFileDialog dialog =
             new() { DefaultFileName = Path.ChangeExtension(this.WadTree.SelectedFile.Name, "glb") };
         foreach (CommonFileDialogFilter filter in FileDialogUtils.CreateGltfFilters())
@@ -55,16 +53,14 @@ public partial class WadFileViewport
 
         Log.Information($"Saving {this.WadTree.SelectedFile.Path} as glTF to {dialog.FileName}");
         ToggleIsSavingAsGltf(true);
-        try
-        {
+        try {
             using Stream fileStream = this.WadTree.SelectedFile.Wad
                 .LoadChunkDecompressed(this.WadTree.SelectedFile.Chunk)
                 .AsStream();
 
             LeagueFileType fileType = LeagueFile.GetFileType(fileStream);
 
-            ModelRoot gltf = fileType switch
-            {
+            ModelRoot gltf = fileType switch {
                 LeagueFileType.PropertyBin
                     when BinUtils.IsSkinPackage(this.WadTree.SelectedFile.Path)
                     => CreateGltfFromSkinPackage(this.WadTree.SelectedFile.Wad, fileStream),
@@ -79,19 +75,14 @@ public partial class WadFileViewport
             gltf.Save(dialog.FileName);
 
             this.Snackbar.Add($"Saved {this.WadTree.SelectedFile.Name} as glTF!", Severity.Success);
-        }
-        catch (Exception exception)
-        {
+        } catch (Exception exception) {
             SnackbarUtils.ShowHardError(this.Snackbar, exception);
-        }
-        finally
-        {
+        } finally {
             ToggleIsSavingAsGltf(false);
         }
     }
 
-    private ModelRoot CreateGltfFromSkinPackage(WadFile wad, Stream stream)
-    {
+    private ModelRoot CreateGltfFromSkinPackage(WadFile wad, Stream stream) {
         BinTree skinPackage = new(stream);
         MetaEnvironment metaEnvironment = BinUtils.CreateMetaEnvironment();
 
@@ -129,8 +120,7 @@ public partial class WadFileViewport
         );
     }
 
-    private void ToggleIsSavingAsGltf(bool value)
-    {
+    private void ToggleIsSavingAsGltf(bool value) {
         this._isSavingAsGltf = value;
         StateHasChanged();
     }

@@ -14,10 +14,8 @@ using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
-namespace Photino.Blazor
-{
-    public class PhotinoWebViewManager : WebViewManager
-    {
+namespace Photino.Blazor {
+    public class PhotinoWebViewManager : WebViewManager {
         private readonly PhotinoWindow _window;
         private readonly Channel<string> _channel;
 
@@ -33,18 +31,15 @@ namespace Photino.Blazor
 
         public PhotinoWebViewManager(PhotinoWindow window, IServiceProvider provider, Dispatcher dispatcher,
             IFileProvider fileProvider, JSComponentConfigurationStore jsComponents, IOptions<PhotinoBlazorAppConfiguration> config)
-            : base(provider, dispatcher, config.Value.AppBaseUri, fileProvider, jsComponents, config.Value.HostPage)
-        {
+            : base(provider, dispatcher, config.Value.AppBaseUri, fileProvider, jsComponents, config.Value.HostPage) {
             _window = window ?? throw new ArgumentNullException(nameof(window));
 
             // Create a scheduler that uses one threads.
             var sts = new Utils.SynchronousTaskScheduler();
 
-            _window.WebMessageReceived += (sender, message) =>
-            {
+            _window.WebMessageReceived += (sender, message) => {
                 // On some platforms, we need to move off the browser UI thread
-                Task.Factory.StartNew(message =>
-                {
+                Task.Factory.StartNew(message => {
                     // TODO: Fix this. Photino should ideally tell us the URL that the message comes from so we
                     // know whether to trust it. Currently it's hardcoded to trust messages from any source, including
                     // if the webview is somehow navigated to an external URL.
@@ -59,57 +54,47 @@ namespace Photino.Blazor
             Task.Run(messagePump);
         }
 
-        public Stream HandleWebRequest(object sender, string schema, string url, out string contentType)
-        {
+        public Stream HandleWebRequest(object sender, string schema, string url, out string contentType) {
             // It would be better if we were told whether or not this is a navigation request, but
             // since we're not, guess.
             var localPath = (new Uri(url)).LocalPath;
             var hasFileExtension = localPath.LastIndexOf('.') > localPath.LastIndexOf('/');
 
             //Remove parameters before attempting to retrieve the file. For example: http://localhost/_content/Blazorise/button.js?v=1.0.7.0
-            if (url.Contains('?')) url = url.Substring(0, url.IndexOf('?'));
+            if (url.Contains('?'))
+                url = url.Substring(0, url.IndexOf('?'));
 
             if (url.StartsWith(AppBaseUri, StringComparison.Ordinal)
                 && TryGetResponseContent(url, !hasFileExtension, out var statusCode, out var statusMessage,
-                    out var content, out var headers))
-            {
+                    out var content, out var headers)) {
                 headers.TryGetValue("Content-Type", out contentType);
                 return content;
-            }
-            else
-            {
+            } else {
                 contentType = default;
                 return null;
             }
         }
 
-        protected override void NavigateCore(Uri absoluteUri)
-        {
+        protected override void NavigateCore(Uri absoluteUri) {
             _window.Load(absoluteUri);
         }
 
-        protected override void SendMessage(string message)
-        {
+        protected override void SendMessage(string message) {
             while (!_channel.Writer.TryWrite(message))
                 Thread.Sleep(200);
         }
 
-        async Task messagePump()
-        {
+        async Task messagePump() {
             var reader = _channel.Reader;
-            try
-            {
-                while (true)
-                {
+            try {
+                while (true) {
                     var message = await reader.ReadAsync();
                     _window.SendWebMessage(message);
                 }
-            }
-            catch (ChannelClosedException) { }
+            } catch (ChannelClosedException) { }
         }
 
-        protected override ValueTask DisposeAsyncCore()
-        {
+        protected override ValueTask DisposeAsyncCore() {
             //complete channel
             try { _channel.Writer.Complete(); } catch { }
 

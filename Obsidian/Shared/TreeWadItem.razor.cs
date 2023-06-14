@@ -10,8 +10,7 @@ using Serilog;
 
 namespace Obsidian.Shared;
 
-public partial class TreeWadItem
-{
+public partial class TreeWadItem {
     [Inject]
     public IJSRuntime JsRuntime { get; set; }
 
@@ -27,11 +26,9 @@ public partial class TreeWadItem
     [Parameter]
     public EventCallback<TreeWadItem> OnSelect { get; set; }
 
-    public bool IsChecked
-    {
+    public bool IsChecked {
         get => this.Item.IsChecked;
-        set
-        {
+        set {
             if (this.Item.IsChecked == value)
                 return;
 
@@ -41,21 +38,15 @@ public partial class TreeWadItem
         }
     }
 
-    private async Task OnRowClick(MouseEventArgs e)
-    {
+    private async Task OnRowClick(MouseEventArgs e) {
         if (this.Item.IsSelected)
             return;
 
-        if (e.ShiftKey)
-        {
+        if (e.ShiftKey) {
             SelectMultiple();
-        }
-        else if (e.CtrlKey)
-        {
+        } else if (e.CtrlKey) {
             this.IsChecked = !this.IsChecked;
-        }
-        else
-        {
+        } else {
             SelectItem();
             await this.Explorer.UpdateSelectedFile(this.Item);
         }
@@ -63,27 +54,23 @@ public partial class TreeWadItem
         await this.OnSelect.InvokeAsync(this);
     }
 
-    private void OnRowDoubleClick(MouseEventArgs e)
-    {
+    private void OnRowDoubleClick(MouseEventArgs e) {
         if (this.Item.Type is WadTreeItemType.Directory)
             ToggleExpand();
 
         this.Explorer.RefreshState();
     }
 
-    private void OnCheckedChanged(bool value)
-    {
+    private void OnCheckedChanged(bool value) {
         this.IsChecked = value;
 
         this.Explorer.RefreshState();
     }
 
-    private void OnToggleExpand(MouseEventArgs e)
-    {
+    private void OnToggleExpand(MouseEventArgs e) {
         ToggleExpand();
 
-        if (e.ShiftKey)
-        {
+        if (e.ShiftKey) {
             foreach (WadTreeItemModel item in this.Item.TraverseFlattenedItems())
                 item.IsExpanded = this.Item.IsExpanded;
         }
@@ -91,31 +78,26 @@ public partial class TreeWadItem
         this.Explorer.RefreshState();
     }
 
-    private void ToggleExpand()
-    {
+    private void ToggleExpand() {
         this.Item.IsExpanded = !this.Item.IsExpanded;
     }
 
-    private async Task CopyNameToClipboard()
-    {
+    private async Task CopyNameToClipboard() {
         await this.JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", this.Item.Name);
     }
 
-    private async Task CopyPathToClipboard()
-    {
+    private async Task CopyPathToClipboard() {
         await this.JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", this.Item.Path);
     }
 
-    private void SelectItem()
-    {
+    private void SelectItem() {
         foreach (WadTreeItemModel item in this.WadTree.TraverseFlattenedItems())
             item.IsSelected = false;
 
         this.Item.IsSelected = true;
     }
 
-    private void SelectMultiple()
-    {
+    private void SelectMultiple() {
         WadTreeItemModel selectedItem = this.WadTree
             .TraverseFlattenedItems()
             .Where(x => x.IsSelected)
@@ -130,8 +112,7 @@ public partial class TreeWadItem
             return;
 
         // Get range of items to select
-        (int startIndex, int endIndex) = (targetIndex) switch
-        {
+        (int startIndex, int endIndex) = (targetIndex) switch {
             _ when targetIndex > currentIndex => (currentIndex, targetIndex),
             _ when targetIndex < currentIndex => (targetIndex, currentIndex),
             _ => (0, 0)
@@ -141,8 +122,7 @@ public partial class TreeWadItem
         IEnumerable<WadTreeItemModel> itemsToSelect = items
             .Skip(startIndex)
             .Take(endIndex - startIndex + 1);
-        foreach (WadTreeItemModel itemToSelect in itemsToSelect)
-        {
+        foreach (WadTreeItemModel itemToSelect in itemsToSelect) {
             itemToSelect.IsChecked = !itemToSelect.IsChecked;
             if (itemToSelect.IsExpanded is false)
                 itemToSelect.CheckItemTree(itemToSelect.IsChecked);
@@ -151,8 +131,7 @@ public partial class TreeWadItem
         this.Explorer.RefreshState();
     }
 
-    private void Save()
-    {
+    private void Save() {
         if (this.Item is not WadTreeFileModel fileItem)
             return;
 
@@ -162,23 +141,17 @@ public partial class TreeWadItem
 
         Log.Information($"Saving {fileItem.Path} to {dialog.FileName}");
         this.Explorer.ToggleExporting(true);
-        try
-        {
+        try {
             WadUtils.SaveChunk(fileItem.Wad, fileItem.Chunk, dialog.FileName);
             this.Explorer.Snackbar.Add($"Saved {fileItem.Name}", Severity.Success);
-        }
-        catch (Exception exception)
-        {
+        } catch (Exception exception) {
             SnackbarUtils.ShowHardError(this.Explorer.Snackbar, exception);
-        }
-        finally
-        {
+        } finally {
             this.Explorer.ToggleExporting(false);
         }
     }
 
-    private void Delete()
-    {
+    private void Delete() {
         this.Item.Parent.Items.Remove(this.Item.Name);
         this.Explorer.RefreshState();
     }

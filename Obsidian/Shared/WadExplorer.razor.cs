@@ -26,8 +26,7 @@ using RigResource = LeagueToolkit.Core.Animation.RigResource;
 
 namespace Obsidian.Shared;
 
-public partial class WadExplorer : IDisposable
-{
+public partial class WadExplorer : IDisposable {
     #region Injection
     [Inject]
     public Config Config { get; set; }
@@ -76,8 +75,7 @@ public partial class WadExplorer : IDisposable
     private bool _isLoadingPreview = false;
 
     #region Toolbar Events
-    public async Task OpenWad()
-    {
+    public async Task OpenWad() {
         CommonOpenFileDialog dialog = FileDialogUtils.CreateOpenWadDialog(
             this.Config.GameDataDirectory
         );
@@ -87,12 +85,9 @@ public partial class WadExplorer : IDisposable
         Log.Information("Opening WAD files: {FileNames}", dialog.FileNames);
         this._isLoadingWadFile = true;
         StateHasChanged();
-        try
-        {
-            await Task.Run(() =>
-            {
-                foreach (string wadPath in dialog.FileNames)
-                {
+        try {
+            await Task.Run(() => {
+                foreach (string wadPath in dialog.FileNames) {
                     FileStream wadFileStream = File.OpenRead(wadPath);
                     WadFile wad = new(wadFileStream);
 
@@ -101,20 +96,15 @@ public partial class WadExplorer : IDisposable
             });
 
             this.Snackbar.Add("Successfully opened Wad archives!", Severity.Success);
-        }
-        catch (Exception exception)
-        {
+        } catch (Exception exception) {
             SnackbarUtils.ShowHardError(this.Snackbar, exception);
-        }
-        finally
-        {
+        } finally {
             this._isLoadingWadFile = false;
             StateHasChanged();
         }
     }
 
-    public async Task ExtractAll()
-    {
+    public async Task ExtractAll() {
         CommonOpenFileDialog dialog = FileDialogUtils.CreateExtractWadDialog(
             this.Config.DefaultExtractDirectory
         );
@@ -128,27 +118,21 @@ public partial class WadExplorer : IDisposable
 
         Log.Information($"Extracting all chunks");
         ToggleExporting(true);
-        try
-        {
+        try {
             await Task.Run(() => ExtractFiles(fileItems, dialog.FileName));
 
             this.Snackbar.Add(
                 $"Successfully exported {fileItems.Count()} files!",
                 Severity.Success
             );
-        }
-        catch (Exception exception)
-        {
+        } catch (Exception exception) {
             SnackbarUtils.ShowHardError(this.Snackbar, exception);
-        }
-        finally
-        {
+        } finally {
             ToggleExporting(false);
         }
     }
 
-    public async Task ExtractSelected()
-    {
+    public async Task ExtractSelected() {
         CommonOpenFileDialog dialog = FileDialogUtils.CreateExtractWadDialog(
             this.Config.DefaultExtractDirectory
         );
@@ -159,39 +143,30 @@ public partial class WadExplorer : IDisposable
 
         Log.Information($"Extracting selected chunks");
         ToggleExporting(true);
-        try
-        {
+        try {
             await Task.Run(() => ExtractFiles(fileItems, dialog.FileName));
 
             this.Snackbar.Add(
                 $"Successfully exported {fileItems.Count()} files!",
                 Severity.Success
             );
-        }
-        catch (Exception exception)
-        {
+        } catch (Exception exception) {
             SnackbarUtils.ShowHardError(this.Snackbar, exception);
-        }
-        finally
-        {
+        } finally {
             ToggleExporting(false);
         }
     }
 
-    public async Task LoadHashtable()
-    {
+    public async Task LoadHashtable() {
         CommonOpenFileDialog dialog = new("Select hashtables") { Multiselect = true };
         if (dialog.ShowDialog(this.Window.WindowHandle) is not CommonFileDialogResult.Ok)
             return;
 
         Log.Information("Loading external hashtables: {Hashtables}", dialog.FileNames);
-        try
-        {
+        try {
             // Load hashtables
-            await InvokeAsync(() =>
-            {
-                foreach (string hashtableFile in dialog.FileNames)
-                {
+            await InvokeAsync(() => {
+                foreach (string hashtableFile in dialog.FileNames) {
                     this.Hashtable.LoadHashtable(hashtableFile);
                 }
             });
@@ -200,16 +175,13 @@ public partial class WadExplorer : IDisposable
             await this.RebuildWadTree.InvokeAsync();
 
             this.Snackbar.Add("Successfully loaded hashtables!", Severity.Success);
-        }
-        catch (Exception exception)
-        {
+        } catch (Exception exception) {
             SnackbarUtils.ShowHardError(this.Snackbar, exception);
         }
     }
     #endregion
 
-    private void ExtractFiles(IEnumerable<WadTreeFileModel> fileItems, string extractionDirectory)
-    {
+    private void ExtractFiles(IEnumerable<WadTreeFileModel> fileItems, string extractionDirectory) {
         foreach (WadTreeFileModel fileItem in fileItems)
             Utils.WadUtils.SaveChunk(
                 fileItem.Wad,
@@ -219,16 +191,12 @@ public partial class WadExplorer : IDisposable
             );
     }
 
-    public List<WadTreeItemModel> GetVisibleItemsForWadTree()
-    {
-        try
-        {
+    public List<WadTreeItemModel> GetVisibleItemsForWadTree() {
+        try {
             return this.WadTree
                 .TraverseFlattenedVisibleItems(this.WadTree.Filter, this.WadTree.UseRegexFilter)
                 .ToList();
-        }
-        catch (Exception exception)
-        {
+        } catch (Exception exception) {
             SnackbarUtils.ShowSoftError(this.Snackbar, exception);
 
             return new();
@@ -236,11 +204,9 @@ public partial class WadExplorer : IDisposable
     }
 
     // TODO: Refactor this to be an event from the tree view itself
-    public async Task UpdateSelectedFile(WadTreeItemModel item)
-    {
+    public async Task UpdateSelectedFile(WadTreeItemModel item) {
         // Hide the preview if the selected file is null
-        if (item is not WadTreeFileModel fileItem)
-        {
+        if (item is not WadTreeFileModel fileItem) {
             await SetCurrentPreviewType(WadFilePreviewType.None);
             return;
         }
@@ -251,51 +217,34 @@ public partial class WadExplorer : IDisposable
 
     #region Preview
     // TODO: This function shouldn't be here
-    private async Task PreviewSelectedFile(WadTreeFileModel file)
-    {
+    private async Task PreviewSelectedFile(WadTreeFileModel file) {
         using Stream fileStream = file.Wad.LoadChunkDecompressed(file.Chunk).AsStream();
         LeagueFileType fileType = LeagueFile.GetFileType(fileStream);
         string extension = Path.GetExtension(file.Name);
 
-        if (BinUtils.IsSkinPackage(file.Path))
-        {
+        if (BinUtils.IsSkinPackage(file.Path)) {
             await PreviewSkinPackage(file.Wad, fileStream);
-        }
-        else if (fileType is LeagueFileType.StaticMeshBinary or LeagueFileType.StaticMeshAscii)
-        {
+        } else if (fileType is LeagueFileType.StaticMeshBinary or LeagueFileType.StaticMeshAscii) {
             await PreviewStaticMesh(
                 fileStream,
                 isAscii: fileType is LeagueFileType.StaticMeshAscii
             );
-        }
-        else if (fileType is (LeagueFileType.TextureDds or LeagueFileType.Texture))
-        {
+        } else if (fileType is (LeagueFileType.TextureDds or LeagueFileType.Texture)) {
             await PreviewImage(ImageUtils.GetImageFromTextureStream(fileStream));
-        }
-        else if (fileType is LeagueFileType.Png or LeagueFileType.Jpeg)
-        {
+        } else if (fileType is LeagueFileType.Png or LeagueFileType.Jpeg) {
             await PreviewImage(fileStream);
-        }
-        else if (fileType is LeagueFileType.PropertyBin)
-        {
+        } else if (fileType is LeagueFileType.PropertyBin) {
             await PreviewPropertyBin(fileStream);
-        }
-        else if (extension is ".json")
-        {
+        } else if (extension is ".json") {
             await PreviewText(fileStream, "json");
-        }
-        else if (extension is ".js")
-        {
+        } else if (extension is ".js") {
             await PreviewText(fileStream, "javascript");
-        }
-        else
-        {
+        } else {
             await SetCurrentPreviewType(WadFilePreviewType.None);
         }
     }
 
-    private async Task PreviewSkinPackage(WadFile wad, Stream stream)
-    {
+    private async Task PreviewSkinPackage(WadFile wad, Stream stream) {
         Log.Information("Previewing skin package");
 
         BinTree skinPackage = new(stream);
@@ -325,8 +274,7 @@ public partial class WadExplorer : IDisposable
         await SetCurrentPreviewType(WadFilePreviewType.Viewport);
         await Task.Delay(25);
 
-        if (this.Config.LoadSkinnedMeshAnimations)
-        {
+        if (this.Config.LoadSkinnedMeshAnimations) {
             await Three.RenderSkinnedMeshFromGltf(
                 this.JsRuntime,
                 WadPreviewUtils.VIEWPORT_CONTAINER_ID,
@@ -341,9 +289,7 @@ public partial class WadExplorer : IDisposable
                 ),
                 SkinnedMeshUtils.LoadAnimationAssets(skinData, skinPackage, wad, metaEnvironment)
             );
-        }
-        else
-        {
+        } else {
             await Three.RenderSkinnedMesh(
                 this.JsRuntime,
                 WadPreviewUtils.VIEWPORT_CONTAINER_ID,
@@ -361,15 +307,13 @@ public partial class WadExplorer : IDisposable
         }
     }
 
-    private async Task PreviewStaticMesh(Stream stream, bool isAscii)
-    {
+    private async Task PreviewStaticMesh(Stream stream, bool isAscii) {
         Log.Information("Previewing static mesh");
 
         await SetCurrentPreviewType(WadFilePreviewType.Viewport);
         await Task.Delay(25);
 
-        StaticMesh staticMesh = isAscii switch
-        {
+        StaticMesh staticMesh = isAscii switch {
             true => StaticMesh.ReadAscii(stream),
             false => StaticMesh.ReadBinary(stream),
         };
@@ -381,8 +325,7 @@ public partial class WadExplorer : IDisposable
         );
     }
 
-    private async Task PreviewMapGeometry(Stream stream)
-    {
+    private async Task PreviewMapGeometry(Stream stream) {
         Log.Information("Previewing map geometry");
 
         await SetCurrentPreviewType(WadFilePreviewType.Viewport);
@@ -395,8 +338,7 @@ public partial class WadExplorer : IDisposable
         );
     }
 
-    private async Task PreviewImage(Image<Rgba32> image)
-    {
+    private async Task PreviewImage(Image<Rgba32> image) {
         Log.Information("Previewing image");
 
         MemoryStream imageStream = new();
@@ -407,8 +349,7 @@ public partial class WadExplorer : IDisposable
         await PreviewImage(imageStream);
     }
 
-    private async Task PreviewImage(Stream imageStream)
-    {
+    private async Task PreviewImage(Stream imageStream) {
         Log.Information("Previewing image from stream");
 
         await SetCurrentPreviewType(WadFilePreviewType.Image);
@@ -420,24 +361,21 @@ public partial class WadExplorer : IDisposable
         );
     }
 
-    private async Task PreviewPropertyBin(Stream stream)
-    {
+    private async Task PreviewPropertyBin(Stream stream) {
         Log.Information("Previewing property bin");
 
         await SetCurrentPreviewType(WadFilePreviewType.Text);
         await this._textPreview.PreviewRitobin(stream);
     }
 
-    private async Task PreviewText(Stream stream, string language)
-    {
+    private async Task PreviewText(Stream stream, string language) {
         Log.Information($"Previewing {language} text");
 
         await SetCurrentPreviewType(WadFilePreviewType.Text);
         await this._textPreview.Preview(stream, language);
     }
 
-    private async Task SetCurrentPreviewType(WadFilePreviewType previewType)
-    {
+    private async Task SetCurrentPreviewType(WadFilePreviewType previewType) {
         if (this.WadTree.CurrentPreviewType is WadFilePreviewType.Viewport)
             await this.JsRuntime.InvokeVoidAsync(
                 "destroyThreeJsRenderer",
@@ -449,28 +387,22 @@ public partial class WadExplorer : IDisposable
     }
     #endregion
 
-    private async Task HandlePreviewTaskAsync(Task previewTask)
-    {
+    private async Task HandlePreviewTaskAsync(Task previewTask) {
         // Hide the preview if the selected file is null
-        if (this.WadTree.SelectedFile is null)
-        {
+        if (this.WadTree.SelectedFile is null) {
             await SetCurrentPreviewType(WadFilePreviewType.None);
             return;
         }
 
-        try
-        {
+        try {
             await previewTask;
-        }
-        catch (Exception exception)
-        {
+        } catch (Exception exception) {
             SnackbarUtils.ShowSoftError(this.Snackbar, exception);
             await SetCurrentPreviewType(WadFilePreviewType.None);
         }
     }
 
-    private async Task OnDimensionChanged(double dimension)
-    {
+    private async Task OnDimensionChanged(double dimension) {
         this._splitterDimension = dimension;
 
         if (this.WadTree?.CurrentPreviewType is WadFilePreviewType.Viewport)
@@ -480,14 +412,12 @@ public partial class WadExplorer : IDisposable
             );
     }
 
-    private void OnCollapseAll()
-    {
+    private void OnCollapseAll() {
         foreach (WadTreeItemModel item in this.WadTree.TraverseFlattenedItems())
             item.IsExpanded = false;
     }
 
-    private void OnExpandAll()
-    {
+    private void OnExpandAll() {
         foreach (
             WadTreeItemModel item in this.WadTree
                 .TraverseFlattenedItems()
@@ -498,21 +428,18 @@ public partial class WadExplorer : IDisposable
 
     private Task OnRefreshTree() => this.RebuildWadTree.InvokeAsync();
 
-    private async Task OnShouldPreviewSelectedItemsChanged(bool value)
-    {
+    private async Task OnShouldPreviewSelectedItemsChanged(bool value) {
         this.Config.ShouldPreviewSelectedItems = value;
 
         await SetCurrentPreviewType(WadFilePreviewType.None);
     }
 
-    private void OnFilterChanged(string value)
-    {
+    private void OnFilterChanged(string value) {
         this.WadTree.Filter = value;
         this.RefreshState();
     }
 
-    private void OnUseRegexFilterChanged(bool value)
-    {
+    private void OnUseRegexFilterChanged(bool value) {
         this.WadTree.UseRegexFilter = value;
         this.RefreshState();
     }
@@ -520,22 +447,19 @@ public partial class WadExplorer : IDisposable
     private async ValueTask FocusWadFilter() =>
         await this._wadFilterComponent.InputField.FocusAsync();
 
-    public void ToggleExporting(bool isExporting)
-    {
+    public void ToggleExporting(bool isExporting) {
         this._isExportingFiles = isExporting;
         StateHasChanged();
     }
 
-    private void ToggleLoadingPreview(bool value)
-    {
+    private void ToggleLoadingPreview(bool value) {
         this._isLoadingPreview = value;
         StateHasChanged();
     }
 
     public void RefreshState() => StateHasChanged();
 
-    protected override void OnInitialized()
-    {
+    protected override void OnInitialized() {
         this._hotKeysContext = this.HotKeys
             .CreateContext()
             .Add(ModCode.Ctrl, Code.F, FocusWadFilter, "Focus Wad Filter");
@@ -546,10 +470,8 @@ public partial class WadExplorer : IDisposable
         base.OnInitialized();
     }
 
-    private void OnPreviewCallback()
-    {
-        _ = InvokeAsync(async () =>
-        {
+    private void OnPreviewCallback() {
+        _ = InvokeAsync(async () => {
             if (this._previewQueue.TryDequeue(out Task previewTask) is false)
                 return;
 
@@ -563,8 +485,7 @@ public partial class WadExplorer : IDisposable
         });
     }
 
-    public void Dispose()
-    {
+    public void Dispose() {
         this._hotKeysContext?.Dispose();
         this._previewTimer?.Dispose();
     }

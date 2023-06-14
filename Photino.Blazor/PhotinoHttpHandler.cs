@@ -5,21 +5,17 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Photino.Blazor
-{
-    public class PhotinoHttpHandler : DelegatingHandler
-    {
+namespace Photino.Blazor {
+    public class PhotinoHttpHandler : DelegatingHandler {
         private readonly PhotinoBlazorApp app;
 
         //use this constructor if a handler is registered in DI to inject dependencies
-        public PhotinoHttpHandler(PhotinoBlazorApp app) : this(app, null)
-        {
+        public PhotinoHttpHandler(PhotinoBlazorApp app) : this(app, null) {
         }
 
         //Use this constructor if a handler is created manually.
         //Otherwise, use DelegatingHandler.InnerHandler public property to set the next handler.
-        public PhotinoHttpHandler(PhotinoBlazorApp app, HttpMessageHandler innerHandler)
-        {
+        public PhotinoHttpHandler(PhotinoBlazorApp app, HttpMessageHandler innerHandler) {
             this.app = app;
 
             //the last (inner) handler in the pipeline should be a "real" handler.
@@ -27,11 +23,9 @@ namespace Photino.Blazor
             InnerHandler = innerHandler ?? new HttpClientHandler();
         }
 
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
             Stream content = app.HandleWebRequest(null, null, request.RequestUri.AbsoluteUri, out string contentType);
-            if(content != null)
-            {
+            if (content != null) {
                 var response = new HttpResponseMessage(HttpStatusCode.OK);
                 response.Content = new StreamContent(content);
                 response.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);

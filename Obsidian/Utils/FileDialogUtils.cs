@@ -2,10 +2,8 @@
 
 namespace Obsidian.Utils;
 
-public static class FileDialogUtils
-{
-    public static CommonOpenFileDialog CreateOpenWadDialog(string initialDirectory)
-    {
+public static class FileDialogUtils {
+    public static CommonOpenFileDialog CreateOpenWadDialog(string initialDirectory) {
         CommonOpenFileDialog dialog =
             new("Open Wad archives") { Multiselect = true, InitialDirectory = initialDirectory };
         dialog.Filters.Add(CreateWadFilter());
@@ -13,11 +11,9 @@ public static class FileDialogUtils
         return dialog;
     }
 
-    public static CommonOpenFileDialog CreateExtractWadDialog(string initialDirectory)
-    {
+    public static CommonOpenFileDialog CreateExtractWadDialog(string initialDirectory) {
         CommonOpenFileDialog dialog =
-            new("Select the extraction directory")
-            {
+            new("Select the extraction directory") {
                 IsFolderPicker = true,
                 InitialDirectory = initialDirectory
             };
@@ -28,8 +24,7 @@ public static class FileDialogUtils
     public static CommonFileDialogFilter CreateWadFilter() =>
         new("Wad Archive", "wad,client,server");
 
-    public static IEnumerable<CommonFileDialogFilter> CreateGltfFilters()
-    {
+    public static IEnumerable<CommonFileDialogFilter> CreateGltfFilters() {
         yield return new("glTF Binary", "glb");
         yield return new("glTF", "gltf");
     }

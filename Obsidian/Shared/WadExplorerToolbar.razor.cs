@@ -5,8 +5,7 @@ using Toolbelt.Blazor.HotKeys2;
 
 namespace Obsidian.Shared;
 
-public partial class WadExplorerToolbar : IDisposable
-{
+public partial class WadExplorerToolbar : IDisposable {
     [Inject]
     public HotKeys HotKeys { get; set; }
 
@@ -32,15 +31,13 @@ public partial class WadExplorerToolbar : IDisposable
 
     public AppTheme Theme { get; } = new();
 
-    protected override void OnInitialized()
-    {
+    protected override void OnInitialized() {
         this._hotKeysContext = this.HotKeys
             .CreateContext()
             .Add(ModCode.Ctrl, Code.O, async () => await OnOpenWad.InvokeAsync(), "Open Wad");
     }
 
-    public void Dispose()
-    {
+    public void Dispose() {
         this._hotKeysContext?.Dispose();
     }
 }

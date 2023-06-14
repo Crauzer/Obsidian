@@ -1,9 +1,3 @@
-using System;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 using Microsoft.Build.Construction;
 using Microsoft.Build.Tasks;
 using NuGet.Versioning;
@@ -26,11 +20,17 @@ using Nuke.Common.Tools.MinVer;
 using Nuke.Common.Utilities.Collections;
 using Octokit;
 using Serilog;
+using System;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 using static Nuke.Common.EnvironmentInfo;
+using static Nuke.Common.IO.CompressionTasks;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
-using static Nuke.Common.IO.CompressionTasks;
 
 [GitHubActions(
     "ci",
@@ -47,8 +47,7 @@ using static Nuke.Common.IO.CompressionTasks;
     },
     InvokedTargets = new[] { nameof(Release) }
 )]
-class Build : NukeBuild
-{
+class Build : NukeBuild {
     /// Support plugins are available for:
     ///   - JetBrains ReSharper        https://nuke.build/resharper
     ///   - JetBrains Rider            https://nuke.build/rider
@@ -81,8 +80,7 @@ class Build : NukeBuild
         _ =>
             _.Description("Clean")
                 .Before(Restore)
-                .Executes(() =>
-                {
+                .Executes(() => {
                     DotNetClean(s => s.SetProject(Solution));
 
                     EnsureCleanDirectory(ArtifactsDirectory);
@@ -92,8 +90,7 @@ class Build : NukeBuild
         _ =>
             _.Description("Restore")
                 .DependsOn(Clean)
-                .Executes(() =>
-                {
+                .Executes(() => {
                     DotNetRestore(s => s.SetProjectFile(Solution));
                 });
 
@@ -101,8 +98,7 @@ class Build : NukeBuild
         _ =>
             _.Description("Build")
                 .DependsOn(Restore)
-                .Executes(() =>
-                {
+                .Executes(() => {
                     DotNetBuild(
                         s =>
                             s.SetProjectFile(Solution.GetProject("Obsidian"))
@@ -117,8 +113,7 @@ class Build : NukeBuild
     Target Test =>
         _ =>
             _.DependsOn(Compile)
-                .Executes(() =>
-                {
+                .Executes(() => {
                     DotNetTest(
                         s =>
                             s.SetProjectFile(Solution.GetProject("Obsidian.Tests"))
@@ -131,8 +126,7 @@ class Build : NukeBuild
         _ =>
             _.DependsOn(Test)
                 .Requires(() => Configuration.Equals(Configuration.Release))
-                .Executes(() =>
-                {
+                .Executes(() => {
                     // --nobuild makes it crash
                     DotNetPublish(
                         s =>
@@ -154,10 +148,8 @@ class Build : NukeBuild
                 .Description("Release")
                 .Requires(() => Configuration.Equals(Configuration.Release))
                 .OnlyWhenStatic(() => GitRepository.Tags.Any())
-                .Executes(async () =>
-                {
-                    GitHubTasks.GitHubClient = new(new ProductHeaderValue(nameof(NukeBuild)))
-                    {
+                .Executes(async () => {
+                    GitHubTasks.GitHubClient = new(new ProductHeaderValue(nameof(NukeBuild))) {
                         Credentials = new Credentials(GitHubActions.Token)
                     };
 
@@ -174,8 +166,7 @@ class Build : NukeBuild
                         owner,
                         name,
                         release.Id,
-                        new()
-                        {
+                        new() {
                             TagName = MinVer.Version,
                             TargetCommitish = GitHubActions.Sha,
                             Name = MinVer.Version,
@@ -190,13 +181,11 @@ class Build : NukeBuild
                     await UploadReleaseAssetToGithub(createdRelease, obsidianZip);
                 });
 
-    private static async Task UploadReleaseAssetToGithub(Release release, string asset)
-    {
+    private static async Task UploadReleaseAssetToGithub(Release release, string asset) {
         string assetFileName = Path.GetFileName(asset);
 
         ReleaseAssetUpload assetUpload =
-            new()
-            {
+            new() {
                 FileName = assetFileName,
                 ContentType = "application/octet-stream",
                 RawData = File.OpenRead(asset),
