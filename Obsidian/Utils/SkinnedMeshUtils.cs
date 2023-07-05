@@ -79,8 +79,12 @@ public static class SkinnedMeshUtils {
         IJSRuntime js
     ) {
         BinTreeObject materialDefObject = skinPackage.Objects.GetValueOrDefault(materialLink);
-        if (materialDefObject is null)
-            return await ImageUtils.CreateImageBlobFromChunk(js, fallbackTexture, wad);
+        if (materialDefObject is null) {
+            return string.IsNullOrEmpty(fallbackTexture) switch {
+                true => fallbackTexture,
+                _ => await ImageUtils.CreateImageBlobFromChunk(js, fallbackTexture, wad)
+            };
+        }
 
         var materialDef = MetaSerializer.Deserialize<StaticMaterialDef>(
             metaEnvironment,
