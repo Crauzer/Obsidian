@@ -2,7 +2,6 @@
 using LeagueToolkit.Core.Wad;
 using Obsidian.Services;
 using Serilog;
-using System.Linq;
 using PathIO = System.IO.Path;
 
 namespace Obsidian.Data.Wad;
