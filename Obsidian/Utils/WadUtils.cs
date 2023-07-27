@@ -1,5 +1,5 @@
 ﻿using LeagueToolkit.Core.Wad;
-using XXHash3NET;
+using LeagueToolkit.Hashing;
 
 namespace Obsidian.Utils;
 
@@ -27,7 +27,7 @@ public static class WadUtils {
             saveDirectory,
             string.Format(
                 "{0:x16}{1}",
-                XXHash64.Compute(chunkPath.ToLower()),
+                XxHash64Ext.Hash(chunkPath.ToLowerInvariant()),
                 Path.GetExtension(chunkPath)
             )
         );

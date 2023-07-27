@@ -1,8 +1,6 @@
 ﻿using CommunityToolkit.Diagnostics;
-using CommunityToolkit.HighPerformance.Helpers;
 using LeagueToolkit.Core.Wad;
 using Obsidian.Services;
-using Obsidian.Shared;
 using Serilog;
 using PathIO = System.IO.Path;
 
@@ -14,8 +12,12 @@ public class WadTreeModel : IWadTreeParent, IDisposable {
 
     public IWadTreeParent Parent => null;
     public int Depth => 0;
+
     public string Name => string.Empty;
     public string Path => string.Empty;
+    public ulong NameHash => 0;
+    public ulong PathHash => 0;
+
     public bool IsWadArchive => false;
 
     public bool UseRegexFilter { get; set; }
@@ -23,19 +25,18 @@ public class WadTreeModel : IWadTreeParent, IDisposable {
 
     public WadFilePreviewType CurrentPreviewType { get; set; }
 
-    public Dictionary<string, WadTreeItemModel> Items { get; set; } = new();
+    public List<WadTreeItemModel> Items { get; set; } = new();
 
     public IEnumerable<WadTreeFileModel> CheckedFiles =>
         this.TraverseFlattenedCheckedItems()
-            .Where(x => x is WadTreeFileModel)
-            .Select(x => x as WadTreeFileModel);
+            .OfType<WadTreeFileModel>();
 
     public WadTreeFileModel SelectedFile => this.SelectedFiles.FirstOrDefault();
 
     public IEnumerable<WadTreeFileModel> SelectedFiles =>
         this.TraverseFlattenedItems()
-            .Where(x => x.IsSelected && x is WadTreeFileModel)
-            .Select(x => x as WadTreeFileModel);
+            .Where(x => x.IsSelected)
+            .OfType<WadTreeFileModel>();
 
     private readonly Dictionary<string, WadFile> _mountedWadFiles = new();
 
@@ -69,8 +70,16 @@ public class WadTreeModel : IWadTreeParent, IDisposable {
         CreateTreeForWadFile(wad, relativeWadPath);
     }
 
-    public void CreateTreeForWadFile(WadFile wad, string wadFilePath) {
+    public void CreateTreeForWadFile(WadFile wad, string wadFilePath, bool allowDuplicate = false) {
         IEnumerable<string> wadFilePathComponents = wadFilePath.Split('/');
+
+        IWadTreeParent wadParent = this;
+        if (allowDuplicate) {
+            var wadItem = new WadTreeItemModel(this, wadFilePathComponents.First());
+            this.Items.Add(wadItem);
+            wadParent = wadItem;
+            wadFilePathComponents = wadFilePathComponents.Skip(1);
+        }
 
         foreach (var (_, chunk) in wad.Chunks) {
             string path = this.Hashtable.TryGetChunkPath(chunk, out path) switch {
@@ -78,18 +87,17 @@ public class WadTreeModel : IWadTreeParent, IDisposable {
                 false => HashtableService.GuessChunkPath(chunk, wad),
             };
 
-            this.AddWadFile(wadFilePathComponents.Concat(path.Split('/')), wad, chunk);
+            wadParent.AddWadFile(wadFilePathComponents.Concat(path.Split('/')), wad, chunk);
         }
     }
 
     public void SortItems() {
         Log.Information($"Sorting wad tree");
 
-        this.Items = new(this.Items.OrderBy(x => x.Value));
+        this.Items.Sort();
 
-        foreach (var (_, item) in this.Items) {
-            if (item.Type is WadTreeItemType.Directory)
-                item.SortItems();
+        foreach (WadTreeItemModel item in this.Items.Where(item => item.Type is WadTreeItemType.Directory)) {
+            item.SortItems();
         }
     }
 

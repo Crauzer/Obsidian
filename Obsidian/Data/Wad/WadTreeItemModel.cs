@@ -1,9 +1,7 @@
-﻿using LeagueToolkit.Core.Wad;
+﻿using LeagueToolkit.Hashing;
 using LeagueToolkit.Utils;
 using MudBlazor;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
 using PathIO = System.IO.Path;
 
 namespace Obsidian.Data.Wad;
@@ -23,8 +21,10 @@ public class WadTreeItemModel
     public int Depth => this.GetDepth();
 
     public Guid Id { get; } = Guid.NewGuid();
-    public string Name { get; set; }
+    public string Name { get; }
     public string Path { get; }
+    public ulong NameHash { get; }
+    public ulong PathHash { get; }
 
     public string Icon => GetIcon();
 
@@ -33,38 +33,34 @@ public class WadTreeItemModel
     public bool IsSelected { get; set; }
     public bool IsChecked { get; set; }
     public bool IsExpanded { get; set; }
+    public bool IsWadArchive { get; }
 
-    public Dictionary<string, WadTreeItemModel> Items { get; protected set; } = new();
-
-    public bool IsWadArchive {
-        get {
-            string extension = PathIO.GetExtension(this.Name);
-
-            return extension.Contains("wad")
-                || extension.Contains("client")
-                || extension.Contains("server");
-        }
-    }
+    public List<WadTreeItemModel> Items { get; protected set; } = new();
 
     public WadTreeItemModel(IWadTreeParent parent, string name) {
         this.Parent = parent;
-        this.Name = name;
 
+        this.Name = name;
         this.Path = parent switch {
             null or WadTreeModel or { IsWadArchive: true } => name,
             _ => string.Join('/', parent.Path, name)
         };
+        this.NameHash = XxHash64Ext.Hash(this.Name);
+        this.PathHash = XxHash64Ext.Hash(this.Path);
+
+        this.IsWadArchive = this.Name.EndsWith(".wad", StringComparison.OrdinalIgnoreCase)
+                                || this.Name.EndsWith(".wad.client", StringComparison.OrdinalIgnoreCase)
+                                || this.Name.EndsWith(".wad.mobile", StringComparison.OrdinalIgnoreCase);
     }
 
     public void SortItems() {
         if (this.Items is null)
             return;
 
-        this.Items = new(this.Items.OrderBy(x => x.Value));
+        this.Items.Sort();
 
-        foreach (var (_, item) in this.Items) {
-            if (item.Type is WadTreeItemType.Directory)
-                item.SortItems();
+        foreach (WadTreeItemModel item in this.Items.Where(item => item.Type is WadTreeItemType.Directory)) {
+            item.SortItems();
         }
     }
 
