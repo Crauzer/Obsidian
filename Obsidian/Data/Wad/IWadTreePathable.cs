@@ -6,6 +6,8 @@ public interface IWadTreePathable {
 
     string Name { get; }
     string Path { get; }
+    ulong NameHash { get; }
+    ulong PathHash { get; }
 
     public bool IsWadArchive { get; }
 }

@@ -1,10 +1,11 @@
 ﻿using LeagueToolkit.Core.Wad;
+using LeagueToolkit.Hashing;
 using System.Text.RegularExpressions;
 
 namespace Obsidian.Data.Wad;
 
 public interface IWadTreeParent : IWadTreePathable {
-    Dictionary<string, WadTreeItemModel> Items { get; }
+    List<WadTreeItemModel> Items { get; }
 }
 
 public static class IWadTreeParentExtensions {
@@ -16,18 +17,19 @@ public static class IWadTreeParentExtensions {
     ) {
         // File belongs to this folder
         if (pathComponents.Count() is 1) {
-            string name = pathComponents.First();
-            parent.Items.Add(name, new WadTreeFileModel(parent, name, wad, chunk));
+            parent.Items.Add(new WadTreeFileModel(parent, pathComponents.First(), wad, chunk));
             return;
         }
 
         string folderName = pathComponents.First();
+        ulong folderNameHash = XxHash64Ext.Hash(folderName);
+
         WadTreeItemModel directory = null;
         lock (parent) {
-            directory = parent.Items.GetValueOrDefault(folderName);
+            directory = parent.Items.FirstOrDefault(item => item.Type is not WadTreeItemType.File && item.NameHash == folderNameHash);
             if (directory is null) {
                 directory = new(parent, folderName);
-                parent.Items.Add(directory.Name, directory);
+                parent.Items.Add(directory);
             }
         }
 
@@ -38,7 +40,7 @@ public static class IWadTreeParentExtensions {
         if (parent.Items is null)
             yield break;
 
-        foreach (var (_, item) in parent.Items) {
+        foreach (var item in parent.Items) {
             yield return item;
 
             foreach (WadTreeItemModel itemItem in item.TraverseFlattenedItems())
@@ -52,7 +54,7 @@ public static class IWadTreeParentExtensions {
         if (parent.Items is null)
             yield break;
 
-        foreach (var (_, item) in parent.Items) {
+        foreach (var item in parent.Items) {
             if (item.IsChecked)
                 yield return item;
 
@@ -69,7 +71,7 @@ public static class IWadTreeParentExtensions {
         if (parent.Items is null)
             yield break;
 
-        foreach (var (_, item) in parent.Items) {
+        foreach (var item in parent.Items) {
             if (!string.IsNullOrEmpty(filter)) {
                 // If the current item is a file we check if it matches the filter
                 if (item is WadTreeFileModel && DoesMatchFilter(item, filter, useRegex)) {
@@ -78,12 +80,12 @@ public static class IWadTreeParentExtensions {
                 }
 
                 // If the current item is a folder we get filtered items and if there are none we skip
-                IReadOnlyList<WadTreeItemModel> filteredItems = item.TraverseFlattenedVisibleItems(
+                WadTreeItemModel[] filteredItems = item.TraverseFlattenedVisibleItems(
                         filter,
                         useRegex
                     )
-                    .ToList();
-                if (filteredItems.Count is 0)
+                    .ToArray();
+                if (filteredItems.Length is 0)
                     continue;
 
                 // Return parent only if its children are included in the filter

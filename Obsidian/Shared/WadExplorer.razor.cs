@@ -91,8 +91,10 @@ public partial class WadExplorer : IDisposable {
                     FileStream wadFileStream = File.OpenRead(wadPath);
                     WadFile wad = new(wadFileStream);
 
-                    this.WadTree.CreateTreeForWadFile(wad, Path.GetFileName(wadPath));
+                    this.WadTree.CreateTreeForWadFile(wad, Path.GetFileName(wadPath), allowDuplicate: true);
                 }
+
+                this.WadTree.SortItems();
             });
 
             this.Snackbar.Add("Successfully opened Wad archives!", Severity.Success);
@@ -191,15 +193,15 @@ public partial class WadExplorer : IDisposable {
             );
     }
 
-    public List<WadTreeItemModel> GetVisibleItemsForWadTree() {
+    private ICollection<WadTreeItemModel> GetVisibleItemsForWadTree() {
         try {
             return this.WadTree
                 .TraverseFlattenedVisibleItems(this.WadTree.Filter, this.WadTree.UseRegexFilter)
-                .ToList();
+                .ToArray();
         } catch (Exception exception) {
             SnackbarUtils.ShowSoftError(this.Snackbar, exception);
 
-            return new();
+            return Array.Empty<WadTreeItemModel>();
         }
     }
 
