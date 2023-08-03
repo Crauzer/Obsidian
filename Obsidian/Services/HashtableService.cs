@@ -36,6 +36,8 @@ public class HashtableService {
     private const string BIN_HASHES_PATH = "hashes/hashes.binhashes.txt";
     private const string BIN_OBJECTS_PATH = "hashes/hashes.binentries.txt";
 
+    private IReadOnlyList<RepositoryContent> cdragonRepositoryContent;
+
     public HashtableService(Config config) {
         this.Config = config;
     }
@@ -83,14 +85,14 @@ public class HashtableService {
         Log.Information("Syncing WAD hashtables");
 
         GitHubClient github = new(new ProductHeaderValue("Obsidian"));
-        IReadOnlyList<RepositoryContent> content = await github.Repository.Content.GetAllContents(
+        this.cdragonRepositoryContent ??= await github.Repository.Content.GetAllContents(
             "CommunityDragon",
             "CDTB",
             "cdragontoolbox"
         );
 
-        RepositoryContent gameHashesContent = GetRepositoryContent(content, "hashes.game.txt");
-        RepositoryContent lcuHashesContent = GetRepositoryContent(content, "hashes.lcu.txt");
+        RepositoryContent gameHashesContent = GetRepositoryContent(this.cdragonRepositoryContent, "hashes.game.txt");
+        RepositoryContent lcuHashesContent = GetRepositoryContent(this.cdragonRepositoryContent, "hashes.lcu.txt");
 
         this.Config.GameHashesChecksum = await SyncHashtable(
             client,
@@ -112,16 +114,16 @@ public class HashtableService {
         Log.Information("Syncing BIN hashtables");
 
         GitHubClient github = new(new ProductHeaderValue("Obsidian"));
-        IReadOnlyList<RepositoryContent> content = await github.Repository.Content.GetAllContents(
+        this.cdragonRepositoryContent ??= await github.Repository.Content.GetAllContents(
             "CommunityDragon",
             "CDTB",
             "cdragontoolbox"
         );
 
-        RepositoryContent fieldsContent = GetRepositoryContent(content, "hashes.binfields.txt");
-        RepositoryContent typesContent = GetRepositoryContent(content, "hashes.bintypes.txt");
-        RepositoryContent hashesContent = GetRepositoryContent(content, "hashes.binhashes.txt");
-        RepositoryContent entriesContent = GetRepositoryContent(content, "hashes.binentries.txt");
+        RepositoryContent fieldsContent = GetRepositoryContent(this.cdragonRepositoryContent, "hashes.binfields.txt");
+        RepositoryContent typesContent = GetRepositoryContent(this.cdragonRepositoryContent, "hashes.bintypes.txt");
+        RepositoryContent hashesContent = GetRepositoryContent(this.cdragonRepositoryContent, "hashes.binhashes.txt");
+        RepositoryContent entriesContent = GetRepositoryContent(this.cdragonRepositoryContent, "hashes.binentries.txt");
 
         this.Config.BinFieldsHashesChecksum = await SyncHashtable(
             client,
