@@ -27,6 +27,8 @@ public partial class HashtableProvider : ComponentBase {
         await this.OnLoadingStart.InvokeAsync();
         try {
             await this.Hashtable.Initialize();
+        } catch (HttpRequestException httpRequestException) {
+            SnackbarUtils.ShowSoftError(this.Snackbar, httpRequestException);
         } catch (Exception exception) {
             SnackbarUtils.ShowHardError(this.Snackbar, exception);
         } finally {
