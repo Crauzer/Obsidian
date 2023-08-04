@@ -55,9 +55,10 @@ public class Program {
         app.MainWindow.UseOsDefaultSize = false;
         app.MainWindow
             .SetIconFile("favicon.ico")
-            .SetTitle("Obsidian")
+            .SetTitle(string.Empty)
             .SetUseOsDefaultSize(true)
             .SetContextMenuEnabled(false)
+            .RegisterWindowCreatedHandler(WindowCreatedHandler)
             .RegisterApi(new());
 
         app.MainWindow.SetDevToolsEnabled(true);
@@ -82,5 +83,13 @@ public class Program {
                 outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
             )
             .CreateLogger();
+    }
+
+    // used to workaround issues with the taskbar icon going missing, see also
+    // https://github.com/tryphotino/photino.NET/issues/106 and
+    // https://github.com/tryphotino/photino.NET/issues/85
+    private static void WindowCreatedHandler(object sender, EventArgs e)
+    {
+        ((PhotinoNET.PhotinoWindow)sender).SetTitle("Obsidian");
     }
 }
