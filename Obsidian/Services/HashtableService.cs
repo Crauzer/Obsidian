@@ -178,34 +178,25 @@ public class HashtableService {
 
     public void LoadHashtable(string hashtablePath) {
         using StreamReader reader = new(hashtablePath);
-        StringBuilder nameBuilder = new();
 
-        while (reader.EndOfStream is false) {
-            string line = reader.ReadLine();
-            string[] split = line.Split(' ');
-
-            ulong pathHash = ulong.Parse(split[0], NumberStyles.HexNumber);
-            nameBuilder = nameBuilder.AppendJoin(' ', split.Skip(1));
-
-            this.Hashes.TryAdd(pathHash, nameBuilder.ToString());
-
-            nameBuilder.Clear();
+        while (reader.ReadLine() is string line) {
+            var separatorIndex = line.IndexOf(' ');
+        
+            ulong pathHash = ulong.Parse(line.AsSpan(0, separatorIndex), NumberStyles.HexNumber);
+        
+            this.Hashes.TryAdd(pathHash, line[(separatorIndex+1)..]);
         }
     }
 
     private static void LoadBinHashtable(string hashtablePath, Dictionary<uint, string> hashtable) {
         using StreamReader reader = new(hashtablePath);
-        StringBuilder nameBuilder = new();
 
-        while (reader.EndOfStream is false) {
-            string line = reader.ReadLine();
-            string[] split = line.Split(' ');
+        while (reader.ReadLine() is string line) {
+            string[] split = line.Split(' ', 2);
 
             uint hash = uint.Parse(split[0], NumberStyles.HexNumber);
-            nameBuilder = nameBuilder.AppendJoin(' ', split.Skip(1));
 
-            hashtable.TryAdd(hash, nameBuilder.ToString());
-            nameBuilder.Clear();
+            hashtable.TryAdd(hash, split[1]);
         }
     }
 
