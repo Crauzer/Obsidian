@@ -1,4 +1,5 @@
-﻿using LeagueToolkit.Hashing;
+﻿using LeagueToolkit.Core.Wad;
+using LeagueToolkit.Hashing;
 using LeagueToolkit.Utils;
 using MudBlazor;
 using System.Diagnostics;
@@ -34,13 +35,15 @@ public class WadTreeItemModel
     public bool IsChecked { get; set; }
     public bool IsExpanded { get; set; }
     public bool IsWadArchive { get; }
+    public WadFile Wad { get; }
 
     public List<WadTreeItemModel> Items { get; protected set; } = new();
 
-    public WadTreeItemModel(IWadTreeParent parent, string name) {
+    public WadTreeItemModel(IWadTreeParent parent, string name, WadFile wad) {
         this.Parent = parent;
 
         this.Name = name;
+        this.Wad = wad;
         this.Path = parent switch {
             null or WadTreeModel or { IsWadArchive: true } => name,
             _ => string.Join('/', parent.Path, name)

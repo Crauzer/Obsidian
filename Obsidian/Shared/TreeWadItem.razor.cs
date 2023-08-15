@@ -154,5 +154,6 @@ public partial class TreeWadItem {
     private void Delete() {
         this.Item.Parent.Items.Remove(this.Item);
         this.Explorer.RefreshState();
+        this.Item.Wad.Dispose();
     }
 }
