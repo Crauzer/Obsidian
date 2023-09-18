@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -17,7 +17,7 @@
     <PackageReference Include="LeagueToolkit" Version="4.0.0-beta.29" />
     <PackageReference Include="LeagueToolkit.IO.Extensions" Version="4.0.0-beta.29" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
-    <PackageReference Include="MudBlazor" Version="6.1.9" />
+    <PackageReference Include="MudBlazor" Version="6.10.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Octokit" Version="5.0.0" />
     <PackageReference Include="Photino.API" Version="1.2.0-alpha" />
