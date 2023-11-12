@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply font-fira-sans;
+  }
+
+  #root {
+    height: 100vh;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-700;
+    @apply rounded-lg;
+    @apply border;
+    @apply border-gray-600;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-obsidian-700;
+    @apply rounded-xl;
+    @apply border-8;
+    @apply border-transparent;
+    @apply transition-colors;
+    @apply duration-200;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-obsidian-800;
+  }
+}
+
+html {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  min-height: 100%;
+  background: #111827;
+  margin: 0;
+}

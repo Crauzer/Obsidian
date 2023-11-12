@@ -1,0 +1,10 @@
+export { ReactComponent as GearIcon } from './gear.svg';
+export { ReactComponent as ToolboxIcon } from './toolbox.svg';
+export { ReactComponent as TestTubeIcon } from './test-tube.svg';
+export { ReactComponent as CaretDownIcon } from './caret-down.svg';
+export { ReactComponent as PlusRegularIcon } from './plus-regular.svg';
+export { ReactComponent as CaretRightIcon } from './caret-right.svg';
+export { ReactComponent as FolderIcon } from './folder.svg';
+export { ReactComponent as FolderOpenIcon } from './folder-open.svg';
+export { ReactComponent as FileIcon } from './file.svg';
+export { ReactComponent as CloseIcon } from './close.svg';
