@@ -10,3 +10,5 @@ export { ReactComponent as FileIcon } from './file.svg';
 export { ReactComponent as CloseIcon } from './close.svg';
 export { ReactComponent as TableSyncIcon } from './table-sync.svg';
 export { ReactComponent as ArchiveIcon } from './archive.svg';
+export { ReactComponent as ForestIcon } from './forest.svg';
+export { ReactComponent as AnimationIcon } from './animation.svg';

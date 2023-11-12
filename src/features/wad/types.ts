@@ -46,17 +46,17 @@ export type WadItemsPage = {
   items: WadItem[];
 };
 
-export type WadFileItem = z.infer<typeof wadFileItemSchema>;
-export const wadFileItemSchema = z.object({
-  id: z.string().uuid(),
-  kind: z.literal('file'),
-  name: z.string(),
-  path: z.string(),
-  nameHash: z.number(),
-  pathHash: z.number(),
-  isSelected: z.boolean(),
-  isChecked: z.boolean(),
-});
+export type WadFileItem = {
+  id: string;
+  kind: 'file';
+  name: string;
+  path: string;
+  nameHash: number;
+  pathHash: number;
+  extensionKind: LeagueFileKind;
+  isSelected: boolean;
+  isChecked: boolean;
+};
 
 export type WadDirectoryItem = z.infer<typeof wadDirectoryItemSchema>;
 export const wadDirectoryItemSchema = z.object({
@@ -71,8 +71,27 @@ export const wadDirectoryItemSchema = z.object({
   isExpanded: z.boolean(),
 });
 
-export type WadItem = z.infer<typeof wadItemSchema>;
-export const wadItemSchema = z.union([wadFileItemSchema, wadDirectoryItemSchema]);
+export type WadItem = WadFileItem | WadDirectoryItem;
 
 export type WadItemKind = z.infer<typeof wadItemKindSchema>;
 export const wadItemKindSchema = z.enum(['file', 'directory']);
+
+export type LeagueFileKind =
+  | 'animation'
+  | 'jpeg'
+  | 'lua_obj'
+  | 'map_geometry'
+  | 'png'
+  | 'preload'
+  | 'property_bin'
+  | 'riot_string_table'
+  | 'simple_skin'
+  | 'skeleton'
+  | 'static_mesh_ascii'
+  | 'static_mesh_binary'
+  | 'texture_dds'
+  | 'texture'
+  | 'unknown'
+  | 'world_geometry'
+  | 'wwise_bank'
+  | 'wwise_package';

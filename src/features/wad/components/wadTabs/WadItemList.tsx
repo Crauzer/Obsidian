@@ -7,6 +7,7 @@ import { FileIcon, FolderIcon } from '../../../../assets';
 import { Icon } from '../../../../components';
 import { useSelectWadTreeItem } from '../../api';
 import { WadItem } from '../../types';
+import { getLeagueFileKindIcon, getLeagueFileKindIconColor } from '../../utils';
 
 export type WadItemListProps = {
   wadId: string;
@@ -56,9 +57,13 @@ export const WadItemList: React.FC<WadItemListProps> = ({ wadId, data }) => {
                 >
                   <div className="flex flex-row items-center gap-2">
                     {item.kind === 'directory' ? (
-                      <Icon size="md" className="fill-amber-500" icon={FolderIcon} />
+                      <Icon size="lg" className="fill-amber-500" icon={FolderIcon} />
                     ) : (
-                      <Icon size="md" className="fill-slate-400" icon={FileIcon} />
+                      <Icon
+                        size="lg"
+                        className={clsx(getLeagueFileKindIconColor(item.extensionKind))}
+                        icon={getLeagueFileKindIcon(item.extensionKind)}
+                      />
                     )}
                     {item.name}
                   </div>
