@@ -3,7 +3,6 @@ import { createBrowserRouter } from 'react-router-dom';
 
 const Root = React.lazy(() => import('../routes/Root'));
 const MountedWads = React.lazy(() => import('../routes/MountedWads'));
-const Wad = React.lazy(() => import('../routes/Wad'));
 const ComponentTest = React.lazy(() => import('../routes/ComponentTest'));
 
 export const appRoutes = {
@@ -26,6 +25,5 @@ export const router = createBrowserRouter([
       },
     ],
   },
-  { path: appRoutes.wad, element: <Wad /> },
   { path: appRoutes.componentTest, element: <ComponentTest /> },
 ]);

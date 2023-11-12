@@ -34,6 +34,7 @@ pub fn get_mounted_wad_directory_path_components(
 
         return Ok(path_components
             .iter()
+            .skip(1) // skip tree root
             .map(|component| WadItemPathComponentDto {
                 item_id: component.id,
                 name: component.name.to_string(),

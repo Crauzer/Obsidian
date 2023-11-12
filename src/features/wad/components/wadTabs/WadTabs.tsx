@@ -28,6 +28,7 @@ export const WadTabs: React.FC<WadTabsProps> = ({
   if (mountedWadsQuery.isSuccess) {
     return (
       <RadixTabs.Root
+        className="flex w-full flex-col"
         orientation="horizontal"
         value={selectedWad}
         onValueChange={onSelectedWadChanged}
@@ -61,7 +62,7 @@ export const WadTabs: React.FC<WadTabsProps> = ({
         </RadixTabs.List>
         {mountedWadsQuery.data.wads.map((mountedWad) => {
           return (
-            <RadixTabs.Content key={mountedWad.id} value={mountedWad.id}>
+            <RadixTabs.Content key={mountedWad.id} className="flex-1" value={mountedWad.id}>
               {selectedItemId ? (
                 <WadDirectoryTabContent wadId={mountedWad.id} selectedItemId={selectedItemId} />
               ) : (

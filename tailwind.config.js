@@ -3,7 +3,8 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     fontFamily: {
-      'fira-sans': ['Fira sans', 'sans-serif'],
+      'fira-sans': ['Fira Sans', 'sans-serif'],
+      'fira-mono': ['Fira Mono', 'monospace'],
     },
     keyframes: {
       fadeIn: {

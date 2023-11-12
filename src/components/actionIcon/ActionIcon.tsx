@@ -1,3 +1,6 @@
+import clsx from 'clsx';
+import { forwardRef } from 'react';
+
 import { Button, ButtonProps, Icon } from '..';
 
 export type ActionIconProps = {
@@ -8,10 +11,19 @@ export type ActionIconProps = {
   >;
 } & ButtonProps<'button'>;
 
-export const ActionIcon: React.FC<ActionIconProps> = ({ size = 'md', variant, icon, ...props }) => {
-  return (
-    <Button {...props} compact size={size} variant={variant}>
-      <Icon size={size} icon={icon} />
-    </Button>
-  );
-};
+export const ActionIcon: React.FC<ActionIconProps> = forwardRef<HTMLButtonElement, ActionIconProps>(
+  ({ size = 'md', variant, icon, ...props }, ref) => {
+    return (
+      <Button
+        {...props}
+        ref={ref}
+        compact
+        className={clsx(props.className, ' fill-gray-200')}
+        size={size}
+        variant={variant}
+      >
+        <Icon size={size} icon={icon} />
+      </Button>
+    );
+  },
+);

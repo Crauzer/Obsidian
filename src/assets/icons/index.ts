@@ -8,3 +8,5 @@ export { ReactComponent as FolderIcon } from './folder.svg';
 export { ReactComponent as FolderOpenIcon } from './folder-open.svg';
 export { ReactComponent as FileIcon } from './file.svg';
 export { ReactComponent as CloseIcon } from './close.svg';
+export { ReactComponent as TableSyncIcon } from './table-sync.svg';
+export { ReactComponent as ArchiveIcon } from './archive.svg';

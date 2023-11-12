@@ -4,11 +4,13 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { generatePath, useMatches, useNavigate } from 'react-router-dom';
 
-import { Button, Kbd } from '..';
-import { CaretDownIcon, PlusRegularIcon } from '../../assets';
+import { ActionIcon, Button, Infobar, Kbd, Popover } from '..';
+import { CaretDownIcon, PlusRegularIcon, TableSyncIcon, ToolboxIcon } from '../../assets';
 import Logo from '../../assets/logo.png';
+import { ToolboxContent } from '../../features/toolbox';
 import { useMountWad } from '../../features/wad';
 import { appRoutes } from '../../lib/router';
+import { composeUrlQuery, env } from '../../utils';
 import { Menu } from '../menu';
 
 type LayoutProps = React.PropsWithChildren;
@@ -22,7 +24,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const handleOpenWad = () => {
     mountWadMutation.mutate(undefined, {
       onSuccess: ({ wadId }) => {
-        navigate(generatePath(appRoutes.mountedWad, { wadId }));
+        navigate(composeUrlQuery(appRoutes.mountedWads, { wadId }));
       },
     });
   };
@@ -64,7 +66,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           </Menu.Content>
         </Menu.Root>
       </div>
-      {children}
+      <div className="flex w-full flex-1">{children}</div>
+      <Infobar />
     </div>
   );
 };
