@@ -26,7 +26,9 @@ export const WadTabContent: React.FC<WadTabContentProps> = ({ wadId }) => {
               href={composeUrlQuery(appRoutes.mountedWads, { wadId })}
             />
           </Breadcrumbs.Root>
-          <WadItemList wadId={wadId} data={wadItemsQuery.data} />
+          <div className="flex h-full">
+            <WadItemList wadId={wadId} data={wadItemsQuery.data} />
+          </div>
         </div>
       </div>
     );
