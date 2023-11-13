@@ -12,11 +12,17 @@ export type IconProps = {
   >;
 
   className?: string;
-};
+} & React.SVGProps<SVGSVGElement>;
 
-export const Icon: React.FC<IconProps> = ({ size = 'md', icon: IconComponent, className }) => {
+export const Icon: React.FC<IconProps> = ({
+  size = 'md',
+  icon: IconComponent,
+  className,
+  ...props
+}) => {
   return (
     <IconComponent
+      {...props}
       className={className}
       width={getWidthFromSize(size)}
       height={getWidthFromSize(size)}

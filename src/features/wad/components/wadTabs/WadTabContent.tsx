@@ -17,9 +17,9 @@ export const WadTabContent: React.FC<WadTabContentProps> = ({ wadId }) => {
 
   if (wadItemsQuery.isSuccess) {
     return (
-      <div className="flex h-full flex-col gap-2 p-2">
+      <div className="flex h-full flex-col gap-2">
         <div className="flex h-full flex-col rounded border border-gray-600 bg-gray-800">
-          <Breadcrumbs.Root className="font-fira-mono border-b border-gray-600 p-1 text-sm leading-6">
+          <Breadcrumbs.Root className="border-b border-gray-600 p-1 font-fira-mono text-sm leading-6">
             <PathBreadcrumbItem
               itemId=""
               name={<Icon size="lg" className="fill-obsidian-500" icon={ArchiveIcon} />}
@@ -49,10 +49,10 @@ export const WadDirectoryTabContent: React.FC<WadDirectoryTabContentProps> = ({
 
   if (itemsQuery.isSuccess) {
     return (
-      <div className="flex h-full flex-col gap-2 p-2">
+      <div className="flex h-full flex-col gap-2">
         <div className="flex h-full flex-col rounded border border-gray-600 bg-gray-800">
           {pathComponentsQuery.isSuccess && (
-            <Breadcrumbs.Root className="font-fira-mono border-b border-gray-600 p-1 text-sm leading-6">
+            <Breadcrumbs.Root className="border-b border-gray-600 p-1 font-fira-mono text-sm leading-6">
               <PathBreadcrumbItem
                 itemId=""
                 name={<Icon size="lg" className="fill-obsidian-500" icon={ArchiveIcon} />}

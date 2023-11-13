@@ -10,10 +10,12 @@ export default function MountedWadItem() {
   };
 
   return (
-    <WadTabs
-      selectedWad={searchParams.get('wadId') ?? undefined}
-      onSelectedWadChanged={handleSelectedWadChanged}
-      selectedItemId={searchParams.get('itemId') ?? undefined}
-    />
+    <div className="flex w-full px-2 py-2">
+      <WadTabs
+        selectedWad={searchParams.get('wadId') ?? undefined}
+        onSelectedWadChanged={handleSelectedWadChanged}
+        selectedItemId={searchParams.get('itemId') ?? undefined}
+      />
+    </div>
   );
 }
