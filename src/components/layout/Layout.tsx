@@ -2,33 +2,16 @@ import * as RadixNavigationMenu from '@radix-ui/react-navigation-menu';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useMatches, useNavigate } from 'react-router-dom';
+import { useMatches } from 'react-router-dom';
 
-import { Button, Infobar, Kbd } from '..';
-import { CaretDownIcon, PlusRegularIcon } from '../../assets';
+import { Button, Infobar } from '..';
 import Logo from '../../assets/logo.png';
-import { useMountWads } from '../../features/wad';
 import { appRoutes } from '../../lib/router';
-import { composeUrlQuery } from '../../utils';
-import { Menu } from '../menu';
 
 type LayoutProps = React.PropsWithChildren;
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [t] = useTranslation('route');
-  const navigate = useNavigate();
-
-  const mountWadMutation = useMountWads();
-
-  const handleMountWads = () => {
-    mountWadMutation.mutate(undefined, {
-      onSuccess: ({ wadIds }) => {
-        if (wadIds.length > 0) {
-          navigate(composeUrlQuery(appRoutes.mountedWads, { wadId: wadIds[0] }));
-        }
-      },
-    });
-  };
 
   return (
     <div className="flex h-full flex-col">
@@ -50,22 +33,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           ]}
         />
         <div className="flex flex-1" />
-        <Menu.Root modal={false}>
-          <Menu.Trigger asChild>
-            <Button compact variant="default" className="h-10 text-xl">
-              <PlusRegularIcon width={16} height={16} />
-              <CaretDownIcon width={16} height={16} />
-            </Button>
-          </Menu.Trigger>
-          <Menu.Content align="start" sideOffset={6}>
-            <Menu.Item className="flex flex-row p-1" onSelect={handleMountWads}>
-              Mount Wads{' '}
-              <span className="ml-auto text-sm text-gray-50">
-                <Kbd>Ctrl + O</Kbd>
-              </span>
-            </Menu.Item>
-          </Menu.Content>
-        </Menu.Root>
       </div>
       <div className="flex w-full flex-1">{children}</div>
       <Infobar />

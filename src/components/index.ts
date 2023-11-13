@@ -7,3 +7,4 @@ export * from './actionIcon';
 export * from './icon';
 export * from './breadcrumbs';
 export * from './infobar';
+export * from './menu';

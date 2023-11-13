@@ -10,10 +10,13 @@ import * as RadixTabs from '@radix-ui/react-tabs';
 import clsx from 'clsx';
 import { CSSProperties } from 'react';
 import { BiDotsVertical } from 'react-icons/bi';
+import { useNavigate } from 'react-router-dom';
 
-import { CloseIcon } from '../../../../assets';
-import { ActionIcon, Icon } from '../../../../components';
-import { useMountedWads, useReorderMountedWad, useUnmountWad } from '../../api';
+import { CaretDownIcon, CloseIcon, PlusRegularIcon } from '../../../../assets';
+import { ActionIcon, Button, Icon, Kbd, Menu } from '../../../../components';
+import { appRoutes } from '../../../../lib/router';
+import { composeUrlQuery } from '../../../../utils';
+import { useMountWads, useMountedWads, useReorderMountedWad, useUnmountWad } from '../../api';
 import { MountedWad } from '../../types';
 import { WadDirectoryTabContent, WadTabContent } from './WadTabContent';
 
@@ -28,8 +31,11 @@ export const WadTabs: React.FC<WadTabsProps> = ({
   selectedItemId,
   onSelectedWadChanged,
 }) => {
+  const navigate = useNavigate();
+
   const mountedWadsQuery = useMountedWads();
 
+  const mountWadsMutation = useMountWads();
   const unmountWadMutation = useUnmountWad();
   const reorderWadMutation = useReorderMountedWad();
 
@@ -46,6 +52,16 @@ export const WadTabs: React.FC<WadTabsProps> = ({
     }
   };
 
+  const handleMountWads = () => {
+    mountWadsMutation.mutate(undefined, {
+      onSuccess: ({ wadIds }) => {
+        if (wadIds.length > 0) {
+          navigate(composeUrlQuery(appRoutes.mountedWads, { wadId: wadIds[0] }));
+        }
+      },
+    });
+  };
+
   if (mountedWadsQuery.isSuccess) {
     return (
       <DragDropContext onDragEnd={handleDragEnd}>
@@ -55,37 +71,56 @@ export const WadTabs: React.FC<WadTabsProps> = ({
           value={selectedWad}
           onValueChange={onSelectedWadChanged}
         >
-          <Droppable droppableId="wad_tabs" direction="horizontal">
-            {(provided, snapshot) => (
-              <RadixTabs.List
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-                className={clsx(
-                  'flex transition-colors data-[orientation=horizontal]:flex-row data-[orientation=vertical]:flex-col',
-                  'rounded-b border border-gray-700 bg-gray-800',
-                  'overflow-x-scroll [scrollbar-gutter:stable_]',
-                  { 'border-obsidian-500 ': snapshot.isDraggingOver },
-                )}
-              >
-                {mountedWadsQuery.data.wads.map((mountedWad, index) => {
-                  return (
-                    <Draggable key={mountedWad.id} draggableId={mountedWad.id} index={index}>
-                      {(provided, snapshot) => (
-                        <TabTrigger
-                          key={mountedWad.id}
-                          mountedWad={mountedWad}
-                          provided={provided}
-                          snapshot={snapshot}
-                          handleTabClose={handleTabClose}
-                        />
-                      )}
-                    </Draggable>
-                  );
-                })}
-                {provided.placeholder}
-              </RadixTabs.List>
-            )}
-          </Droppable>
+          <div className="flex flex-row gap-2">
+            {' '}
+            <Droppable droppableId="wad_tabs" direction="horizontal">
+              {(provided, snapshot) => (
+                <RadixTabs.List
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                  className={clsx(
+                    'flex transition-colors data-[orientation=horizontal]:flex-row data-[orientation=vertical]:flex-col',
+                    'rounded border border-gray-700 bg-gray-800',
+                    'overflow-x-scroll [scrollbar-gutter:stable_]',
+                    'relative',
+                    { 'border-obsidian-500 ': snapshot.isDraggingOver },
+                  )}
+                >
+                  {mountedWadsQuery.data.wads.map((mountedWad, index) => {
+                    return (
+                      <Draggable key={mountedWad.id} draggableId={mountedWad.id} index={index}>
+                        {(provided, snapshot) => (
+                          <TabTrigger
+                            key={mountedWad.id}
+                            mountedWad={mountedWad}
+                            provided={provided}
+                            snapshot={snapshot}
+                            handleTabClose={handleTabClose}
+                          />
+                        )}
+                      </Draggable>
+                    );
+                  })}
+                </RadixTabs.List>
+              )}
+            </Droppable>
+            <Menu.Root modal={false}>
+              <Menu.Trigger asChild>
+                <Button compact variant="default" className="h-10 text-xl">
+                  <PlusRegularIcon width={16} height={16} />
+                  <CaretDownIcon width={16} height={16} />
+                </Button>
+              </Menu.Trigger>
+              <Menu.Content align="start" sideOffset={6}>
+                <Menu.Item className="flex flex-row p-1" onSelect={handleMountWads}>
+                  Mount Wads{' '}
+                  <span className="ml-auto text-sm text-gray-50">
+                    <Kbd>Ctrl + O</Kbd>
+                  </span>
+                </Menu.Item>
+              </Menu.Content>
+            </Menu.Root>
+          </div>
           {mountedWadsQuery.data.wads.map((mountedWad) => {
             return (
               <RadixTabs.Content key={mountedWad.id} className="flex-1" value={mountedWad.id}>
@@ -124,7 +159,7 @@ const TabTrigger: React.FC<TabTriggerProps> = ({
       <RadixTabs.Trigger
         value={mountedWad.id}
         className={clsx(
-          'group flex flex-row items-center justify-center gap-1 rounded-t-sm border-r border-r-gray-600 bg-gray-800 px-[0.5rem] py-[0.25rem] text-sm  text-gray-300 hover:bg-gray-700',
+          'group flex h-full flex-row items-center justify-center gap-1 rounded-t-sm border-r border-r-gray-600 bg-gray-800 px-[0.5rem] py-[0.25rem] text-sm text-gray-300 hover:bg-gray-700',
           'data-[state=active]:border-t-2 data-[state=active]:border-t-obsidian-700 data-[state=active]:bg-gray-700',
           { 'border-t border-t-obsidian-700 ': snapshot.isDragging },
         )}
