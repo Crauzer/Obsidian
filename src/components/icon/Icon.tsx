@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { match } from 'ts-pattern';
 
 import { Size } from '../../types';
@@ -20,21 +21,14 @@ export const Icon: React.FC<IconProps> = ({
   className,
   ...props
 }) => {
-  return (
-    <IconComponent
-      {...props}
-      className={className}
-      width={getWidthFromSize(size)}
-      height={getWidthFromSize(size)}
-    />
-  );
+  return <IconComponent {...props} className={clsx(className, getWidthFromSize(size))} />;
 };
 
 const getWidthFromSize = (size: Size) =>
   match(size)
-    .with('xs', () => 12)
-    .with('sm', () => 14)
-    .with('md', () => 16)
-    .with('lg', () => 20)
-    .with('xl', () => 24)
+    .with('xs', () => clsx('w-[12px] h-[12px]'))
+    .with('sm', () => clsx('w-[14px] h-[14px]'))
+    .with('md', () => clsx('w-[16px] h-[16px]'))
+    .with('lg', () => clsx('w-[20px] h-[20px]'))
+    .with('xl', () => clsx('w-[24px] h-[24px]'))
     .exhaustive();

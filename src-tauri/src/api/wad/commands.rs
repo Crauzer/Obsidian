@@ -1,7 +1,6 @@
 use std::{collections::VecDeque, sync::Arc};
 
 use itertools::Itertools;
-use tracing::info;
 use uuid::Uuid;
 
 use crate::{
@@ -10,7 +9,22 @@ use crate::{
     state::mounted_wads::MountedWadsState,
 };
 
-use super::{WadItemDto, WadItemPathComponentDto};
+use super::WadItemPathComponentDto;
+
+#[tauri::command]
+pub async fn reorder_mounted_wad(
+    source_index: usize,
+    dest_index: usize,
+    mounted_wads: tauri::State<'_, MountedWadsState>,
+) -> Result<(), String> {
+    let mut mounted_wads_guard = mounted_wads.0.lock();
+
+    mounted_wads_guard
+        .wad_trees_mut()
+        .move_index(source_index, dest_index);
+
+    Ok(())
+}
 
 #[tauri::command]
 pub fn get_mounted_wad_directory_path_components(
@@ -26,9 +40,6 @@ pub fn get_mounted_wad_directory_path_components(
     let mounted_wads_guard = mounted_wads.0.lock();
 
     if let Some(wad_tree) = mounted_wads_guard.wad_trees().get(&wad_id) {
-        let item = wad_tree.find_item(|item| item.id() == item_id);
-        let item = item.ok_or(ApiError::from_message("failed to find item"))?;
-
         let mut path_components = VecDeque::<PathComponentInternal>::new();
         search_parent(wad_tree, &mut path_components, &|item| item.id() == item_id);
 

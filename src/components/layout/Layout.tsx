@@ -2,15 +2,14 @@ import * as RadixNavigationMenu from '@radix-ui/react-navigation-menu';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { generatePath, useMatches, useNavigate } from 'react-router-dom';
+import { useMatches, useNavigate } from 'react-router-dom';
 
-import { ActionIcon, Button, Infobar, Kbd, Popover } from '..';
-import { CaretDownIcon, PlusRegularIcon, TableSyncIcon, ToolboxIcon } from '../../assets';
+import { Button, Infobar, Kbd } from '..';
+import { CaretDownIcon, PlusRegularIcon } from '../../assets';
 import Logo from '../../assets/logo.png';
-import { ToolboxContent } from '../../features/toolbox';
-import { useMountWad } from '../../features/wad';
+import { useMountWads } from '../../features/wad';
 import { appRoutes } from '../../lib/router';
-import { composeUrlQuery, env } from '../../utils';
+import { composeUrlQuery } from '../../utils';
 import { Menu } from '../menu';
 
 type LayoutProps = React.PropsWithChildren;
@@ -19,12 +18,14 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [t] = useTranslation('route');
   const navigate = useNavigate();
 
-  const mountWadMutation = useMountWad();
+  const mountWadMutation = useMountWads();
 
-  const handleOpenWad = () => {
+  const handleMountWads = () => {
     mountWadMutation.mutate(undefined, {
-      onSuccess: ({ wadId }) => {
-        navigate(composeUrlQuery(appRoutes.mountedWads, { wadId }));
+      onSuccess: ({ wadIds }) => {
+        if (wadIds.length > 0) {
+          navigate(composeUrlQuery(appRoutes.mountedWads, { wadId: wadIds[0] }));
+        }
       },
     });
   };
@@ -57,8 +58,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             </Button>
           </Menu.Trigger>
           <Menu.Content align="start" sideOffset={6}>
-            <Menu.Item className="flex flex-row p-1" onSelect={handleOpenWad}>
-              Mount Wad{' '}
+            <Menu.Item className="flex flex-row p-1" onSelect={handleMountWads}>
+              Mount Wads{' '}
               <span className="ml-auto text-sm text-gray-50">
                 <Kbd>Ctrl + O</Kbd>
               </span>

@@ -11,7 +11,8 @@ use self::core::wad::{
     Wad,
 };
 use crate::{
-    api::wad::get_mounted_wad_directory_path_components, core::wad_hashtable::WadHashtable,
+    api::wad::{get_mounted_wad_directory_path_components, reorder_mounted_wad},
+    core::wad_hashtable::WadHashtable,
 };
 use api::{
     error::ApiError,
@@ -168,19 +169,16 @@ async fn get_mounted_wads(
 }
 
 #[tauri::command]
-async fn mount_wad(
+async fn mount_wads(
     mounted_wads: tauri::State<'_, MountedWadsState>,
 ) -> Result<MountWadResponse, ApiError> {
     let mut mounted_wads_guard = mounted_wads.0.lock();
 
     let file_path = tauri::api::dialog::blocking::FileDialogBuilder::new()
         .add_filter(".wad files", &["wad.client"])
-        .pick_file();
+        .pick_files();
 
-    if let Some(wad_path) = file_path {
-        let wad = Wad::mount(File::open(&wad_path).expect("failed to open wad file"))
-            .expect("failed to mount wad file");
-
+    if let Some(wad_paths) = file_path {
         info!("Creating hashtable");
         let mut hashtable = WadHashtable::new();
         hashtable
@@ -190,11 +188,19 @@ async fn mount_wad(
             )
             .map_err(|error| ApiError::from_message(error))?;
 
-        return Ok(MountWadResponse {
-            wad_id: mounted_wads_guard
-                .mount_wad(wad, wad_path.to_str().unwrap().into(), &hashtable)
-                .map_err(|_| ApiError::from_message("failed to mount wad"))?,
-        });
+        let mut wad_ids: Vec<Uuid> = vec![];
+        for wad_path in &wad_paths {
+            let wad = Wad::mount(File::open(&wad_path).expect("failed to open wad file"))
+                .expect("failed to mount wad file");
+
+            wad_ids.push(
+                mounted_wads_guard
+                    .mount_wad(wad, wad_path.to_str().unwrap().into(), &hashtable)
+                    .map_err(|_| ApiError::from_message("failed to mount wad"))?,
+            )
+        }
+
+        return Ok(MountWadResponse { wad_ids });
     }
 
     Err(ApiError::from_message("Failed to pick file"))
@@ -236,12 +242,13 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             expand_wad_tree_item,
             get_mounted_wad_directory_items,
+            get_mounted_wad_directory_path_components,
             get_mounted_wads,
             get_wad_items,
-            mount_wad,
+            mount_wads,
+            reorder_mounted_wad,
             select_wad_tree_item,
             unmount_wad,
-            get_mounted_wad_directory_path_components
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

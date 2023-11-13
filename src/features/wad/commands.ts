@@ -6,7 +6,8 @@ export const wadCommands = {
   getMountedWads: 'get_mounted_wads' as const,
   getWadItems: 'get_wad_items' as const,
   getWadTree: 'get_wad_tree' as const,
-  mountWad: 'mount_wad' as const,
+  mountWads: 'mount_wads' as const,
+  reorderMountedWad: 'reorder_mounted_wad' as const,
   selectWadTreeItem: 'select_wad_tree_item' as const,
   unmountWad: 'unmount_wad' as const,
 };

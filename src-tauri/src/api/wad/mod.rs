@@ -21,7 +21,7 @@ pub struct MountedWadsResponse {
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MountWadResponse {
-    pub wad_id: Uuid,
+    pub wad_ids: Vec<Uuid>,
 }
 
 #[derive(Serialize, Deserialize)]

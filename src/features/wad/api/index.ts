@@ -1,5 +1,5 @@
 export * from './getWadItems';
-export * from './mountWad';
+export * from './mountWads';
 export * from './getWadTree';
 export * from './expandWadTreeItem';
 export * from './selectWadTreeItem';
@@ -8,3 +8,4 @@ export * from './unmountWad';
 export * from './getMountedWad';
 export * from './getWadDirectoryItems';
 export * from './getWadDirectoryPathComponents';
+export * from './reorderMountedWad';

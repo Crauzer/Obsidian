@@ -4,13 +4,18 @@ import { tauri } from '@tauri-apps/api';
 import { wadQueryKeys } from '..';
 import { queryClient } from '../../../lib/query';
 import { wadCommands } from '../commands';
-import { MountWadResponse } from '../types';
 
-export const mountWad = () => tauri.invoke<MountWadResponse>(wadCommands.mountWad);
+export type UseReorderMountedWadContext = {
+  sourceIndex: number;
+  destIndex: number;
+};
 
-export const useMountWad = () => {
+export const reorderMountedWad = ({ sourceIndex, destIndex }: UseReorderMountedWadContext) =>
+  tauri.invoke(wadCommands.reorderMountedWad, { sourceIndex, destIndex });
+
+export const useReorderMountedWad = () => {
   return useMutation({
-    mutationFn: mountWad,
+    mutationFn: reorderMountedWad,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: wadQueryKeys.mountedWads });
     },

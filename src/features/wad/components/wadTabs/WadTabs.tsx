@@ -4,15 +4,16 @@ import {
   DraggableProvided,
   DraggableStateSnapshot,
   Droppable,
+  OnDragEndResponder,
 } from '@hello-pangea/dnd';
 import * as RadixTabs from '@radix-ui/react-tabs';
 import clsx from 'clsx';
 import { CSSProperties } from 'react';
-import { PiDotsSixVerticalDuotone } from 'react-icons/pi';
+import { BiDotsVertical } from 'react-icons/bi';
 
 import { CloseIcon } from '../../../../assets';
 import { ActionIcon, Icon } from '../../../../components';
-import { useMountedWads, useUnmountWad } from '../../api';
+import { useMountedWads, useReorderMountedWad, useUnmountWad } from '../../api';
 import { MountedWad } from '../../types';
 import { WadDirectoryTabContent, WadTabContent } from './WadTabContent';
 
@@ -30,14 +31,24 @@ export const WadTabs: React.FC<WadTabsProps> = ({
   const mountedWadsQuery = useMountedWads();
 
   const unmountWadMutation = useUnmountWad();
+  const reorderWadMutation = useReorderMountedWad();
 
   const handleTabClose = (wadId: string) => {
     unmountWadMutation.mutate({ wadId });
   };
 
+  const handleDragEnd: OnDragEndResponder = (result, _provided) => {
+    if (result.destination) {
+      reorderWadMutation.mutate({
+        sourceIndex: result.source.index,
+        destIndex: result.destination.index,
+      });
+    }
+  };
+
   if (mountedWadsQuery.isSuccess) {
     return (
-      <DragDropContext onDragEnd={() => {}}>
+      <DragDropContext onDragEnd={handleDragEnd}>
         <RadixTabs.Root
           className="flex w-full flex-col gap-2"
           orientation="horizontal"
@@ -51,16 +62,17 @@ export const WadTabs: React.FC<WadTabsProps> = ({
                 {...provided.droppableProps}
                 className={clsx(
                   'flex transition-colors data-[orientation=horizontal]:flex-row data-[orientation=vertical]:flex-col',
-                  'rounded-b-lg border-x border-b border-gray-700 bg-gray-800 ',
+                  'rounded-b border border-gray-700 bg-gray-800',
+                  'overflow-x-scroll [scrollbar-gutter:stable_]',
                   { 'border-obsidian-500 ': snapshot.isDraggingOver },
                 )}
               >
                 {mountedWadsQuery.data.wads.map((mountedWad, index) => {
                   return (
-                    <Draggable key={index} draggableId={mountedWad.id} index={index}>
+                    <Draggable key={mountedWad.id} draggableId={mountedWad.id} index={index}>
                       {(provided, snapshot) => (
                         <TabTrigger
-                          key={index}
+                          key={mountedWad.id}
                           mountedWad={mountedWad}
                           provided={provided}
                           snapshot={snapshot}
@@ -108,17 +120,21 @@ const TabTrigger: React.FC<TabTriggerProps> = ({
   snapshot,
 }) => {
   return (
-    <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+    <div ref={provided.innerRef} {...provided.draggableProps}>
       <RadixTabs.Trigger
         value={mountedWad.id}
         className={clsx(
-          'group flex flex-row items-center justify-center gap-1 rounded-t-sm border-r border-r-gray-600 bg-gray-800 px-[0.5rem] py-[0.5rem]  text-sm text-gray-300',
-          'first:rounded-bl-lg',
-          'data-[state=active]:border-t data-[state=active]:border-t-obsidian-700 data-[state=active]:bg-gray-700',
+          'group flex flex-row items-center justify-center gap-1 rounded-t-sm border-r border-r-gray-600 bg-gray-800 px-[0.5rem] py-[0.5rem] text-sm  text-gray-300 hover:bg-gray-700',
+          'data-[state=active]:border-t-2 data-[state=active]:border-t-obsidian-700 data-[state=active]:bg-gray-700',
           { 'border-t border-t-obsidian-700 ': snapshot.isDragging },
         )}
       >
-        <Icon size="sm" icon={PiDotsSixVerticalDuotone} />
+        <div
+          {...provided.dragHandleProps}
+          className="flex items-center justify-center rounded transition-colors hover:bg-obsidian-500/30"
+        >
+          <Icon size="lg" icon={BiDotsVertical} />
+        </div>
         {mountedWad.name}
         <span className="invisible ml-auto rounded p-1 opacity-0 transition-opacity duration-150 hover:bg-obsidian-500/40 group-hover:visible group-hover:opacity-100">
           <Icon size="md" icon={CloseIcon} onClick={() => handleTabClose(mountedWad.id)} />

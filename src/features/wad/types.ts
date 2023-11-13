@@ -5,7 +5,7 @@ export type MountedWadsResponse = {
 };
 
 export type MountWadResponse = {
-  wadId: string;
+  wadIds: string[];
 };
 
 export type MountedWad = {

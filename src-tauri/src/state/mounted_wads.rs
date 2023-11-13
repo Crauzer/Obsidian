@@ -1,3 +1,4 @@
+use indexmap::IndexMap;
 use parking_lot::Mutex;
 use std::{collections::HashMap, fs::File, sync::Arc};
 
@@ -13,14 +14,14 @@ use crate::core::{
 };
 
 pub struct MountedWads {
-    wad_trees: HashMap<Uuid, WadTree>,
+    wad_trees: IndexMap<Uuid, WadTree>,
     wads: HashMap<Uuid, Wad<File>>,
 }
 
 impl MountedWads {
     pub fn new() -> Self {
         Self {
-            wad_trees: HashMap::default(),
+            wad_trees: IndexMap::default(),
             wads: HashMap::default(),
         }
     }
@@ -50,10 +51,10 @@ impl MountedWads {
         let _ = self.wads.remove(&id);
     }
 
-    pub fn wad_trees(&self) -> &HashMap<Uuid, WadTree> {
+    pub fn wad_trees(&self) -> &IndexMap<Uuid, WadTree> {
         &self.wad_trees
     }
-    pub fn wad_trees_mut(&mut self) -> &mut HashMap<Uuid, WadTree> {
+    pub fn wad_trees_mut(&mut self) -> &mut IndexMap<Uuid, WadTree> {
         &mut self.wad_trees
     }
 }
