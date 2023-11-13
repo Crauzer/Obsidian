@@ -238,6 +238,7 @@ fn main() {
         .expect("failed to set global default log subscriber");
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_window_state::Builder::default().build())
         .manage(MountedWadsState(Mutex::new(MountedWads::new())))
         .invoke_handler(tauri::generate_handler![
             expand_wad_tree_item,

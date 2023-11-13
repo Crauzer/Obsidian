@@ -124,7 +124,7 @@ const TabTrigger: React.FC<TabTriggerProps> = ({
       <RadixTabs.Trigger
         value={mountedWad.id}
         className={clsx(
-          'group flex flex-row items-center justify-center gap-1 rounded-t-sm border-r border-r-gray-600 bg-gray-800 px-[0.5rem] py-[0.5rem] text-sm  text-gray-300 hover:bg-gray-700',
+          'group flex flex-row items-center justify-center gap-1 rounded-t-sm border-r border-r-gray-600 bg-gray-800 px-[0.5rem] py-[0.25rem] text-sm  text-gray-300 hover:bg-gray-700',
           'data-[state=active]:border-t-2 data-[state=active]:border-t-obsidian-700 data-[state=active]:bg-gray-700',
           { 'border-t border-t-obsidian-700 ': snapshot.isDragging },
         )}
