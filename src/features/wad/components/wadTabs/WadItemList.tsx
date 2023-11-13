@@ -29,9 +29,8 @@ export const WadItemList: React.FC<WadItemListProps> = ({ wadId, data }) => {
             itemContent={(index, item) => {
               return (
                 <div
-                  tabIndex={0}
                   className={clsx(
-                    'text-md flex select-none flex-row  pl-2 text-gray-50 hover:cursor-pointer',
+                    'text-md box-border flex select-none flex-row  pl-2 text-gray-50 hover:cursor-pointer',
                     { 'hover:bg-gray-500/25': !item.isSelected },
                     { 'border border-obsidian-500/75 bg-obsidian-500/30': item.isSelected },
                   )}

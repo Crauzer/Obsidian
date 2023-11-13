@@ -71,15 +71,14 @@ export const WadTabs: React.FC<WadTabsProps> = ({
           value={selectedWad}
           onValueChange={onSelectedWadChanged}
         >
-          <div className="flex flex-row gap-2">
-            {' '}
+          <div className="flex w-full flex-row gap-2">
             <Droppable droppableId="wad_tabs" direction="horizontal">
               {(provided, snapshot) => (
                 <RadixTabs.List
                   ref={provided.innerRef}
                   {...provided.droppableProps}
                   className={clsx(
-                    'flex transition-colors data-[orientation=horizontal]:flex-row data-[orientation=vertical]:flex-col',
+                    'flex flex-1 transition-colors data-[orientation=horizontal]:flex-row data-[orientation=vertical]:flex-col',
                     'rounded border border-gray-700 bg-gray-800',
                     'overflow-x-scroll [scrollbar-gutter:stable_]',
                     'relative',
