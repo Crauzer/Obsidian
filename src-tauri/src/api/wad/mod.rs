@@ -37,6 +37,7 @@ pub struct MountedWadDto {
 pub struct WadItemPathComponentDto {
     pub item_id: Uuid,
     pub name: String,
+    pub path: String,
 }
 
 #[derive(Serialize, Deserialize)]
