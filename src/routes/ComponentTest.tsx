@@ -16,7 +16,7 @@ export default function ComponentTest() {
       <div className="flex flex-col gap-2">
         <h1 className="text-xl text-gray-50">Kbd:</h1>
         <div className="flex flex-row gap-2">
-          <div className="flex flex-row items-center gap-2 p-2 bg-obsidian-600/50 text-gray-50">
+          <div className="flex flex-row items-center gap-2 bg-obsidian-600/50 p-2 text-gray-50">
             <span>
               <Kbd>Ctrl</Kbd> + <Kbd>F</Kbd>
             </span>

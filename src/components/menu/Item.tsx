@@ -10,7 +10,7 @@ export const MenuItem: React.FC<MenuItemProps> = (props) => {
       {...props}
       className={clsx(
         props.className,
-        'text-md text-gray-50 border-none px-2 rounded transition-colors',
+        'text-md rounded border-none px-2 text-gray-50 transition-colors',
         'data-[highlighted]:bg-gray-500/20',
         'cursor-pointer select-none outline-none',
       )}

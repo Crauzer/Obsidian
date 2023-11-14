@@ -10,6 +10,11 @@
     @apply font-fira-sans;
   }
 
+  body {
+    @apply bg-gray-950;
+    @apply text-gray-50;
+  }
+
   #root {
     height: 100vh;
   }
@@ -50,6 +55,5 @@ html {
 
 body {
   min-height: 100%;
-  background: #111827;
   margin: 0;
 }

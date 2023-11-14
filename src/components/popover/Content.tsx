@@ -18,8 +18,8 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
         onOpenAutoFocus={(e) => e.preventDefault()}
         className={clsx(
           className,
-          'p-4 bg-gray-800 rounded shadow-xl',
-          'will-change-[transform,opacity] origin-[var(--radix-popover-content-transform-origin)]',
+          'rounded bg-gray-800 p-4 shadow-xl',
+          'origin-[var(--radix-popover-content-transform-origin)] will-change-[transform,opacity]',
 
           'data-[state=open]:data-[side=top]:animate-slideAndFadeInFromTop',
           'data-[state=open]:data-[side=right]:animate-slideAndFadeInFromRight',
