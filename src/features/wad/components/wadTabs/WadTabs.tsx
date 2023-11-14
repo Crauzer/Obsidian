@@ -78,10 +78,11 @@ export const WadTabs: React.FC<WadTabsProps> = ({
                   ref={provided.innerRef}
                   {...provided.droppableProps}
                   className={clsx(
-                    'flex flex-1 transition-colors data-[orientation=horizontal]:flex-row data-[orientation=vertical]:flex-col',
-                    'rounded border border-gray-700 bg-gray-800',
-                    'overflow-x-scroll [scrollbar-gutter:stable_]',
-                    'relative',
+                    'flex flex-1',
+                    'data-[orientation=horizontal]:flex-row data-[orientation=vertical]:flex-col',
+                    'rounded border border-gray-700 bg-gray-800 transition-colors',
+                    'overflow-x-scroll [scrollbar-gutter:stable]',
+                    'relative min-h-[2.5rem]',
                     { 'border-obsidian-500 ': snapshot.isDraggingOver },
                   )}
                 >
@@ -105,7 +106,7 @@ export const WadTabs: React.FC<WadTabsProps> = ({
             </Droppable>
             <Menu.Root modal={false}>
               <Menu.Trigger asChild>
-                <Button compact variant="default" className="h-10 text-xl">
+                <Button compact variant="default" className="h-full text-xl">
                   <PlusRegularIcon width={16} height={16} />
                   <CaretDownIcon width={16} height={16} />
                 </Button>
