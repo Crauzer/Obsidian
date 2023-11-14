@@ -2,17 +2,20 @@ import {
   DragDropContext,
   Draggable,
   DraggableProvided,
+  DraggableProvidedDragHandleProps,
   DraggableStateSnapshot,
   Droppable,
   OnDragEndResponder,
 } from '@hello-pangea/dnd';
 import * as RadixTabs from '@radix-ui/react-tabs';
 import clsx from 'clsx';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { BiDotsVertical } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
 
 import { CaretDownIcon, CloseIcon, PlusRegularIcon } from '../../../../assets';
-import { Button, Icon, Kbd, Menu } from '../../../../components';
+import { Button, Icon, Kbd, Menu, Tooltip } from '../../../../components';
 import { appRoutes } from '../../../../lib/router';
 import { composeUrlQuery } from '../../../../utils';
 import { useMountWads, useMountedWads, useReorderMountedWad, useUnmountWad } from '../../api';
@@ -153,27 +156,72 @@ const TabTrigger: React.FC<TabTriggerProps> = ({
   provided,
   snapshot,
 }) => {
+  const [t] = useTranslation('mountedWads');
+
   return (
-    <div ref={provided.innerRef} {...provided.draggableProps}>
-      <RadixTabs.Trigger
-        value={mountedWad.id}
-        className={clsx(
-          'group flex h-full flex-row items-center justify-center gap-1 rounded-t-sm border-r border-r-gray-600 bg-gray-800 px-[0.5rem] py-[0.25rem] text-sm text-gray-300 hover:bg-gray-700',
-          'data-[state=active]:border-t-2 data-[state=active]:border-t-obsidian-700 data-[state=active]:bg-gray-700',
-          { 'border-t border-t-obsidian-700 ': snapshot.isDragging },
-        )}
-      >
+    <Tooltip.Root>
+      <Tooltip.Trigger asChild>
+        <div ref={provided.innerRef} {...provided.draggableProps}>
+          <RadixTabs.Trigger
+            value={mountedWad.id}
+            className={clsx(
+              'group flex h-full flex-row items-center justify-center gap-1 rounded-t-sm border-r border-r-gray-600 bg-gray-800 px-[0.5rem] py-[0.25rem] text-sm text-gray-300 hover:bg-gray-700',
+              'data-[state=active]:border-t-2 data-[state=active]:border-t-obsidian-700 data-[state=active]:bg-gray-700',
+              { 'border-t border-t-obsidian-700 ': snapshot.isDragging },
+            )}
+          >
+            <TabTriggerDragHandle dragHandleProps={provided.dragHandleProps} />
+            {mountedWad.name}
+            <TabTriggerCloseButton onClick={() => handleTabClose(mountedWad.id)} />
+          </RadixTabs.Trigger>
+        </div>
+      </Tooltip.Trigger>
+      <Tooltip.Content side="bottom" className="text-xs">
+        {mountedWad.wadPath}
+      </Tooltip.Content>
+    </Tooltip.Root>
+  );
+};
+
+type TabTriggerDragHandleProps = {
+  dragHandleProps: DraggableProvidedDragHandleProps | null;
+};
+
+const TabTriggerDragHandle: React.FC<TabTriggerDragHandleProps> = ({ dragHandleProps }) => {
+  const [t] = useTranslation('mountedWads');
+
+  return (
+    <Tooltip.Root>
+      <Tooltip.Trigger asChild>
         <div
-          {...provided.dragHandleProps}
+          {...dragHandleProps}
           className="flex items-center justify-center rounded transition-colors hover:bg-obsidian-500/30"
         >
           <Icon size="lg" icon={BiDotsVertical} />
         </div>
-        {mountedWad.name}
+      </Tooltip.Trigger>
+      <Tooltip.Content className="text-sm">{t('tab.dndTooltip')}</Tooltip.Content>
+    </Tooltip.Root>
+  );
+};
+
+type TabTriggerCloseButtonProps = {
+  onClick: React.MouseEventHandler<SVGSVGElement>;
+};
+
+const TabTriggerCloseButton: React.FC<TabTriggerCloseButtonProps> = ({ onClick }) => {
+  const [t] = useTranslation('mountedWads');
+
+  return (
+    <Tooltip.Root>
+      <Tooltip.Trigger asChild>
         <span className="invisible ml-auto rounded p-1 opacity-0 transition-opacity duration-150 hover:bg-obsidian-500/40 group-hover:visible group-hover:opacity-100">
-          <Icon size="md" icon={CloseIcon} onClick={() => handleTabClose(mountedWad.id)} />
+          <Icon size="md" icon={CloseIcon} onClick={onClick} />
         </span>
-      </RadixTabs.Trigger>
-    </div>
+      </Tooltip.Trigger>
+      <Tooltip.Content side="top" className="text-sm">
+        {t('tab.closeTooltip')}
+      </Tooltip.Content>
+    </Tooltip.Root>
   );
 };

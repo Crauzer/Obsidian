@@ -12,7 +12,7 @@ export const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <I18nextProvider i18n={i18next}>
-        <Tooltip.Provider delayDuration={350}>
+        <Tooltip.Provider delayDuration={800}>
           <RouterProvider router={router} />
         </Tooltip.Provider>
       </I18nextProvider>

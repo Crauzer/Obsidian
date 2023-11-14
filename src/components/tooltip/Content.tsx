@@ -16,13 +16,12 @@ export const TooltipContent: React.FC<TooltipContentProps> = ({
         sideOffset={sideOffset}
         className={clsx(
           className,
-          'py-1 px-2 bg-gray-800/50 rounded shadow-xl',
-          'will-change-[opacity] origin-[var(--radix-popover-content-transform-origin)]',
-          'data-[state=delayed-open]:data-[side=top]:animate-fadeIn data-[state=closed]:data-[side=top]:animate-fadeOut',
+          'rounded border border-gray-600/50 bg-gray-800/80 px-2 py-1 text-gray-50 shadow-xl',
+          'origin-[var(--radix-popover-content-transform-origin)]',
         )}
       >
         {children}
-        <RadixTooltip.Arrow className="fill-gray-800" />
+        <RadixTooltip.Arrow className="fill-gray-800/80" />
       </RadixTooltip.Content>
     </RadixTooltip.Portal>
   );
