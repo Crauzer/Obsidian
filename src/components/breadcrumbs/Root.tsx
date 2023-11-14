@@ -22,7 +22,9 @@ export const BreadcrumbsRoot: React.FC<BreadcrumbsRootProps> = ({
         isElement(child) ? (
           React.cloneElement(child, { key: index })
         ) : (
-          <BreadcrumbItem key={index} title={child} href="" />
+          <BreadcrumbItem key={index} href="">
+            {child}
+          </BreadcrumbItem>
         ),
       );
 

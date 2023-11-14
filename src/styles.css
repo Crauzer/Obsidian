@@ -16,7 +16,7 @@
 
   ::-webkit-scrollbar {
     width: 6px;
-    height: 6px;
+    height: 4px;
   }
   ::-webkit-scrollbar-track {
     @apply bg-gray-700;

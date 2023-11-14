@@ -14,9 +14,10 @@ export const TooltipContent: React.FC<TooltipContentProps> = ({
       <RadixTooltip.Content
         {...props}
         sideOffset={sideOffset}
+        collisionPadding={8}
         className={clsx(
-          className,
           'rounded border border-gray-600/50 bg-gray-800/50 px-2 py-1 text-gray-50 shadow-xl backdrop-blur',
+          className,
         )}
       >
         {children}

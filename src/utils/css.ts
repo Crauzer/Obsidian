@@ -24,11 +24,11 @@ export const getTextSizeClass = (size: Size) =>
 
 export const getClickableVariantClass = (variant: ClickableVariant) =>
   clsx({
-    'bg-gray-800 border-gray-600 text-gray-200 hover:bg-gray-700 hover:border-gray-500 active:bg-gray-600':
+    'bg-gray-800 border-gray-600 text-gray-50 hover:bg-gray-700 hover:border-gray-500 active:bg-gray-600':
       variant === 'default',
-    'bg-obsidian-800 border-obsidian-600 text-gray-200 hover:bg-obsidian-900 hover:border-obsidian-700':
+    'bg-obsidian-800 border-obsidian-600 text-gray-50 hover:bg-obsidian-900 hover:border-obsidian-700':
       variant === 'filled',
-    'border-obsidian-500/60 border text-gray-200 hover:bg-obsidian-500/60': variant === 'outline',
-    'bg-obsidian-600/25 text-gray-200 hover:bg-obsidian-600/40 border-none': variant === 'light',
+    'border-obsidian-500/60 border text-gray-50 hover:bg-obsidian-500/60': variant === 'outline',
+    'bg-obsidian-600/40 text-gray-50 hover:bg-obsidian-600/60 border-none': variant === 'light',
     'text-gray-200 hover:bg-obsidian-600/30 border-none': variant === 'ghost',
   });

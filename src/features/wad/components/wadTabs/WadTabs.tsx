@@ -73,7 +73,7 @@ export const WadTabs: React.FC<WadTabsProps> = ({
           value={selectedWad}
           onValueChange={onSelectedWadChanged}
         >
-          <div className="flex w-full flex-row gap-2">
+          <div className="flex w-full flex-row">
             <Droppable droppableId="wad_tabs" direction="horizontal">
               {(provided, snapshot) => (
                 <RadixTabs.List
@@ -82,7 +82,7 @@ export const WadTabs: React.FC<WadTabsProps> = ({
                   className={clsx(
                     'flex flex-1',
                     'data-[orientation=horizontal]:flex-row data-[orientation=vertical]:flex-col',
-                    'rounded border border-gray-700 bg-gray-800 transition-colors',
+                    'rounded rounded-r-none border border-gray-700 bg-gray-800 transition-colors',
                     'overflow-x-scroll [scrollbar-gutter:stable]',
                     'relative min-h-[2.5rem]',
                     { 'border-obsidian-500 ': snapshot.isDraggingOver },
@@ -106,22 +106,18 @@ export const WadTabs: React.FC<WadTabsProps> = ({
                 </RadixTabs.List>
               )}
             </Droppable>
-            <Menu.Root modal={false}>
-              <Menu.Trigger asChild>
-                <Button compact variant="default" className="h-full text-xl">
-                  <PlusRegularIcon width={16} height={16} />
-                  <CaretDownIcon width={16} height={16} />
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <Button
+                  variant="filled"
+                  className="h-full rounded-l-none text-xl"
+                  onClick={() => handleMountWads()}
+                >
+                  <Icon size="md" icon={PlusRegularIcon} />
                 </Button>
-              </Menu.Trigger>
-              <Menu.Content align="start" sideOffset={6}>
-                <Menu.Item className="flex flex-row p-1" onSelect={handleMountWads}>
-                  Mount Wads{' '}
-                  <span className="ml-auto text-sm text-gray-50">
-                    <Kbd>Ctrl + O</Kbd>
-                  </span>
-                </Menu.Item>
-              </Menu.Content>
-            </Menu.Root>
+              </Tooltip.Trigger>
+              <Tooltip.Content side="bottom">Mount Wads</Tooltip.Content>
+            </Tooltip.Root>
           </div>
           {mountedWadsQuery.data.wads.map((mountedWad) => {
             return (

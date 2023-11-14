@@ -10,8 +10,8 @@ export const Kbd: React.FC<KbdProps> = ({ className, children }) => {
     <kbd
       className={clsx(
         className,
-        'px-[6px] py-1 font-mono font-bold rounded text-xs bg-gray-700/50 text-gray-50/75',
-        'border border-gray-600/50 border-b-[3px]',
+        'font-mono rounded bg-gray-700/50 px-[6px] py-1 text-center text-xs font-bold text-gray-50/75',
+        'border border-b-[3px] border-gray-600/50',
       )}
     >
       {children}
