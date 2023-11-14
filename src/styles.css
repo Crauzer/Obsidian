@@ -36,6 +36,11 @@
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-obsidian-800;
   }
+
+  :focus-visible {
+    @apply outline;
+    @apply outline-obsidian-500;
+  }
 }
 
 html {

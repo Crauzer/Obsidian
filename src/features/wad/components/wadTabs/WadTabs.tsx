@@ -8,12 +8,11 @@ import {
 } from '@hello-pangea/dnd';
 import * as RadixTabs from '@radix-ui/react-tabs';
 import clsx from 'clsx';
-import { CSSProperties } from 'react';
 import { BiDotsVertical } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
 
 import { CaretDownIcon, CloseIcon, PlusRegularIcon } from '../../../../assets';
-import { ActionIcon, Button, Icon, Kbd, Menu } from '../../../../components';
+import { Button, Icon, Kbd, Menu } from '../../../../components';
 import { appRoutes } from '../../../../lib/router';
 import { composeUrlQuery } from '../../../../utils';
 import { useMountWads, useMountedWads, useReorderMountedWad, useUnmountWad } from '../../api';

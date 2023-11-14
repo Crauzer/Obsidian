@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import { useSearchParams } from 'react-router-dom';
 
 import { ArchiveIcon } from '../../../../assets';
-import { Breadcrumbs, Icon } from '../../../../components';
+import { Breadcrumbs, Icon, Input } from '../../../../components';
 import { appRoutes } from '../../../../lib/router';
 import { composeUrlQuery } from '../../../../utils';
 import { useWadDirectoryItems, useWadDirectoryPathComponents, useWadItems } from '../../api';
@@ -18,6 +18,7 @@ export const WadTabContent: React.FC<WadTabContentProps> = ({ wadId }) => {
   if (wadItemsQuery.isSuccess) {
     return (
       <div className="flex h-full flex-col gap-2">
+        <Input />
         <div className="flex h-full flex-col rounded border border-gray-600 bg-gray-800">
           <Breadcrumbs.Root className="border-b border-gray-600 p-1 font-fira-mono text-sm leading-6">
             <PathBreadcrumbItem
@@ -70,9 +71,7 @@ export const WadDirectoryTabContent: React.FC<WadDirectoryTabContentProps> = ({
               ))}
             </Breadcrumbs.Root>
           )}
-          <div className="flex h-full">
-            <WadItemList wadId={wadId} data={itemsQuery.data} />
-          </div>
+          <WadItemList wadId={wadId} data={itemsQuery.data} />
         </div>
       </div>
     );
