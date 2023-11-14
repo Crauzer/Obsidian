@@ -8,7 +8,7 @@ export const MenuContent: React.FC<RadixMenu.DropdownMenuContentProps> = (props)
       {...props}
       className={clsx(
         props.className,
-        'min-w-[250px] bg-gray-800 rounded-lg p-2 shadow-xl border border-gray-700',
+        'min-w-[250px] rounded-lg border border-gray-700 bg-gray-800 p-2 shadow-xl',
         'will-change-[opacity,transform]',
 
         'data-[state=open]:data-[side=top]:animate-slideAndFadeInFromTop',
