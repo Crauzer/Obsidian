@@ -16,6 +16,7 @@ export type MountedWad = {
 
 export type WadItemPathComponent = {
   name: string;
+  path: string;
   itemId: string;
 };
 

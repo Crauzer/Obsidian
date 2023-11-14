@@ -49,6 +49,7 @@ pub fn get_mounted_wad_directory_path_components(
             .map(|component| WadItemPathComponentDto {
                 item_id: component.id,
                 name: component.name.to_string(),
+                path: component.path.to_string(),
             })
             .collect_vec());
     }
@@ -63,6 +64,7 @@ pub fn get_mounted_wad_directory_path_components(
 struct PathComponentInternal {
     id: Uuid,
     name: Arc<str>,
+    path: Arc<str>,
 }
 
 fn search_parent<'p>(
@@ -73,6 +75,7 @@ fn search_parent<'p>(
     path_components.push_back(PathComponentInternal {
         id: parent.id(),
         name: parent.name().into(),
+        path: parent.path().into(),
     });
 
     for (_, item) in parent.items() {
@@ -80,6 +83,7 @@ fn search_parent<'p>(
             path_components.push_back(PathComponentInternal {
                 id: item.id(),
                 name: item.name().into(),
+                path: item.path().into(),
             });
             return Some(item);
         }

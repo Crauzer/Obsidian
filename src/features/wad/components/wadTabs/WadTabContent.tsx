@@ -1,8 +1,10 @@
 import clsx from 'clsx';
+import { t } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 
 import { ArchiveIcon } from '../../../../assets';
-import { Breadcrumbs, Icon, Input } from '../../../../components';
+import { Breadcrumbs, Icon, Input, Tooltip } from '../../../../components';
 import { appRoutes } from '../../../../lib/router';
 import { composeUrlQuery } from '../../../../utils';
 import { useWadDirectoryItems, useWadDirectoryPathComponents, useWadItems } from '../../api';
@@ -13,6 +15,8 @@ export type WadTabContentProps = {
 };
 
 export const WadTabContent: React.FC<WadTabContentProps> = ({ wadId }) => {
+  const [t] = useTranslation('mountedWads');
+
   const wadItemsQuery = useWadItems(wadId);
 
   if (wadItemsQuery.isSuccess) {
@@ -24,6 +28,7 @@ export const WadTabContent: React.FC<WadTabContentProps> = ({ wadId }) => {
             <PathBreadcrumbItem
               itemId=""
               name={<Icon size="lg" className="fill-obsidian-500" icon={ArchiveIcon} />}
+              path={t('path.root')}
               href={composeUrlQuery(appRoutes.mountedWads, { wadId })}
             />
           </Breadcrumbs.Root>
@@ -47,6 +52,8 @@ export const WadDirectoryTabContent: React.FC<WadDirectoryTabContentProps> = ({
   wadId,
   selectedItemId,
 }) => {
+  const [t] = useTranslation('mountedWads');
+
   const pathComponentsQuery = useWadDirectoryPathComponents({ wadId, itemId: selectedItemId });
   const itemsQuery = useWadDirectoryItems(wadId, selectedItemId);
 
@@ -59,13 +66,15 @@ export const WadDirectoryTabContent: React.FC<WadDirectoryTabContentProps> = ({
               <PathBreadcrumbItem
                 itemId=""
                 name={<Icon size="lg" className="fill-obsidian-500" icon={ArchiveIcon} />}
+                path={t('path.root')}
                 href={composeUrlQuery(appRoutes.mountedWads, { wadId })}
               />
-              {pathComponentsQuery.data.map(({ itemId, name }, index) => (
+              {pathComponentsQuery.data.map(({ itemId, name, path }, index) => (
                 <PathBreadcrumbItem
                   key={index}
                   itemId={itemId}
                   name={name}
+                  path={path}
                   href={composeUrlQuery(appRoutes.mountedWads, { wadId, itemId })}
                 />
               ))}
@@ -83,19 +92,26 @@ export const WadDirectoryTabContent: React.FC<WadDirectoryTabContentProps> = ({
 type PathBreadcrumbItemProps = {
   itemId: string;
   name: React.ReactNode;
+  path: React.ReactNode;
   href: string;
 };
 
-const PathBreadcrumbItem: React.FC<PathBreadcrumbItemProps> = ({ itemId, name, href }) => {
+const PathBreadcrumbItem: React.FC<PathBreadcrumbItemProps> = ({ itemId, name, path, href }) => {
   const [searchParams] = useSearchParams();
 
   return (
-    <Breadcrumbs.Item
-      className={clsx('font-mono', {
-        'font-bold text-obsidian-400': searchParams.get('itemId') === itemId,
-      })}
-      title={name}
-      href={href}
-    />
+    <Tooltip.Root>
+      <Tooltip.Trigger asChild>
+        <Breadcrumbs.Item
+          className={clsx('font-mono', {
+            'font-bold text-obsidian-400': searchParams.get('itemId') === itemId,
+          })}
+          href={href}
+        >
+          {name}
+        </Breadcrumbs.Item>
+      </Tooltip.Trigger>
+      <Tooltip.Content side="bottom">{path}</Tooltip.Content>
+    </Tooltip.Root>
   );
 };
