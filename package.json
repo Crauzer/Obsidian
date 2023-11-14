@@ -20,6 +20,7 @@
     "@tanstack/react-query-devtools": "^5.8.1",
     "@tauri-apps/api": "^1.4.0",
     "clsx": "^2.0.0",
+    "downshift": "^8.2.3",
     "framer-motion": "^10.16.4",
     "i18next": "^23.6.0",
     "i18next-browser-languagedetector": "^7.1.0",
