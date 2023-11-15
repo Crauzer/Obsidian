@@ -63,7 +63,7 @@ export const Button: ButtonComponent = forwardRef(
           getTextSizeClass(size),
           getJustifyClass(justify),
           {
-            'px-2 py-1': compact,
+            'p-2': compact,
             'px-4 py-2': !compact,
           },
           {

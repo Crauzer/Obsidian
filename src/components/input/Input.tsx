@@ -14,7 +14,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         ref={ref}
         className={clsx(
           className,
-          'rounded border border-gray-600 bg-gray-800 text-gray-50 transition-colors focus-visible:border-obsidian-500 focus-visible:outline-none',
+          'rounded border border-gray-500 bg-gray-700 text-gray-50 transition-colors focus-visible:border-obsidian-500 focus-visible:outline-none',
           compact ? 'px-1' : 'p-1 px-2',
         )}
       />

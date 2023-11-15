@@ -11,7 +11,7 @@ export type UseReorderMountedWadContext = {
 };
 
 export const reorderMountedWad = ({ sourceIndex, destIndex }: UseReorderMountedWadContext) =>
-  tauri.invoke(wadCommands.reorderMountedWad, { sourceIndex, destIndex });
+  tauri.invoke(wadCommands.moveMountedWad, { sourceIndex, destIndex });
 
 export const useReorderMountedWad = () => {
   return useMutation({

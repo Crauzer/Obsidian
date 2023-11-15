@@ -11,7 +11,8 @@ use self::core::wad::{
     Wad,
 };
 use crate::{
-    api::wad::{get_mounted_wad_directory_path_components, reorder_mounted_wad},
+    api::actions::get_action_progress,
+    api::wad::{get_mounted_wad_directory_path_components, move_mounted_wad},
     core::wad_hashtable::WadHashtable,
 };
 use api::{
@@ -20,7 +21,7 @@ use api::{
 };
 use itertools::Itertools;
 use parking_lot::Mutex;
-use state::mounted_wads::{MountedWads, MountedWadsState};
+use state::{MountedWads, MountedWadsState};
 use std::{fs::File, path::Path};
 use tauri::Manager;
 use tracing::info;
@@ -247,9 +248,10 @@ fn main() {
             get_mounted_wads,
             get_wad_items,
             mount_wads,
-            reorder_mounted_wad,
+            move_mounted_wad,
             select_wad_tree_item,
             unmount_wad,
+            get_action_progress
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

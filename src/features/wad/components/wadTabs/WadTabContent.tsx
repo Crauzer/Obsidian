@@ -1,10 +1,19 @@
 import clsx from 'clsx';
 import { t } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { LuFileDown, LuFileStack } from 'react-icons/lu';
 import { useSearchParams } from 'react-router-dom';
 
 import { ArchiveIcon } from '../../../../assets';
-import { Breadcrumbs, Icon, Input, Tooltip } from '../../../../components';
+import {
+  Breadcrumbs,
+  Button,
+  Icon,
+  Input,
+  Toolbar,
+  ToolbarRootProps,
+  Tooltip,
+} from '../../../../components';
 import { appRoutes } from '../../../../lib/router';
 import { composeUrlQuery } from '../../../../utils';
 import { useWadDirectoryItems, useWadDirectoryPathComponents, useWadItems } from '../../api';
@@ -60,8 +69,11 @@ export const WadDirectoryTabContent: React.FC<WadDirectoryTabContentProps> = ({
   if (itemsQuery.isSuccess) {
     return (
       <div className="flex h-full flex-col gap-2">
-        <Input />
         <div className="flex h-full flex-col rounded border border-gray-600 bg-gray-900">
+          <div className="flex flex-row rounded border border-gray-600 bg-gray-800">
+            <WadTabToolbar className="w-1/2 rounded" />
+            <Input className="m-1 w-1/2 flex-1" />
+          </div>
           {pathComponentsQuery.isSuccess && (
             <Breadcrumbs.Root className="border-b border-gray-600 bg-gray-800 p-1 font-fira-mono text-sm leading-6">
               <PathBreadcrumbItem
@@ -114,5 +126,24 @@ const PathBreadcrumbItem: React.FC<PathBreadcrumbItemProps> = ({ itemId, name, p
       </Tooltip.Trigger>
       <Tooltip.Content side="bottom">{path}</Tooltip.Content>
     </Tooltip.Root>
+  );
+};
+
+type WadTabToolbarProps = ToolbarRootProps;
+
+const WadTabToolbar: React.FC<WadTabToolbarProps> = (props) => {
+  return (
+    <Toolbar.Root {...props}>
+      <Toolbar.Button asChild>
+        <Button compact variant="ghost">
+          <Icon size="md" icon={LuFileDown} />
+        </Button>
+      </Toolbar.Button>
+      <Toolbar.Button asChild>
+        <Button compact variant="ghost">
+          <Icon size="md" icon={LuFileStack} />
+        </Button>
+      </Toolbar.Button>
+    </Toolbar.Root>
   );
 };

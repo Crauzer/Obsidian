@@ -33,8 +33,7 @@ export const WadItemList: React.FC<WadItemListProps> = ({ wadId, data }) => {
                     'text-md box-border flex select-none flex-row py-1 pl-2 text-gray-50 hover:cursor-pointer',
                     { 'hover:bg-gray-700/25': !item.isSelected },
                     {
-                      'border border-obsidian-500/40 bg-gradient-to-r from-obsidian-700/40 to-obsidian-900/30':
-                        item.isSelected,
+                      'border border-obsidian-500/40 bg-obsidian-700/40': item.isSelected,
                     },
                   )}
                   onClick={() => {

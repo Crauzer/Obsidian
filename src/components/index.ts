@@ -9,3 +9,4 @@ export * from './breadcrumbs';
 export * from './infobar';
 export * from './menu';
 export * from './input';
+export * from './toolbar';

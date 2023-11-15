@@ -11,10 +11,11 @@ import * as RadixTabs from '@radix-ui/react-tabs';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { BiDotsVertical } from 'react-icons/bi';
+import { LuPackagePlus } from 'react-icons/lu';
+import { RxDragHandleDots2 } from 'react-icons/rx';
 import { useNavigate } from 'react-router-dom';
 
-import { CaretDownIcon, CloseIcon, PlusRegularIcon } from '../../../../assets';
+import { CaretDownIcon, CloseIcon } from '../../../../assets';
 import { Button, Icon, Kbd, Menu, Tooltip } from '../../../../components';
 import { appRoutes } from '../../../../lib/router';
 import { composeUrlQuery } from '../../../../utils';
@@ -113,7 +114,7 @@ export const WadTabs: React.FC<WadTabsProps> = ({
                   className="h-full rounded-l-none text-xl"
                   onClick={() => handleMountWads()}
                 >
-                  <Icon size="md" icon={PlusRegularIcon} />
+                  <Icon size="xl" icon={LuPackagePlus} />
                 </Button>
               </Tooltip.Trigger>
               <Tooltip.Content side="bottom">Mount Wads</Tooltip.Content>
@@ -191,9 +192,9 @@ const TabTriggerDragHandle: React.FC<TabTriggerDragHandleProps> = ({ dragHandleP
       <Tooltip.Trigger asChild>
         <div
           {...dragHandleProps}
-          className="flex items-center justify-center rounded transition-colors hover:bg-obsidian-500/30"
+          className="flex items-center justify-center rounded transition-colors"
         >
-          <Icon size="lg" icon={BiDotsVertical} />
+          <Icon size="lg" className="text-gray-400" icon={RxDragHandleDots2} />
         </div>
       </Tooltip.Trigger>
       <Tooltip.Content className="text-sm">{t('tab.dndTooltip')}</Tooltip.Content>

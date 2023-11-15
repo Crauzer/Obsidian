@@ -6,13 +6,20 @@ use uuid::Uuid;
 use crate::{
     api::error::ApiError,
     core::wad::tree::{WadTreeItem, WadTreeParent, WadTreePathable},
-    state::mounted_wads::MountedWadsState,
+    state::MountedWadsState,
 };
 
 use super::WadItemPathComponentDto;
 
 #[tauri::command]
-pub async fn reorder_mounted_wad(
+async fn extract_mounted_wad(
+    mounted_wads: tauri::State<'_, MountedWadsState>,
+) -> Result<(), String> {
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn move_mounted_wad(
     source_index: usize,
     dest_index: usize,
     mounted_wads: tauri::State<'_, MountedWadsState>,
@@ -41,7 +48,7 @@ pub fn get_mounted_wad_directory_path_components(
 
     if let Some(wad_tree) = mounted_wads_guard.wad_trees().get(&wad_id) {
         let mut path_components = VecDeque::<PathComponentInternal>::new();
-        search_parent(wad_tree, &mut path_components, &|item| item.id() == item_id);
+        collect_path_components(wad_tree, &mut path_components, &|item| item.id() == item_id);
 
         return Ok(path_components
             .iter()
@@ -67,7 +74,7 @@ struct PathComponentInternal {
     path: Arc<str>,
 }
 
-fn search_parent<'p>(
+fn collect_path_components<'p>(
     parent: &'p (impl WadTreeParent + WadTreePathable),
     path_components: &mut VecDeque<PathComponentInternal>,
     condition: &dyn Fn(&WadTreeItem) -> bool,
@@ -89,7 +96,7 @@ fn search_parent<'p>(
         }
 
         if let WadTreeItem::Directory(directory) = item {
-            if let Some(item) = search_parent(directory, path_components, condition) {
+            if let Some(item) = collect_path_components(directory, path_components, condition) {
                 return Some(item);
             }
         }
