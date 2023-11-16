@@ -11,8 +11,11 @@ use self::core::wad::{
     Wad,
 };
 use crate::{
-    api::actions::get_action_progress,
-    api::wad::{get_mounted_wad_directory_path_components, move_mounted_wad},
+    api::{
+        actions::get_action_progress,
+        settings::{get_settings, update_settings},
+        wad::{get_mounted_wad_directory_path_components, move_mounted_wad},
+    },
     core::wad_hashtable::WadHashtable,
 };
 use api::{
@@ -20,8 +23,8 @@ use api::{
     wad::{MountWadResponse, MountedWadDto, MountedWadsResponse, WadItemDto},
 };
 use itertools::Itertools;
-use parking_lot::Mutex;
-use state::{MountedWads, MountedWadsState};
+use parking_lot::{Mutex, RwLock};
+use state::{MountedWads, MountedWadsState, Settings, SettingsState};
 use std::{fs::File, path::Path};
 use tauri::Manager;
 use tracing::info;
@@ -240,7 +243,26 @@ fn main() {
 
     tauri::Builder::default()
         .plugin(tauri_plugin_window_state::Builder::default().build())
+        .plugin(tauri_plugin_store::Builder::default().build())
+        .plugin(tauri_plugin_upload::init())
         .manage(MountedWadsState(Mutex::new(MountedWads::new())))
+        .manage(SettingsState(RwLock::new(Settings::default())))
+        .setup(|app| {
+            info!("{:#?}", app.path_resolver().app_config_dir());
+
+            let settings = app.state::<SettingsState>();
+            let mut settings = settings.0.write();
+
+            *settings = Settings::load_or_default(
+                app.path_resolver()
+                    .app_config_dir()
+                    .unwrap()
+                    .join("settings.json"),
+            )
+            .unwrap();
+
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             expand_wad_tree_item,
             get_mounted_wad_directory_items,
@@ -251,8 +273,27 @@ fn main() {
             move_mounted_wad,
             select_wad_tree_item,
             unmount_wad,
-            get_action_progress
+            get_action_progress,
+            get_settings,
+            update_settings
         ])
+        .on_window_event(|event| {
+            if let tauri::WindowEvent::CloseRequested { .. } = event.event() {
+                let app_handle = event.window().app_handle();
+                let settings = app_handle.state::<SettingsState>();
+                let settings = settings.0.read();
+
+                settings
+                    .save(
+                        app_handle
+                            .path_resolver()
+                            .app_config_dir()
+                            .unwrap()
+                            .join("settings.json"),
+                    )
+                    .expect("failed to save settings")
+            }
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

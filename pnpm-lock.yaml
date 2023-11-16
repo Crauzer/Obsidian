@@ -74,6 +74,12 @@ dependencies:
   react-virtuoso:
     specifier: ^4.6.2
     version: 4.6.2(react-dom@18.2.0)(react@18.2.0)
+  tauri-plugin-store-api:
+    specifier: github:tauri-apps/tauri-plugin-store#v1
+    version: github.com/tauri-apps/tauri-plugin-store/6e19887b1bdea9b921a31993d72396a350731e07
+  tauri-plugin-upload-api:
+    specifier: github:tauri-apps/tauri-plugin-upload#v1
+    version: github.com/tauri-apps/tauri-plugin-upload/d05be831aa9b003ebb52b051cf5049e35a8afa93
   tauri-plugin-window-state-api:
     specifier: github:tauri-apps/tauri-plugin-window-state#v1
     version: github.com/tauri-apps/tauri-plugin-window-state/813087b0c24f9b6a1e8bc25e8d1f8e151b079e3e
@@ -5037,6 +5043,22 @@ packages:
 
   /zod@3.22.4:
     resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
+    dev: false
+
+  github.com/tauri-apps/tauri-plugin-store/6e19887b1bdea9b921a31993d72396a350731e07:
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/6e19887b1bdea9b921a31993d72396a350731e07}
+    name: tauri-plugin-store-api
+    version: 0.0.0
+    dependencies:
+      '@tauri-apps/api': 1.5.1
+    dev: false
+
+  github.com/tauri-apps/tauri-plugin-upload/d05be831aa9b003ebb52b051cf5049e35a8afa93:
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-upload/tar.gz/d05be831aa9b003ebb52b051cf5049e35a8afa93}
+    name: tauri-plugin-upload-api
+    version: 0.0.0
+    dependencies:
+      '@tauri-apps/api': 1.5.1
     dev: false
 
   github.com/tauri-apps/tauri-plugin-window-state/813087b0c24f9b6a1e8bc25e8d1f8e151b079e3e:

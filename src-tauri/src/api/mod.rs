@@ -3,6 +3,8 @@ use uuid::Uuid;
 
 pub mod actions;
 pub mod error;
+pub mod hashtable;
+pub mod settings;
 pub mod wad;
 
 #[derive(Debug, Serialize)]

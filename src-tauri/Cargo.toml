@@ -30,6 +30,9 @@ indexmap = "2.0.2"
 itertools = "0.11.0"
 parking_lot = "0.12.1"
 tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
+tauri-plugin-store = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
+tauri-plugin-upload = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
+
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

@@ -8,6 +8,10 @@ export type MountWadResponse = {
   wadIds: string[];
 };
 
+export type ExtractMountedWadResponse = {
+  actionId: string;
+};
+
 export type MountedWad = {
   id: string;
   name: string;

@@ -2,6 +2,7 @@ use std::{
     collections::HashMap,
     fs::File,
     io::{BufRead, BufReader},
+    path::{Path, PathBuf},
     sync::Arc,
 };
 
@@ -21,6 +22,14 @@ impl WadHashtable {
     }
     pub fn items_mut(&mut self) -> &mut HashMap<u64, Arc<str>> {
         &mut self.items
+    }
+
+    pub fn initialize(&mut self, files: &[impl AsRef<Path>]) -> Result<(), String> {
+        for file in files {
+            self.add_from_file(&mut File::open(file).map_err(|e| e.to_string())?)?;
+        }
+
+        Ok(())
     }
 
     pub fn add_from_file(&mut self, file: &mut File) -> Result<(), String> {
