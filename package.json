@@ -11,7 +11,10 @@
   },
   "dependencies": {
     "@hello-pangea/dnd": "^16.3.0",
+    "@hookform/resolvers": "^3.3.2",
+    "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
+    "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-navigation-menu": "^1.1.4",
     "@radix-ui/react-popover": "^1.0.7",
     "@radix-ui/react-tabs": "^1.0.4",
@@ -28,6 +31,7 @@
     "qs": "^6.11.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.48.2",
     "react-i18next": "^13.2.2",
     "react-icons": "^4.11.0",
     "react-router-dom": "^6.16.0",
@@ -41,6 +45,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@hookform/devtools": "^4.3.1",
     "@tanstack/eslint-plugin-query": "^4.36.0",
     "@tauri-apps/cli": "^1.4.0",
     "@testing-library/react": "14.0.0",

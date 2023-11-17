@@ -1,4 +1,15 @@
-import { Button, Kbd } from '../components';
+import { DevTool } from '@hookform/devtools';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+
+import { Button, Checkbox, Form, Input, Kbd } from '../components';
+
+type ComponentTestFormData = z.infer<typeof componentTestFormDataSchema>;
+const componentTestFormDataSchema = z.object({
+  testInput: z.string().min(5),
+  testCheckbox: z.boolean(),
+});
 
 export default function ComponentTest() {
   return (
@@ -28,6 +39,33 @@ export default function ComponentTest() {
           </div>
         </div>
       </div>
+      <FormCard />
     </div>
   );
 }
+
+const FormCard = () => {
+  const { register, handleSubmit, control } = useForm<ComponentTestFormData>({
+    resolver: zodResolver(componentTestFormDataSchema),
+  });
+
+  const handleFormSubmit = (data: ComponentTestFormData) => {
+    console.info(data);
+  };
+
+  return (
+    <div className="flex flex-col gap-2">
+      <h1 className="text-xl text-gray-50">Form:</h1>
+      <div className="flex flex-row gap-2">
+        <form className="flex flex-col gap-2" onSubmit={handleSubmit(handleFormSubmit)}>
+          <Form.Input control={control} name="testInput" label="ffgff" />
+          <Form.Checkbox control={control} name="testCheckbox">
+            Test 123
+          </Form.Checkbox>
+          <Button type="submit">Submit</Button>
+        </form>
+        <DevTool control={control} />
+      </div>
+    </div>
+  );
+};

@@ -10,3 +10,5 @@ export * from './infobar';
 export * from './menu';
 export * from './input';
 export * from './toolbar';
+export * from './checkbox';
+export * from './form';
