@@ -21,7 +21,8 @@
         "endOfLine": "auto"
       }
     ],
-    "no-unused-vars": ["warn", { "args": "none" }]
+    "no-unused-vars": ["warn", { "args": "none" }],
+    "no-empty-pattern": ["warn"]
   },
   "extends": [
     "eslint:recommended",
