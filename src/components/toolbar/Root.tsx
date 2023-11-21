@@ -1,5 +1,6 @@
 import * as RadixToolbar from '@radix-ui/react-toolbar';
 import clsx from 'clsx';
+import React from 'react';
 
 export type ToolbarRootProps = RadixToolbar.ToolbarProps;
 

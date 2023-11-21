@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "lint": "eslint --fix \"./**/*.{ts,tsx}\""
   },
   "dependencies": {
     "@hello-pangea/dnd": "^16.3.0",
@@ -41,6 +42,7 @@
     "tauri-plugin-upload-api": "github:tauri-apps/tauri-plugin-upload#v1",
     "tauri-plugin-window-state-api": "github:tauri-apps/tauri-plugin-window-state#v1",
     "ts-pattern": "^5.0.5",
+    "uuid": "^9.0.1",
     "vite-plugin-svgr": "^3.2.0",
     "zod": "^3.22.4"
   },
@@ -54,6 +56,7 @@
     "@types/qs": "^6.9.10",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
+    "@types/uuid": "^9.0.7",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
     "@vitejs/plugin-react": "^4.0.3",
@@ -71,6 +74,7 @@
     "prettier-plugin-tailwindcss": "^0.5.7",
     "tailwindcss": "^3.3.3",
     "typescript": "^5.2.2",
-    "vite": "^4.4.4"
+    "vite": "^4.4.4",
+    "vite-plugin-eslint": "^1.8.1"
   }
 }

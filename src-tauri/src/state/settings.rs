@@ -3,23 +3,23 @@ use std::{fs::File, path::Path};
 use parking_lot::RwLock;
 use serde::{Deserialize, Serialize};
 
+use crate::error::Result;
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Settings {
     pub wad_hashtable_urls: Vec<String>,
 }
 
 impl Settings {
-    pub fn load_or_default(location: impl AsRef<Path>) -> Result<Self, String> {
+    pub fn load_or_default(location: impl AsRef<Path>) -> Result<Self> {
         match File::open(location) {
-            Ok(file) => serde_json::from_reader::<File, Self>(file).map_err(|e| e.to_string()),
+            Ok(file) => Ok(serde_json::from_reader::<File, Self>(file)?),
             Err(_) => Ok(Self::default()),
         }
     }
 
-    pub fn save(&self, path: impl AsRef<Path>) -> Result<(), String> {
-        let file = File::create(path).map_err(|e| e.to_string())?;
-        serde_json::to_writer_pretty(file, self).map_err(|e| e.to_string())?;
-
+    pub fn save(&self, path: impl AsRef<Path>) -> Result<()> {
+        serde_json::to_writer_pretty(File::create(path)?, self)?;
         Ok(())
     }
 }

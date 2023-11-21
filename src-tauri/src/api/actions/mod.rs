@@ -16,3 +16,10 @@ pub enum ActionProgress {
         id: Uuid,
     },
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ActionProgressEvent {
+    pub progress: f64,
+    pub message: Option<String>,
+}

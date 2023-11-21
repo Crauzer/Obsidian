@@ -1,1 +1,1 @@
-export * from './WadHashtableList';
+export * from './SettingsForm';

@@ -1,4 +1,5 @@
 import * as RadixPopover from '@radix-ui/react-popover';
+import React from 'react';
 
 export type PopoverProps = RadixPopover.PopoverProps;
 

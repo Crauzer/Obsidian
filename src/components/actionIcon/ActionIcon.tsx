@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import { forwardRef } from 'react';
+import React from 'react';
 
 import { Button, ButtonProps, Icon } from '..';
 

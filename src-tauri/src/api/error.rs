@@ -1,5 +1,7 @@
 use serde::{ser::SerializeStruct, Serialize};
 
+use crate::error::Error;
+
 const UNKNOWN_ERROR: &str = "Unknown error";
 
 #[derive(Debug)]
@@ -47,6 +49,30 @@ impl ApiErrorBuilder {
     pub fn extension(mut self, extension: ApiErrorExtension) -> Self {
         self.extensions.push(extension);
         self
+    }
+}
+
+impl From<octocrab::Error> for ApiError {
+    fn from(error: octocrab::Error) -> Self {
+        Self::from_message(error.to_string())
+    }
+}
+
+impl From<tauri::api::Error> for ApiError {
+    fn from(error: tauri::api::Error) -> Self {
+        Self::from_message(error.to_string())
+    }
+}
+
+impl From<reqwest::Error> for ApiError {
+    fn from(error: reqwest::Error) -> Self {
+        Self::from_message(error.to_string())
+    }
+}
+
+impl From<Error> for ApiError {
+    fn from(error: Error) -> Self {
+        Self::from_message(error.to_string())
     }
 }
 

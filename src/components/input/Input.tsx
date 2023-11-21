@@ -1,6 +1,7 @@
 import * as RadixLabel from '@radix-ui/react-label';
 import clsx from 'clsx';
 import { forwardRef } from 'react';
+import React from 'react';
 
 export type InputProps = {
   label?: string;

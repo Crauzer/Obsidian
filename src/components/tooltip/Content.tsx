@@ -1,5 +1,6 @@
 import * as RadixTooltip from '@radix-ui/react-tooltip';
 import clsx from 'clsx';
+import React from 'react';
 
 export type TooltipContentProps = RadixTooltip.TooltipContentProps;
 

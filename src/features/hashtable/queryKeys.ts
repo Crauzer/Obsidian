@@ -1,3 +1,3 @@
-export const hashtableQueryKeys = {
-  hashtablesStatus: ['hashtable', 'status'] as const,
+export const wadHashtableQueryKeys = {
+  wadHashtableStatus: ['wad_hashtable', 'status'] as const,
 };

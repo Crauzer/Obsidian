@@ -1,4 +1,5 @@
 import * as RadixTooltip from '@radix-ui/react-tooltip';
+import React from 'react';
 
 export type TooltipTriggerProps = RadixTooltip.TooltipTriggerProps;
 

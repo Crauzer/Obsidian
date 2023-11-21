@@ -1,1 +1,1 @@
-export * from './getActionProgress';
+export * from './useActionProgress';

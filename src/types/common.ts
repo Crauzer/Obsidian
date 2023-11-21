@@ -1,3 +1,5 @@
+import React from 'react';
+
 type BasePolymorphicProps<TAs extends React.ElementType, TProps = {}> = {
   as?: TAs;
 } & TProps;

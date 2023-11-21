@@ -1,3 +1,4 @@
-export type HashtablesStatusResponse = { status: HashtablesStatus };
-
-export type HashtablesStatus = 'not_loaded' | 'loaded' | 'update';
+export type WadHashtableStatus = {
+  isLoaded: boolean;
+  isUpdateAvailable: boolean;
+};

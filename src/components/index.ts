@@ -12,3 +12,4 @@ export * from './input';
 export * from './toolbar';
 export * from './checkbox';
 export * from './form';
+export * from './label';

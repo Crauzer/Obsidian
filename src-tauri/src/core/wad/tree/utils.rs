@@ -4,9 +4,9 @@ use indexmap::IndexMap;
 use uuid::Uuid;
 use xxhash_rust::xxh3::xxh3_64;
 
-use crate::core::{
-    wad::{tree::WadTreeParent, WadChunk},
-    wad_hashtable::WadHashtable,
+use crate::{
+    core::wad::{tree::WadTreeParent, WadChunk},
+    state::WadHashtable,
 };
 
 use super::{

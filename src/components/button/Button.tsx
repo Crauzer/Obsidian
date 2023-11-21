@@ -42,7 +42,6 @@ export const Button: ButtonComponent = forwardRef(
       size = 'md',
       justify = 'center',
       fullWidth = false,
-      disabled = false,
       compact = false,
       left,
       right,

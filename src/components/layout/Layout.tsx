@@ -2,9 +2,10 @@ import * as RadixNavigationMenu from '@radix-ui/react-navigation-menu';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { PiGearSixDuotone } from 'react-icons/pi';
 import { useMatches } from 'react-router-dom';
 
-import { Button, Infobar } from '..';
+import { Button, Icon, Infobar } from '..';
 import Logo from '../../assets/logo.png';
 import { appRoutes } from '../../lib/router';
 
@@ -44,34 +45,47 @@ type NavigationMenuProps = { items: NavigationMenuItemProps[] };
 
 const NavigationMenu: React.FC<NavigationMenuProps> = ({ items }) => {
   return (
-    <RadixNavigationMenu.Root>
+    <RadixNavigationMenu.Root className="w-full">
       <RadixNavigationMenu.List className="center flex gap-2">
         {items.map((item) => (
           <NavigationMenuItem {...item} />
         ))}
+        <NavigationMenuItem
+          className="group ml-auto"
+          title={
+            <Icon
+              size="xl"
+              className="transition-transform duration-500 group-hover:rotate-90"
+              icon={PiGearSixDuotone}
+            />
+          }
+          href={appRoutes.settings}
+        />
       </RadixNavigationMenu.List>
     </RadixNavigationMenu.Root>
   );
 };
 
 type NavigationMenuItemProps = {
-  title: string;
+  title: React.ReactNode;
   href: string;
+
+  className?: string;
 };
 
-const NavigationMenuItem: React.FC<NavigationMenuItemProps> = ({ title, href }) => {
+const NavigationMenuItem: React.FC<NavigationMenuItemProps> = ({ title, href, className }) => {
   const matches = useMatches();
 
   const match = matches.find((match) => match.pathname === href);
 
   return (
-    <RadixNavigationMenu.Item>
+    <RadixNavigationMenu.Item className={className}>
       <RadixNavigationMenu.Link asChild>
         <Button
           className="text-xl font-bold text-gray-300"
           as="a"
           href={href}
-          variant={!!match ? 'light' : 'ghost'}
+          variant={match ? 'light' : 'ghost'}
         >
           {title}
         </Button>

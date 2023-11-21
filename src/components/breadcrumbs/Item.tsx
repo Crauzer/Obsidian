@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import { forwardRef } from 'react';
+import React from 'react';
 
 export type BreadcrumbItemProps = {
   href: string;
@@ -8,7 +9,7 @@ export type BreadcrumbItemProps = {
 } & React.DetailedHTMLProps<React.AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>;
 
 export const BreadcrumbItem = forwardRef<HTMLAnchorElement, BreadcrumbItemProps>(
-  ({ content, href, className, children, ...props }, ref) => {
+  ({ href, className, children, ...props }, ref) => {
     return (
       <a
         {...props}

@@ -5,13 +5,12 @@ use std::{collections::HashMap, fs::File, sync::Arc};
 use tracing::info;
 use uuid::Uuid;
 
-use crate::core::{
-    wad::{
-        tree::{WadTree, WadTreeError},
-        Wad,
-    },
-    wad_hashtable::WadHashtable,
+use crate::core::wad::{
+    tree::{WadTree, WadTreeError},
+    Wad,
 };
+
+use super::WadHashtable;
 
 pub struct MountedWads {
     wad_trees: IndexMap<Uuid, WadTree>,

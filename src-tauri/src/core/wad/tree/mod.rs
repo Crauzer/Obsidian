@@ -4,7 +4,6 @@ use std::{
     sync::Arc,
 };
 
-use crate::core::wad_hashtable::WadHashtable;
 use indexmap::IndexMap;
 use thiserror::Error;
 use uuid::Uuid;
@@ -13,6 +12,8 @@ mod item;
 mod utils;
 
 pub use item::*;
+
+use crate::state::WadHashtable;
 
 use self::utils::{
     add_item_to_parent, find_parent_item, sort_parent_items, traverse_parent_items,

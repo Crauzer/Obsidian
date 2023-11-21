@@ -3,7 +3,7 @@ use std::{iter::Peekable, sync::Arc};
 use indexmap::IndexMap;
 use uuid::Uuid;
 
-use crate::core::wad_hashtable::WadHashtable;
+use crate::state::WadHashtable;
 
 use super::utils::{
     add_item_to_parent, find_parent_item, traverse_parent_items, traverse_parent_items_mut,

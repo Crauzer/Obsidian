@@ -6,72 +6,6 @@ export default {
       'fira-sans': ['Fira Sans', 'sans-serif'],
       'fira-mono': ['Fira Mono', 'monospace'],
     },
-    keyframes: {
-      fadeIn: {
-        from: { opacity: '0' },
-        to: { opacity: '1' },
-      },
-      fadeOut: {
-        from: { opacity: '1' },
-        to: { opacity: '0' },
-      },
-
-      slideAndFadeInFromTop: {
-        from: { opacity: '0', transform: 'translateY(-25px)' },
-        to: { opacity: '1', transform: 'translateY(0)' },
-      },
-      slideAndFadeInFromRight: {
-        from: { opacity: '0', transform: 'translateX(25px)' },
-        to: { opacity: '1', transform: 'translateX(0)' },
-      },
-      slideAndFadeInFromBottom: {
-        from: { opacity: '0', transform: 'translateY(25px)' },
-        to: { opacity: '1', transform: 'translateY(0)' },
-      },
-      slideAndFadeInFromLeft: {
-        from: { opacity: '0', transform: 'translateX(-25px)' },
-        to: { opacity: '1', transform: 'translateX(0)' },
-      },
-
-      slideAndFadeOutFromTop: {
-        from: { opacity: '1', transform: 'translateY(0)' },
-        to: { opacity: '0', transform: 'translateY(-25px)' },
-      },
-      slideAndFadeOutFromRight: {
-        from: { opacity: '1', transform: 'translateX(0)' },
-        to: { opacity: '0', transform: 'translateX(25px)' },
-      },
-      slideAndFadeOutFromBottom: {
-        from: { opacity: '1', transform: 'translateY(0)' },
-        to: { opacity: '0', transform: 'translateY(25px)' },
-      },
-      slideAndFadeOutFromLeft: {
-        from: { opacity: '1', transform: 'translateX(0)' },
-        to: { opacity: '0', transform: 'translateX(-25px)' },
-      },
-    },
-    animation: {
-      fadeIn: 'fadeIn 150ms ease-in',
-      fadeOut: 'fadeOut 150ms ease-in',
-
-      slideAndFadeInFromTop:
-        'slideAndFadeInFromTop 250ms cubic-bezier(0.250, 0.460, 0.450, 0.940) both',
-      slideAndFadeInFromRight:
-        'slideAndFadeInFromRight 250ms cubic-bezier(0.250, 0.460, 0.450, 0.940) both',
-      slideAndFadeInFromBottom:
-        'slideAndFadeInFromBottom 250ms cubic-bezier(0.250, 0.460, 0.450, 0.940) both',
-      slideAndFadeInFromLeft:
-        'slideAndFadeInFromLeft 250ms cubic-bezier(0.250, 0.460, 0.450, 0.940) both',
-
-      slideAndFadeOutFromTop:
-        'slideAndFadeOutFromTop 250ms cubic-bezier(0.250, 0.460, 0.450, 0.940) both',
-      slideAndFadeOutFromRight:
-        'slideAndFadeOutFromRight 250ms cubic-bezier(0.250, 0.460, 0.450, 0.940) both',
-      slideAndFadeOutFromBottom:
-        'slideAndFadeOutFromBottom 250ms cubic-bezier(0.250, 0.460, 0.450, 0.940) both',
-      slideAndFadeOutFromLeft:
-        'slideAndFadeOutFromLeft 250ms cubic-bezier(0.250, 0.460, 0.450, 0.940) both',
-    },
     extend: {
       colors: {
         obsidian: {
@@ -100,6 +34,72 @@ export default {
           900: '#242532',
           950: '#1C1C27',
         },
+      },
+      keyframes: {
+        fadeIn: {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
+        fadeOut: {
+          from: { opacity: '1' },
+          to: { opacity: '0' },
+        },
+
+        slideAndFadeInFromTop: {
+          from: { opacity: '0', transform: 'translateY(-25px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        slideAndFadeInFromRight: {
+          from: { opacity: '0', transform: 'translateX(25px)' },
+          to: { opacity: '1', transform: 'translateX(0)' },
+        },
+        slideAndFadeInFromBottom: {
+          from: { opacity: '0', transform: 'translateY(25px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        slideAndFadeInFromLeft: {
+          from: { opacity: '0', transform: 'translateX(-25px)' },
+          to: { opacity: '1', transform: 'translateX(0)' },
+        },
+
+        slideAndFadeOutFromTop: {
+          from: { opacity: '1', transform: 'translateY(0)' },
+          to: { opacity: '0', transform: 'translateY(-25px)' },
+        },
+        slideAndFadeOutFromRight: {
+          from: { opacity: '1', transform: 'translateX(0)' },
+          to: { opacity: '0', transform: 'translateX(25px)' },
+        },
+        slideAndFadeOutFromBottom: {
+          from: { opacity: '1', transform: 'translateY(0)' },
+          to: { opacity: '0', transform: 'translateY(25px)' },
+        },
+        slideAndFadeOutFromLeft: {
+          from: { opacity: '1', transform: 'translateX(0)' },
+          to: { opacity: '0', transform: 'translateX(-25px)' },
+        },
+      },
+      animation: {
+        fadeIn: 'fadeIn 150ms ease-in',
+        fadeOut: 'fadeOut 150ms ease-in',
+
+        slideAndFadeInFromTop:
+          'slideAndFadeInFromTop 250ms cubic-bezier(0.250, 0.460, 0.450, 0.940) both',
+        slideAndFadeInFromRight:
+          'slideAndFadeInFromRight 250ms cubic-bezier(0.250, 0.460, 0.450, 0.940) both',
+        slideAndFadeInFromBottom:
+          'slideAndFadeInFromBottom 250ms cubic-bezier(0.250, 0.460, 0.450, 0.940) both',
+        slideAndFadeInFromLeft:
+          'slideAndFadeInFromLeft 250ms cubic-bezier(0.250, 0.460, 0.450, 0.940) both',
+
+        slideAndFadeOutFromTop:
+          'slideAndFadeOutFromTop 250ms cubic-bezier(0.250, 0.460, 0.450, 0.940) both',
+        slideAndFadeOutFromRight:
+          'slideAndFadeOutFromRight 250ms cubic-bezier(0.250, 0.460, 0.450, 0.940) both',
+        slideAndFadeOutFromBottom:
+          'slideAndFadeOutFromBottom 250ms cubic-bezier(0.250, 0.460, 0.450, 0.940) both',
+        slideAndFadeOutFromLeft:
+          'slideAndFadeOutFromLeft 250ms cubic-bezier(0.250, 0.460, 0.450, 0.940) both',
       },
     },
   },
