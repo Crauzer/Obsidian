@@ -15,8 +15,8 @@ import { LuPackagePlus } from 'react-icons/lu';
 import { RxDragHandleDots2 } from 'react-icons/rx';
 import { useNavigate } from 'react-router-dom';
 
-import { CaretDownIcon, CloseIcon } from '../../../../assets';
-import { Button, Icon, Kbd, Menu, Tooltip } from '../../../../components';
+import { CloseIcon } from '../../../../assets';
+import { Button, Icon, Tooltip } from '../../../../components';
 import { appRoutes } from '../../../../lib/router';
 import { composeUrlQuery } from '../../../../utils';
 import { useMountWads, useMountedWads, useReorderMountedWad, useUnmountWad } from '../../api';

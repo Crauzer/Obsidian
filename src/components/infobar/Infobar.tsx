@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
-import React from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { Id as ToastId, toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
 
-import { ActionIcon, Button, Icon, Popover } from '..';
+import { ActionIcon, Button, Icon, Popover, Toast } from '..';
 import { TableSyncIcon, ToolboxIcon } from '../../assets';
 import { useActionProgress, useActionProgressSubscription } from '../../features/actions';
 import { useLoadWadHashtables, useWadHashtableStatus } from '../../features/hashtable';
@@ -28,6 +28,8 @@ export const Infobar = () => {
 };
 
 const WadHashtablesBar = () => {
+  const hashtablesLoadingToastId = useRef<ToastId>('');
+
   const [actionId, setActionId] = useState(uuidv4());
 
   const loadHashtablesMutation = useLoadWadHashtables();
@@ -38,18 +40,30 @@ const WadHashtablesBar = () => {
       return;
     }
 
-    if (!wadHashtableStatus.data.isLoaded) {
+    if (!wadHashtableStatus.data.isLoaded && loadHashtablesMutation.isIdle) {
+      hashtablesLoadingToastId.current = toast.info('Loading hashtables...', { autoClose: false });
       loadHashtablesMutation.mutate(
         { actionId },
         {
+          onSuccess: () => {
+            toast.update(hashtablesLoadingToastId.current, {
+              type: 'success',
+              render: 'Hashtables loaded!',
+              autoClose: 2500,
+            });
+          },
           onError: (error) => {
-            console.error(error);
+            toast.update(hashtablesLoadingToastId.current, {
+              type: 'error',
+              render: <Toast.Error title="Failed to load hashtables" message={error.message} />,
+            });
           },
         },
       );
     }
   }, [
     actionId,
+    hashtablesLoadingToastId,
     loadHashtablesMutation,
     wadHashtableStatus.data?.isLoaded,
     wadHashtableStatus.isSuccess,

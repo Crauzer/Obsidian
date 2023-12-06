@@ -80,6 +80,9 @@ dependencies:
   react-router-dom:
     specifier: ^6.16.0
     version: 6.16.0(react-dom@18.2.0)(react@18.2.0)
+  react-toastify:
+    specifier: ^9.1.3
+    version: 9.1.3(react-dom@18.2.0)(react@18.2.0)
   react-virtualized-auto-sizer:
     specifier: ^1.0.20
     version: 1.0.20(react-dom@18.2.0)(react@18.2.0)
@@ -88,13 +91,13 @@ dependencies:
     version: 4.6.2(react-dom@18.2.0)(react@18.2.0)
   tauri-plugin-store-api:
     specifier: github:tauri-apps/tauri-plugin-store#v1
-    version: github.com/tauri-apps/tauri-plugin-store/9eb678838515e8d5b7ed4d704fa6aefe21eb05bd
+    version: github.com/tauri-apps/tauri-plugin-store/3367248b2661abcb73d2a89f30df780c387fb57d
   tauri-plugin-upload-api:
     specifier: github:tauri-apps/tauri-plugin-upload#v1
-    version: github.com/tauri-apps/tauri-plugin-upload/f91933b3e17f4874ab43e15a1148ba78b13c2a47
+    version: github.com/tauri-apps/tauri-plugin-upload/53fe17d5cfec7acf286ce9f8c8cdbc0b69d09b7b
   tauri-plugin-window-state-api:
     specifier: github:tauri-apps/tauri-plugin-window-state#v1
-    version: github.com/tauri-apps/tauri-plugin-window-state/813087b0c24f9b6a1e8bc25e8d1f8e151b079e3e
+    version: github.com/tauri-apps/tauri-plugin-window-state/ea145f97d4c3d1aad849a7846765b0ad77803f32
   ts-pattern:
     specifier: ^5.0.5
     version: 5.0.5
@@ -2642,6 +2645,11 @@ packages:
       fsevents: 2.3.3
     dev: true
 
+  /clsx@1.2.1:
+    resolution: {integrity: sha512-EcR6r5a8bj6pu3ycsa/E/cKVGuTgZJZdsyUYHOksG/UHIiKfjxzRxYJpyVBwYaQeOvghal9fcc4PidlgzugAQg==}
+    engines: {node: '>=6'}
+    dev: false
+
   /clsx@2.0.0:
     resolution: {integrity: sha512-rQ1+kcj+ttHG0MKVGBUXwayCCF1oh39BF5COIpRzuCEv8Mwjv0XucrI2ExNTOn9IlLifGClWQcU9BrZORvtw6Q==}
     engines: {node: '>=6'}
@@ -4662,6 +4670,17 @@ packages:
       tslib: 2.6.2
     dev: false
 
+  /react-toastify@9.1.3(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-fPfb8ghtn/XMxw3LkxQBk3IyagNpF/LIKjOBflbexr2AWxAH1MJgvnESwEwBn9liLFXgTKWgBSdZpw9m4OTHTg==}
+    peerDependencies:
+      react: '>=16'
+      react-dom: '>=16'
+    dependencies:
+      clsx: 1.2.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
   /react-virtualized-auto-sizer@1.0.20(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-OdIyHwj4S4wyhbKHOKM1wLSj/UDXm839Z3Cvfg2a9j+He6yDa6i5p0qQvEiCnyQlGO/HyfSnigQwuxvYalaAXA==}
     peerDependencies:
@@ -5386,24 +5405,24 @@ packages:
     resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
     dev: false
 
-  github.com/tauri-apps/tauri-plugin-store/9eb678838515e8d5b7ed4d704fa6aefe21eb05bd:
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/9eb678838515e8d5b7ed4d704fa6aefe21eb05bd}
+  github.com/tauri-apps/tauri-plugin-store/3367248b2661abcb73d2a89f30df780c387fb57d:
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/3367248b2661abcb73d2a89f30df780c387fb57d}
     name: tauri-plugin-store-api
     version: 0.0.0
     dependencies:
       '@tauri-apps/api': 1.5.1
     dev: false
 
-  github.com/tauri-apps/tauri-plugin-upload/f91933b3e17f4874ab43e15a1148ba78b13c2a47:
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-upload/tar.gz/f91933b3e17f4874ab43e15a1148ba78b13c2a47}
+  github.com/tauri-apps/tauri-plugin-upload/53fe17d5cfec7acf286ce9f8c8cdbc0b69d09b7b:
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-upload/tar.gz/53fe17d5cfec7acf286ce9f8c8cdbc0b69d09b7b}
     name: tauri-plugin-upload-api
     version: 0.0.0
     dependencies:
       '@tauri-apps/api': 1.5.1
     dev: false
 
-  github.com/tauri-apps/tauri-plugin-window-state/813087b0c24f9b6a1e8bc25e8d1f8e151b079e3e:
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-window-state/tar.gz/813087b0c24f9b6a1e8bc25e8d1f8e151b079e3e}
+  github.com/tauri-apps/tauri-plugin-window-state/ea145f97d4c3d1aad849a7846765b0ad77803f32:
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-window-state/tar.gz/ea145f97d4c3d1aad849a7846765b0ad77803f32}
     name: tauri-plugin-window-state-api
     version: 0.0.0
     dependencies:

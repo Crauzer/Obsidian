@@ -32,7 +32,7 @@ use std::{
     fs::{create_dir, DirBuilder, File},
     path::Path,
 };
-use tauri::Manager;
+use tauri::{App, Manager};
 use tracing::info;
 use uuid::Uuid;
 
@@ -251,13 +251,7 @@ fn main() {
         .manage(SettingsState(RwLock::new(Settings::default())))
         .manage(WadHashtableState(Mutex::new(WadHashtable::default())))
         .setup(|app| {
-            info!("creating app directories");
-            try_create_dir(
-                app.path_resolver()
-                    .app_data_dir()
-                    .unwrap()
-                    .join(WAD_HASHTABLES_DIR),
-            )?;
+            create_app_directories(app)?;
 
             *app.state::<SettingsState>().0.write() = Settings::load_or_default(
                 app.path_resolver()
@@ -305,4 +299,16 @@ fn main() {
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+fn create_app_directories(app: &mut App) -> crate::error::Result<()> {
+    info!("creating app directories");
+    try_create_dir(
+        app.path_resolver()
+            .app_data_dir()
+            .unwrap()
+            .join(WAD_HASHTABLES_DIR),
+    )?;
+
+    Ok(())
 }

@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { Virtuoso } from 'react-virtuoso';

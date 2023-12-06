@@ -14,32 +14,14 @@ use walkdir::WalkDir;
 #[derive(Debug, Clone, Default)]
 pub struct WadHashtable {
     is_loaded: bool,
-    pub is_update_available: bool,
     items: HashMap<u64, Arc<str>>,
-    checksums: WadHashtableChecksums,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone, Default)]
-pub struct WadHashtableChecksums {
-    pub game: String,
-    pub lcu: String,
 }
 
 impl WadHashtable {
     pub fn new() -> Result<Self> {
-        let checksums = match File::open("wad_hashtable_checksums.json") {
-            Ok(file) => serde_json::from_reader(file)?,
-            Err(_) => WadHashtableChecksums {
-                game: String::new(),
-                lcu: String::new(),
-            },
-        };
-
         Ok(WadHashtable {
             is_loaded: false,
-            is_update_available: false,
             items: HashMap::default(),
-            checksums,
         })
     }
 
@@ -48,10 +30,6 @@ impl WadHashtable {
     }
     pub fn items_mut(&mut self) -> &mut HashMap<u64, Arc<str>> {
         &mut self.items
-    }
-
-    pub fn checksums(&self) -> &WadHashtableChecksums {
-        &self.checksums
     }
 
     pub fn load_from_dir(&mut self, dir: impl AsRef<Path>) -> Result<()> {
@@ -92,7 +70,6 @@ impl WadHashtable {
     pub fn status(&self) -> WadHashtableStatus {
         WadHashtableStatus {
             is_loaded: self.is_loaded,
-            is_update_available: self.is_update_available,
         }
     }
 }

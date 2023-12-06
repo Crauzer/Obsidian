@@ -7,5 +7,4 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 pub struct WadHashtableStatus {
     pub is_loaded: bool,
-    pub is_update_available: bool,
 }

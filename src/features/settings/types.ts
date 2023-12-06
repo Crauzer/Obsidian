@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
 export type Settings = {
-  wadHashtables: string[];
+  wadHashtableSources: string[];
 };
 
 export type SettingsFormData = z.infer<typeof settingsFormDataSchema>;
 export const settingsFormDataSchema = z.object({
-  wadHashtables: z.array(z.object({ url: z.string().url().optional() })),
+  wadHashtableSources: z.array(z.object({ url: z.string().url().optional() })),
 });

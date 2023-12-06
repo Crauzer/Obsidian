@@ -1,6 +1,7 @@
 import { DevTool } from '@hookform/devtools';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 import { z } from 'zod';
 
 import { Button, Checkbox, Form, Input, Kbd } from '../components';
@@ -37,6 +38,46 @@ export default function ComponentTest() {
               <Kbd>Ctrl</Kbd> + <Kbd>F</Kbd>
             </span>
           </div>
+        </div>
+      </div>
+      <div className="flex flex-col gap-2">
+        <h1 className="text-xl text-gray-50">Toast:</h1>
+        <div className="flex h-fit flex-row gap-2">
+          <Button
+            onClick={() => {
+              toast('Hi', { type: 'default' });
+            }}
+          >
+            Default
+          </Button>
+          <Button
+            onClick={() => {
+              toast('Hi', { type: 'info' });
+            }}
+          >
+            Info
+          </Button>
+          <Button
+            onClick={() => {
+              toast('Hi', { type: 'success' });
+            }}
+          >
+            Success
+          </Button>
+          <Button
+            onClick={() => {
+              toast('Hi', { type: 'error' });
+            }}
+          >
+            Error
+          </Button>
+          <Button
+            onClick={() => {
+              toast('Hi', { type: 'warning' });
+            }}
+          >
+            Warning
+          </Button>
         </div>
       </div>
       <FormCard />

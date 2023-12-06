@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { t } from 'i18next';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { LuFileDown, LuFileStack } from 'react-icons/lu';
 import { useSearchParams } from 'react-router-dom';
