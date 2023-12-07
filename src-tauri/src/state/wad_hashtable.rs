@@ -9,6 +9,7 @@ use std::{
     sync::Arc,
 };
 use tracing::info;
+use tracing_subscriber::filter;
 use walkdir::WalkDir;
 
 #[derive(Debug, Clone, Default)]
@@ -35,11 +36,10 @@ impl WadHashtable {
     pub fn load_from_dir(&mut self, dir: impl AsRef<Path>) -> Result<()> {
         info!("loading wad hasthables from dir: {:?}", dir.as_ref());
 
-        for wad_hashtable_entry in WalkDir::new(dir)
-            .into_iter()
-            .filter_entry(|x| x.file_type().is_file())
-        {
-            let wad_hashtable_entry = wad_hashtable_entry?;
+        for wad_hashtable_entry in WalkDir::new(dir).into_iter().filter_map(|x| x.ok()) {
+            if !wad_hashtable_entry.file_type().is_file() {
+                continue;
+            }
 
             info!("loading wad hasthable: {:?}", wad_hashtable_entry.path());
             self.add_from_file(&mut File::open(wad_hashtable_entry.path())?)?;

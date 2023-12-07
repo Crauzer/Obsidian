@@ -41,5 +41,5 @@ export const BreadcrumbsRoot: React.FC<BreadcrumbsRootProps> = ({
     [],
   );
 
-  return <div className={clsx(className, 'flex flex-row gap-1')}>{items}</div>;
+  return <div className={clsx(className, 'flex flex-row flex-wrap gap-1')}>{items}</div>;
 };

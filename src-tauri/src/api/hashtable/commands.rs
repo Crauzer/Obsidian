@@ -20,8 +20,6 @@ pub async fn load_wad_hashtables(
 ) -> std::result::Result<(), ApiError> {
     info!("loading wad hashtables");
 
-    return Err(ApiError::from_message("blwdwsdrfwef"));
-
     let wad_hashtables_dir = app
         .path_resolver()
         .app_data_dir()

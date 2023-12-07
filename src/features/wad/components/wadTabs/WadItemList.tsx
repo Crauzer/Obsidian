@@ -31,10 +31,11 @@ export const WadItemList: React.FC<WadItemListProps> = ({ wadId, data }) => {
               return (
                 <div
                   className={clsx(
-                    'text-md box-border flex select-none flex-row py-1 pl-2 text-gray-50 hover:cursor-pointer',
+                    'text-md box-border flex select-none flex-row border py-1 pl-2 text-gray-50 hover:cursor-pointer',
                     { 'hover:bg-gray-700/25': !item.isSelected },
                     {
-                      'border border-obsidian-500/40 bg-obsidian-700/40': item.isSelected,
+                      'border-obsidian-500/40 bg-obsidian-700/40': item.isSelected,
+                      'border-transparent': !item.isSelected,
                     },
                   )}
                   onClick={() => {

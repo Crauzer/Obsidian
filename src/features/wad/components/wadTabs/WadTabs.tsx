@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { LuPackagePlus } from 'react-icons/lu';
 import { RxDragHandleDots2 } from 'react-icons/rx';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import { CloseIcon } from '../../../../assets';
 import { Button, Icon, Tooltip } from '../../../../components';
@@ -34,6 +35,7 @@ export const WadTabs: React.FC<WadTabsProps> = ({
   selectedItemId,
   onSelectedWadChanged,
 }) => {
+  const [t] = useTranslation('mountedWads');
   const navigate = useNavigate();
 
   const mountedWadsQuery = useMountedWads();
@@ -58,9 +60,13 @@ export const WadTabs: React.FC<WadTabsProps> = ({
   const handleMountWads = () => {
     mountWadsMutation.mutate(undefined, {
       onSuccess: ({ wadIds }) => {
-        if (wadIds.length > 0) {
-          navigate(composeUrlQuery(appRoutes.mountedWads, { wadId: wadIds[0] }));
+        if (wadIds.length === 0) {
+          return;
         }
+
+        toast.success(t('mountSuccess', { count: wadIds.length }));
+
+        navigate(composeUrlQuery(appRoutes.mountedWads, { wadId: wadIds[0] }));
       },
     });
   };
