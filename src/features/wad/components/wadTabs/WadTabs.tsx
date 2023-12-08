@@ -22,7 +22,7 @@ import { appRoutes } from '../../../../lib/router';
 import { composeUrlQuery } from '../../../../utils';
 import { useMountWads, useMountedWads, useReorderMountedWad, useUnmountWad } from '../../api';
 import { MountedWad } from '../../types';
-import { WadDirectoryTabContent, WadTabContent } from './WadTabContent';
+import { WadDirectoryTabContent, WadRootTabContent } from './WadTabContent';
 
 export type WadTabsProps = {
   selectedWad?: string;
@@ -132,7 +132,7 @@ export const WadTabs: React.FC<WadTabsProps> = ({
                 {selectedItemId ? (
                   <WadDirectoryTabContent wadId={mountedWad.id} selectedItemId={selectedItemId} />
                 ) : (
-                  <WadTabContent wadId={mountedWad.id} />
+                  <WadRootTabContent wadId={mountedWad.id} />
                 )}
               </RadixTabs.Content>
             );
