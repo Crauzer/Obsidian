@@ -2,12 +2,12 @@
 using LeagueToolkit.Core.Wad;
 using LeagueToolkit.Utils;
 using Obsidian.Data;
-using Octokit;
 using Serilog;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection.Metadata;
 using System.Text;
+using System.Text.RegularExpressions;
 using FileMode = System.IO.FileMode;
 
 namespace Obsidian.Services;
@@ -22,19 +22,22 @@ public class HashtableService {
     public Dictionary<uint, string> BinHashes { get; private set; } = new();
     public Dictionary<uint, string> BinObjects { get; private set; } = new();
 
-    private const string GAME_HASHES_URL =
-        "https://github.com/CommunityDragon/CDTB/raw/master/cdragontoolbox/hashes.game.txt";
-    private const string LCU_HASHES_URL =
-        "https://github.com/CommunityDragon/CDTB/raw/master/cdragontoolbox/hashes.lcu.txt";
+    private const string HASHES_BASE_URL = "https://raw.communitydragon.org/data/hashes/lol/";
 
     private const string HASHES_DIRECTORY = "hashes";
-    private const string GAME_HASHES_PATH = "hashes/hashes.game.txt";
-    private const string LCU_HASHES_PATH = "hashes/hashes.lcu.txt";
+    private const string GAME_HASHES_FILENAME = "hashes.game.txt";
+    private const string LCU_HASHES_FILENAME = "hashes.lcu.txt";
+    private const string GAME_HASHES_PATH = $"{HASHES_DIRECTORY}/hashes.game.txt";
+    private const string LCU_HASHES_PATH = $"{HASHES_DIRECTORY}/hashes.lcu.txt";
 
-    private const string BIN_FIELDS_PATH = "hashes/hashes.binfields.txt";
-    private const string BIN_CLASSES_PATH = "hashes/hashes.bintypes.txt";
-    private const string BIN_HASHES_PATH = "hashes/hashes.binhashes.txt";
-    private const string BIN_OBJECTS_PATH = "hashes/hashes.binentries.txt";
+    private const string BIN_FIELDS_FILENAME = "hashes.binfields.txt";
+    private const string BIN_CLASSES_FILENAME = "hashes.bintypes.txt";
+    private const string BIN_HASHES_FILENAME = "hashes.binhashes.txt";
+    private const string BIN_OBJECTS_FILENAME = "hashes.binentries.txt";
+    private const string BIN_FIELDS_PATH = $"{HASHES_DIRECTORY}/hashes.binfields.txt";
+    private const string BIN_CLASSES_PATH = $"{HASHES_DIRECTORY}/hashes.bintypes.txt";
+    private const string BIN_HASHES_PATH = $"{HASHES_DIRECTORY}/hashes.binhashes.txt";
+    private const string BIN_OBJECTS_PATH = $"{HASHES_DIRECTORY}/hashes.binentries.txt";
 
     public HashtableService(Config config) {
         this.Config = config;
@@ -45,24 +48,27 @@ public class HashtableService {
 
         Directory.CreateDirectory(HASHES_DIRECTORY);
 
-        await InitializeHashtables(client);
-        await InitializeBinHashtables(client);
+        if (this.Config.SyncHashtables) {
+            string hashFilesHtml = await client.GetStringAsync(HASHES_BASE_URL);
+            await SyncHashtables(client, hashFilesHtml);
+            await SyncBinHashtables(client, hashFilesHtml);
+        }
+
+        this.InitializeHashtables();
+        this.InitializeBinHashtables();
     }
 
-    private async Task InitializeHashtables(HttpClient client) {
+    private void InitializeHashtables() {
         Log.Information("Initializing hashtables");
 
         File.Open(GAME_HASHES_PATH, FileMode.OpenOrCreate).Dispose();
         File.Open(LCU_HASHES_PATH, FileMode.OpenOrCreate).Dispose();
 
-        if (this.Config.SyncHashtables)
-            await SyncHashtables(client);
-
         LoadHashtable(GAME_HASHES_PATH);
         LoadHashtable(LCU_HASHES_PATH);
     }
 
-    private async Task InitializeBinHashtables(HttpClient client) {
+    private void InitializeBinHashtables() {
         Log.Information("Initializing BIN hashtables");
 
         File.Open(BIN_FIELDS_PATH, FileMode.OpenOrCreate).Dispose();
@@ -70,100 +76,76 @@ public class HashtableService {
         File.Open(BIN_HASHES_PATH, FileMode.OpenOrCreate).Dispose();
         File.Open(BIN_OBJECTS_PATH, FileMode.OpenOrCreate).Dispose();
 
-        if (this.Config.SyncHashtables)
-            await SyncBinHashtables(client);
-
         LoadBinHashtable(BIN_FIELDS_PATH, this.BinProperties);
         LoadBinHashtable(BIN_CLASSES_PATH, this.BinClasses);
         LoadBinHashtable(BIN_HASHES_PATH, this.BinHashes);
         LoadBinHashtable(BIN_OBJECTS_PATH, this.BinObjects);
     }
 
-    private async Task SyncHashtables(HttpClient client) {
+    private async Task SyncHashtables(HttpClient client, string hashFilesHtml) {
         Log.Information("Syncing WAD hashtables");
 
-        GitHubClient github = new(new ProductHeaderValue("Obsidian"));
-        IReadOnlyList<RepositoryContent> content = await github.Repository.Content.GetAllContents(
-            "CommunityDragon",
-            "CDTB",
-            "cdragontoolbox"
-        );
-
-        RepositoryContent gameHashesContent = GetRepositoryContent(content, "hashes.game.txt");
-        RepositoryContent lcuHashesContent = GetRepositoryContent(content, "hashes.lcu.txt");
-
-        this.Config.GameHashesChecksum = await SyncHashtable(
+        this.Config.GameHashesLastUpdate = await SyncHashtable(
             client,
-            gameHashesContent,
-            GAME_HASHES_URL,
+            hashFilesHtml,
+            HASHES_BASE_URL + GAME_HASHES_FILENAME,
             GAME_HASHES_PATH,
-            this.Config.GameHashesChecksum
+            this.Config.GameHashesLastUpdate
         );
-        this.Config.LcuHashesChecksum = await SyncHashtable(
+        this.Config.LcuHashesLastUpdate = await SyncHashtable(
             client,
-            lcuHashesContent,
-            LCU_HASHES_URL,
+            hashFilesHtml,
+            HASHES_BASE_URL + LCU_HASHES_FILENAME,
             LCU_HASHES_PATH,
-            this.Config.LcuHashesChecksum
+            this.Config.LcuHashesLastUpdate
         );
     }
 
-    private async Task SyncBinHashtables(HttpClient client) {
+    private async Task SyncBinHashtables(HttpClient client, string hashFilesHtml) {
         Log.Information("Syncing BIN hashtables");
 
-        GitHubClient github = new(new ProductHeaderValue("Obsidian"));
-        IReadOnlyList<RepositoryContent> content = await github.Repository.Content.GetAllContents(
-            "CommunityDragon",
-            "CDTB",
-            "cdragontoolbox"
-        );
-
-        RepositoryContent fieldsContent = GetRepositoryContent(content, "hashes.binfields.txt");
-        RepositoryContent typesContent = GetRepositoryContent(content, "hashes.bintypes.txt");
-        RepositoryContent hashesContent = GetRepositoryContent(content, "hashes.binhashes.txt");
-        RepositoryContent entriesContent = GetRepositoryContent(content, "hashes.binentries.txt");
-
-        this.Config.BinFieldsHashesChecksum = await SyncHashtable(
+        this.Config.BinFieldsHashesLastUpdate = await SyncHashtable(
             client,
-            fieldsContent,
-            fieldsContent.DownloadUrl,
+            hashFilesHtml,
+            HASHES_BASE_URL + BIN_FIELDS_FILENAME,
             BIN_FIELDS_PATH,
-            this.Config.BinFieldsHashesChecksum
+            this.Config.BinFieldsHashesLastUpdate
         );
-        this.Config.BinTypesHashesChecksum = await SyncHashtable(
+        this.Config.BinTypesHashesLastUpdate = await SyncHashtable(
             client,
-            typesContent,
-            typesContent.DownloadUrl,
+            hashFilesHtml,
+            HASHES_BASE_URL + BIN_CLASSES_FILENAME,
             BIN_CLASSES_PATH,
-            this.Config.BinTypesHashesChecksum
+            this.Config.BinTypesHashesLastUpdate
         );
-        this.Config.BinHashesHashesChecksum = await SyncHashtable(
+        this.Config.BinHashesHashesLastUpdate = await SyncHashtable(
             client,
-            hashesContent,
-            hashesContent.DownloadUrl,
+            hashFilesHtml,
+            HASHES_BASE_URL + BIN_HASHES_FILENAME,
             BIN_HASHES_PATH,
-            this.Config.BinHashesHashesChecksum
+            this.Config.BinHashesHashesLastUpdate
         );
-        this.Config.BinEntriesHashesChecksum = await SyncHashtable(
+        this.Config.BinEntriesHashesLastUpdate = await SyncHashtable(
             client,
-            entriesContent,
-            entriesContent.DownloadUrl,
+            hashFilesHtml,
+            HASHES_BASE_URL + BIN_OBJECTS_FILENAME,
             BIN_OBJECTS_PATH,
-            this.Config.BinEntriesHashesChecksum
+            this.Config.BinEntriesHashesLastUpdate
         );
     }
 
-    private static async Task<string> SyncHashtable(
+    private static async Task<DateTime> SyncHashtable(
         HttpClient client,
-        RepositoryContent content,
+        string hashFilesHtml,
         string url,
         string path,
-        string checksum
+        DateTime lastUpdateTime
     ) {
         // Hashtable is up to date
-        if (checksum == content.Sha) {
+        DateTime serverTime = ParseServerUpdateTime(hashFilesHtml, Path.GetFileName(url));
+        if (serverTime == lastUpdateTime) {
             Log.Information($"{path} is up to date");
-            return checksum;
+            return lastUpdateTime;
         }
 
         Log.Information($"Downloading hashtable: {path} from {url}");
@@ -173,7 +155,16 @@ public class HashtableService {
 
         await fileContentStream.CopyToAsync(fileStream);
 
-        return content.Sha;
+        return serverTime;
+    }
+
+    private static DateTime ParseServerUpdateTime(string html, string fileName) {
+        var match = Regex.Match(html, $"""<a href="{fileName}\">{fileName}</a> *([^ ]+) *([^ ]+)""");
+        if (!match.Success) throw new Exception($"Failed to find entry for file {fileName}");
+
+        var date = DateOnly.Parse(match.Groups[1].Value, DateTimeFormatInfo.InvariantInfo);
+        var time = TimeOnly.Parse(match.Groups[2].Value, DateTimeFormatInfo.InvariantInfo);
+        return date.ToDateTime(time);
     }
 
     public void LoadHashtable(string hashtablePath) {
@@ -181,9 +172,9 @@ public class HashtableService {
 
         while (reader.ReadLine() is string line) {
             var separatorIndex = line.IndexOf(' ');
-        
+
             ulong pathHash = ulong.Parse(line.AsSpan(0, separatorIndex), NumberStyles.HexNumber);
-        
+
             this.Hashes.TryAdd(pathHash, line[(separatorIndex+1)..]);
         }
     }
@@ -198,17 +189,6 @@ public class HashtableService {
 
             hashtable.TryAdd(hash, split[1]);
         }
-    }
-
-    private static RepositoryContent GetRepositoryContent(
-        IReadOnlyList<RepositoryContent> content,
-        string name
-    ) {
-        RepositoryContent foundContent = content.FirstOrDefault(x => x.Name == name);
-        if (foundContent is null)
-            throw new InvalidOperationException($"Failed to find {name} in repository");
-
-        return foundContent;
     }
 
     public string GetChunkPath(WadChunk chunk) {
