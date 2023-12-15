@@ -26,7 +26,7 @@ pub async fn load_wad_hashtables(
         .ok_or(ApiError::from_message("failed to get app data dir"))?
         .join("wad_hashtables");
 
-    wad_hashtable.0.lock().load_from_dir(wad_hashtables_dir)?;
+    wad_hashtable.0.lock().add_from_dir(wad_hashtables_dir)?;
 
     Ok(())
 }

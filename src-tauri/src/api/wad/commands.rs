@@ -1,20 +1,55 @@
-use std::{collections::VecDeque, sync::Arc};
-
+use super::WadItemPathComponentDto;
+use crate::{
+    api::{error::ApiError, hashtable},
+    core::wad::{
+        tree::{WadTreeItem, WadTreeParent, WadTreePathable},
+        Wad,
+    },
+    state::{ActionsState, MountedWadsState, WadHashtable, WadHashtableState},
+};
+use eyre::Context;
 use itertools::Itertools;
+use std::{
+    collections::VecDeque,
+    fs::{self, DirBuilder},
+    io::{Read, Seek},
+    path::{Path, PathBuf},
+    sync::Arc,
+};
+use tracing::info;
 use uuid::Uuid;
 
-use crate::{
-    api::error::ApiError,
-    core::wad::tree::{WadTreeItem, WadTreeParent, WadTreePathable},
-    state::MountedWadsState,
-};
-
-use super::WadItemPathComponentDto;
-
 #[tauri::command]
-async fn extract_mounted_wad(
+pub async fn extract_mounted_wad(
+    wad_id: String,
+    action_id: String,
+    extract_directory: String,
     mounted_wads: tauri::State<'_, MountedWadsState>,
-) -> Result<(), String> {
+    wad_hashtable: tauri::State<'_, WadHashtableState>,
+    actions: tauri::State<'_, ActionsState>,
+) -> Result<(), ApiError> {
+    info!("extracting mounted wad (wad_id: {})", wad_id);
+
+    let mut mounted_wads = mounted_wads.0.lock();
+    let wad_hashtable = wad_hashtable.0.lock();
+
+    let wad_id = uuid::Uuid::parse_str(&wad_id)
+        .map_err(|_| ApiError::from_message("failed to parse wad_id"))?;
+    let mut wad = mounted_wads
+        .wads_mut()
+        .get_mut(&wad_id)
+        .ok_or(ApiError::from_message(format!(
+            "failed to find wad (wad_id: {})",
+            wad_id
+        )))?;
+
+    let extract_directory = PathBuf::from(extract_directory);
+
+    // pre-create all chunk directories
+    prepare_extraction_directories(&wad, &wad_hashtable, &extract_directory)?;
+
+    // extract all chunks
+
     Ok(())
 }
 
@@ -105,4 +140,68 @@ fn collect_path_components<'p>(
     path_components.pop_back();
 
     None
+}
+
+fn prepare_extraction_directories<TSource>(
+    wad: &Wad<TSource>,
+    wad_hashtable: &WadHashtable,
+    extraction_directory: impl AsRef<Path>,
+) -> crate::error::Result<()>
+where
+    TSource: Read + Seek,
+{
+    info!("preparing extraction directories");
+
+    let chunk_directories = wad.chunks().iter().map(|(_, chunk)| {
+        Path::new(wad_hashtable.resolve_path(chunk.path_hash()).as_ref())
+            .parent()
+            .map(|path| path.to_path_buf())
+    });
+    for chunk_directory in chunk_directories {
+        if let Some(chunk_directory) = chunk_directory {
+            DirBuilder::new()
+                .recursive(true)
+                .create(extraction_directory.as_ref().join(chunk_directory))?;
+        }
+    }
+
+    Ok(())
+}
+
+fn extract_wad_chunks<TSource: Read + Seek>(
+    wad: &mut Wad<TSource>,
+    wad_hashtable: &WadHashtable,
+    extract_directory: PathBuf,
+) -> eyre::Result<()> {
+    info!("extracting chunks");
+
+    let (mut decoder, chunks) = wad.decode();
+    for (chunk_path_hash, chunk) in chunks {
+        let chunk_path = wad_hashtable.resolve_path(chunk.path_hash());
+        let chunk_path = Path::new(chunk_path.as_ref());
+        let chunk_extract_path = extract_directory.join(chunk_path);
+
+        info!(
+            "extracting chunk (chunk_path: {})",
+            chunk_path
+                .to_str()
+                .unwrap_or(chunk_path_hash.to_string().as_str())
+        );
+
+        let chunk_data = decoder.load_chunk_decompressed(chunk).wrap_err(format!(
+            "failed to decompress chunk (chunk_path: {})",
+            chunk_path
+                .to_str()
+                .unwrap_or(chunk_path_hash.to_string().as_str())
+        ))?;
+
+        fs::write(chunk_extract_path, chunk_data).wrap_err(format!(
+            "failed to write chunk (chunk_path: {})",
+            chunk_path
+                .to_str()
+                .unwrap_or(chunk_path_hash.to_string().as_str()),
+        ))?;
+    }
+
+    Ok(())
 }

@@ -1,10 +1,10 @@
-mod action_progresses;
+mod actions;
 mod http_client;
 mod mounted_wads;
 mod settings;
 mod wad_hashtable;
 
-pub use action_progresses::*;
+pub use actions::*;
 pub use http_client::*;
 pub use mounted_wads::*;
 pub use settings::*;

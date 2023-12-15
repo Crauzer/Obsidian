@@ -1,8 +1,10 @@
+import { tauri } from '@tauri-apps/api';
 import clsx from 'clsx';
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LuFileDown, LuFileStack } from 'react-icons/lu';
 import { useSearchParams } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 
 import { ArchiveIcon } from '../../../../assets';
 import {
@@ -16,7 +18,9 @@ import {
 } from '../../../../components';
 import { appRoutes } from '../../../../lib/router';
 import { composeUrlQuery } from '../../../../utils';
+import { usePickDirectory } from '../../../fs';
 import { useWadDirectoryItems, useWadDirectoryPathComponents, useWadItems } from '../../api';
+import { wadCommands } from '../../commands';
 import { WadItem, WadItemPathComponent } from '../../types';
 import { WadItemList } from './WadItemList';
 
@@ -70,7 +74,7 @@ const WadTabContent: React.FC<WadTabContentProps> = ({ wadId, items, pathCompone
     <div className="flex h-full flex-col gap-2">
       <div className="flex h-full flex-col rounded border border-gray-600 bg-gray-900">
         <div className="flex flex-row border-b border-gray-600 bg-gray-800">
-          <WadTabToolbar className="w-1/2" />
+          <WadTabToolbar className="w-1/2" wadId={wadId} />
           <Input className="m-1 w-1/2 flex-1" />
         </div>
         <Breadcrumbs.Root className="border-b border-gray-600 bg-gray-800 p-1 font-fira-mono text-sm leading-6">
@@ -123,13 +127,31 @@ const PathBreadcrumbItem: React.FC<PathBreadcrumbItemProps> = ({ itemId, name, p
   );
 };
 
-type WadTabToolbarProps = ToolbarRootProps;
+type WadTabToolbarProps = { wadId: string } & ToolbarRootProps;
 
-const WadTabToolbar: React.FC<WadTabToolbarProps> = (props) => {
+const WadTabToolbar: React.FC<WadTabToolbarProps> = ({ wadId, ...props }) => {
+  const [extractAllActionId] = useState(uuidv4());
+
+  const pickDirectory = usePickDirectory();
+
   return (
     <Toolbar.Root {...props}>
       <Toolbar.Button asChild>
-        <Button compact variant="ghost">
+        <Button
+          compact
+          variant="ghost"
+          onClick={() => {
+            pickDirectory.mutate(undefined, {
+              onSuccess: (directory) => {
+                tauri.invoke(wadCommands.extractMountedWad, {
+                  wadId,
+                  actionId: extractAllActionId,
+                  extractDirectory: directory.path,
+                });
+              },
+            });
+          }}
+        >
           <Icon size="md" icon={LuFileDown} />
         </Button>
       </Toolbar.Button>

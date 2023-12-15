@@ -13,9 +13,10 @@ use self::core::wad::{
 use crate::{
     api::{
         actions::get_action_progress,
+        fs::{pick_directory, pick_file},
         hashtable::{get_wad_hashtable_status, load_wad_hashtables},
         settings::{get_settings, update_settings},
-        wad::{get_mounted_wad_directory_path_components, move_mounted_wad},
+        wad::{extract_mounted_wad, get_mounted_wad_directory_path_components, move_mounted_wad},
     },
     paths::WAD_HASHTABLES_DIR,
     state::WadHashtable,
@@ -26,12 +27,11 @@ use api::{
     wad::{MountWadResponse, MountedWadDto, MountedWadsResponse, WadItemDto},
 };
 use itertools::Itertools;
-use parking_lot::{Mutex, RwLock};
-use state::{MountedWads, MountedWadsState, Settings, SettingsState, WadHashtableState};
-use std::{
-    fs::{create_dir, DirBuilder, File},
-    path::Path,
+use parking_lot::{lock_api::RwLock, Mutex};
+use state::{
+    ActionsState, MountedWads, MountedWadsState, Settings, SettingsState, WadHashtableState,
 };
+use std::{collections::HashMap, fs::File, path::Path};
 use tauri::{App, Manager};
 use tracing::info;
 use uuid::Uuid;
@@ -250,6 +250,7 @@ fn main() {
         .manage(MountedWadsState(Mutex::new(MountedWads::new())))
         .manage(SettingsState(RwLock::new(Settings::default())))
         .manage(WadHashtableState(Mutex::new(WadHashtable::default())))
+        .manage(ActionsState(RwLock::new(HashMap::default())))
         .setup(|app| {
             create_app_directories(app)?;
 
@@ -266,6 +267,7 @@ fn main() {
         })
         .invoke_handler(tauri::generate_handler![
             expand_wad_tree_item,
+            extract_mounted_wad,
             get_action_progress,
             get_mounted_wad_directory_items,
             get_mounted_wad_directory_path_components,
@@ -276,6 +278,8 @@ fn main() {
             load_wad_hashtables,
             mount_wads,
             move_mounted_wad,
+            pick_directory,
+            pick_file,
             select_wad_tree_item,
             unmount_wad,
             update_settings,

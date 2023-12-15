@@ -9,7 +9,6 @@ use std::{
     sync::Arc,
 };
 use tracing::info;
-use tracing_subscriber::filter;
 use walkdir::WalkDir;
 
 #[derive(Debug, Clone, Default)]
@@ -26,14 +25,14 @@ impl WadHashtable {
         })
     }
 
-    pub fn items(&self) -> &HashMap<u64, Arc<str>> {
-        &self.items
-    }
-    pub fn items_mut(&mut self) -> &mut HashMap<u64, Arc<str>> {
-        &mut self.items
+    pub fn resolve_path(&self, path_hash: u64) -> Arc<str> {
+        self.items
+            .get(&path_hash)
+            .map(|x| x.clone())
+            .unwrap_or_else(|| format!("{:#0x}", path_hash).into())
     }
 
-    pub fn load_from_dir(&mut self, dir: impl AsRef<Path>) -> Result<()> {
+    pub fn add_from_dir(&mut self, dir: impl AsRef<Path>) -> Result<()> {
         info!("loading wad hasthables from dir: {:?}", dir.as_ref());
 
         for wad_hashtable_entry in WalkDir::new(dir).into_iter().filter_map(|x| x.ok()) {
@@ -65,6 +64,13 @@ impl WadHashtable {
         }
 
         Ok(())
+    }
+
+    pub fn items(&self) -> &HashMap<u64, Arc<str>> {
+        &self.items
+    }
+    pub fn items_mut(&mut self) -> &mut HashMap<u64, Arc<str>> {
+        &mut self.items
     }
 
     pub fn status(&self) -> WadHashtableStatus {

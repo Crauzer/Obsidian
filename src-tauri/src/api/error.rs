@@ -1,6 +1,6 @@
-use serde::{ser::SerializeStruct, Serialize};
+use std::io;
 
-use crate::error::Error;
+use serde::{ser::SerializeStruct, Serialize};
 
 const UNKNOWN_ERROR: &str = "Unknown error";
 
@@ -52,27 +52,12 @@ impl ApiErrorBuilder {
     }
 }
 
-impl From<octocrab::Error> for ApiError {
-    fn from(error: octocrab::Error) -> Self {
-        Self::from_message(error.to_string())
-    }
-}
-
-impl From<tauri::api::Error> for ApiError {
-    fn from(error: tauri::api::Error) -> Self {
-        Self::from_message(error.to_string())
-    }
-}
-
-impl From<reqwest::Error> for ApiError {
-    fn from(error: reqwest::Error) -> Self {
-        Self::from_message(error.to_string())
-    }
-}
-
-impl From<Error> for ApiError {
-    fn from(error: Error) -> Self {
-        Self::from_message(error.to_string())
+impl<TError> From<TError> for ApiError
+where
+    TError: std::error::Error,
+{
+    fn from(value: TError) -> Self {
+        Self::from_message(value.to_string())
     }
 }
 

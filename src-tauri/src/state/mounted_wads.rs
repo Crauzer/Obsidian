@@ -56,6 +56,13 @@ impl MountedWads {
     pub fn wad_trees_mut(&mut self) -> &mut IndexMap<Uuid, WadTree> {
         &mut self.wad_trees
     }
+
+    pub fn wads(&self) -> &HashMap<Uuid, Wad<File>> {
+        &self.wads
+    }
+    pub fn wads_mut(&mut self) -> &mut HashMap<Uuid, Wad<File>> {
+        &mut self.wads
+    }
 }
 
 pub struct MountedWadsState(pub Mutex<MountedWads>);

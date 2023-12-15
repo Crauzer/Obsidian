@@ -7,3 +7,8 @@ use serde::{Deserialize, Serialize};
 pub struct PickFileResponse {
     path: String,
 }
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct PickDirectoryResponse {
+    path: String,
+}
