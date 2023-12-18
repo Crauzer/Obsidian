@@ -7,6 +7,7 @@ use crate::{
     },
     state::{ActionsState, MountedWadsState, WadHashtable, WadHashtableState},
 };
+use color_eyre::eyre;
 use eyre::Context;
 use itertools::Itertools;
 use std::{
@@ -49,6 +50,7 @@ pub async fn extract_mounted_wad(
     prepare_extraction_directories(&wad, &wad_hashtable, &extract_directory)?;
 
     // extract all chunks
+    extract_wad_chunks(wad, &wad_hashtable, extract_directory)?;
 
     Ok(())
 }
@@ -146,7 +148,7 @@ fn prepare_extraction_directories<TSource>(
     wad: &Wad<TSource>,
     wad_hashtable: &WadHashtable,
     extraction_directory: impl AsRef<Path>,
-) -> crate::error::Result<()>
+) -> eyre::Result<()>
 where
     TSource: Read + Seek,
 {

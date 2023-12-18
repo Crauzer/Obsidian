@@ -26,6 +26,7 @@ use api::{
     error::ApiError,
     wad::{MountWadResponse, MountedWadDto, MountedWadsResponse, WadItemDto},
 };
+use color_eyre::eyre;
 use itertools::Itertools;
 use parking_lot::{lock_api::RwLock, Mutex};
 use state::{
@@ -235,7 +236,9 @@ async fn unmount_wad(
     Ok(())
 }
 
-fn main() {
+fn main() -> eyre::Result<()> {
+    color_eyre::install()?;
+
     let subscriber = tracing_subscriber::fmt()
         .with_file(true)
         .with_line_number(true)
@@ -303,9 +306,11 @@ fn main() {
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+
+    Ok(())
 }
 
-fn create_app_directories(app: &mut App) -> crate::error::Result<()> {
+fn create_app_directories(app: &mut App) -> eyre::Result<()> {
     info!("creating app directories");
     try_create_dir(
         app.path_resolver()

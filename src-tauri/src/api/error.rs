@@ -1,5 +1,6 @@
 use std::io;
 
+use color_eyre::eyre;
 use serde::{ser::SerializeStruct, Serialize};
 
 const UNKNOWN_ERROR: &str = "Unknown error";
@@ -52,12 +53,12 @@ impl ApiErrorBuilder {
     }
 }
 
-impl<TError> From<TError> for ApiError
-where
-    TError: std::error::Error,
-{
-    fn from(value: TError) -> Self {
-        Self::from_message(value.to_string())
+impl From<eyre::Report> for ApiError {
+    fn from(value: eyre::Report) -> Self {
+        Self {
+            message: format!("{:#}", value),
+            extensions: Vec::default(),
+        }
     }
 }
 

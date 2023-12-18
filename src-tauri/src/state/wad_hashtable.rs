@@ -1,4 +1,5 @@
-use crate::{api::hashtable::WadHashtableStatus, error::Result};
+use crate::api::hashtable::WadHashtableStatus;
+use color_eyre::eyre::{self, eyre, Result};
 use parking_lot::Mutex;
 use serde::{Deserialize, Serialize};
 use std::{
@@ -32,7 +33,7 @@ impl WadHashtable {
             .unwrap_or_else(|| format!("{:#0x}", path_hash).into())
     }
 
-    pub fn add_from_dir(&mut self, dir: impl AsRef<Path>) -> Result<()> {
+    pub fn add_from_dir(&mut self, dir: impl AsRef<Path>) -> eyre::Result<()> {
         info!("loading wad hasthables from dir: {:?}", dir.as_ref());
 
         for wad_hashtable_entry in WalkDir::new(dir).into_iter().filter_map(|x| x.ok()) {
@@ -49,14 +50,14 @@ impl WadHashtable {
         Ok(())
     }
 
-    pub fn add_from_file(&mut self, file: &mut File) -> Result<()> {
+    pub fn add_from_file(&mut self, file: &mut File) -> eyre::Result<()> {
         let reader = BufReader::new(file);
         let mut lines = reader.lines();
 
         while let Some(Ok(line)) = lines.next() {
             let mut components = line.split(' ');
 
-            let hash = components.next().expect("failed to read hash");
+            let hash = components.next().ok_or(eyre!("failed to read hash"))?;
             let hash = u64::from_str_radix(hash, 16).expect("failed to convert hash");
             let path = itertools::join(components, " ");
 
