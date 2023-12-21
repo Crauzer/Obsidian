@@ -1,8 +1,4 @@
-use std::{
-    fs::{create_dir, create_dir_all},
-    io,
-    path::Path,
-};
+use std::{fs::create_dir_all, io, path::Path};
 
 use color_eyre::eyre::{self, Context};
 

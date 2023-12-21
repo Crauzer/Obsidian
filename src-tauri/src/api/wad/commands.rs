@@ -1,11 +1,12 @@
 use super::WadItemPathComponentDto;
 use crate::{
-    api::{error::ApiError, hashtable},
+    api::error::ApiError,
     core::wad::{
         tree::{WadTreeItem, WadTreeParent, WadTreePathable},
         Wad,
     },
-    state::{ActionsState, MountedWadsState, WadHashtable, WadHashtableState},
+    state::{MountedWadsState, WadHashtable, WadHashtableState},
+    utils::actions::emit_action_progress,
 };
 use color_eyre::eyre;
 use eyre::Context;
@@ -15,6 +16,7 @@ use std::{
     fs::{self, DirBuilder},
     io::{Read, Seek},
     path::{Path, PathBuf},
+    str::FromStr,
     sync::Arc,
 };
 use tracing::info;
@@ -22,21 +24,25 @@ use uuid::Uuid;
 
 #[tauri::command]
 pub async fn extract_mounted_wad(
+    app_handle: tauri::AppHandle,
     wad_id: String,
     action_id: String,
     extract_directory: String,
     mounted_wads: tauri::State<'_, MountedWadsState>,
     wad_hashtable: tauri::State<'_, WadHashtableState>,
-    actions: tauri::State<'_, ActionsState>,
 ) -> Result<(), ApiError> {
     info!("extracting mounted wad (wad_id: {})", wad_id);
 
+    let action_id = Uuid::from_str(&action_id).wrap_err(format!(
+        "failed to parse action_id (action_id = {})",
+        action_id
+    ))?;
     let mut mounted_wads = mounted_wads.0.lock();
     let wad_hashtable = wad_hashtable.0.lock();
 
     let wad_id = uuid::Uuid::parse_str(&wad_id)
         .map_err(|_| ApiError::from_message("failed to parse wad_id"))?;
-    let mut wad = mounted_wads
+    let wad = mounted_wads
         .wads_mut()
         .get_mut(&wad_id)
         .ok_or(ApiError::from_message(format!(
@@ -46,11 +52,31 @@ pub async fn extract_mounted_wad(
 
     let extract_directory = PathBuf::from(extract_directory);
 
+    emit_action_progress(
+        &app_handle,
+        action_id,
+        0.0,
+        Some("Preparing extraction directories...".into()),
+    )?;
+
     // pre-create all chunk directories
     prepare_extraction_directories(&wad, &wad_hashtable, &extract_directory)?;
+    let progress_offset = 0.1;
 
     // extract all chunks
-    extract_wad_chunks(wad, &wad_hashtable, extract_directory)?;
+    extract_wad_chunks(
+        wad,
+        &wad_hashtable,
+        extract_directory,
+        |progress, message| {
+            emit_action_progress(
+                &app_handle,
+                action_id,
+                progress_offset + progress,
+                message.map(|x| x.to_string()),
+            )
+        },
+    )?;
 
     Ok(())
 }
@@ -174,35 +200,31 @@ fn extract_wad_chunks<TSource: Read + Seek>(
     wad: &mut Wad<TSource>,
     wad_hashtable: &WadHashtable,
     extract_directory: PathBuf,
+    report_progress: impl Fn(f64, Option<&str>) -> eyre::Result<()>,
 ) -> eyre::Result<()> {
     info!("extracting chunks");
 
+    let mut i = 0;
     let (mut decoder, chunks) = wad.decode();
-    for (chunk_path_hash, chunk) in chunks {
+    for (_, chunk) in chunks {
         let chunk_path = wad_hashtable.resolve_path(chunk.path_hash());
         let chunk_path = Path::new(chunk_path.as_ref());
         let chunk_extract_path = extract_directory.join(chunk_path);
 
-        info!(
-            "extracting chunk (chunk_path: {})",
-            chunk_path
-                .to_str()
-                .unwrap_or(chunk_path_hash.to_string().as_str())
-        );
+        info!("extracting chunk (chunk_path: {})", chunk_path.display());
+        report_progress((i / chunks.len()) as f64, chunk_path.to_str())?;
 
         let chunk_data = decoder.load_chunk_decompressed(chunk).wrap_err(format!(
             "failed to decompress chunk (chunk_path: {})",
-            chunk_path
-                .to_str()
-                .unwrap_or(chunk_path_hash.to_string().as_str())
+            chunk_path.display()
         ))?;
 
         fs::write(chunk_extract_path, chunk_data).wrap_err(format!(
             "failed to write chunk (chunk_path: {})",
-            chunk_path
-                .to_str()
-                .unwrap_or(chunk_path_hash.to_string().as_str()),
+            chunk_path.display(),
         ))?;
+
+        i = i + 1;
     }
 
     Ok(())

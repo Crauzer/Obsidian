@@ -5,3 +5,7 @@ export type PickFileResponse = {
 export type PickDirectoryResponse = {
   path: string;
 };
+
+export type AppDirectoryResponse = {
+  app_directoru: string;
+};

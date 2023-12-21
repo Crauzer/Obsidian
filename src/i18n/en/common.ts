@@ -1,1 +1,3 @@
-export const common = {};
+export const common = {
+  appDirectory: 'App Directory',
+};

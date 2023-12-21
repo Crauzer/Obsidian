@@ -19,7 +19,7 @@ export const ActionIcon: React.FC<ActionIconProps> = forwardRef<HTMLButtonElemen
         {...props}
         ref={ref}
         compact
-        className={clsx(props.className, ' fill-gray-200')}
+        className={clsx(props.className, 'fill-gray-200')}
         size={size}
         variant={variant}
       >

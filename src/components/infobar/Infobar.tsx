@@ -1,17 +1,24 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { VscFileSymlinkDirectory } from 'react-icons/vsc';
 import { Id as ToastId, toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
 
-import { ActionIcon, Button, Icon, Popover, Toast } from '..';
+import { ActionIcon, Button, Icon, Popover, Toast, Tooltip } from '..';
 import { TableSyncIcon, ToolboxIcon } from '../../assets';
 import { useActionProgress, useActionProgressSubscription } from '../../features/actions';
+import { useAppDirectory } from '../../features/fs';
 import { useLoadWadHashtables, useWadHashtableStatus } from '../../features/hashtable';
 import { ToolboxContent } from '../../features/toolbox';
 import { env } from '../../utils';
 
 export const Infobar = () => {
+  const [t] = useTranslation('common');
+
+  const appDirectory = useAppDirectory();
+
   return (
-    <div className="flex min-h-[32px] flex-row  border border-t border-gray-600 bg-gray-800">
+    <div className="flex min-h-[32px] flex-row border-t border-gray-600 bg-gray-800">
       {env.DEV && (
         <Popover.Root>
           <Popover.Trigger asChild>
@@ -23,6 +30,16 @@ export const Infobar = () => {
         </Popover.Root>
       )}
       <WadHashtablesBar />
+      {appDirectory.isSuccess && (
+        <Tooltip.Root>
+          <Tooltip.Trigger asChild>
+            <ActionIcon size="lg" variant="ghost" icon={VscFileSymlinkDirectory} />
+          </Tooltip.Trigger>
+          <Tooltip.Content>
+            <p className="text-sm text-gray-50">{t('appDirectory')}</p>
+          </Tooltip.Content>
+        </Tooltip.Root>
+      )}
     </div>
   );
 };

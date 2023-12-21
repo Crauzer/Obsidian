@@ -42,6 +42,7 @@ reqwest = "0.11.22"
 futures-util = "0.3.29"
 walkdir = "2.4.0"
 color-eyre = "0.6.2"
+open = "5.0.1"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

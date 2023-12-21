@@ -10,6 +10,7 @@ use self::core::wad::{
     tree::{WadTreeExpandable, WadTreeItem, WadTreeParent, WadTreeSelectable},
     Wad,
 };
+use crate::api::fs::get_app_directory;
 use crate::{
     api::{
         actions::get_action_progress,
@@ -272,6 +273,7 @@ fn main() -> eyre::Result<()> {
             expand_wad_tree_item,
             extract_mounted_wad,
             get_action_progress,
+            get_app_directory,
             get_mounted_wad_directory_items,
             get_mounted_wad_directory_path_components,
             get_mounted_wads,

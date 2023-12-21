@@ -12,3 +12,8 @@ pub struct PickFileResponse {
 pub struct PickDirectoryResponse {
     path: String,
 }
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct AppDirectoryResponse {
+    app_directory: String,
+}
