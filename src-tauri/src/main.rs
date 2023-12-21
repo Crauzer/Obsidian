@@ -11,6 +11,7 @@ use self::core::wad::{
     Wad,
 };
 use crate::api::fs::get_app_directory;
+use crate::api::fs::open_path;
 use crate::{
     api::{
         actions::get_action_progress,
@@ -287,6 +288,7 @@ fn main() -> eyre::Result<()> {
             pick_file,
             select_wad_tree_item,
             unmount_wad,
+            open_path,
             update_settings,
         ])
         .on_window_event(|event| {

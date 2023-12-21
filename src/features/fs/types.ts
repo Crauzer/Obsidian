@@ -7,5 +7,5 @@ export type PickDirectoryResponse = {
 };
 
 export type AppDirectoryResponse = {
-  app_directoru: string;
+  appDirectory: string;
 };

@@ -1,3 +1,5 @@
+use color_eyre::eyre::Context;
+
 use crate::api::error::ApiError;
 
 use super::{AppDirectoryResponse, PickDirectoryResponse, PickFileResponse};
@@ -34,4 +36,11 @@ pub async fn get_app_directory(app: tauri::AppHandle) -> Result<AppDirectoryResp
     }
 
     Err(ApiError::from_message("failed to get app directory"))
+}
+
+#[tauri::command]
+pub async fn open_path(path: String) -> Result<(), ApiError> {
+    open::that(path).wrap_err("failed to open path")?;
+
+    Ok(())
 }

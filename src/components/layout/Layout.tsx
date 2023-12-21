@@ -5,8 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { PiGearSixDuotone } from 'react-icons/pi';
 import { useMatches } from 'react-router-dom';
 
-import { Button, Icon, Infobar } from '..';
+import { Button, Icon } from '..';
 import Logo from '../../assets/logo.png';
+import { Infobar } from '../../features/infobar';
 import { appRoutes } from '../../lib/router';
 
 type LayoutProps = React.PropsWithChildren;

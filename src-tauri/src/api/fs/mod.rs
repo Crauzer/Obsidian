@@ -14,6 +14,7 @@ pub struct PickDirectoryResponse {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct AppDirectoryResponse {
     app_directory: String,
 }

@@ -4,18 +4,27 @@ import { VscFileSymlinkDirectory } from 'react-icons/vsc';
 import { Id as ToastId, toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
 
-import { ActionIcon, Button, Icon, Popover, Toast, Tooltip } from '..';
-import { TableSyncIcon, ToolboxIcon } from '../../assets';
-import { useActionProgress, useActionProgressSubscription } from '../../features/actions';
-import { useAppDirectory } from '../../features/fs';
-import { useLoadWadHashtables, useWadHashtableStatus } from '../../features/hashtable';
-import { ToolboxContent } from '../../features/toolbox';
-import { env } from '../../utils';
+import { TableSyncIcon, ToolboxIcon } from '../../../assets';
+import { ActionIcon, Button, Icon, Popover, Toast, Tooltip } from '../../../components';
+import { env } from '../../../utils';
+import { useActionProgress, useActionProgressSubscription } from '../../actions';
+import { useAppDirectory, useOpenPath } from '../../fs';
+import { useLoadWadHashtables, useWadHashtableStatus } from '../../hashtable';
+import { ToolboxContent } from '../../toolbox';
 
 export const Infobar = () => {
   const [t] = useTranslation('common');
 
   const appDirectory = useAppDirectory();
+  const openPath = useOpenPath();
+
+  const handleOpenAppDirectory = () => {
+    if (!appDirectory.isSuccess) {
+      return;
+    }
+
+    openPath.mutate({ path: appDirectory.data.appDirectory });
+  };
 
   return (
     <div className="flex min-h-[32px] flex-row border-t border-gray-600 bg-gray-800">
@@ -33,7 +42,12 @@ export const Infobar = () => {
       {appDirectory.isSuccess && (
         <Tooltip.Root>
           <Tooltip.Trigger asChild>
-            <ActionIcon size="lg" variant="ghost" icon={VscFileSymlinkDirectory} />
+            <ActionIcon
+              size="lg"
+              variant="ghost"
+              icon={VscFileSymlinkDirectory}
+              onClick={handleOpenAppDirectory}
+            />
           </Tooltip.Trigger>
           <Tooltip.Content>
             <p className="text-sm text-gray-50">{t('appDirectory')}</p>

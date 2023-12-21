@@ -211,7 +211,6 @@ fn extract_wad_chunks<TSource: Read + Seek>(
         let chunk_path = Path::new(chunk_path.as_ref());
         let chunk_extract_path = extract_directory.join(chunk_path);
 
-        info!("extracting chunk (chunk_path: {})", chunk_path.display());
         report_progress((i / chunks.len()) as f64, chunk_path.to_str())?;
 
         let chunk_data = decoder.load_chunk_decompressed(chunk).wrap_err(format!(
