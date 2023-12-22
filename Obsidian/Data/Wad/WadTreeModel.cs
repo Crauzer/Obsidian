@@ -75,7 +75,7 @@ public class WadTreeModel : IWadTreeParent, IDisposable {
 
         IWadTreeParent wadParent = this;
         if (allowDuplicate) {
-            var wadItem = new WadTreeItemModel(this, wadFilePathComponents.First());
+            var wadItem = new WadTreeItemModel(this, wadFilePathComponents.First(), wad);
             this.Items.Add(wadItem);
             wadParent = wadItem;
             wadFilePathComponents = wadFilePathComponents.Skip(1);

@@ -28,7 +28,7 @@ public static class IWadTreeParentExtensions {
         lock (parent) {
             directory = parent.Items.FirstOrDefault(item => item.Type is not WadTreeItemType.File && item.NameHash == folderNameHash);
             if (directory is null) {
-                directory = new(parent, folderName);
+                directory = new(parent, folderName, wad);
                 parent.Items.Add(directory);
             }
         }

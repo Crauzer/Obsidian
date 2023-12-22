@@ -6,11 +6,9 @@ namespace Obsidian.Data.Wad;
 [DebuggerDisplay("{Name}")]
 public sealed class WadTreeFileModel : WadTreeItemModel {
     public WadChunk Chunk { get; }
-    public WadFile Wad { get; }
 
     public WadTreeFileModel(IWadTreeParent parent, string name, WadFile wad, WadChunk chunk)
-        : base(parent, name) {
+        : base(parent, name, wad) {
         this.Chunk = chunk;
-        this.Wad = wad;
     }
 }
