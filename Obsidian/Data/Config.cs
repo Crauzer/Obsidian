@@ -4,61 +4,61 @@ namespace Obsidian.Data;
 
 public class Config {
     #region Wad Hashtable Checksums
-    public string GameHashesChecksum {
-        get => this._gameHashesChecksum;
+    public DateTime GameHashesLastUpdate {
+        get => this._gameHashesLastUpdate;
         set {
-            this._gameHashesChecksum = value;
+            this._gameHashesLastUpdate = value;
             Save();
         }
     }
-    private string _gameHashesChecksum;
+    private DateTime _gameHashesLastUpdate;
 
-    public string LcuHashesChecksum {
-        get => this._lcuHashesChecksum;
+    public DateTime LcuHashesLastUpdate {
+        get => this._lcuHashesLastUpdate;
         set {
-            this._lcuHashesChecksum = value;
+            this._lcuHashesLastUpdate = value;
             Save();
         }
     }
-    private string _lcuHashesChecksum;
+    private DateTime _lcuHashesLastUpdate;
     #endregion
 
     #region Bin Hashtable Checksums
-    public string BinFieldsHashesChecksum {
-        get => this._binFieldsHashesChecksum;
+    public DateTime BinFieldsHashesLastUpdate {
+        get => this._binFieldsHashesLastUpdate;
         set {
-            this._binFieldsHashesChecksum = value;
+            this._binFieldsHashesLastUpdate = value;
             Save();
         }
     }
-    private string _binFieldsHashesChecksum;
+    private DateTime _binFieldsHashesLastUpdate;
 
-    public string BinTypesHashesChecksum {
-        get => this._binTypesHashesChecksum;
+    public DateTime BinTypesHashesLastUpdate {
+        get => this._binTypesHashesLastUpdate;
         set {
-            this._binTypesHashesChecksum = value;
+            this._binTypesHashesLastUpdate = value;
             Save();
         }
     }
-    private string _binTypesHashesChecksum;
+    private DateTime _binTypesHashesLastUpdate;
 
-    public string BinHashesHashesChecksum {
-        get => this._binHashesHashesChecksum;
+    public DateTime BinHashesHashesLastUpdate {
+        get => this._binHashesHashesLastUpdate;
         set {
-            this._binHashesHashesChecksum = value;
+            this._binHashesHashesLastUpdate = value;
             Save();
         }
     }
-    private string _binHashesHashesChecksum;
+    private DateTime _binHashesHashesLastUpdate;
 
-    public string BinEntriesHashesChecksum {
-        get => this._binEntriesHashesChecksum;
+    public DateTime BinEntriesHashesLastUpdate {
+        get => this._binEntriesHashesLastUpdate;
         set {
-            this._binEntriesHashesChecksum = value;
+            this._binEntriesHashesLastUpdate = value;
             Save();
         }
     }
-    private string _binEntriesHashesChecksum;
+    private DateTime _binEntriesHashesLastUpdate;
     #endregion
 
     public bool DoNotRequireGameDirectory {
