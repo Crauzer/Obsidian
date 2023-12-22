@@ -4,10 +4,8 @@ import { Layout } from '../components/layout';
 
 export default function Root() {
   return (
-    <>
-      <Layout>
-        <Outlet />
-      </Layout>
-    </>
+    <Layout>
+      <Outlet />
+    </Layout>
   );
 }

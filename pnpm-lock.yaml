@@ -14,6 +14,9 @@ dependencies:
   '@radix-ui/react-checkbox':
     specifier: ^1.0.4
     version: 1.0.4(@types/react-dom@18.2.8)(@types/react@18.2.23)(react-dom@18.2.0)(react@18.2.0)
+  '@radix-ui/react-dialog':
+    specifier: ^1.0.5
+    version: 1.0.5(@types/react-dom@18.2.8)(@types/react@18.2.23)(react-dom@18.2.0)(react@18.2.0)
   '@radix-ui/react-dropdown-menu':
     specifier: ^2.0.6
     version: 2.0.6(@types/react-dom@18.2.8)(@types/react@18.2.23)(react-dom@18.2.0)(react@18.2.0)
@@ -26,6 +29,9 @@ dependencies:
   '@radix-ui/react-popover':
     specifier: ^1.0.7
     version: 1.0.7(@types/react-dom@18.2.8)(@types/react@18.2.23)(react-dom@18.2.0)(react@18.2.0)
+  '@radix-ui/react-progress':
+    specifier: ^1.0.3
+    version: 1.0.3(@types/react-dom@18.2.8)(@types/react@18.2.23)(react-dom@18.2.0)(react@18.2.0)
   '@radix-ui/react-tabs':
     specifier: ^1.0.4
     version: 1.0.4(@types/react-dom@18.2.8)(@types/react@18.2.23)(react-dom@18.2.0)(react@18.2.0)
@@ -91,13 +97,13 @@ dependencies:
     version: 4.6.2(react-dom@18.2.0)(react@18.2.0)
   tauri-plugin-store-api:
     specifier: github:tauri-apps/tauri-plugin-store#v1
-    version: github.com/tauri-apps/tauri-plugin-store/3367248b2661abcb73d2a89f30df780c387fb57d
+    version: github.com/tauri-apps/tauri-plugin-store/7d2632996f290b0f18cc5f8a2b2791046400690e
   tauri-plugin-upload-api:
     specifier: github:tauri-apps/tauri-plugin-upload#v1
-    version: github.com/tauri-apps/tauri-plugin-upload/53fe17d5cfec7acf286ce9f8c8cdbc0b69d09b7b
+    version: github.com/tauri-apps/tauri-plugin-upload/7b97b5c04838922a8b69892b3e39219d5b42835e
   tauri-plugin-window-state-api:
     specifier: github:tauri-apps/tauri-plugin-window-state#v1
-    version: github.com/tauri-apps/tauri-plugin-window-state/ea145f97d4c3d1aad849a7846765b0ad77803f32
+    version: github.com/tauri-apps/tauri-plugin-window-state/91fafb628cd0c83ad52bdf9029cad212381f740a
   ts-pattern:
     specifier: ^5.0.5
     version: 5.0.5
@@ -1060,6 +1066,40 @@ packages:
       react: 18.2.0
     dev: false
 
+  /@radix-ui/react-dialog@1.0.5(@types/react-dom@18.2.8)(@types/react@18.2.23)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-GjWJX/AUpB703eEBanuBnIWdIXg6NvJFCXcNlSZk4xdszCdhrJgBoUd1cGk67vFO+WdA2pfI/plOpqz/5GUP6Q==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.23.1
+      '@radix-ui/primitive': 1.0.1
+      '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.23)(react@18.2.0)
+      '@radix-ui/react-context': 1.0.1(@types/react@18.2.23)(react@18.2.0)
+      '@radix-ui/react-dismissable-layer': 1.0.5(@types/react-dom@18.2.8)(@types/react@18.2.23)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-focus-guards': 1.0.1(@types/react@18.2.23)(react@18.2.0)
+      '@radix-ui/react-focus-scope': 1.0.4(@types/react-dom@18.2.8)(@types/react@18.2.23)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-id': 1.0.1(@types/react@18.2.23)(react@18.2.0)
+      '@radix-ui/react-portal': 1.0.4(@types/react-dom@18.2.8)(@types/react@18.2.23)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-presence': 1.0.1(@types/react-dom@18.2.8)(@types/react@18.2.23)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.2.8)(@types/react@18.2.23)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-slot': 1.0.2(@types/react@18.2.23)(react@18.2.0)
+      '@radix-ui/react-use-controllable-state': 1.0.1(@types/react@18.2.23)(react@18.2.0)
+      '@types/react': 18.2.23
+      '@types/react-dom': 18.2.8
+      aria-hidden: 1.2.3
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      react-remove-scroll: 2.5.5(@types/react@18.2.23)(react@18.2.0)
+    dev: false
+
   /@radix-ui/react-direction@1.0.1(@types/react@18.2.23)(react@18.2.0):
     resolution: {integrity: sha512-RXcvnXgyvYvBEOhCBuddKecVkoMiI10Jcm5cTI7abJRAHYfFxeu+FBQs/DvdxSYucxR5mna0dNsL6QFlds5TMA==}
     peerDependencies:
@@ -1394,6 +1434,28 @@ packages:
     dependencies:
       '@babel/runtime': 7.23.1
       '@radix-ui/react-slot': 1.0.2(@types/react@18.2.23)(react@18.2.0)
+      '@types/react': 18.2.23
+      '@types/react-dom': 18.2.8
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
+  /@radix-ui/react-progress@1.0.3(@types/react-dom@18.2.8)(@types/react@18.2.23)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-5G6Om/tYSxjSeEdrb1VfKkfZfn/1IlPWd731h2RfPuSbIfNUgfqAwbKfJCg/PP6nuUCTrYzalwHSpSinoWoCag==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.23.1
+      '@radix-ui/react-context': 1.0.1(@types/react@18.2.23)(react@18.2.0)
+      '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.2.8)(@types/react@18.2.23)(react-dom@18.2.0)(react@18.2.0)
       '@types/react': 18.2.23
       '@types/react-dom': 18.2.8
       react: 18.2.0
@@ -1935,8 +1997,8 @@ packages:
     engines: {node: '>= 14.6.0', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
     dev: false
 
-  /@tauri-apps/api@1.5.1:
-    resolution: {integrity: sha512-6unsZDOdlXTmauU3NhWhn+Cx0rODV+rvNvTdvolE5Kls5ybA6cqndQENDt1+FS0tF7ozCP66jwWoH6a5h90BrA==}
+  /@tauri-apps/api@1.5.3:
+    resolution: {integrity: sha512-zxnDjHHKjOsrIzZm6nO5Xapb/BxqUq1tc7cGkFXsFkGTsSWgCPH1D8mm0XS9weJY2OaR73I3k3S+b7eSzJDfqA==}
     engines: {node: '>= 14.6.0', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
     dev: false
 
@@ -5405,26 +5467,26 @@ packages:
     resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
     dev: false
 
-  github.com/tauri-apps/tauri-plugin-store/3367248b2661abcb73d2a89f30df780c387fb57d:
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/3367248b2661abcb73d2a89f30df780c387fb57d}
+  github.com/tauri-apps/tauri-plugin-store/7d2632996f290b0f18cc5f8a2b2791046400690e:
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/7d2632996f290b0f18cc5f8a2b2791046400690e}
     name: tauri-plugin-store-api
     version: 0.0.0
     dependencies:
-      '@tauri-apps/api': 1.5.1
+      '@tauri-apps/api': 1.5.3
     dev: false
 
-  github.com/tauri-apps/tauri-plugin-upload/53fe17d5cfec7acf286ce9f8c8cdbc0b69d09b7b:
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-upload/tar.gz/53fe17d5cfec7acf286ce9f8c8cdbc0b69d09b7b}
+  github.com/tauri-apps/tauri-plugin-upload/7b97b5c04838922a8b69892b3e39219d5b42835e:
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-upload/tar.gz/7b97b5c04838922a8b69892b3e39219d5b42835e}
     name: tauri-plugin-upload-api
     version: 0.0.0
     dependencies:
-      '@tauri-apps/api': 1.5.1
+      '@tauri-apps/api': 1.5.3
     dev: false
 
-  github.com/tauri-apps/tauri-plugin-window-state/ea145f97d4c3d1aad849a7846765b0ad77803f32:
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-window-state/tar.gz/ea145f97d4c3d1aad849a7846765b0ad77803f32}
+  github.com/tauri-apps/tauri-plugin-window-state/91fafb628cd0c83ad52bdf9029cad212381f740a:
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-window-state/tar.gz/91fafb628cd0c83ad52bdf9029cad212381f740a}
     name: tauri-plugin-window-state-api
     version: 0.0.0
     dependencies:
-      '@tauri-apps/api': 1.5.1
+      '@tauri-apps/api': 1.5.3
     dev: false
