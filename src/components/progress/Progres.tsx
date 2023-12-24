@@ -1,4 +1,4 @@
-import RadixProgress from '@radix-ui/react-progress';
+import * as RadixProgress from '@radix-ui/react-progress';
 import clsx from 'clsx';
 import React from 'react';
 
@@ -7,10 +7,10 @@ export const Progress: React.FC<RadixProgress.ProgressProps> = ({ className, val
     <RadixProgress.Progress
       {...props}
       value={value}
-      className={clsx('relative h-4 overflow-hidden rounded-lg bg-gray-900/50', className)}
+      className={clsx('relative h-4 overflow-hidden rounded bg-gray-800/50', className)}
     >
       <RadixProgress.Indicator
-        className="h-full w-full"
+        className="h-full w-full bg-obsidian-600"
         style={{ transform: `translateX(-${100 - (value ?? 0)}%)` }}
       />
     </RadixProgress.Progress>

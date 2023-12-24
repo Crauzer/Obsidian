@@ -25,7 +25,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         )}
       >
         <a className="rounded-md" href="https://github.com/Crauzer/Obsidian" target="_blank">
-          <img className="rounded-xl shadow-xl" width={60} height={60} src={Logo} />
+          <img className="rounded-xl shadow-xl" width={60} height={60} src={Logo} alt="logo" />
         </a>
 
         <NavigationMenu

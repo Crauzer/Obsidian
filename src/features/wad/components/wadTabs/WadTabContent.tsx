@@ -1,28 +1,16 @@
-import { tauri } from '@tauri-apps/api';
 import clsx from 'clsx';
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { LuFileDown, LuFileStack } from 'react-icons/lu';
 import { useSearchParams } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
 
 import { ArchiveIcon } from '../../../../assets';
-import {
-  Breadcrumbs,
-  Button,
-  Icon,
-  Input,
-  Toolbar,
-  ToolbarRootProps,
-  Tooltip,
-} from '../../../../components';
+import { Breadcrumbs, Icon, Input, Tooltip } from '../../../../components';
 import { appRoutes } from '../../../../lib/router';
 import { composeUrlQuery } from '../../../../utils';
-import { usePickDirectory } from '../../../fs';
 import { useWadDirectoryItems, useWadDirectoryPathComponents, useWadItems } from '../../api';
-import { wadCommands } from '../../commands';
 import { WadItem, WadItemPathComponent } from '../../types';
 import { WadItemList } from './WadItemList';
+import { WadTabToolbar } from './toolbar/Toolbar';
 
 export type WadRootTabContentProps = { wadId: string };
 
@@ -124,42 +112,5 @@ const PathBreadcrumbItem: React.FC<PathBreadcrumbItemProps> = ({ itemId, name, p
       </Tooltip.Trigger>
       <Tooltip.Content side="bottom">{path}</Tooltip.Content>
     </Tooltip.Root>
-  );
-};
-
-type WadTabToolbarProps = { wadId: string } & ToolbarRootProps;
-
-const WadTabToolbar: React.FC<WadTabToolbarProps> = ({ wadId, ...props }) => {
-  const [extractAllActionId] = useState(uuidv4());
-
-  const pickDirectory = usePickDirectory();
-
-  return (
-    <Toolbar.Root {...props}>
-      <Toolbar.Button asChild>
-        <Button
-          compact
-          variant="ghost"
-          onClick={() => {
-            pickDirectory.mutate(undefined, {
-              onSuccess: (directory) => {
-                tauri.invoke(wadCommands.extractMountedWad, {
-                  wadId,
-                  actionId: extractAllActionId,
-                  extractDirectory: directory.path,
-                });
-              },
-            });
-          }}
-        >
-          <Icon size="md" icon={LuFileDown} />
-        </Button>
-      </Toolbar.Button>
-      <Toolbar.Button asChild>
-        <Button compact variant="ghost">
-          <Icon size="md" icon={LuFileStack} />
-        </Button>
-      </Toolbar.Button>
-    </Toolbar.Root>
   );
 };

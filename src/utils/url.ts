@@ -1,3 +1,4 @@
 import qs from 'qs';
 
-export const composeUrlQuery = (url: string, query: any) => `${url}?${qs.stringify(query)}`;
+export const composeUrlQuery = <TQuery>(url: string, query: TQuery) =>
+  `${url}?${qs.stringify(query)}`;
