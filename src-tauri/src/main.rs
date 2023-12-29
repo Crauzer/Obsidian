@@ -35,7 +35,7 @@ use state::{
     ActionsState, MountedWads, MountedWadsState, Settings, SettingsState, WadHashtableState,
 };
 use std::{collections::HashMap, fs::File, io::stdout, path::Path};
-use tauri::{App, Manager};
+use tauri::{App, AppHandle, Manager};
 use tracing::info;
 use tracing_subscriber::fmt::writer::MakeWriterExt;
 use utils::log::create_log_filename;
@@ -249,148 +249,7 @@ fn main() -> eyre::Result<()> {
         .manage(WadHashtableState(Mutex::new(WadHashtable::default())))
         .manage(ActionsState(RwLock::new(HashMap::default())))
         .setup(|app| {
-            let app_handle = app.handle();
-
-            println!(
-                "resource_dir: {}",
-                app_handle
-                    .path_resolver()
-                    .resource_dir()
-                    .unwrap_or(std::path::PathBuf::new())
-                    .to_string_lossy()
-            );
-            println!(
-                "app_config_dir: {}",
-                app_handle
-                    .path_resolver()
-                    .app_config_dir()
-                    .unwrap_or(std::path::PathBuf::new())
-                    .to_string_lossy()
-            );
-            println!(
-                "app_data_dir: {}",
-                app_handle
-                    .path_resolver()
-                    .app_data_dir()
-                    .unwrap_or(std::path::PathBuf::new())
-                    .to_string_lossy()
-            );
-            println!(
-                "app_local_data_dir: {}",
-                app_handle
-                    .path_resolver()
-                    .app_local_data_dir()
-                    .unwrap_or(std::path::PathBuf::new())
-                    .to_string_lossy()
-            );
-            println!(
-                "app_cache_dir: {}",
-                app_handle
-                    .path_resolver()
-                    .app_cache_dir()
-                    .unwrap_or(std::path::PathBuf::new())
-                    .to_string_lossy()
-            );
-            println!(
-                "app_log_dir: {}",
-                app_handle
-                    .path_resolver()
-                    .app_log_dir()
-                    .unwrap_or(std::path::PathBuf::new())
-                    .to_string_lossy()
-            );
-            println!(
-                "{}",
-                tauri::api::path::data_dir()
-                    .unwrap_or(std::path::PathBuf::new())
-                    .to_string_lossy()
-            );
-            println!(
-                "{}",
-                tauri::api::path::local_data_dir()
-                    .unwrap_or(std::path::PathBuf::new())
-                    .to_string_lossy()
-            );
-            println!(
-                "{}",
-                tauri::api::path::cache_dir()
-                    .unwrap_or(std::path::PathBuf::new())
-                    .to_string_lossy()
-            );
-            println!(
-                "{}",
-                tauri::api::path::config_dir()
-                    .unwrap_or(std::path::PathBuf::new())
-                    .to_string_lossy()
-            );
-            println!(
-                "{}",
-                tauri::api::path::executable_dir()
-                    .unwrap_or(std::path::PathBuf::new())
-                    .to_string_lossy()
-            );
-            println!(
-                "{}",
-                tauri::api::path::public_dir()
-                    .unwrap_or(std::path::PathBuf::new())
-                    .to_string_lossy()
-            );
-            println!(
-                "{}",
-                tauri::api::path::runtime_dir()
-                    .unwrap_or(std::path::PathBuf::new())
-                    .to_string_lossy()
-            );
-            println!(
-                "{}",
-                tauri::api::path::template_dir()
-                    .unwrap_or(std::path::PathBuf::new())
-                    .to_string_lossy()
-            );
-            println!(
-                "{}",
-                tauri::api::path::font_dir()
-                    .unwrap_or(std::path::PathBuf::new())
-                    .to_string_lossy()
-            );
-            println!(
-                "{}",
-                tauri::api::path::home_dir()
-                    .unwrap_or(std::path::PathBuf::new())
-                    .to_string_lossy()
-            );
-            println!(
-                "{}",
-                tauri::api::path::audio_dir()
-                    .unwrap_or(std::path::PathBuf::new())
-                    .to_string_lossy()
-            );
-            println!(
-                "{}",
-                tauri::api::path::desktop_dir()
-                    .unwrap_or(std::path::PathBuf::new())
-                    .to_string_lossy()
-            );
-            println!(
-                "{}",
-                tauri::api::path::document_dir()
-                    .unwrap_or(std::path::PathBuf::new())
-                    .to_string_lossy()
-            );
-            println!(
-                "{}",
-                tauri::api::path::download_dir()
-                    .unwrap_or(std::path::PathBuf::new())
-                    .to_string_lossy()
-            );
-            println!(
-                "{}",
-                tauri::api::path::picture_dir()
-                    .unwrap_or(std::path::PathBuf::new())
-                    .to_string_lossy()
-            );
-
-            initialize_logging(app)?;
+            initialize_logging(&app.handle())?;
             create_app_directories(app)?;
 
             *app.state::<SettingsState>().0.write() = Settings::load_or_default(
@@ -448,11 +307,15 @@ fn main() -> eyre::Result<()> {
     Ok(())
 }
 
-fn initialize_logging(app: &mut App) -> eyre::Result<()> {
+fn initialize_logging(app_handle: &AppHandle) -> eyre::Result<()> {
     color_eyre::install()?;
 
     let appender = tracing_appender::rolling::never(
-        app.path_resolver().app_data_dir().unwrap().join(LOGS_DIR),
+        app_handle
+            .path_resolver()
+            .app_data_dir()
+            .unwrap()
+            .join(LOGS_DIR),
         create_log_filename(),
     );
     let (non_blocking_appender, _guard) = tracing_appender::non_blocking(appender);
@@ -466,14 +329,6 @@ fn initialize_logging(app: &mut App) -> eyre::Result<()> {
 
     tracing::subscriber::with_default(subscriber, || {
         tracing::event!(tracing::Level::INFO, "Initialized logging");
-        info!(
-            "{}",
-            app.path_resolver()
-                .app_config_dir()
-                .unwrap()
-                .join(LOGS_DIR)
-                .display()
-        );
     });
 
     Ok(())
