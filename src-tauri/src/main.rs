@@ -11,12 +11,10 @@ use self::core::wad::{
     tree::{WadTreeExpandable, WadTreeItem, WadTreeParent, WadTreeSelectable},
     Wad,
 };
-use crate::api::fs::get_app_directory;
-use crate::api::fs::open_path;
 use crate::{
     api::{
         actions::get_action_progress,
-        fs::{pick_directory, pick_file},
+        fs::{get_app_directory, open_path, pick_directory, pick_file},
         hashtable::{get_wad_hashtable_status, load_wad_hashtables},
         settings::{get_settings, update_settings},
         wad::{extract_mounted_wad, get_mounted_wad_directory_path_components, move_mounted_wad},
@@ -32,12 +30,15 @@ use api::{
 use color_eyre::eyre;
 use itertools::Itertools;
 use parking_lot::{lock_api::RwLock, Mutex};
+use paths::LOGS_DIR;
 use state::{
     ActionsState, MountedWads, MountedWadsState, Settings, SettingsState, WadHashtableState,
 };
-use std::{collections::HashMap, fs::File, path::Path};
+use std::{collections::HashMap, fs::File, io::stdout, path::Path};
 use tauri::{App, Manager};
 use tracing::info;
+use tracing_subscriber::fmt::writer::MakeWriterExt;
+use utils::log::create_log_filename;
 use uuid::Uuid;
 
 mod error;
@@ -240,16 +241,6 @@ async fn unmount_wad(
 }
 
 fn main() -> eyre::Result<()> {
-    color_eyre::install()?;
-
-    let subscriber = tracing_subscriber::fmt()
-        .with_file(true)
-        .with_line_number(true)
-        .finish();
-
-    tracing::subscriber::set_global_default(subscriber)
-        .expect("failed to set global default log subscriber");
-
     tauri::Builder::default()
         .plugin(tauri_plugin_window_state::Builder::default().build())
         .plugin(tauri_plugin_upload::init())
@@ -258,6 +249,148 @@ fn main() -> eyre::Result<()> {
         .manage(WadHashtableState(Mutex::new(WadHashtable::default())))
         .manage(ActionsState(RwLock::new(HashMap::default())))
         .setup(|app| {
+            let app_handle = app.handle();
+
+            println!(
+                "resource_dir: {}",
+                app_handle
+                    .path_resolver()
+                    .resource_dir()
+                    .unwrap_or(std::path::PathBuf::new())
+                    .to_string_lossy()
+            );
+            println!(
+                "app_config_dir: {}",
+                app_handle
+                    .path_resolver()
+                    .app_config_dir()
+                    .unwrap_or(std::path::PathBuf::new())
+                    .to_string_lossy()
+            );
+            println!(
+                "app_data_dir: {}",
+                app_handle
+                    .path_resolver()
+                    .app_data_dir()
+                    .unwrap_or(std::path::PathBuf::new())
+                    .to_string_lossy()
+            );
+            println!(
+                "app_local_data_dir: {}",
+                app_handle
+                    .path_resolver()
+                    .app_local_data_dir()
+                    .unwrap_or(std::path::PathBuf::new())
+                    .to_string_lossy()
+            );
+            println!(
+                "app_cache_dir: {}",
+                app_handle
+                    .path_resolver()
+                    .app_cache_dir()
+                    .unwrap_or(std::path::PathBuf::new())
+                    .to_string_lossy()
+            );
+            println!(
+                "app_log_dir: {}",
+                app_handle
+                    .path_resolver()
+                    .app_log_dir()
+                    .unwrap_or(std::path::PathBuf::new())
+                    .to_string_lossy()
+            );
+            println!(
+                "{}",
+                tauri::api::path::data_dir()
+                    .unwrap_or(std::path::PathBuf::new())
+                    .to_string_lossy()
+            );
+            println!(
+                "{}",
+                tauri::api::path::local_data_dir()
+                    .unwrap_or(std::path::PathBuf::new())
+                    .to_string_lossy()
+            );
+            println!(
+                "{}",
+                tauri::api::path::cache_dir()
+                    .unwrap_or(std::path::PathBuf::new())
+                    .to_string_lossy()
+            );
+            println!(
+                "{}",
+                tauri::api::path::config_dir()
+                    .unwrap_or(std::path::PathBuf::new())
+                    .to_string_lossy()
+            );
+            println!(
+                "{}",
+                tauri::api::path::executable_dir()
+                    .unwrap_or(std::path::PathBuf::new())
+                    .to_string_lossy()
+            );
+            println!(
+                "{}",
+                tauri::api::path::public_dir()
+                    .unwrap_or(std::path::PathBuf::new())
+                    .to_string_lossy()
+            );
+            println!(
+                "{}",
+                tauri::api::path::runtime_dir()
+                    .unwrap_or(std::path::PathBuf::new())
+                    .to_string_lossy()
+            );
+            println!(
+                "{}",
+                tauri::api::path::template_dir()
+                    .unwrap_or(std::path::PathBuf::new())
+                    .to_string_lossy()
+            );
+            println!(
+                "{}",
+                tauri::api::path::font_dir()
+                    .unwrap_or(std::path::PathBuf::new())
+                    .to_string_lossy()
+            );
+            println!(
+                "{}",
+                tauri::api::path::home_dir()
+                    .unwrap_or(std::path::PathBuf::new())
+                    .to_string_lossy()
+            );
+            println!(
+                "{}",
+                tauri::api::path::audio_dir()
+                    .unwrap_or(std::path::PathBuf::new())
+                    .to_string_lossy()
+            );
+            println!(
+                "{}",
+                tauri::api::path::desktop_dir()
+                    .unwrap_or(std::path::PathBuf::new())
+                    .to_string_lossy()
+            );
+            println!(
+                "{}",
+                tauri::api::path::document_dir()
+                    .unwrap_or(std::path::PathBuf::new())
+                    .to_string_lossy()
+            );
+            println!(
+                "{}",
+                tauri::api::path::download_dir()
+                    .unwrap_or(std::path::PathBuf::new())
+                    .to_string_lossy()
+            );
+            println!(
+                "{}",
+                tauri::api::path::picture_dir()
+                    .unwrap_or(std::path::PathBuf::new())
+                    .to_string_lossy()
+            );
+
+            initialize_logging(app)?;
             create_app_directories(app)?;
 
             *app.state::<SettingsState>().0.write() = Settings::load_or_default(
@@ -311,6 +444,37 @@ fn main() -> eyre::Result<()> {
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+
+    Ok(())
+}
+
+fn initialize_logging(app: &mut App) -> eyre::Result<()> {
+    color_eyre::install()?;
+
+    let appender = tracing_appender::rolling::never(
+        app.path_resolver().app_data_dir().unwrap().join(LOGS_DIR),
+        create_log_filename(),
+    );
+    let (non_blocking_appender, _guard) = tracing_appender::non_blocking(appender);
+
+    let subscriber = tracing_subscriber::fmt()
+        .with_file(true)
+        .with_line_number(true)
+        .with_ansi(false)
+        .with_writer(stdout.and(non_blocking_appender))
+        .finish();
+
+    tracing::subscriber::with_default(subscriber, || {
+        tracing::event!(tracing::Level::INFO, "Initialized logging");
+        info!(
+            "{}",
+            app.path_resolver()
+                .app_config_dir()
+                .unwrap()
+                .join(LOGS_DIR)
+                .display()
+        );
+    });
 
     Ok(())
 }

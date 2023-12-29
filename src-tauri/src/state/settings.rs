@@ -7,7 +7,8 @@ use tracing::info;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Settings {
-    pub wad_hashtable_urls: Vec<String>,
+    pub default_mount_directory: Option<String>,
+    pub default_extraction_directory: Option<String>,
 }
 
 impl Settings {
@@ -29,12 +30,8 @@ impl Settings {
 impl Default for Settings {
     fn default() -> Self {
         Self {
-            wad_hashtable_urls: vec![
-                "https://raw.githubusercontent.com/CommunityDragon/CDTB/master/cdragontoolbox/hashes.game.txt"
-                    .into(),
-                "https://raw.githubusercontent.com/CommunityDragon/CDTB/master/cdragontoolbox/hashes.lcu.txt"
-                    .into(),
-            ],
+            default_mount_directory: None,
+            default_extraction_directory: None,
         }
     }
 }
