@@ -11,17 +11,13 @@ import * as RadixTabs from '@radix-ui/react-tabs';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { LuPackagePlus } from 'react-icons/lu';
 import { RxDragHandleDots2 } from 'react-icons/rx';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
 
 import { CloseIcon } from '../../../../assets';
-import { Button, Icon, Tooltip } from '../../../../components';
-import { appRoutes } from '../../../../lib/router';
-import { composeUrlQuery } from '../../../../utils';
-import { useMountWads, useMountedWads, useReorderMountedWad, useUnmountWad } from '../../api';
+import { Icon, Tooltip } from '../../../../components';
+import { useMountedWads, useReorderMountedWad, useUnmountWad } from '../../api';
 import { MountedWad } from '../../types';
+import { MountWadsButton } from './MountWadsButton';
 import { WadDirectoryTabContent, WadRootTabContent } from './WadTabContent';
 
 export type WadTabsProps = {
@@ -35,12 +31,8 @@ export const WadTabs: React.FC<WadTabsProps> = ({
   selectedItemId,
   onSelectedWadChanged,
 }) => {
-  const [t] = useTranslation('mountedWads');
-  const navigate = useNavigate();
-
   const mountedWadsQuery = useMountedWads();
 
-  const mountWadsMutation = useMountWads();
   const unmountWadMutation = useUnmountWad();
   const reorderWadMutation = useReorderMountedWad();
 
@@ -55,20 +47,6 @@ export const WadTabs: React.FC<WadTabsProps> = ({
         destIndex: result.destination.index,
       });
     }
-  };
-
-  const handleMountWads = () => {
-    mountWadsMutation.mutate(undefined, {
-      onSuccess: ({ wadIds }) => {
-        if (wadIds.length === 0) {
-          return;
-        }
-
-        toast.success(t('mountSuccess', { count: wadIds.length }));
-
-        navigate(composeUrlQuery(appRoutes.mountedWads, { wadId: wadIds[0] }));
-      },
-    });
   };
 
   if (mountedWadsQuery.isSuccess) {
@@ -113,18 +91,7 @@ export const WadTabs: React.FC<WadTabsProps> = ({
                 </RadixTabs.List>
               )}
             </Droppable>
-            <Tooltip.Root>
-              <Tooltip.Trigger asChild>
-                <Button
-                  variant="filled"
-                  className="h-full rounded-l-none text-xl"
-                  onClick={() => handleMountWads()}
-                >
-                  <Icon size="xl" icon={LuPackagePlus} />
-                </Button>
-              </Tooltip.Trigger>
-              <Tooltip.Content side="bottom">Mount Wads</Tooltip.Content>
-            </Tooltip.Root>
+            <MountWadsButton />
           </div>
           {mountedWadsQuery.data.wads.map((mountedWad) => {
             return (
@@ -159,8 +126,6 @@ const TabTrigger: React.FC<TabTriggerProps> = ({
   provided,
   snapshot,
 }) => {
-  const [t] = useTranslation('mountedWads');
-
   return (
     <Tooltip.Root>
       <Tooltip.Trigger asChild>

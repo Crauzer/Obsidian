@@ -3,7 +3,12 @@ import { tauri } from '@tauri-apps/api';
 
 import { PickDirectoryResponse, fsCommands } from '..';
 
-export const pickDirectory = () => tauri.invoke<PickDirectoryResponse>(fsCommands.pickDirectory);
+export type PickDirectoryContext = {
+  initialDirectory?: string;
+};
+
+export const pickDirectory = ({ initialDirectory }: PickDirectoryContext) =>
+  tauri.invoke<PickDirectoryResponse>(fsCommands.pickDirectory, { initialDirectory });
 
 export const usePickDirectory = () => {
   return useMutation({ mutationFn: pickDirectory });

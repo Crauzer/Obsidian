@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 use tracing::info;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct Settings {
     pub default_mount_directory: Option<String>,
     pub default_extraction_directory: Option<String>,

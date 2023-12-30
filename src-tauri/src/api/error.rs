@@ -1,5 +1,3 @@
-use std::io;
-
 use color_eyre::eyre;
 use serde::{ser::SerializeStruct, Serialize};
 
@@ -7,13 +5,15 @@ const UNKNOWN_ERROR: &str = "Unknown error";
 
 #[derive(Debug)]
 pub struct ApiError {
+    title: Option<String>,
     message: String,
-    extensions: Vec<ApiErrorExtension>,
+    extensions: Option<Vec<ApiErrorExtension>>,
 }
 
 pub struct ApiErrorBuilder {
+    title: Option<String>,
     message: String,
-    extensions: Vec<ApiErrorExtension>,
+    extensions: Option<Vec<ApiErrorExtension>>,
 }
 
 #[derive(Debug, Serialize)]
@@ -22,8 +22,9 @@ pub enum ApiErrorExtension {}
 impl ApiError {
     pub fn from_message(message: impl AsRef<str>) -> Self {
         Self {
+            title: None,
             message: String::from(message.as_ref()),
-            extensions: Vec::default(),
+            extensions: None,
         }
     }
 }
@@ -31,13 +32,15 @@ impl ApiError {
 impl ApiErrorBuilder {
     pub fn new() -> Self {
         Self {
+            title: None,
             message: String::from(UNKNOWN_ERROR),
-            extensions: Vec::default(),
+            extensions: None,
         }
     }
 
     pub fn build(self) -> ApiError {
         ApiError {
+            title: self.title,
             message: self.message,
             extensions: self.extensions,
         }
@@ -47,8 +50,13 @@ impl ApiErrorBuilder {
         self.message = String::from(message.as_ref());
         self
     }
-    pub fn extension(mut self, extension: ApiErrorExtension) -> Self {
-        self.extensions.push(extension);
+    pub fn extend(mut self, extension: ApiErrorExtension) -> Self {
+        if let Some(extensions) = &mut self.extensions {
+            extensions.push(extension);
+        } else {
+            self.extensions = Some(vec![extension]);
+        }
+
         self
     }
 }
@@ -56,8 +64,9 @@ impl ApiErrorBuilder {
 impl From<eyre::Report> for ApiError {
     fn from(value: eyre::Report) -> Self {
         Self {
+            title: None,
             message: format!("{:#}", value),
-            extensions: Vec::default(),
+            extensions: None,
         }
     }
 }

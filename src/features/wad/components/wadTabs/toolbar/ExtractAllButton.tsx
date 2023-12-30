@@ -1,15 +1,19 @@
-import { tauri } from '@tauri-apps/api';
+import { t } from 'i18next';
 import React, { useMemo, useState } from 'react';
 import { LuFileDown } from 'react-icons/lu';
 import { toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
-import { set } from 'zod';
 
 import { useExtractMountedWad } from '../../..';
-import { Button, Icon, LoadingOverlay, Toast } from '../../../../../components';
+import { Button, Icon, LoadingOverlay } from '../../../../../components';
 import { queryClient } from '../../../../../lib/query';
-import { useActionProgress, useActionProgressSubscription } from '../../../../actions';
+import {
+  actionsQueryKeys,
+  useActionProgress,
+  useActionProgressSubscription,
+} from '../../../../actions';
 import { usePickDirectory } from '../../../../fs';
+import { useSettings } from '../../../../settings';
 
 type ExtractAllButtonProps = {
   wadId: string;
@@ -19,6 +23,7 @@ export const ExtractAllButton: React.FC<ExtractAllButtonProps> = ({ wadId }) => 
   const [actionId] = useState(uuidv4());
   const [isLoadingOverlayOpen, setIsLoadingOverlayOpen] = useState(false);
 
+  const settings = useSettings();
   const pickDirectory = usePickDirectory();
   const extractMountedWad = useExtractMountedWad();
 
@@ -46,27 +51,30 @@ export const ExtractAllButton: React.FC<ExtractAllButtonProps> = ({ wadId }) => 
         onClick={() => {
           setIsLoadingOverlayOpen(true);
 
-          pickDirectory.mutate(undefined, {
-            onSuccess: (directory) => {
-              extractMountedWad.mutate(
-                { wadId, actionId, extractDirectory: directory.path },
-                {
-                  onSuccess: () => {},
-                  onError: (error) => {
-                    console.error(error);
-                    toast.error(<Toast.Error message={error.message} />);
+          pickDirectory.mutate(
+            { initialDirectory: settings.data?.defaultExtractionDirectory },
+            {
+              onSuccess: (directory) => {
+                extractMountedWad.mutate(
+                  { wadId, actionId, extractDirectory: directory.path },
+                  {
+                    onSuccess: () => {
+                      toast.success(t('mountedWads:exteraction.success'));
+                    },
+                    onSettled: () => {
+                      setIsLoadingOverlayOpen(false);
+                      queryClient.resetQueries({
+                        queryKey: actionsQueryKeys.actionProgress(actionId),
+                      });
+                    },
                   },
-                  onSettled: () => {
-                    setIsLoadingOverlayOpen(false);
-                    queryClient.resetQueries();
-                  },
-                },
-              );
+                );
+              },
+              onError: () => {
+                setIsLoadingOverlayOpen(false);
+              },
             },
-            onError: () => {
-              setIsLoadingOverlayOpen(false);
-            },
-          });
+          );
         }}
       >
         <Icon size="md" icon={LuFileDown} />

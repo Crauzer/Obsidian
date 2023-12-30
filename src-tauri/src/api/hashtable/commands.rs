@@ -1,6 +1,6 @@
 use crate::api::ApiResult;
-use crate::error::Result;
 use crate::{api::error::ApiError, state::WadHashtableState};
+use color_eyre::eyre;
 use octocrab::models::repos::ContentItems;
 use tracing::info;
 
@@ -31,7 +31,7 @@ pub async fn load_wad_hashtables(
     Ok(())
 }
 
-async fn get_file_content(path: impl AsRef<str>) -> Result<ContentItems> {
+async fn get_file_content(path: impl AsRef<str>) -> eyre::Result<ContentItems> {
     let path = path.as_ref();
     info!("getting github file content: {}", path);
 

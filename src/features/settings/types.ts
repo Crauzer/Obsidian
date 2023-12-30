@@ -1,7 +1,8 @@
 import { z } from 'zod';
 
 export type Settings = {
-  wadHashtableSources: string[];
+  defaultMountDirectory: string;
+  defaultExtractionDirectory: string;
 };
 
 export type SettingsFormData = z.infer<typeof settingsFormDataSchema>;
