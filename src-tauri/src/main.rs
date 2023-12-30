@@ -126,9 +126,7 @@ fn initialize_logging(app_handle: &AppHandle) -> eyre::Result<()> {
         .with_writer(stdout.and(non_blocking_appender))
         .finish();
 
-    tracing::subscriber::with_default(subscriber, || {
-        tracing::event!(tracing::Level::INFO, "Initialized logging");
-    });
+    tracing::subscriber::set_global_default(subscriber)?;
 
     Ok(())
 }

@@ -1,9 +1,9 @@
 use color_eyre::eyre;
-use serde::{ser::SerializeStruct, Serialize};
+use serde::{Deserialize, Serialize};
 
 const UNKNOWN_ERROR: &str = "Unknown error";
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ApiError {
     title: Option<String>,
     message: String,
@@ -16,7 +16,7 @@ pub struct ApiErrorBuilder {
     extensions: Option<Vec<ApiErrorExtension>>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum ApiErrorExtension {}
 
 impl ApiError {
@@ -68,18 +68,5 @@ impl From<eyre::Report> for ApiError {
             message: format!("{:#}", value),
             extensions: None,
         }
-    }
-}
-
-impl serde::Serialize for ApiError {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        let mut state = serializer.serialize_struct("ApiError", 2)?;
-        state.serialize_field("message", &self.message)?;
-        state.serialize_field("extensions", &self.extensions)?;
-
-        state.end()
     }
 }

@@ -7,7 +7,7 @@ use crate::{
         tree::{WadTreeItem, WadTreeParent, WadTreePathable},
         Wad, WadChunk, WadDecoder,
     },
-    state::{MountedWadsState, WadHashtable, WadHashtableState},
+    state::{MountedWadsState, SettingsState, WadHashtable, WadHashtableState},
     utils::actions::emit_action_progress,
 };
 use color_eyre::eyre;
@@ -21,7 +21,7 @@ use std::{
     str::FromStr,
     sync::Arc,
 };
-use tauri::Manager;
+use tauri::{api::dialog, Manager};
 use tracing::{error, info, warn};
 use uuid::Uuid;
 
@@ -29,14 +29,18 @@ use uuid::Uuid;
 pub async fn mount_wads(
     mounted_wads: tauri::State<'_, MountedWadsState>,
     wad_hashtable: tauri::State<'_, WadHashtableState>,
+    settings: tauri::State<'_, SettingsState>,
 ) -> Result<MountWadResponse, ApiError> {
     let mut mounted_wads_guard = mounted_wads.0.lock();
 
-    let file_path = tauri::api::dialog::blocking::FileDialogBuilder::new()
-        .add_filter(".wad files", &["wad.client"])
-        .pick_files();
+    let mut dialog =
+        dialog::blocking::FileDialogBuilder::new().add_filter(".wad files", &["wad.client"]);
 
-    if let Some(wad_paths) = file_path {
+    if let Some(default_mount_directory) = &settings.0.read().default_mount_directory {
+        dialog = dialog.set_directory(Path::new(default_mount_directory));
+    }
+
+    if let Some(wad_paths) = dialog.pick_files() {
         let wad_hashtable = wad_hashtable.0.lock();
         let mut wad_ids: Vec<Uuid> = vec![];
 
