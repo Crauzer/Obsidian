@@ -34,13 +34,18 @@ export const WadItemList: React.FC<WadItemListProps> = ({ wadId, parentItemId, d
           endIndex - startIndex + 1,
           startIndex,
         ).map<WadItemSelectionUpdate>((x) => {
-          const item = data[x];
-
           return {
             index: x,
             isSelected: true,
           };
         }),
+      });
+    } else if (isHotkeyPressed('ctrl')) {
+      updateMountedWadItemSelection.mutate({
+        wadId,
+        parentItemId,
+        resetSelection: false,
+        itemSelections: [{ index, isSelected: !data[index].isSelected }],
       });
     } else {
       updateMountedWadItemSelection.mutate({
