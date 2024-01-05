@@ -18,7 +18,14 @@ export const WadRootTabContent: React.FC<WadRootTabContentProps> = ({ wadId }) =
   const itemsQuery = useWadItems(wadId);
 
   if (itemsQuery.isSuccess) {
-    return <WadTabContent wadId={wadId} items={itemsQuery.data} pathComponents={[]} />;
+    return (
+      <WadTabContent
+        wadId={wadId}
+        parentItemId={undefined}
+        items={itemsQuery.data}
+        pathComponents={[]}
+      />
+    );
   }
 
   return null;
@@ -40,6 +47,7 @@ export const WadDirectoryTabContent: React.FC<WadDirectoryTabContentProps> = ({
     return (
       <WadTabContent
         wadId={wadId}
+        parentItemId={selectedItemId}
         items={itemsQuery.data}
         pathComponents={pathComponentsQuery.data ?? []}
       />
@@ -51,11 +59,17 @@ export const WadDirectoryTabContent: React.FC<WadDirectoryTabContentProps> = ({
 
 type WadTabContentProps = {
   wadId: string;
+  parentItemId?: string;
   items: WadItem[];
   pathComponents: WadItemPathComponent[];
 };
 
-const WadTabContent: React.FC<WadTabContentProps> = ({ wadId, items, pathComponents }) => {
+const WadTabContent: React.FC<WadTabContentProps> = ({
+  wadId,
+  parentItemId,
+  items,
+  pathComponents,
+}) => {
   const [t] = useTranslation('mountedWads');
 
   return (
@@ -82,7 +96,7 @@ const WadTabContent: React.FC<WadTabContentProps> = ({ wadId, items, pathCompone
             />
           ))}
         </Breadcrumbs.Root>
-        <WadItemList wadId={wadId} data={items} />
+        <WadItemList wadId={wadId} parentItemId={parentItemId} data={items} />
       </div>
     </div>
   );

@@ -1,22 +1,24 @@
 use super::{
     MountWadResponse, MountedWadDto, MountedWadsResponse, WadItemDto, WadItemPathComponentDto,
+    WadItemSelectionUpdate,
 };
 use crate::{
     api::error::ApiError,
     core::wad::{
-        tree::{WadTreeItem, WadTreeParent, WadTreePathable},
+        tree::{WadTreeItem, WadTreeItemKey, WadTreeParent, WadTreePathable, WadTreeSelectable},
         Wad, WadChunk, WadDecoder,
     },
     state::{MountedWadsState, SettingsState, WadHashtable, WadHashtableState},
     utils::actions::emit_action_progress,
 };
-use color_eyre::eyre;
+use color_eyre::eyre::{self, ContextCompat};
 use eyre::Context;
 use itertools::Itertools;
 use std::{
     collections::VecDeque,
     fs::{self, DirBuilder, File},
     io::{self, Read, Seek},
+    ops::IndexMut,
     path::{Path, PathBuf},
     str::FromStr,
     sync::Arc,
@@ -116,6 +118,60 @@ pub async fn get_mounted_wad_directory_items(
         "failed to get wad tree ({})",
         wad_id
     )))
+}
+
+#[tauri::command]
+pub async fn update_mounted_wad_item_selection(
+    wad_id: Uuid,
+    parent_item_id: Option<Uuid>,
+    reset_selection: bool,
+    item_selections: Vec<WadItemSelectionUpdate>,
+    mounted_wads: tauri::State<'_, MountedWadsState>,
+) -> Result<(), ApiError> {
+    if let Some(wad_tree) = mounted_wads.0.lock().wad_trees_mut().get_mut(&wad_id) {
+        match parent_item_id {
+            None => {
+                update_parent_items_selection(wad_tree, reset_selection, &item_selections);
+            }
+            Some(parent_item_id) => {
+                let parent_item = wad_tree
+                    .find_item_mut(|item| item.id() == parent_item_id)
+                    .wrap_err(format!(
+                        "failed to find parent wad item (parent_item_id = {})",
+                        parent_item_id
+                    ))?;
+
+                if let WadTreeItem::Directory(directory) = parent_item {
+                    update_parent_items_selection(directory, reset_selection, &item_selections);
+                }
+            }
+        };
+    }
+
+    Ok(())
+}
+
+pub(crate) fn update_parent_items_selection(
+    parent: &mut impl WadTreeParent,
+    reset_selection: bool,
+    item_selections: &Vec<WadItemSelectionUpdate>,
+) {
+    let parent_items = parent.items_mut();
+
+    if reset_selection {
+        for (_, item) in parent_items.iter_mut() {
+            item.set_is_selected(false);
+        }
+    }
+
+    // apply selection
+    for item_selection_update in item_selections {
+        info!("{:#?}", &item_selection_update);
+
+        parent_items
+            .index_mut(item_selection_update.index)
+            .set_is_selected(item_selection_update.is_selected);
+    }
 }
 
 #[tauri::command]

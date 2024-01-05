@@ -4,25 +4,18 @@ import { useSearchParams } from 'react-router-dom';
 
 import { FolderIcon } from '../../../../assets';
 import { Icon } from '../../../../components';
-import { useSelectWadTreeItem } from '../../api';
 import { WadItem } from '../../types';
 import { getLeagueFileKindIcon, getLeagueFileKindIconColor } from '../../utils';
 
-export type WadItemListRowProps = { wadId: string; item: WadItem; index: number };
+export type WadItemListRowProps = {
+  wadId: string;
+  item: WadItem;
+  index: number;
+  onClick?: () => void;
+};
 
-export const WadItemListRow: React.FC<WadItemListRowProps> = ({ wadId, item, index }) => {
+export const WadItemListRow: React.FC<WadItemListRowProps> = ({ wadId, item, index, onClick }) => {
   const [_, setSearchParams] = useSearchParams();
-
-  const { mutate: selectWadTreeItemMutate } = useSelectWadTreeItem();
-
-  const handleClick = useCallback(() => {
-    selectWadTreeItemMutate({
-      wadId,
-      itemId: item.id,
-      itemIndex: index,
-      isSelected: true,
-    });
-  }, [index, item.id, selectWadTreeItemMutate, wadId]);
 
   const handleDoubleClick = useCallback(() => {
     if (item.kind !== 'directory') {
@@ -46,7 +39,7 @@ export const WadItemListRow: React.FC<WadItemListRowProps> = ({ wadId, item, ind
           'border-transparent': !item.isSelected,
         },
       )}
-      onClick={handleClick}
+      onClick={() => onClick?.()}
       onDoubleClick={handleDoubleClick}
     >
       <div className="flex flex-row items-center gap-2">

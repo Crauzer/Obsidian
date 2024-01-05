@@ -1,6 +1,8 @@
+use crate::core::wad::tree::utils::find_parent_item_mut;
 use std::{iter::Peekable, sync::Arc};
 
 use indexmap::IndexMap;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::state::WadHashtable;
@@ -10,16 +12,18 @@ use super::utils::{
 };
 use super::{WadChunk, WadTreeError};
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub enum WadTreeItemKind {
+    #[serde(rename = "file")]
     File,
+    #[serde(rename = "directory")]
     Directory,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct WadTreeItemKey {
-    pub(super) path_hash: u64,
-    pub(super) kind: WadTreeItemKind,
+    pub path_hash: u64,
+    pub kind: WadTreeItemKind,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -71,6 +75,10 @@ pub trait WadTreeParent {
 
     fn find_item<'p>(&'p self, condition: impl Fn(&WadTreeItem) -> bool)
         -> Option<&'p WadTreeItem>;
+    fn find_item_mut<'p>(
+        &'p mut self,
+        condition: impl Fn(&WadTreeItem) -> bool,
+    ) -> Option<&'p mut WadTreeItem>;
 }
 
 pub(super) trait WadTreeParentInternal: WadTreeParent {
@@ -155,6 +163,12 @@ impl WadTreeParent for WadTreeDirectory {
         condition: impl Fn(&WadTreeItem) -> bool,
     ) -> Option<&'p WadTreeItem> {
         find_parent_item(self, &condition)
+    }
+    fn find_item_mut<'p>(
+        &'p mut self,
+        condition: impl Fn(&WadTreeItem) -> bool,
+    ) -> Option<&'p mut WadTreeItem> {
+        find_parent_item_mut(self, &condition)
     }
 }
 

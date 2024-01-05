@@ -76,10 +76,10 @@ pub(super) fn add_file_item(
     return Ok(());
 }
 
-pub(super) fn add_or_resolve_directory_item<'w>(
-    parent: &'w mut (impl WadTreeParentInternal + WadTreePathable),
+pub(super) fn add_or_resolve_directory_item(
+    parent: &mut (impl WadTreeParentInternal + WadTreePathable),
     name: Arc<str>,
-) -> Result<&'w mut WadTreeItem, WadTreeError> {
+) -> Result<&mut WadTreeItem, WadTreeError> {
     let path: Arc<str> = match parent.is_root() {
         true => name.clone(),
         false => format!("{}/{}", parent.path(), name).into(),
@@ -172,6 +172,33 @@ pub(super) fn find_parent_item<'p>(
         condition: &dyn Fn(&WadTreeItem) -> bool,
     ) -> Option<&'p WadTreeItem> {
         for (_, item) in parent.items() {
+            if condition(&item) {
+                return Some(item);
+            }
+
+            if let Some(found_item) = match item {
+                WadTreeItem::Directory(directory) => search_parent(directory, condition),
+                _ => None,
+            } {
+                return Some(found_item);
+            }
+        }
+
+        None
+    }
+
+    search_parent(parent, &condition)
+}
+
+pub(super) fn find_parent_item_mut<'p>(
+    parent: &'p mut impl WadTreeParent,
+    condition: impl Fn(&WadTreeItem) -> bool,
+) -> Option<&'p mut WadTreeItem> {
+    fn search_parent<'p>(
+        parent: &'p mut impl WadTreeParent,
+        condition: &dyn Fn(&WadTreeItem) -> bool,
+    ) -> Option<&'p mut WadTreeItem> {
+        for (_, item) in parent.items_mut() {
             if condition(&item) {
                 return Some(item);
             }

@@ -1,3 +1,4 @@
+use crate::core::wad::tree::utils::find_parent_item_mut;
 use std::{
     io::{Read, Seek},
     iter::Peekable,
@@ -39,6 +40,7 @@ pub struct WadTree {
     wad_id: Uuid,
     wad_path: Arc<str>,
     items: IndexMap<WadTreeItemKey, WadTreeItem>,
+    selected_items: Vec<WadTreeItemKey>,
 }
 
 impl WadTree {
@@ -55,6 +57,7 @@ impl WadTree {
             wad_id,
             wad_path: wad_path.into(),
             items: IndexMap::default(),
+            selected_items: vec![],
         };
 
         for (_, chunk) in wad.chunks() {
@@ -82,6 +85,10 @@ impl WadTree {
     pub fn wad_path(&self) -> &str {
         &self.wad_path
     }
+
+    pub fn set_selected_items(&mut self, selected_items: impl IntoIterator<Item = WadTreeItemKey>) {
+        self.selected_items = Vec::from_iter(selected_items);
+    }
 }
 
 impl WadTreeParent for WadTree {
@@ -104,11 +111,17 @@ impl WadTreeParent for WadTree {
         traverse_parent_items_mut(self, &mut cb)
     }
 
-    fn find_item<'p>(
-        &'p self,
+    fn find_item(
+        &self,
         condition: impl Fn(&WadTreeItem) -> bool,
-    ) -> Option<&'p WadTreeItem> {
+    ) -> Option<&WadTreeItem> {
         find_parent_item(self, &condition)
+    }
+    fn find_item_mut(
+        &mut self,
+        condition: impl Fn(&WadTreeItem) -> bool,
+    ) -> Option<&mut WadTreeItem> {
+        find_parent_item_mut(self, &condition)
     }
 }
 

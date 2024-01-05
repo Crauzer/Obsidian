@@ -5,7 +5,7 @@ use uuid::Uuid;
 
 use crate::core::{
     league_file::{get_league_file_kind_from_extension, LeagueFileKind},
-    wad::tree::{WadTreeDirectory, WadTreeFile, WadTreeItem, WadTreePathable},
+    wad::tree::{WadTreeDirectory, WadTreeFile, WadTreeItem, WadTreeItemKind, WadTreePathable},
 };
 
 mod commands;
@@ -38,6 +38,13 @@ pub struct WadItemPathComponentDto {
     pub item_id: Uuid,
     pub name: String,
     pub path: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct WadItemSelectionUpdate {
+    pub index: usize,
+    pub is_selected: bool,
 }
 
 #[derive(Serialize, Deserialize)]

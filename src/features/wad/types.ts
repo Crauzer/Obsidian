@@ -81,6 +81,11 @@ export type WadItem = WadFileItem | WadDirectoryItem;
 export type WadItemKind = z.infer<typeof wadItemKindSchema>;
 export const wadItemKindSchema = z.enum(['file', 'directory']);
 
+export type WadItemSelectionUpdate = {
+  index: number;
+  isSelected: boolean;
+};
+
 export type LeagueFileKind =
   | 'animation'
   | 'jpeg'

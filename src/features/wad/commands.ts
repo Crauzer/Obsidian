@@ -11,4 +11,5 @@ export const wadCommands = {
   moveMountedWad: 'move_mounted_wad' as const,
   selectWadTreeItem: 'select_wad_tree_item' as const,
   unmountWad: 'unmount_wad' as const,
+  updateMountedWadItemSelection: 'update_mounted_wad_item_selection' as const,
 };

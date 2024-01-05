@@ -10,3 +10,4 @@ export * from './mountWads';
 export * from './reorderMountedWad';
 export * from './selectWadTreeItem';
 export * from './unmountWad';
+export * from './updateMountedWadItemSelection';

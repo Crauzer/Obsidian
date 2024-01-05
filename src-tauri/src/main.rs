@@ -11,6 +11,7 @@ use crate::api::wad::get_mounted_wad_directory_items;
 use crate::api::wad::get_mounted_wads;
 use crate::api::wad::get_wad_items;
 use crate::api::wad::unmount_wad;
+use crate::api::wad::update_mounted_wad_item_selection;
 use crate::{
     api::{
         actions::get_action_progress,
@@ -77,10 +78,11 @@ fn main() -> eyre::Result<()> {
             load_wad_hashtables,
             mount_wads,
             move_mounted_wad,
+            open_path,
             pick_directory,
             pick_file,
             unmount_wad,
-            open_path,
+            update_mounted_wad_item_selection,
             update_settings,
         ])
         .on_window_event(|event| {
