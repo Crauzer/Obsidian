@@ -28,12 +28,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           <img className="rounded-xl shadow-xl" width={60} height={60} src={Logo} alt="logo" />
         </a>
 
-        <NavigationMenu
-          items={[
-            { title: t('explorer.title'), href: appRoutes.explorer },
-            { title: t('mountedWads.title'), href: appRoutes.mountedWads },
-          ]}
-        />
+        <NavigationMenu items={[{ title: t('mountedWads.title'), href: appRoutes.mountedWads }]} />
         <div className="flex flex-1" />
       </div>
       <div className="flex w-full flex-1">{children}</div>

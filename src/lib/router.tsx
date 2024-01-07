@@ -19,6 +19,7 @@ export const router = createBrowserRouter([
   {
     path: appRoutes.root,
     element: <Root />,
+
     children: [
       { path: appRoutes.explorer },
       {

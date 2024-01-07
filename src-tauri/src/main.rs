@@ -40,7 +40,6 @@ use std::{collections::HashMap, io::stdout};
 use tauri::{App, AppHandle, Manager};
 use tracing::info;
 use tracing_subscriber::fmt::writer::MakeWriterExt;
-use utils::log::create_log_filename;
 
 mod error;
 mod paths;
