@@ -2,8 +2,10 @@ import * as RadixNavigationMenu from '@radix-ui/react-navigation-menu';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { FaGithub } from 'react-icons/fa';
 import { PiGearSixDuotone } from 'react-icons/pi';
 import { useMatches } from 'react-router-dom';
+import { P } from 'ts-pattern';
 
 import { Button, Icon } from '..';
 import Logo from '../../assets/logo.png';
@@ -24,15 +26,29 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           'bg-gradient-to-r from-obsidian-900/90 to-obsidian-700/60 backdrop-blur',
         )}
       >
-        <a className="rounded-md" href="https://github.com/Crauzer/Obsidian" target="_blank">
-          <img className="rounded-xl shadow-xl" width={60} height={60} src={Logo} alt="logo" />
-        </a>
-
+        <BrandLogo />
         <NavigationMenu items={[{ title: t('mountedWads.title'), href: appRoutes.mountedWads }]} />
         <div className="flex flex-1" />
       </div>
       <div className="flex w-full flex-1">{children}</div>
       <Infobar />
+    </div>
+  );
+};
+
+const BrandLogo: React.FC = () => {
+  return (
+    <div className="group relative flex rounded-md">
+      <a
+        className="relative rounded-md transition-[filter] duration-200 group-hover:blur-[2px]"
+        href="https://github.com/Crauzer/Obsidian"
+        target="_blank"
+      >
+        <img className="rounded-xl shadow-xl" width={60} height={60} src={Logo} alt="logo" />
+      </a>
+      <div className="pointer-events-none absolute flex h-full w-full items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
+        <Icon size="xl" icon={FaGithub} />
+      </div>
     </div>
   );
 };
