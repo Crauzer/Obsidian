@@ -2,6 +2,9 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 #![feature(io_error_more)]
 
+#[macro_use]
+extern crate lazy_static;
+
 mod api;
 mod core;
 mod state;
@@ -42,6 +45,11 @@ use utils::log::create_log_filename;
 mod error;
 mod paths;
 
+lazy_static! {
+    static ref LOG_GUARD: Mutex<Option<tracing_appender::non_blocking::WorkerGuard>> =
+        Mutex::new(None);
+}
+
 fn main() -> eyre::Result<()> {
     tauri::Builder::default()
         .plugin(tauri_plugin_window_state::Builder::default().build())
@@ -51,7 +59,8 @@ fn main() -> eyre::Result<()> {
         .manage(WadHashtableState(Mutex::new(WadHashtable::default())))
         .manage(ActionsState(RwLock::new(HashMap::default())))
         .setup(|app| {
-            initialize_logging(&app.handle())?;
+            LOG_GUARD.lock().replace(initialize_logging(&app.handle())?);
+
             create_app_directories(app)?;
 
             *app.state::<SettingsState>().0.write() = Settings::load_or_default(
@@ -108,18 +117,20 @@ fn main() -> eyre::Result<()> {
     Ok(())
 }
 
-fn initialize_logging(app_handle: &AppHandle) -> eyre::Result<()> {
+fn initialize_logging(
+    app_handle: &AppHandle,
+) -> eyre::Result<tracing_appender::non_blocking::WorkerGuard> {
     color_eyre::install()?;
 
-    let appender = tracing_appender::rolling::never(
+    let appender = tracing_appender::rolling::hourly(
         app_handle
             .path_resolver()
             .app_data_dir()
             .unwrap()
             .join(LOGS_DIR),
-        create_log_filename(),
+        "obsidian",
     );
-    let (non_blocking_appender, _guard) = tracing_appender::non_blocking(appender);
+    let (non_blocking_appender, guard) = tracing_appender::non_blocking(appender);
 
     let subscriber = tracing_subscriber::fmt()
         .with_file(true)
@@ -130,7 +141,7 @@ fn initialize_logging(app_handle: &AppHandle) -> eyre::Result<()> {
 
     tracing::subscriber::set_global_default(subscriber)?;
 
-    Ok(())
+    Ok(guard)
 }
 
 fn create_app_directories(app: &mut App) -> eyre::Result<()> {

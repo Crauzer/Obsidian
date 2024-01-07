@@ -2102,6 +2102,7 @@ dependencies = [
  "futures-util",
  "indexmap 2.1.0",
  "itertools",
+ "lazy_static",
  "memchr",
  "num_enum 0.7.1",
  "octocrab",

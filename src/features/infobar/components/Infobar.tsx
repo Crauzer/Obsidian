@@ -61,7 +61,7 @@ export const Infobar = () => {
 const WadHashtablesBar = () => {
   const hashtablesLoadingToastId = useRef<ToastId>('');
 
-  const [actionId, setActionId] = useState(uuidv4());
+  const [actionId] = useState(uuidv4());
 
   const loadHashtablesMutation = useLoadWadHashtables();
   const wadHashtableStatus = useWadHashtableStatus();

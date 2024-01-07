@@ -45,6 +45,7 @@ color-eyre = "0.6.2"
 open = "5.0.1"
 chrono = { version = "0.4.31", features = ["std", "clock"] }
 tracing-appender = "0.2.3"
+lazy_static = "1.4.0"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

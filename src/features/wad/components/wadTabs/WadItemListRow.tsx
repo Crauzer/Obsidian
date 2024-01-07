@@ -14,7 +14,7 @@ export type WadItemListRowProps = {
   onClick?: () => void;
 };
 
-export const WadItemListRow: React.FC<WadItemListRowProps> = ({ wadId, item, index, onClick }) => {
+export const WadItemListRow: React.FC<WadItemListRowProps> = ({ item, onClick }) => {
   const [_, setSearchParams] = useSearchParams();
 
   const handleDoubleClick = useCallback(() => {

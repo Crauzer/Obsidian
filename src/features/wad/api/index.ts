@@ -5,7 +5,6 @@ export * from './getMountedWads';
 export * from './getWadDirectoryItems';
 export * from './getWadDirectoryPathComponents';
 export * from './getWadItems';
-export * from './getWadTree';
 export * from './mountWads';
 export * from './reorderMountedWad';
 export * from './selectWadTreeItem';

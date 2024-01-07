@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
 
-import { Button, Checkbox, Form, Input, Kbd } from '../components';
+import { Button, Form, Kbd } from '../components';
 
 type ComponentTestFormData = z.infer<typeof componentTestFormDataSchema>;
 const componentTestFormDataSchema = z.object({
@@ -86,7 +86,7 @@ export default function ComponentTest() {
 }
 
 const FormCard = () => {
-  const { register, handleSubmit, control } = useForm<ComponentTestFormData>({
+  const { handleSubmit, control } = useForm<ComponentTestFormData>({
     resolver: zodResolver(componentTestFormDataSchema),
   });
 

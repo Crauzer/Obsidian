@@ -166,8 +166,6 @@ pub(crate) fn update_parent_items_selection(
 
     // apply selection
     for item_selection_update in item_selections {
-        info!("{:#?}", &item_selection_update);
-
         parent_items
             .index_mut(item_selection_update.index)
             .set_is_selected(item_selection_update.is_selected);
