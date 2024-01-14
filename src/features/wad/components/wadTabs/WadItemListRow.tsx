@@ -1,13 +1,13 @@
-import { readText, writeText } from '@tauri-apps/api/clipboard';
+import { writeText } from '@tauri-apps/api/clipboard';
 import clsx from 'clsx';
-import React, { MouseEventHandler, useCallback, useState } from 'react';
+import React, { MouseEventHandler, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { HiClipboardCopy } from 'react-icons/hi';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 import { FolderIcon } from '../../../../assets';
-import { ContextMenu, Icon, Menu, Toast } from '../../../../components';
+import { ContextMenu, Icon, Toast } from '../../../../components';
 import { toastAutoClose } from '../../../../utils/toast';
 import { WadItem } from '../../types';
 import { getLeagueFileKindIcon, getLeagueFileKindIconColor } from '../../utils';
@@ -20,9 +20,7 @@ export type WadItemListRowProps = {
 };
 
 export const WadItemListRow: React.FC<WadItemListRowProps> = ({ item, onClick }) => {
-  const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
-
-  const [_, setSearchParams] = useSearchParams();
+  const [, setSearchParams] = useSearchParams();
 
   const handleDoubleClick = useCallback(() => {
     if (item.kind !== 'directory') {
@@ -37,11 +35,7 @@ export const WadItemListRow: React.FC<WadItemListRowProps> = ({ item, onClick })
   }, [item.id, item.kind, setSearchParams]);
 
   return (
-    <WadItemListRowContextMenu
-      item={item}
-      open={isContextMenuOpen}
-      onOpenChange={(open) => setIsContextMenuOpen(open)}
-    >
+    <WadItemListRowContextMenu item={item}>
       <div
         className={clsx(
           'text-md box-border flex select-none flex-row border py-1 pl-2 text-gray-50 hover:cursor-pointer',
@@ -75,17 +69,11 @@ export const WadItemListRow: React.FC<WadItemListRowProps> = ({ item, onClick })
 type WadItemListRowContextMenuProps = {
   item: WadItem;
 
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-
   children?: React.ReactNode;
 };
 
 const WadItemListRowContextMenu: React.FC<WadItemListRowContextMenuProps> = ({
   item,
-
-  open,
-  onOpenChange,
 
   children,
 }) => {
@@ -94,7 +82,7 @@ const WadItemListRowContextMenu: React.FC<WadItemListRowContextMenuProps> = ({
   const handleCopyName = useCallback(async () => {
     await writeText(item.name);
 
-    toast.success(<Toast.Success message={t('common:copied', { text: item.name })} />, {
+    toast.info(<Toast.Info message={t('common:copied', { text: item.name })} />, {
       autoClose: toastAutoClose.veryShort,
     });
   }, [item.name, t]);
@@ -102,7 +90,7 @@ const WadItemListRowContextMenu: React.FC<WadItemListRowContextMenuProps> = ({
   const handleCopyPath = useCallback(async () => {
     await writeText(item.path);
 
-    toast.success(<Toast.Success message={t('common:copied', { text: item.path })} />, {
+    toast.info(<Toast.Info message={t('common:copied', { text: item.path })} />, {
       autoClose: toastAutoClose.veryShort,
     });
   }, [item.path, t]);
