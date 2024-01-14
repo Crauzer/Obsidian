@@ -19,7 +19,7 @@ export const WadItemList: React.FC<WadItemListProps> = ({ wadId, parentItemId, d
 
   const updateMountedWadItemSelection = useUpdateMountedWadItemSelection();
 
-  const onRowClicked = (index: number) => {
+  const onRowClicked = (index: number, isRightClick: boolean) => {
     setLatestSelectedIndex(index);
 
     if (isHotkeyPressed('shift')) {
@@ -69,7 +69,7 @@ export const WadItemList: React.FC<WadItemListProps> = ({ wadId, parentItemId, d
                 item={item}
                 wadId={wadId}
                 index={index}
-                onClick={() => onRowClicked(index)}
+                onClick={(event) => onRowClicked(index, event.type === 'contextmenu')}
               />
             )}
           />

@@ -7,6 +7,7 @@ use std::{
 
 use indexmap::IndexMap;
 use thiserror::Error;
+use tracing::info;
 use uuid::Uuid;
 
 mod item;
@@ -53,6 +54,8 @@ impl WadTree {
     where
         TSource: Read + Seek,
     {
+        info!("creating wad tree for wad (wad_id: {})", wad_id);
+
         let mut tree = WadTree {
             wad_id,
             wad_path: wad_path.into(),
@@ -111,10 +114,7 @@ impl WadTreeParent for WadTree {
         traverse_parent_items_mut(self, &mut cb)
     }
 
-    fn find_item(
-        &self,
-        condition: impl Fn(&WadTreeItem) -> bool,
-    ) -> Option<&WadTreeItem> {
+    fn find_item(&self, condition: impl Fn(&WadTreeItem) -> bool) -> Option<&WadTreeItem> {
         find_parent_item(self, &condition)
     }
     fn find_item_mut(

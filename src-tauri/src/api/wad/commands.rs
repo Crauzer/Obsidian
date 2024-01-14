@@ -5,7 +5,7 @@ use super::{
 use crate::{
     api::error::ApiError,
     core::wad::{
-        tree::{WadTreeItem, WadTreeItemKey, WadTreeParent, WadTreePathable, WadTreeSelectable},
+        tree::{WadTreeItem, WadTreeParent, WadTreePathable, WadTreeSelectable},
         Wad, WadChunk, WadDecoder,
     },
     state::{MountedWadsState, SettingsState, WadHashtable, WadHashtableState},
@@ -15,7 +15,7 @@ use color_eyre::eyre::{self, ContextCompat};
 use eyre::Context;
 use itertools::Itertools;
 use std::{
-    collections::VecDeque,
+    collections::{HashMap, VecDeque},
     fs::{self, DirBuilder, File},
     io::{self, Read, Seek},
     ops::IndexMut,
@@ -256,12 +256,14 @@ pub async fn extract_mounted_wad(
     )?;
 
     // pre-create all chunk directories
-    prepare_extraction_directories(&wad, &wad_hashtable, &extract_directory)?;
+    prepare_extraction_directories(wad.chunks().iter(), &wad_hashtable, &extract_directory)?;
     let progress_offset = 0.1;
 
     // extract all chunks
+    let (mut decoder, chunks) = wad.decode();
     extract_wad_chunks(
-        wad,
+        &mut decoder,
+        &chunks,
         &wad_hashtable,
         extract_directory,
         |progress, message| {
@@ -368,21 +370,22 @@ fn collect_path_components<'p>(
     None
 }
 
-fn prepare_extraction_directories<TSource>(
-    wad: &Wad<TSource>,
+fn prepare_extraction_directories<'chunks>(
+    chunks: impl Iterator<Item = (&'chunks u64, &'chunks WadChunk)>,
     wad_hashtable: &WadHashtable,
     extraction_directory: impl AsRef<Path>,
-) -> eyre::Result<()>
-where
-    TSource: Read + Seek,
-{
+) -> eyre::Result<()> {
     info!("preparing extraction directories");
 
-    let chunk_directories = wad.chunks().iter().map(|(_, chunk)| {
+    // collect all chunk directories
+    let chunk_directories = chunks.map(|(_, chunk)| {
         Path::new(wad_hashtable.resolve_path(chunk.path_hash()).as_ref())
             .parent()
             .map(|path| path.to_path_buf())
     });
+
+    // create all chunk directories
+    // this wont error if the directory already exists since recursive mode is enabled
     for chunk_directory in chunk_directories {
         if let Some(chunk_directory) = chunk_directory {
             DirBuilder::new()
@@ -394,8 +397,9 @@ where
     Ok(())
 }
 
-fn extract_wad_chunks<TSource: Read + Seek>(
-    wad: &mut Wad<TSource>,
+fn extract_wad_chunks<'chunks, TSource: Read + Seek>(
+    decoder: &mut WadDecoder<TSource>,
+    chunks: &HashMap<u64, WadChunk>,
     wad_hashtable: &WadHashtable,
     extract_directory: PathBuf,
     report_progress: impl Fn(f64, Option<&str>) -> eyre::Result<()>,
@@ -403,14 +407,13 @@ fn extract_wad_chunks<TSource: Read + Seek>(
     info!("extracting chunks");
 
     let mut i = 0;
-    let (mut decoder, chunks) = wad.decode();
     for (_, chunk) in chunks {
         let chunk_path = wad_hashtable.resolve_path(chunk.path_hash());
         let chunk_path = Path::new(chunk_path.as_ref());
 
         report_progress(i as f64 / chunks.len() as f64, chunk_path.to_str())?;
 
-        extract_wad_chunk(&mut decoder, &chunk, &chunk_path, &extract_directory)?;
+        extract_wad_chunk(decoder, &chunk, &chunk_path, &extract_directory)?;
 
         i = i + 1;
     }

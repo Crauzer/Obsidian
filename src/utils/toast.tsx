@@ -6,6 +6,7 @@ export const toastAutoClose = {
   infinite: false,
   default: 5000,
   short: 2500,
+  veryShort: 1250,
 };
 
 export const createToastClassName = (props: { type?: TypeOptions } | undefined) =>

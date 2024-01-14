@@ -10,11 +10,6 @@ mod core;
 mod state;
 mod utils;
 
-use crate::api::wad::get_mounted_wad_directory_items;
-use crate::api::wad::get_mounted_wads;
-use crate::api::wad::get_wad_items;
-use crate::api::wad::unmount_wad;
-use crate::api::wad::update_mounted_wad_item_selection;
 use crate::{
     api::{
         actions::get_action_progress,
@@ -22,8 +17,9 @@ use crate::{
         hashtable::{get_wad_hashtable_status, load_wad_hashtables},
         settings::{get_settings, update_settings},
         wad::{
-            extract_mounted_wad, get_mounted_wad_directory_path_components, mount_wads,
-            move_mounted_wad,
+            extract_mounted_wad, get_mounted_wad_directory_items,
+            get_mounted_wad_directory_path_components, get_mounted_wads, get_wad_items, mount_wads,
+            move_mounted_wad, unmount_wad, update_mounted_wad_item_selection,
         },
     },
     paths::WAD_HASHTABLES_DIR,

@@ -14,3 +14,4 @@ export * from './form';
 export * from './label';
 export * from './toast';
 export * from './loadingOverlay';
+export * from './contextMenu';

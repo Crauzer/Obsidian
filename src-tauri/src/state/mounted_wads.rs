@@ -34,7 +34,6 @@ impl MountedWads {
         let id = Uuid::new_v4();
 
         info!("mounting wad (id: {}, path: {})", id, wad_path);
-        info!("creating wad tree (id: {})", id);
 
         self.wad_trees
             .insert(id, WadTree::from_wad(&wad, id, wad_path, hashtable)?);

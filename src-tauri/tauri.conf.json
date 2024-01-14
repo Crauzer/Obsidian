@@ -23,6 +23,11 @@
         "message": true,
         "open": true,
         "save": true
+      },
+      "clipboard": {
+        "all": true,
+        "writeText": true,
+        "readText": true
       }
     },
     "bundle": {

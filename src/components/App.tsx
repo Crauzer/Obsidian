@@ -25,7 +25,7 @@ export const App = () => {
               position="bottom-right"
               newestOnTop
               className="flex flex-col gap-2"
-              bodyClassName={() => 'text-sm font-med block p-3 gap-2 flex flex-row gap-2'}
+              bodyClassName={() => 'text-sm font-med block p-3 gap-2 flex flex-row gap-2 w-fit'}
               toastClassName={(props) => createToastClassName(props)}
               closeButton={({ closeToast }) => (
                 <ActionIcon
