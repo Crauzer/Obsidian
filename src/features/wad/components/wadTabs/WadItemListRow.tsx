@@ -82,7 +82,7 @@ const WadItemListRowContextMenu: React.FC<WadItemListRowContextMenuProps> = ({
   const handleCopyName = useCallback(async () => {
     await writeText(item.name);
 
-    toast.info(<Toast.Info message={t('common:copied', { text: item.name })} />, {
+    toast.info(<Toast.Info message={t('common:copied')} />, {
       autoClose: toastAutoClose.veryShort,
     });
   }, [item.name, t]);
@@ -90,7 +90,7 @@ const WadItemListRowContextMenu: React.FC<WadItemListRowContextMenuProps> = ({
   const handleCopyPath = useCallback(async () => {
     await writeText(item.path);
 
-    toast.info(<Toast.Info message={t('common:copied', { text: item.path })} />, {
+    toast.info(<Toast.Info message={t('common:copied')} />, {
       autoClose: toastAutoClose.veryShort,
     });
   }, [item.path, t]);
