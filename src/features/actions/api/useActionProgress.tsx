@@ -7,13 +7,6 @@ import { queryClient } from '../../../lib/query';
 import { ActionProgressEvent, actionProgressEventSchema } from '../types';
 
 export const useActionProgress = (actionId: string) => {
-  return useQuery<ActionProgressEvent>({
-    queryKey: actionsQueryKeys.actionProgress(actionId),
-    staleTime: Infinity,
-  });
-};
-
-export const useActionProgressSubscription = (actionId: string) => {
   useEffect(() => {
     const unlisten = listen(actionId, (event) => {
       const actionEvent = actionProgressEventSchema.safeParse(event);
@@ -28,4 +21,9 @@ export const useActionProgressSubscription = (actionId: string) => {
       unlisten.then((x) => x());
     };
   }, [actionId]);
+
+  return useQuery<ActionProgressEvent>({
+    queryKey: actionsQueryKeys.actionProgress(actionId),
+    staleTime: Infinity,
+  });
 };

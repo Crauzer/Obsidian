@@ -7,11 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useExtractMountedWad } from '../../..';
 import { Button, Icon, LoadingOverlay } from '../../../../../components';
 import { queryClient } from '../../../../../lib/query';
-import {
-  actionsQueryKeys,
-  useActionProgress,
-  useActionProgressSubscription,
-} from '../../../../actions';
+import { actionsQueryKeys, useActionProgress } from '../../../../actions';
 import { usePickDirectory } from '../../../../fs';
 import { useSettings } from '../../../../settings';
 
@@ -27,7 +23,6 @@ export const ExtractAllButton: React.FC<ExtractAllButtonProps> = ({ wadId }) => 
   const pickDirectory = usePickDirectory();
   const extractMountedWad = useExtractMountedWad();
 
-  useActionProgressSubscription(actionId);
   const actionProgress = useActionProgress(actionId);
 
   const progress = useMemo(() => {

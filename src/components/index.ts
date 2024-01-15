@@ -15,3 +15,4 @@ export * from './label';
 export * from './toast';
 export * from './loadingOverlay';
 export * from './contextMenu';
+export * from './spinner';

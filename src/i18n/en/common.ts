@@ -1,5 +1,8 @@
 export const common = {
-  appDirectory: 'App Directory',
+  infobar: {
+    appDirectory: 'App Directory',
+    refreshHashtables: 'Refresh Hashtables',
+  },
 
   copied: 'Copied!',
 };
