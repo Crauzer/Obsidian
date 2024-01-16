@@ -17,7 +17,11 @@ pub struct ApiErrorBuilder {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub enum ApiErrorExtension {}
+#[serde(rename_all = "camelCase", tag = "kind")]
+pub enum ApiErrorExtension {
+    #[serde(rename_all = "camelCase")]
+    WadHashtablesMissing,
+}
 
 impl ApiError {
     pub fn from_message(message: impl AsRef<str>) -> Self {

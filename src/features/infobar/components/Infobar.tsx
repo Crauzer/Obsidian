@@ -1,14 +1,17 @@
-import { t } from 'i18next';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LuFolderSync } from 'react-icons/lu';
 import { VscFileSymlinkDirectory } from 'react-icons/vsc';
-import FadeLoader from 'react-spinners/FadeLoader';
 import { Id as ToastId, toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
 
-import { TableSyncIcon, ToolboxIcon } from '../../../assets';
-import { ActionIcon, Button, Icon, Popover, Spinner, Toast, Tooltip } from '../../../components';
+import { ToolboxIcon } from '../../../assets';
+import { ActionIcon, Button, Link, Popover, Spinner, Toast, Tooltip } from '../../../components';
+import {
+  apiErrorSchema,
+  getApiErrorExtension,
+  wadHashtablesMissingExtensionSchema,
+} from '../../../types/error';
 import { env } from '../../../utils';
 import { useActionProgress } from '../../actions';
 import { useAppDirectory, useOpenPath } from '../../fs';
@@ -71,6 +74,7 @@ const WadHashtablesIcon = () => {
 
   const handleRefresh = useCallback(() => {
     hashtablesLoadingToastId.current = toast.info('Loading hashtables...', { autoClose: false });
+
     loadHashtablesMutation.mutate(
       { actionId },
       {
@@ -82,6 +86,37 @@ const WadHashtablesIcon = () => {
           });
         },
         onError: (error) => {
+          const apiError = apiErrorSchema.parse(error);
+          const wadHashtablesMissingExtension = getApiErrorExtension(
+            apiError,
+            wadHashtablesMissingExtensionSchema,
+          );
+
+          if (wadHashtablesMissingExtension) {
+            toast.update(hashtablesLoadingToastId.current, {
+              type: 'warning',
+              render: (
+                <Toast.Warning
+                  title={t('wadHashtablesMissing.title')}
+                  message={
+                    <span>
+                      {t('wadHashtablesMissing.message.0')}
+                      <Link
+                        href="https://github.com/CommunityDragon/Data/tree/master/hashes/lol"
+                        target="_blank"
+                      >
+                        {t('wadHashtablesMissing.message.1')}
+                      </Link>
+                    </span>
+                  }
+                />
+              ),
+              autoClose: false,
+            });
+
+            return;
+          }
+
           toast.update(hashtablesLoadingToastId.current, {
             type: 'error',
             render: <Toast.Error title="Failed to load hashtables" message={error.message} />,
@@ -89,7 +124,7 @@ const WadHashtablesIcon = () => {
         },
       },
     );
-  }, [actionId, loadHashtablesMutation]);
+  }, [actionId, loadHashtablesMutation, t]);
 
   useEffect(() => {
     if (!wadHashtableStatus.isSuccess) {

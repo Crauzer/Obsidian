@@ -1,8 +1,10 @@
+use crate::api::error::{ApiErrorBuilder, ApiErrorExtension};
 use crate::api::ApiResult;
 use crate::{api::error::ApiError, state::WadHashtableState};
-use color_eyre::eyre;
+use color_eyre::eyre::{self, Context};
 use octocrab::models::repos::ContentItems;
 use tracing::info;
+use walkdir::WalkDir;
 
 use super::WadHashtableStatus;
 
@@ -25,6 +27,18 @@ pub async fn load_wad_hashtables(
         .app_data_dir()
         .ok_or(ApiError::from_message("failed to get app data dir"))?
         .join("wad_hashtables");
+
+    if wad_hashtables_dir
+        .read_dir()
+        .wrap_err("failed to read dir")?
+        .next()
+        .is_none()
+    {
+        return Err(ApiErrorBuilder::new()
+            .message("Wad hashtables missing")
+            .extend(ApiErrorExtension::WadHashtablesMissing)
+            .build());
+    }
 
     wad_hashtable.0.lock().items_mut().clear();
     wad_hashtable.0.lock().add_from_dir(wad_hashtables_dir)?;

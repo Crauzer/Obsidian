@@ -16,3 +16,5 @@ export * from './toast';
 export * from './loadingOverlay';
 export * from './contextMenu';
 export * from './spinner';
+export * from './actionText';
+export * from './link';
