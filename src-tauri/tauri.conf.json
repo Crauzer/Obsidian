@@ -7,7 +7,7 @@
     "withGlobalTauri": true
   },
   "package": {
-    "productName": "obsidian",
+    "productName": "Obsidian",
     "version": "0.0.0"
   },
   "tauri": {

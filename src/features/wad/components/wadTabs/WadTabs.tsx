@@ -19,6 +19,7 @@ import { useMountedWads, useReorderMountedWad, useUnmountWad } from '../../api';
 import { MountedWad } from '../../types';
 import { MountWadsButton } from './MountWadsButton';
 import { WadDirectoryTabContent, WadRootTabContent } from './WadTabContent';
+import { WadTabContextMenu } from './WadTabContextMenu';
 
 export type WadTabsProps = {
   selectedWad?: string;
@@ -130,18 +131,20 @@ const TabTrigger: React.FC<TabTriggerProps> = ({
     <Tooltip.Root>
       <Tooltip.Trigger asChild>
         <div ref={provided.innerRef} {...provided.draggableProps}>
-          <RadixTabs.Trigger
-            value={mountedWad.id}
-            className={clsx(
-              'group flex h-full flex-row items-center justify-center gap-1 rounded-t-sm border-r border-r-gray-600 bg-gray-800 px-[0.5rem] py-[0.25rem] text-sm hover:bg-gray-700',
-              'data-[state=active]:border-t-2 data-[state=active]:border-t-obsidian-700 data-[state=active]:bg-gray-700',
-              { 'border-t border-t-obsidian-700 ': snapshot.isDragging },
-            )}
-          >
-            <TabTriggerDragHandle dragHandleProps={provided.dragHandleProps} />
-            {mountedWad.name}
-            <TabTriggerCloseButton onClick={() => handleTabClose(mountedWad.id)} />
-          </RadixTabs.Trigger>
+          <WadTabContextMenu wadId={mountedWad.id}>
+            <RadixTabs.Trigger
+              value={mountedWad.id}
+              className={clsx(
+                'group flex h-full flex-row items-center justify-center gap-1 rounded-t-sm border-r border-r-gray-600 bg-gray-800 px-[0.5rem] py-[0.25rem] text-sm hover:bg-gray-700',
+                'data-[state=active]:border-t-2 data-[state=active]:border-t-obsidian-700 data-[state=active]:bg-gray-700',
+                { 'border-t border-t-obsidian-700 ': snapshot.isDragging },
+              )}
+            >
+              <TabTriggerDragHandle dragHandleProps={provided.dragHandleProps} />
+              {mountedWad.name}
+              <TabTriggerCloseButton onClick={() => handleTabClose(mountedWad.id)} />
+            </RadixTabs.Trigger>
+          </WadTabContextMenu>
         </div>
       </Tooltip.Trigger>
       <Tooltip.Content side="bottom" className="text-xs">
