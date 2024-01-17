@@ -11,3 +11,4 @@ export { ReactComponent as TableSyncIcon } from './table-sync.svg';
 export { ReactComponent as ArchiveIcon } from './archive.svg';
 export { ReactComponent as ForestIcon } from './forest.svg';
 export { ReactComponent as AnimationIcon } from './animation.svg';
+export { ReactComponent as CDragonLogoIcon } from './cdragon-logo.svg';

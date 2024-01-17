@@ -72,7 +72,7 @@ export const ExtractAllButton: React.FC<ExtractAllButtonProps> = ({ wadId }) => 
           );
         }}
       >
-        <Icon size="md" icon={LuFileDown} />
+        <Icon size="sm" icon={LuFileDown} />
       </Button>
       <LoadingOverlay
         open={isLoadingOverlayOpen}

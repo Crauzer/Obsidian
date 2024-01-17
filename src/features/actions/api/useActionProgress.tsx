@@ -1,12 +1,13 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { listen } from '@tauri-apps/api/event';
 import { useEffect } from 'react';
 
 import { actionsQueryKeys } from '..';
-import { queryClient } from '../../../lib/query';
 import { ActionProgressEvent, actionProgressEventSchema } from '../types';
 
 export const useActionProgress = (actionId: string) => {
+  const queryClient = useQueryClient();
+
   useEffect(() => {
     const unlisten = listen(actionId, (event) => {
       const actionEvent = actionProgressEventSchema.safeParse(event);
@@ -20,7 +21,11 @@ export const useActionProgress = (actionId: string) => {
     return () => {
       unlisten.then((x) => x());
     };
-  }, [actionId]);
+  }, [actionId, queryClient]);
+
+  queryClient.setQueryDefaults(actionsQueryKeys.actionProgress(actionId), {
+    initialData: { payload: { progress: 0 } },
+  });
 
   return useQuery<ActionProgressEvent>({
     queryKey: actionsQueryKeys.actionProgress(actionId),

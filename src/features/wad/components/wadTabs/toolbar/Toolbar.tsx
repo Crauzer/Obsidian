@@ -14,7 +14,7 @@ export const WadTabToolbar: React.FC<WadTabToolbarProps> = ({ wadId, ...props })
       </Toolbar.Button>
       <Toolbar.Button asChild>
         <Button compact variant="ghost">
-          <Icon size="md" icon={LuFileStack} />
+          <Icon size="sm" icon={LuFileStack} />
         </Button>
       </Toolbar.Button>
     </Toolbar.Root>

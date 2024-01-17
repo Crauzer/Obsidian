@@ -36,7 +36,7 @@ export const MountWadsButton = () => {
           className="h-full rounded-l-none text-xl"
           onClick={() => handleMountWads()}
         >
-          <Icon size="xl" icon={LuPackagePlus} />
+          <Icon size="lg" icon={LuPackagePlus} />
         </Button>
       </Tooltip.Trigger>
       <Tooltip.Content side="bottom">{t('mount.tooltip')}</Tooltip.Content>

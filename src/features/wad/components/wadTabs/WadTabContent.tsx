@@ -82,7 +82,7 @@ const WadTabContent: React.FC<WadTabContentProps> = ({
         <Breadcrumbs.Root className="border-b border-gray-600 bg-gray-800 p-1 font-fira-mono text-sm leading-6">
           <PathBreadcrumbItem
             itemId=""
-            name={<Icon size="lg" className="fill-obsidian-500" icon={ArchiveIcon} />}
+            name={<Icon size="md" className="fill-obsidian-500" icon={ArchiveIcon} />}
             path={t('path.root')}
             href={composeUrlQuery(appRoutes.mountedWads, { wadId })}
           />

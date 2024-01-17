@@ -8,6 +8,7 @@ import { useMatches } from 'react-router-dom';
 import { P } from 'ts-pattern';
 
 import { Button, Icon } from '..';
+import { CDragonLogoIcon } from '../../assets';
 import Logo from '../../assets/logo.png';
 import { Infobar } from '../../features/infobar';
 import { appRoutes } from '../../lib/router';
@@ -47,7 +48,7 @@ const BrandLogo: React.FC = () => {
         <img className="rounded-xl shadow-xl" width={60} height={60} src={Logo} alt="logo" />
       </a>
       <div className="pointer-events-none absolute flex h-full w-full items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
-        <Icon size="xl" icon={FaGithub} />
+        <Icon size="lg" icon={FaGithub} />
       </div>
     </div>
   );
@@ -58,12 +59,18 @@ type NavigationMenuProps = { items: NavigationMenuItemProps[] };
 const NavigationMenu: React.FC<NavigationMenuProps> = ({ items }) => {
   return (
     <RadixNavigationMenu.Root className="w-full">
-      <RadixNavigationMenu.List className="center flex gap-2">
+      <RadixNavigationMenu.List className="flex items-center gap-2 ">
         {items.map((item) => (
           <NavigationMenuItem {...item} />
         ))}
         <NavigationMenuItem
-          className="group ml-auto"
+          className="ml-auto"
+          title={<Icon size="xl" icon={CDragonLogoIcon} className="fill-gray-50" />}
+          href="https://github.com/CommunityDragon/Data"
+          target="_blank"
+        />
+        <NavigationMenuItem
+          className="group"
           title={
             <Icon
               size="xl"
@@ -81,11 +88,17 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ items }) => {
 type NavigationMenuItemProps = {
   title: React.ReactNode;
   href: string;
+  target?: string;
 
   className?: string;
 };
 
-const NavigationMenuItem: React.FC<NavigationMenuItemProps> = ({ title, href, className }) => {
+const NavigationMenuItem: React.FC<NavigationMenuItemProps> = ({
+  title,
+  href,
+  target,
+  className,
+}) => {
   const matches = useMatches();
 
   const match = matches.find((match) => match.pathname === href);
@@ -97,6 +110,7 @@ const NavigationMenuItem: React.FC<NavigationMenuItemProps> = ({ title, href, cl
           className="text-xl font-bold text-gray-300"
           as="a"
           href={href}
+          target={target}
           variant={match ? 'light' : 'ghost'}
         >
           {title}

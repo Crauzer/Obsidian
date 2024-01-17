@@ -51,10 +51,10 @@ export const WadItemListRow: React.FC<WadItemListRowProps> = ({ item, onClick })
       >
         <div className="flex flex-row items-center gap-2">
           {item.kind === 'directory' ? (
-            <Icon size="lg" className="fill-amber-500" icon={FolderIcon} />
+            <Icon size="md" className="fill-amber-500" icon={FolderIcon} />
           ) : (
             <Icon
-              size="lg"
+              size="md"
               className={clsx(getLeagueFileKindIconColor(item.extensionKind))}
               icon={getLeagueFileKindIcon(item.extensionKind)}
             />
@@ -102,11 +102,11 @@ const WadItemListRowContextMenu: React.FC<WadItemListRowContextMenuProps> = ({
         <ContextMenu.Item>Test</ContextMenu.Item>
         <ContextMenu.Separator />
         <ContextMenu.Item className="flex flex-row items-center gap-2" onClick={handleCopyName}>
-          <Icon icon={HiClipboardCopy} size="lg" />
+          <Icon icon={HiClipboardCopy} size="md" />
           {t('contextMenu.copyName')}
         </ContextMenu.Item>
         <ContextMenu.Item className="flex flex-row items-center gap-2" onClick={handleCopyPath}>
-          <Icon icon={HiClipboardCopy} size="lg" />
+          <Icon icon={HiClipboardCopy} size="md" />
           {t('contextMenu.copyPath')}
         </ContextMenu.Item>
       </ContextMenu.Content>

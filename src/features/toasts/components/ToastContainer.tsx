@@ -17,7 +17,7 @@ export const ToastContainer: React.FC = () => {
       closeButton={({ closeToast }) => (
         <ActionIcon
           icon={MdClose}
-          size="sm"
+          size="xs"
           className="h-6 w-6"
           variant="ghost"
           onClick={closeToast}

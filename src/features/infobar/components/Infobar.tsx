@@ -5,7 +5,7 @@ import { VscFileSymlinkDirectory } from 'react-icons/vsc';
 import { Id as ToastId, toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
 
-import { ToolboxIcon } from '../../../assets';
+import { CDragonLogoIcon, ToolboxIcon } from '../../../assets';
 import { ActionIcon, Button, Link, Popover, Spinner, Toast, Tooltip } from '../../../components';
 import {
   apiErrorSchema,
@@ -17,6 +17,7 @@ import { useActionProgress } from '../../actions';
 import { useAppDirectory, useOpenPath } from '../../fs';
 import { useLoadWadHashtables, useWadHashtableStatus } from '../../hashtable';
 import { ToolboxContent } from '../../toolbox';
+import { useRefreshHashtables } from '../hooks';
 
 export const Infobar = () => {
   const [t] = useTranslation('common');
@@ -37,7 +38,7 @@ export const Infobar = () => {
       {env.DEV && (
         <Popover.Root>
           <Popover.Trigger asChild>
-            <ActionIcon size="lg" variant="ghost" icon={ToolboxIcon} />
+            <ActionIcon size="md" variant="ghost" icon={ToolboxIcon} />
           </Popover.Trigger>
           <Popover.Content className="w-[300px]" side="top" sideOffset={8}>
             <ToolboxContent />
@@ -49,7 +50,7 @@ export const Infobar = () => {
         <Tooltip.Root>
           <Tooltip.Trigger asChild>
             <ActionIcon
-              size="lg"
+              size="md"
               variant="ghost"
               icon={VscFileSymlinkDirectory}
               onClick={handleOpenAppDirectory}
@@ -64,67 +65,8 @@ export const Infobar = () => {
 
 const WadHashtablesIcon = () => {
   const [t] = useTranslation('common');
-
-  const hashtablesLoadingToastId = useRef<ToastId>('');
-
-  const [actionId] = useState(uuidv4());
-
-  const loadHashtablesMutation = useLoadWadHashtables();
+  const { handleRefresh, loadHashtablesMutation } = useRefreshHashtables();
   const wadHashtableStatus = useWadHashtableStatus();
-
-  const handleRefresh = useCallback(() => {
-    hashtablesLoadingToastId.current = toast.info('Loading hashtables...', { autoClose: false });
-
-    loadHashtablesMutation.mutate(
-      { actionId },
-      {
-        onSuccess: () => {
-          toast.update(hashtablesLoadingToastId.current, {
-            type: 'success',
-            render: 'Hashtables loaded!',
-            autoClose: 2500,
-          });
-        },
-        onError: (error) => {
-          const apiError = apiErrorSchema.parse(error);
-          const wadHashtablesMissingExtension = getApiErrorExtension(
-            apiError,
-            wadHashtablesMissingExtensionSchema,
-          );
-
-          if (wadHashtablesMissingExtension) {
-            toast.update(hashtablesLoadingToastId.current, {
-              type: 'warning',
-              render: (
-                <Toast.Warning
-                  title={t('wadHashtablesMissing.title')}
-                  message={
-                    <span>
-                      {t('wadHashtablesMissing.message.0')}
-                      <Link
-                        href="https://github.com/CommunityDragon/Data/tree/master/hashes/lol"
-                        target="_blank"
-                      >
-                        {t('wadHashtablesMissing.message.1')}
-                      </Link>
-                    </span>
-                  }
-                />
-              ),
-              autoClose: false,
-            });
-
-            return;
-          }
-
-          toast.update(hashtablesLoadingToastId.current, {
-            type: 'error',
-            render: <Toast.Error title="Failed to load hashtables" message={error.message} />,
-          });
-        },
-      },
-    );
-  }, [actionId, loadHashtablesMutation, t]);
 
   useEffect(() => {
     if (!wadHashtableStatus.isSuccess) {
@@ -141,8 +83,6 @@ const WadHashtablesIcon = () => {
     wadHashtableStatus.isSuccess,
   ]);
 
-  const loadHashtablesActionProgress = useActionProgress(actionId);
-
   return (
     <Tooltip.Root>
       <Tooltip.Trigger asChild>
@@ -151,7 +91,7 @@ const WadHashtablesIcon = () => {
             <Spinner className="h-5 w-5" />
           </Button>
         ) : (
-          <ActionIcon size="lg" variant="ghost" icon={LuFolderSync} onClick={handleRefresh} />
+          <ActionIcon size="md" variant="ghost" icon={LuFolderSync} onClick={handleRefresh} />
         )}
       </Tooltip.Trigger>
       <Tooltip.Content>{t('infobar.refreshHashtables')}</Tooltip.Content>

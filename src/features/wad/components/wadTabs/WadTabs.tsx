@@ -165,7 +165,7 @@ const TabTriggerDragHandle: React.FC<TabTriggerDragHandleProps> = ({ dragHandleP
           {...dragHandleProps}
           className="flex items-center justify-center rounded transition-colors"
         >
-          <Icon size="lg" className="text-gray-400" icon={RxDragHandleDots2} />
+          <Icon size="md" className="text-gray-400" icon={RxDragHandleDots2} />
         </div>
       </Tooltip.Trigger>
       <Tooltip.Content className="text-sm">{t('tab.dndTooltip')}</Tooltip.Content>
@@ -184,7 +184,7 @@ const TabTriggerCloseButton: React.FC<TabTriggerCloseButtonProps> = ({ onClick }
     <Tooltip.Root>
       <Tooltip.Trigger asChild>
         <span className="invisible ml-auto rounded p-1 opacity-0 transition-opacity duration-150 hover:bg-obsidian-500/40 group-hover:visible group-hover:opacity-100">
-          <Icon size="md" icon={CloseIcon} onClick={onClick} />
+          <Icon size="sm" icon={CloseIcon} onClick={onClick} />
         </span>
       </Tooltip.Trigger>
       <Tooltip.Content side="top" className="text-sm">
