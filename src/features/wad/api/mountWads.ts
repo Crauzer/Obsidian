@@ -6,7 +6,12 @@ import { queryClient } from '../../../lib/query';
 import { wadCommands } from '../commands';
 import { MountWadResponse } from '../types';
 
-export const mountWads = () => tauri.invoke<MountWadResponse>(wadCommands.mountWads);
+export type MountWadsContext = {
+  wadPaths?: string[];
+};
+
+export const mountWads = ({ wadPaths }: MountWadsContext) =>
+  tauri.invoke<MountWadResponse>(wadCommands.mountWads, { wadPaths });
 
 export const useMountWads = () => {
   return useMutation({

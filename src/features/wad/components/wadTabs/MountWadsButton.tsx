@@ -15,17 +15,20 @@ export const MountWadsButton = () => {
   const mountWadsMutation = useMountWads();
 
   const handleMountWads = () => {
-    mountWadsMutation.mutate(undefined, {
-      onSuccess: ({ wadIds }) => {
-        if (wadIds.length === 0) {
-          return;
-        }
+    mountWadsMutation.mutate(
+      {},
+      {
+        onSuccess: ({ wadIds }) => {
+          if (wadIds.length === 0) {
+            return;
+          }
 
-        toast.success(t('mount.success', { count: wadIds.length }));
+          toast.success(t('mount.success', { count: wadIds.length }));
 
-        navigate(composeUrlQuery(appRoutes.mountedWads, { wadId: wadIds[0] }));
+          navigate(composeUrlQuery(appRoutes.mountedWads, { wadId: wadIds[0] }));
+        },
       },
-    });
+    );
   };
 
   return (

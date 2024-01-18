@@ -29,38 +29,44 @@ use uuid::Uuid;
 
 #[tauri::command]
 pub async fn mount_wads(
+    wad_paths: Option<Vec<String>>,
     mounted_wads: tauri::State<'_, MountedWadsState>,
     wad_hashtable: tauri::State<'_, WadHashtableState>,
     settings: tauri::State<'_, SettingsState>,
 ) -> Result<MountWadResponse, ApiError> {
     let mut mounted_wads_guard = mounted_wads.0.lock();
 
-    let mut dialog =
-        dialog::blocking::FileDialogBuilder::new().add_filter(".wad files", &["wad.client"]);
+    let wad_paths = match wad_paths {
+        Some(wad_paths) => wad_paths.iter().map(PathBuf::from).collect_vec(),
+        None => {
+            let mut dialog = dialog::blocking::FileDialogBuilder::new()
+                .add_filter(".wad files", &["wad.client"]);
 
-    if let Some(default_mount_directory) = &settings.0.read().default_mount_directory {
-        dialog = dialog.set_directory(Path::new(default_mount_directory));
-    }
+            if let Some(default_mount_directory) = &settings.0.read().default_mount_directory {
+                dialog = dialog.set_directory(Path::new(default_mount_directory));
+            }
 
-    if let Some(wad_paths) = dialog.pick_files() {
-        let wad_hashtable = wad_hashtable.0.lock();
-        let mut wad_ids: Vec<Uuid> = vec![];
-
-        for wad_path in &wad_paths {
-            let wad = Wad::mount(File::open(&wad_path).expect("failed to open wad file"))
-                .expect("failed to mount wad file");
-
-            wad_ids.push(
-                mounted_wads_guard
-                    .mount_wad(wad, wad_path.to_str().unwrap().into(), &wad_hashtable)
-                    .map_err(|_| ApiError::from_message("failed to mount wad"))?,
-            )
+            dialog
+                .pick_files()
+                .ok_or(ApiError::from_message("Failed to pick files"))?
         }
+    };
 
-        return Ok(MountWadResponse { wad_ids });
+    let wad_hashtable = wad_hashtable.0.lock();
+    let mut wad_ids: Vec<Uuid> = vec![];
+
+    for wad_path in &wad_paths {
+        let wad = Wad::mount(File::open(&wad_path).expect("failed to open wad file"))
+            .expect("failed to mount wad file");
+
+        wad_ids.push(
+            mounted_wads_guard
+                .mount_wad(wad, wad_path.to_str().unwrap().into(), &wad_hashtable)
+                .map_err(|_| ApiError::from_message("failed to mount wad"))?,
+        )
     }
 
-    Err(ApiError::from_message("Failed to pick file"))
+    return Ok(MountWadResponse { wad_ids });
 }
 
 #[tauri::command]
