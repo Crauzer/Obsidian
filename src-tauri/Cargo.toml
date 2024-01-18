@@ -1,7 +1,6 @@
 [package]
 name = "obsidian"
 version = "0.0.0"
-description = "A Tauri App"
 authors = ["you"]
 license = ""
 repository = ""
@@ -13,7 +12,8 @@ edition = "2021"
 tauri-build = { version = "1.5.1", features = [] }
 
 [dependencies]
-tauri = { version = "1.5.4", features = [ "clipboard-all",
+tauri = { version = "1.5.4", features = [
+    "clipboard-all",
     "dialog-all",
     "shell-open",
     "dialog",
