@@ -1,3 +1,7 @@
+mod commands;
+
+pub use commands::*;
+
 use std::path::Path;
 
 use serde::{self, Deserialize, Serialize};
@@ -5,12 +9,8 @@ use uuid::Uuid;
 
 use crate::core::{
     league_file::{get_league_file_kind_from_extension, LeagueFileKind},
-    wad::tree::{WadTreeDirectory, WadTreeFile, WadTreeItem, WadTreeItemKind, WadTreePathable},
+    wad::tree::{WadTreeDirectory, WadTreeFile, WadTreeItem, WadTreePathable},
 };
-
-mod commands;
-
-pub use commands::*;
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

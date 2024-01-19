@@ -9,9 +9,11 @@ use std::{
 };
 
 mod error;
+mod extractor;
 pub mod tree;
 
 pub use error::*;
+pub use extractor::*;
 
 #[derive(Debug)]
 pub struct Wad<TSource: Read + Seek> {
