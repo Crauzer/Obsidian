@@ -1,6 +1,6 @@
-mod extract_wad_chunks;
+mod extract_wad_items;
 
-pub use extract_wad_chunks::*;
+pub use extract_wad_items::*;
 
 use super::{
     MountWadResponse, MountedWadDto, MountedWadsResponse, WadItemDto, WadItemPathComponentDto,
@@ -266,7 +266,11 @@ pub async fn extract_mounted_wad(
     )?;
 
     // pre-create all chunk directories
-    wad::prepare_extraction_directories(wad.chunks().iter(), &wad_hashtable, &extract_directory)?;
+    wad::prepare_extraction_directories_absolute(
+        wad.chunks().iter(),
+        &wad_hashtable,
+        &extract_directory,
+    )?;
     let progress_offset = 0.1;
 
     // extract all chunks

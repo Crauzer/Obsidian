@@ -121,6 +121,9 @@ impl WadTreeFile {
     pub fn is_checked(&self) -> bool {
         self.is_checked
     }
+    pub fn chunk(&self) -> &WadChunk {
+        &self.chunk
+    }
 }
 
 impl WadTreeDirectory {

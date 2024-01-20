@@ -17,7 +17,7 @@ use crate::{
         hashtable::{get_wad_hashtable_status, load_wad_hashtables},
         settings::{get_settings, update_settings},
         wad::{
-            extract_mounted_wad, extract_wad_chunks, get_mounted_wad_directory_items,
+            extract_mounted_wad, extract_wad_items, get_mounted_wad_directory_items,
             get_mounted_wad_directory_path_components, get_mounted_wads, get_wad_items, mount_wads,
             move_mounted_wad, unmount_wad, update_mounted_wad_item_selection,
         },
@@ -71,7 +71,7 @@ fn main() -> eyre::Result<()> {
         })
         .invoke_handler(tauri::generate_handler![
             extract_mounted_wad,
-            extract_wad_chunks,
+            extract_wad_items,
             get_action_progress,
             get_app_directory,
             get_mounted_wad_directory_items,

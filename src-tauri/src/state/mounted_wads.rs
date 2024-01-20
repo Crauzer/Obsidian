@@ -49,6 +49,19 @@ impl MountedWads {
         let _ = self.wads.remove(&id);
     }
 
+    pub fn get_wad(&self, id: Uuid) -> Option<(&WadTree, &Wad<File>)> {
+        match (self.wad_trees.get(&id), self.wads.get(&id)) {
+            (Some(wad_tree), Some(wad)) => Some((wad_tree, wad)),
+            _ => None,
+        }
+    }
+    pub fn get_wad_mut(&mut self, id: Uuid) -> Option<(&mut WadTree, &mut Wad<File>)> {
+        match (self.wad_trees.get_mut(&id), self.wads.get_mut(&id)) {
+            (Some(wad_tree), Some(wad)) => Some((wad_tree, wad)),
+            _ => None,
+        }
+    }
+
     pub fn wad_trees(&self) -> &IndexMap<Uuid, WadTree> {
         &self.wad_trees
     }

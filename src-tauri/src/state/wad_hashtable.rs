@@ -1,7 +1,6 @@
 use crate::api::hashtable::WadHashtableStatus;
 use color_eyre::eyre::{self, eyre, Result};
 use parking_lot::Mutex;
-use serde::{Deserialize, Serialize};
 use std::{
     collections::HashMap,
     fs::File,
