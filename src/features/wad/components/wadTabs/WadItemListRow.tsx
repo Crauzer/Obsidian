@@ -1,25 +1,33 @@
 import { writeText } from '@tauri-apps/api/clipboard';
 import clsx from 'clsx';
-import React, { MouseEventHandler, useCallback } from 'react';
+import React, { MouseEventHandler, forwardRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { FaSave } from 'react-icons/fa';
 import { HiClipboardCopy } from 'react-icons/hi';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
+import { useExtractWadItemsWithDirectory } from '../..';
 import { FolderIcon } from '../../../../assets';
-import { ContextMenu, Icon, Toast } from '../../../../components';
+import { ContextMenu, Icon, LoadingOverlay, Toast } from '../../../../components';
 import { toastAutoClose } from '../../../../utils/toast';
 import { WadItem } from '../../types';
 import { getLeagueFileKindIcon, getLeagueFileKindIconColor } from '../../utils';
 
 export type WadItemListRowProps = {
   wadId: string;
+  parentId?: string;
   item: WadItem;
   index: number;
   onClick?: MouseEventHandler;
 };
 
-export const WadItemListRow: React.FC<WadItemListRowProps> = ({ item, onClick }) => {
+export const WadItemListRow: React.FC<WadItemListRowProps> = ({
+  wadId,
+  parentId,
+  item,
+  onClick,
+}) => {
   const [, setSearchParams] = useSearchParams();
 
   const handleDoubleClick = useCallback(() => {
@@ -35,7 +43,7 @@ export const WadItemListRow: React.FC<WadItemListRowProps> = ({ item, onClick })
   }, [item.id, item.kind, setSearchParams]);
 
   return (
-    <WadItemListRowContextMenu item={item}>
+    <WadItemListRowContextMenu wadId={wadId} parentId={parentId} item={item}>
       <div
         className={clsx(
           'text-md box-border flex select-none flex-row border py-1 pl-2 text-gray-50 hover:cursor-pointer',
@@ -67,12 +75,16 @@ export const WadItemListRow: React.FC<WadItemListRowProps> = ({ item, onClick })
 };
 
 type WadItemListRowContextMenuProps = {
+  wadId: string;
+  parentId?: string;
   item: WadItem;
 
   children?: React.ReactNode;
 };
 
 const WadItemListRowContextMenu: React.FC<WadItemListRowContextMenuProps> = ({
+  wadId,
+  parentId,
   item,
 
   children,
@@ -99,17 +111,57 @@ const WadItemListRowContextMenu: React.FC<WadItemListRowContextMenuProps> = ({
     <ContextMenu.Root>
       <ContextMenu.Trigger asChild>{children}</ContextMenu.Trigger>
       <ContextMenu.Content>
-        <ContextMenu.Item>Test</ContextMenu.Item>
+        <ExtractItem wadId={wadId} parentId={parentId} item={item} />
         <ContextMenu.Separator />
         <ContextMenu.Item className="flex flex-row items-center gap-2" onClick={handleCopyName}>
           <Icon icon={HiClipboardCopy} size="md" />
-          {t('contextMenu.copyName')}
+          {t('wad:contextMenu.copyName')}
         </ContextMenu.Item>
         <ContextMenu.Item className="flex flex-row items-center gap-2" onClick={handleCopyPath}>
           <Icon icon={HiClipboardCopy} size="md" />
-          {t('contextMenu.copyPath')}
+          {t('wad:contextMenu.copyPath')}
         </ContextMenu.Item>
       </ContextMenu.Content>
     </ContextMenu.Root>
   );
 };
+
+type ExtractItemProps = {
+  wadId: string;
+  parentId?: string;
+  item: WadItem;
+};
+
+const ExtractItem = forwardRef<HTMLDivElement, ExtractItemProps>(
+  ({ wadId, parentId, item }, ref) => {
+    const [t] = useTranslation('wad');
+
+    const { progress, message, isExtracting, extractWadItemsWithDirectory } =
+      useExtractWadItemsWithDirectory();
+
+    return (
+      <>
+        <ContextMenu.Item
+          ref={ref}
+          className="flex flex-row items-center gap-2"
+          onClick={() => {
+            extractWadItemsWithDirectory({
+              wadId,
+              parentId,
+              items: [item.id],
+            });
+          }}
+        >
+          <Icon icon={FaSave} size="md" />
+          {t('contextMenu.extract')}
+        </ContextMenu.Item>
+        <LoadingOverlay
+          open={isExtracting}
+          onOpenChange={() => {}}
+          progress={progress * 100}
+          message={message}
+        />
+      </>
+    );
+  },
+);

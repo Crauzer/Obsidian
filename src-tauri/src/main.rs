@@ -1,6 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 #![feature(io_error_more)]
+#![feature(anonymous_lifetime_in_impl_trait)]
 
 #[macro_use]
 extern crate lazy_static;
