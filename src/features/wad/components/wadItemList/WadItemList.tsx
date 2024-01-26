@@ -68,7 +68,7 @@ export const WadItemList: React.FC<WadItemListProps> = ({ wadId, parentItemId, d
               <WadItemListRow
                 item={item}
                 wadId={wadId}
-                parentId={parentItemId}
+                parentItemId={parentItemId}
                 index={index}
                 onClick={(event) => onRowClicked(index, event.type === 'contextmenu')}
               />

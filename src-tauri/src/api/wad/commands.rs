@@ -16,8 +16,7 @@ use crate::{
     state::{MountedWadsState, SettingsState, WadHashtableState},
     utils::actions::emit_action_progress,
 };
-use color_eyre::eyre::{self, ContextCompat};
-use eyre::Context;
+use color_eyre::eyre::{eyre, Context, ContextCompat};
 use itertools::Itertools;
 use std::{
     collections::VecDeque,
@@ -74,60 +73,37 @@ pub async fn mount_wads(
 }
 
 #[tauri::command]
-pub fn get_wad_items(
-    wad_id: String,
+pub async fn get_wad_parent_items(
+    wad_id: Uuid,
+    parent_id: Option<Uuid>,
     mounted_wads: tauri::State<'_, MountedWadsState>,
 ) -> Result<Vec<WadItemDto>, ApiError> {
     let mounted_wads_guard = mounted_wads.0.lock();
 
-    if let Some(wad_tree) = mounted_wads_guard.wad_trees().get(
-        &uuid::Uuid::parse_str(&wad_id)
-            .map_err(|_| ApiError::from_message("failed to parse wad_id"))?,
-    ) {
-        return Ok(wad_tree
+    let Some(wad_tree) = mounted_wads_guard.wad_trees().get(&wad_id) else {
+        return Err(eyre!("failed to get wad tree (wad_id: {})", wad_id))?;
+    };
+
+    match parent_id {
+        Some(parent_id) => {
+            let item = wad_tree.find_item(|item| item.id() == parent_id);
+            let item = item.ok_or(ApiError::from_message("failed to find item"))?;
+
+            match item {
+                WadTreeItem::File(_) => Err(ApiError::from_message("cannot get items of file")),
+                WadTreeItem::Directory(directory) => Ok(directory
+                    .items()
+                    .iter()
+                    .map(|(_, item)| WadItemDto::from(item))
+                    .collect_vec()),
+            }
+        }
+        None => Ok(wad_tree
             .items()
             .iter()
             .map(|(_, item)| WadItemDto::from(item))
-            .collect_vec());
+            .collect_vec()),
     }
-
-    Err(ApiError::from_message(format!(
-        "failed to get wad tree ({})",
-        wad_id
-    )))
-}
-
-#[tauri::command]
-pub async fn get_mounted_wad_directory_items(
-    wad_id: String,
-    item_id: String,
-    mounted_wads: tauri::State<'_, MountedWadsState>,
-) -> Result<Vec<WadItemDto>, ApiError> {
-    let wad_id = uuid::Uuid::parse_str(&wad_id)
-        .map_err(|_| ApiError::from_message("failed to parse wad_id"))?;
-    let item_id = uuid::Uuid::parse_str(&item_id)
-        .map_err(|_| ApiError::from_message("failed to parse item_id"))?;
-
-    let mounted_wads_guard = mounted_wads.0.lock();
-
-    if let Some(wad_tree) = mounted_wads_guard.wad_trees().get(&wad_id) {
-        let item = wad_tree.find_item(|item| item.id() == item_id);
-        let item = item.ok_or(ApiError::from_message("failed to find item"))?;
-
-        return match item {
-            WadTreeItem::File(_) => Err(ApiError::from_message("cannot get items of file")),
-            WadTreeItem::Directory(directory) => Ok(directory
-                .items()
-                .iter()
-                .map(|(_, item)| WadItemDto::from(item))
-                .collect_vec()),
-        };
-    }
-
-    Err(ApiError::from_message(format!(
-        "failed to get wad tree ({})",
-        wad_id
-    )))
 }
 
 #[tauri::command]

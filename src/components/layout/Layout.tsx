@@ -107,7 +107,7 @@ const NavigationMenuItem: React.FC<NavigationMenuItemProps> = ({
     <RadixNavigationMenu.Item className={className}>
       <RadixNavigationMenu.Link asChild>
         <Button
-          className="text-xl font-bold text-gray-300"
+          className="text-xl font-bold text-gray-300 hover:bg-obsidian-500/20"
           as="a"
           href={href}
           target={target}

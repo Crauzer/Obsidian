@@ -31,61 +31,36 @@ export const useUpdateMountedWadItemSelection = () => {
   return useMutation({
     mutationFn: updateMountedWadItemSelection,
     onMutate: async ({ wadId, parentItemId, itemSelections }) => {
-      if (parentItemId) {
-        await queryClient.cancelQueries({
-          queryKey: wadQueryKeys.mountedWadDirectoryItems(wadId, parentItemId),
-        });
-      } else {
-        await queryClient.cancelQueries({ queryKey: wadQueryKeys.mountedWadItems(wadId) });
-      }
+      await queryClient.cancelQueries({
+        queryKey: wadQueryKeys.wadParentItems(wadId, parentItemId),
+      });
 
-      const previousItems = parentItemId
-        ? queryClient.getQueryData<WadItem[]>(
-            wadQueryKeys.mountedWadDirectoryItems(wadId, parentItemId),
-          )
-        : queryClient.getQueryData<WadItem[]>(wadQueryKeys.mountedWadItems(wadId));
+      const previousItems = queryClient.getQueryData<WadItem[]>(
+        wadQueryKeys.wadParentItems(wadId, parentItemId),
+      );
 
       let items = [...(previousItems ?? [])];
       for (const itemSelection of itemSelections) {
         items[itemSelection.index].isSelected = itemSelection.isSelected;
       }
 
-      if (parentItemId) {
-        queryClient.setQueryData(wadQueryKeys.mountedWadDirectoryItems(wadId, parentItemId), items);
-      } else {
-        queryClient.setQueryData(wadQueryKeys.mountedWadItems(wadId), items);
-      }
+      queryClient.setQueryData(wadQueryKeys.wadParentItems(wadId, parentItemId), items);
 
       return { previousItems };
-    },
-    onSuccess: (data) => {
-      console.info(data);
     },
     onError: (_error, variables, context) => {
       if (!context?.previousItems) {
         return;
       }
 
-      if (variables.parentItemId) {
-        queryClient.setQueryData(
-          wadQueryKeys.mountedWadDirectoryItems(variables.wadId, variables.parentItemId),
-          context.previousItems,
-        );
-      } else {
-        queryClient.setQueryData(
-          wadQueryKeys.mountedWadItems(variables.wadId),
-          context.previousItems,
-        );
-      }
+      queryClient.setQueryData(
+        wadQueryKeys.wadParentItems(variables.wadId, variables.parentItemId),
+        context.previousItems,
+      );
     },
-    onSettled: (_data, _error, variables) => {
-      if (variables.parentItemId) {
-        queryClient.invalidateQueries({
-          queryKey: wadQueryKeys.mountedWadDirectoryItems(variables.wadId, variables.parentItemId),
-        });
-      } else {
-        queryClient.invalidateQueries({ queryKey: wadQueryKeys.mountedWadItems(variables.wadId) });
-      }
-    },
+    onSettled: (_data, _error, variables) =>
+      queryClient.invalidateQueries({
+        queryKey: wadQueryKeys.wadParentItems(variables.wadId, variables.parentItemId),
+      }),
   });
 };

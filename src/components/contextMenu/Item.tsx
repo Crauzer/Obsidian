@@ -12,6 +12,7 @@ export const ContextMenuItem = forwardRef<HTMLDivElement, ContextMenuItemProps>(
       className={clsx(
         props.className,
         'text-md rounded border-none px-2 py-[1px] text-gray-50 transition-colors',
+        'data-[disabled]:cursor-not-allowed  data-[disabled]:text-gray-500',
         'data-[highlighted]:bg-gray-500/20',
         'cursor-pointer select-none outline-none',
       )}

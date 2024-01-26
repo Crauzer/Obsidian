@@ -3,7 +3,7 @@ export const wadCommands = {
   extractMountedWad: 'extract_mounted_wad' as const,
   extractWadItems: 'extract_wad_items' as const,
   getMountedWad: 'get_mounted_wad' as const,
-  getMountedWadDirectoryItems: 'get_mounted_wad_directory_items' as const,
+  getWadParentItems: 'get_wad_parent_items' as const,
   getMountedWadDirectoryPathComponents: 'get_mounted_wad_directory_path_components' as const,
   getMountedWads: 'get_mounted_wads' as const,
   getWadItems: 'get_wad_items' as const,

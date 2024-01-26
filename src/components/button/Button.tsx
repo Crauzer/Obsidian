@@ -57,7 +57,6 @@ export const Button: ButtonComponent = forwardRef(
         {...buttonProps}
         ref={ref}
         className={clsx(
-          className,
           'flex items-center rounded-md border transition-colors duration-150',
           getTextSizeClass(size),
           getJustifyClass(justify),
@@ -69,6 +68,7 @@ export const Button: ButtonComponent = forwardRef(
             'w-full': fullWidth,
           },
           getClickableVariantClass(variant),
+          className,
         )}
       >
         <span className="flex flex-row items-center justify-center gap-2">

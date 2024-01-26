@@ -30,5 +30,5 @@ export const getClickableVariantClass = (variant: ClickableVariant) =>
       variant === 'filled',
     'border-obsidian-500/60 border-2 text-gray-50 hover:bg-obsidian-500/60': variant === 'outline',
     'bg-obsidian-700/40 text-gray-50 hover:bg-obsidian-600/60 border-none': variant === 'light',
-    'text-gray-50 hover:bg-obsidian-600/30 border-none': variant === 'ghost',
+    'text-gray-50 hover:bg-gray-500/30 border-none': variant === 'ghost',
   });

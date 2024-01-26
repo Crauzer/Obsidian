@@ -6,7 +6,7 @@ import { wadCommands } from '../commands';
 export type ExtractWadItemsContext = {
   wadId: string;
   actionId: string;
-  parentId?: string;
+  parentItemId?: string;
   items: string[];
   extractDirectory: string;
 };
@@ -14,14 +14,14 @@ export type ExtractWadItemsContext = {
 export const extractWadItems = ({
   wadId,
   actionId,
-  parentId,
+  parentItemId,
   items,
   extractDirectory,
 }: ExtractWadItemsContext) =>
   tauri.invoke(wadCommands.extractWadItems, {
     wadId,
     actionId,
-    parentId,
+    parentItemId,
     items,
     extractDirectory,
   });

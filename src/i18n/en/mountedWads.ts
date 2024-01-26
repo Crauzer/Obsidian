@@ -4,8 +4,13 @@ export const mountedWads = {
     success_one: 'Mounted {{count}} wad',
     success_other: 'Mounted {{count}} wads',
   },
-  exteraction: {
+  extraction: {
     success: 'Extraction successful!',
+  },
+  toolbar: {
+    extractAll: {
+      tooltip: 'Extract All',
+    },
   },
   tab: {
     dndTooltip: 'Drag',

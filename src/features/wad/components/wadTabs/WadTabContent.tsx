@@ -7,15 +7,15 @@ import { ArchiveIcon } from '../../../../assets';
 import { Breadcrumbs, Icon, Input, Tooltip } from '../../../../components';
 import { appRoutes } from '../../../../lib/router';
 import { composeUrlQuery } from '../../../../utils';
-import { useWadDirectoryItems, useWadDirectoryPathComponents, useWadItems } from '../../api';
+import { useWadDirectoryPathComponents, useWadParentItems } from '../../api';
 import { WadItem, WadItemPathComponent } from '../../types';
-import { WadItemList } from './WadItemList';
-import { WadTabToolbar } from './toolbar/Toolbar';
+import { WadItemList } from '../wadItemList';
+import { WadTabToolbar } from './toolbar';
 
 export type WadRootTabContentProps = { wadId: string };
 
 export const WadRootTabContent: React.FC<WadRootTabContentProps> = ({ wadId }) => {
-  const itemsQuery = useWadItems(wadId);
+  const itemsQuery = useWadParentItems({ wadId, parentId: undefined });
 
   if (itemsQuery.isSuccess) {
     return (
@@ -41,8 +41,9 @@ export const WadDirectoryTabContent: React.FC<WadDirectoryTabContentProps> = ({
   selectedItemId,
 }) => {
   const pathComponentsQuery = useWadDirectoryPathComponents({ wadId, itemId: selectedItemId });
-  const itemsQuery = useWadDirectoryItems(wadId, selectedItemId);
+  const itemsQuery = useWadParentItems({ wadId, parentId: selectedItemId });
 
+  console.info(selectedItemId);
   if (itemsQuery.isSuccess) {
     return (
       <WadTabContent

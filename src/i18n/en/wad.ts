@@ -3,5 +3,6 @@ export const wad = {
     copyName: 'Copy name',
     copyPath: 'Copy path',
     extract: 'Extract',
+    extractSelected: 'Extract selected',
   },
 };

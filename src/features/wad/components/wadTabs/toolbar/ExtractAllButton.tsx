@@ -1,11 +1,11 @@
-import { t } from 'i18next';
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { LuFileDown } from 'react-icons/lu';
 import { toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
 
 import { useExtractMountedWad } from '../../..';
-import { Button, Icon, LoadingOverlay } from '../../../../../components';
+import { Button, Icon, LoadingOverlay, Tooltip } from '../../../../../components';
 import { queryClient } from '../../../../../lib/query';
 import { actionsQueryKeys, useActionProgress } from '../../../../actions';
 import { usePickDirectory } from '../../../../fs';
@@ -16,6 +16,8 @@ type ExtractAllButtonProps = {
 };
 
 export const ExtractAllButton: React.FC<ExtractAllButtonProps> = ({ wadId }) => {
+  const [t] = useTranslation('mountedWads');
+
   const [actionId] = useState(uuidv4());
   const [isLoadingOverlayOpen, setIsLoadingOverlayOpen] = useState(false);
 
@@ -38,42 +40,51 @@ export const ExtractAllButton: React.FC<ExtractAllButtonProps> = ({ wadId }) => 
     pickDirectory.isSuccess,
   ]);
 
-  return (
-    <>
-      <Button
-        compact
-        variant="ghost"
-        onClick={() => {
-          setIsLoadingOverlayOpen(true);
+  const extractWad = () => {
+    setIsLoadingOverlayOpen(true);
 
-          pickDirectory.mutate(
-            { initialDirectory: settings.data?.defaultExtractionDirectory },
+    pickDirectory.mutate(
+      { initialDirectory: settings.data?.defaultExtractionDirectory },
+      {
+        onSuccess: (directory) => {
+          extractMountedWad.mutate(
+            { wadId, actionId, extractDirectory: directory.path },
             {
-              onSuccess: (directory) => {
-                extractMountedWad.mutate(
-                  { wadId, actionId, extractDirectory: directory.path },
-                  {
-                    onSuccess: () => {
-                      toast.success(t('mountedWads:exteraction.success'));
-                    },
-                    onSettled: () => {
-                      setIsLoadingOverlayOpen(false);
-                      queryClient.resetQueries({
-                        queryKey: actionsQueryKeys.actionProgress(actionId),
-                      });
-                    },
-                  },
-                );
+              onSuccess: () => {
+                toast.success(t('extraction.success'));
               },
-              onError: () => {
+              onSettled: () => {
                 setIsLoadingOverlayOpen(false);
+                queryClient.resetQueries({
+                  queryKey: actionsQueryKeys.actionProgress(actionId),
+                });
               },
             },
           );
-        }}
-      >
-        <Icon size="sm" icon={LuFileDown} />
-      </Button>
+        },
+        onError: () => {
+          setIsLoadingOverlayOpen(false);
+        },
+      },
+    );
+  };
+
+  return (
+    <>
+      <Tooltip.Root>
+        <Tooltip.Trigger asChild>
+          <Button
+            compact
+            variant="ghost"
+            onClick={() => {
+              extractWad();
+            }}
+          >
+            <Icon size="sm" icon={LuFileDown} />
+          </Button>
+        </Tooltip.Trigger>
+        <Tooltip.Content>{t('toolbar.extractAll.tooltip')}</Tooltip.Content>
+      </Tooltip.Root>
       <LoadingOverlay
         open={isLoadingOverlayOpen}
         onOpenChange={() => {}}
