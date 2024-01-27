@@ -8,7 +8,10 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
-    "lint": "eslint --fix \"./**/*.{ts,tsx}\""
+    "lint": "eslint --fix \"./**/*.{ts,tsx}\"",
+    "test": "vitest --run",
+    "testWatch": "vitest",
+    "prepare": "husky"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^16.3.0",
@@ -75,12 +78,14 @@
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-react": "7.32.2",
     "eslint-plugin-react-hooks": "4.6.0",
+    "husky": "^9.0.6",
     "postcss": "^8.4.31",
     "prettier": "^3.0.3",
     "prettier-plugin-tailwindcss": "^0.5.7",
     "tailwindcss": "^3.3.3",
     "typescript": "^5.2.2",
     "vite": "^4.4.4",
-    "vite-plugin-eslint": "^1.8.1"
+    "vite-plugin-eslint": "^1.8.1",
+    "vitest": "^1.2.2"
   }
 }
