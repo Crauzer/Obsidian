@@ -19,7 +19,7 @@ export const WadItemList: React.FC<WadItemListProps> = ({ wadId, parentItemId, d
 
   const updateMountedWadItemSelection = useUpdateMountedWadItemSelection();
 
-  const onRowClicked = (index: number, isRightClick: boolean) => {
+  const onRowClicked = (index: number, _isRightClick: boolean) => {
     setLatestSelectedIndex(index);
 
     if (isHotkeyPressed('shift')) {

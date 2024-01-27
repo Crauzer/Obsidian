@@ -7,8 +7,7 @@
     "withGlobalTauri": true
   },
   "package": {
-    "productName": "Obsidian",
-    "version": "0.0.0"
+    "productName": "Obsidian"
   },
   "tauri": {
     "allowlist": {
@@ -32,8 +31,12 @@
     },
     "bundle": {
       "active": true,
-      "targets": "all",
+      "targets": "nsis",
       "identifier": "com.leaguetoolkit.obsidian",
+      "windows": {
+        "nsis": {},
+        "wix": null
+      },
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
