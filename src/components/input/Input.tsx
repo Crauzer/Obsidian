@@ -15,7 +15,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       <div className={clsx(className, 'flex flex-col gap-1')}>
         {label && (
           <RadixLabel.Root
-            className={clsx('text-sm text-gray-50', { 'text-obsidian-500': error })}
+            className={clsx('text-base text-gray-50', { 'text-obsidian-500': error })}
             htmlFor={props.id}
           >
             {label}:

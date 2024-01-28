@@ -10,10 +10,11 @@ export type ActionIconProps = {
       title?: string | undefined;
     }
   >;
+  iconClassName?: string;
 } & ButtonProps<'button'>;
 
 export const ActionIcon: React.FC<ActionIconProps> = forwardRef<HTMLButtonElement, ActionIconProps>(
-  ({ size = 'md', variant, icon, ...props }, ref) => {
+  ({ size = 'md', variant, icon, iconClassName, ...props }, ref) => {
     return (
       <Button
         {...props}
@@ -23,7 +24,7 @@ export const ActionIcon: React.FC<ActionIconProps> = forwardRef<HTMLButtonElemen
         size={size}
         variant={variant}
       >
-        <Icon size={size} icon={icon} />
+        <Icon size={size} icon={icon} className={iconClassName} />
       </Button>
     );
   },
