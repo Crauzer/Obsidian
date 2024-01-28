@@ -1,7 +1,10 @@
-# Tauri + React + Typescript
+# Obsidian
+Fast and modern League of Legends Wad archive explorer
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
+## Development guide
 
-## Recommended IDE Setup
-
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+### How to launch the app
+1. Clone the repository (preferably onto a Windows system)
+2. Make sure you're running `node v18.16.0` (specified in `.nvmrc`)
+3. Run `pnpm install`
+4. Run `pnpm tauri dev` 
