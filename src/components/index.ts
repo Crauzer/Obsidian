@@ -18,3 +18,4 @@ export * from './contextMenu';
 export * from './spinner';
 export * from './actionText';
 export * from './link';
+export * from './textField';
