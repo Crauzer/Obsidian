@@ -8,7 +8,7 @@ export const ContextMenuContent: React.FC<RadixContextMenu.MenuContentProps> = (
       {...props}
       className={clsx(
         props.className,
-        'flex min-w-[250px] flex-col gap-y-1 rounded-lg border border-gray-500 bg-gray-700 p-2 shadow-xl',
+        'flex min-w-[250px] flex-col gap-y-1 rounded-lg border border-gray-500 bg-gray-700/75 p-2 shadow-xl backdrop-blur',
         'will-change-[opacity,transform]',
 
         'data-[state=open]:data-[side=top]:animate-slideAndFadeInFromTop',
