@@ -55,7 +55,7 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({}) => {
             />
           }
         />
-        <Button type="submit" className="ml-auto">
+        <Button type="submit" variant="filled" className="ml-auto">
           Submit
         </Button>
       </form>

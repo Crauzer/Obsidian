@@ -26,7 +26,7 @@ export const getClickableVariantClass = (variant: ClickableVariant) =>
   clsx({
     'bg-gray-800 border-gray-600 text-gray-50 hover:bg-gray-700 hover:border-gray-500 active:bg-gray-600':
       variant === 'default',
-    'bg-obsidian-800 border-obsidian-600 text-gray-50 hover:bg-obsidian-900 hover:border-obsidian-700':
+    'bg-obsidian-800 border-obsidian-600 text-gray-50 hover:bg-obsidian-900 hover:border-obsidian-700 shadow-inner':
       variant === 'filled',
     'border-obsidian-500/60 border-2 text-gray-50 hover:bg-obsidian-500/60': variant === 'outline',
     'bg-obsidian-700/40 text-gray-50 hover:bg-obsidian-600/60 border-none': variant === 'light',

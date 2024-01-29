@@ -20,26 +20,27 @@
   }
 
   ::-webkit-scrollbar {
-    width: 6px;
+    width: 10px;
     height: 4px;
   }
   ::-webkit-scrollbar-track {
     @apply bg-gray-700;
-    @apply rounded-lg;
+    @apply rounded;
     @apply border;
     @apply border-gray-600;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-obsidian-700;
-    @apply rounded-xl;
+    @apply bg-obsidian-600;
+    @apply rounded;
     @apply border-8;
     @apply border-transparent;
     @apply transition-colors;
     @apply duration-200;
+    @apply shadow-inner;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-obsidian-800;
+    @apply bg-obsidian-700;
   }
 
   :focus-visible {
