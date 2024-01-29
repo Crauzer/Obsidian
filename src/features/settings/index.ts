@@ -3,3 +3,4 @@ export * from './commands';
 export * from './queryKeys';
 export * from './api';
 export * from './components';
+export * from './factories';

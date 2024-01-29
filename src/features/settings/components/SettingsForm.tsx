@@ -1,60 +1,58 @@
 import { DevTool } from '@hookform/devtools';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, SubmitErrorHandler, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { FaFolder } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
-import { SettingsFormData, settingsFormDataSchema } from '..';
-import { ActionIcon, Button, Form, TextField } from '../../../components';
-import { usePickDirectory } from '../../fs';
+import {
+  SettingsFormData,
+  createSettingsFromFormData,
+  settingsFormDataSchema,
+  useSettings,
+  useUpdateSettings,
+} from '..';
+import { Button, Toast } from '../../../components';
+import { toastAutoClose } from '../../../utils/toast';
+import { FormDirectoryInput } from './FormDirectoryInput';
 
 export type SettingsFormProps = {};
 
 export const SettingsForm: React.FC<SettingsFormProps> = ({}) => {
   const [t] = useTranslation('settings');
 
+  const settings = useSettings();
+  const updateSettings = useUpdateSettings();
+
   const formMethods = useForm<SettingsFormData>({
+    values: settings.data,
     resolver: zodResolver(settingsFormDataSchema),
   });
-  const { control, handleSubmit, setValue: setFormValue } = formMethods;
-
-  const pickDirectory = usePickDirectory();
+  const { control, handleSubmit } = formMethods;
 
   const handleFormSubmit = (data: SettingsFormData) => {
-    console.info(data);
+    updateSettings.mutate(
+      { settings: createSettingsFromFormData(data) },
+      {
+        onSuccess: () => {
+          toast.success(<Toast.Success message={t('submit.success')} />, {
+            autoClose: toastAutoClose.veryShort,
+          });
+        },
+      },
+    );
   };
 
   return (
     <FormProvider {...formMethods}>
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="flex w-full flex-col gap-2">
-        <DevTool control={control} />
-        <Form.TextField
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="flex w-full flex-col gap-8">
+        <FormDirectoryInput
+          control={control}
           name="defaultMountDirectory"
           label={t('defaultMountDirectory.label')}
-          control={control}
-          className="min-w-[500px]"
-          left={
-            <ActionIcon
-              icon={FaFolder}
-              iconClassName="shadow"
-              variant="ghost"
-              onClick={() => {
-                pickDirectory.mutate(
-                  {},
-                  {
-                    onSuccess: ({ path }) => {
-                      setFormValue('defaultMountDirectory', path, {
-                        shouldTouch: true,
-                        shouldDirty: true,
-                      });
-                    },
-                  },
-                );
-              }}
-            />
-          }
         />
+        <DevTool control={control} />
+
         <Button type="submit" variant="filled" className="ml-auto">
           Submit
         </Button>

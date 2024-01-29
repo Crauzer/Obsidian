@@ -5,4 +5,7 @@ export const settings = {
   defaultMountDirectory: {
     label: 'Default mount directory',
   },
+  submit: {
+    success: 'Saved!',
+  },
 };

@@ -1,6 +1,4 @@
 {
-  "wad_hashtable_urls": [
-    "https://raw.githubusercontent.com/CommunityDragon/CDTB/master/cdragontoolbox/hashes.game.txt",
-    "https://raw.githubusercontent.com/CommunityDragon/CDTB/master/cdragontoolbox/hashes.lcu.txt"
-  ]
+  "defaultMountDirectory": "C:\\Riot Games\\League of Legends\\DATA",
+  "defaultExtractionDirectory": "C:/Users/Filip/Desktop"
 }

@@ -18,7 +18,10 @@ impl Settings {
 
         match File::open(location) {
             Ok(file) => Ok(serde_json::from_reader::<File, Self>(file)?),
-            Err(_) => Ok(Self::default()),
+            Err(_) => {
+                tracing::warn!("failed to open settings file, using default settings...");
+                Ok(Self::default())
+            }
         }
     }
 
