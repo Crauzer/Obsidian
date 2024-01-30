@@ -5,6 +5,9 @@ export const settings = {
   defaultMountDirectory: {
     label: 'Default mount directory',
   },
+  defaultExtractionDirectory: {
+    label: 'Default extraction directory',
+  },
   submit: {
     success: 'Saved!',
   },

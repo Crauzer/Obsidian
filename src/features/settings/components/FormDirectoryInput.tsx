@@ -1,11 +1,21 @@
-import { Control, FieldValues, Path, useController } from 'react-hook-form';
+import {
+  Control,
+  FieldPath,
+  FieldValues,
+  Path,
+  RegisterOptions,
+  useController,
+} from 'react-hook-form';
 import { FaFolder } from 'react-icons/fa';
 
 import { ActionIcon, TextField, TextFieldProps } from '../../../components';
 import { usePickDirectory } from '../../fs';
 
-export type FormDirectoryInputProps<TFieldValues extends FieldValues> = {
-  name: Path<TFieldValues>;
+export type FormDirectoryInputProps<
+  TFieldValues extends FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = {
+  name: TFieldName;
   control: Control<TFieldValues>;
 } & TextFieldProps;
 

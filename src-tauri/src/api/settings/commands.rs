@@ -20,9 +20,7 @@ pub async fn update_settings(
 ) -> Result<(), ApiError> {
     let mut settings_state = settings_state.0.write();
 
-    settings
-        .save(SETTINGS_FILE)
-        .wrap_err("failed to save settings")?;
+    tracing::info!("updating settings: {:?}", settings);
 
     *settings_state = settings;
 

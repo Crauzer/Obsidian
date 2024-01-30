@@ -46,11 +46,18 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({}) => {
   return (
     <FormProvider {...formMethods}>
       <form onSubmit={handleSubmit(handleFormSubmit)} className="flex w-full flex-col gap-8">
-        <FormDirectoryInput
-          control={control}
-          name="defaultMountDirectory"
-          label={t('defaultMountDirectory.label')}
-        />
+        <div className="flex flex-col gap-4">
+          <FormDirectoryInput
+            control={control}
+            name="defaultMountDirectory"
+            label={t('defaultMountDirectory.label')}
+          />
+          <FormDirectoryInput
+            control={control}
+            name="defaultExtractionDirectory"
+            label={t('defaultExtractionDirectory.label')}
+          />
+        </div>
         <DevTool control={control} />
 
         <Button type="submit" variant="filled" className="ml-auto">
