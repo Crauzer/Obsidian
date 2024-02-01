@@ -4,12 +4,12 @@ import { LuFileDown } from 'react-icons/lu';
 import { toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
 
-import { useExtractMountedWad } from '../../..';
-import { Button, Icon, LoadingOverlay, Tooltip } from '../../../../../components';
-import { queryClient } from '../../../../../lib/query';
-import { actionsQueryKeys, useActionProgress } from '../../../../actions';
-import { usePickDirectory } from '../../../../fs';
-import { useSettings } from '../../../../settings';
+import { useExtractMountedWad } from '../..';
+import { Button, Icon, LoadingOverlay, Tooltip } from '../../../../components';
+import { queryClient } from '../../../../lib/query';
+import { actionsQueryKeys, useActionProgress } from '../../../actions';
+import { usePickDirectory } from '../../../fs';
+import { useSettings } from '../../../settings';
 
 type ExtractAllButtonProps = {
   wadId: string;

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Toolbar, ToolbarRootProps } from '../../../../../components';
-import { ExtractAllButton } from './ExtractAllButton';
+import { ExtractAllButton } from '../ExtractAllButton';
 
 type WadTabToolbarProps = { wadId: string } & ToolbarRootProps;
 
