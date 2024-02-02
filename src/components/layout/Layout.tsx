@@ -109,9 +109,10 @@ const NavigationMenuItem: React.FC<NavigationMenuItemProps> = ({
         <Button
           className="text-xl font-bold text-gray-300 hover:bg-obsidian-500/20"
           as="a"
+          variant={match ? 'light' : 'ghost'}
           href={href}
           target={target}
-          variant={match ? 'light' : 'ghost'}
+          draggable={false}
         >
           {title}
         </Button>

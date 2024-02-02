@@ -52,6 +52,7 @@ const WadBreadcrumb: React.FC<WadBreadcrumbProps> = ({ wadId, name, itemId }) =>
         as="a"
         variant="ghost"
         className="rounded-none rounded-l px-[6px] py-1"
+        draggable={false}
         href={composeUrlQuery(appRoutes.mountedWads, { wadId, itemId: itemId })}
       >
         {name}
