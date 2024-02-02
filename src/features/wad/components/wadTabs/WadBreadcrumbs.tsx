@@ -129,7 +129,6 @@ export const WadBreadcrumbChildrenMenuItem: React.FC<WadBreadcrumbChildrenMenuIt
   const navigate = useNavigate();
 
   const handleClick = () => {
-    console.info(composeUrlQuery(appRoutes.mountedWads, { wadId, itemId: item.id }));
     navigate(composeUrlQuery(appRoutes.mountedWads, { wadId, itemId: item.id }));
   };
 

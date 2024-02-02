@@ -45,7 +45,6 @@ export const WadDirectoryTabContent: React.FC<WadDirectoryTabContentProps> = ({
   const pathComponentsQuery = useWadDirectoryPathComponents({ wadId, itemId: selectedItemId });
   const itemsQuery = useWadParentItems({ wadId, parentId: selectedItemId });
 
-  console.info(selectedItemId);
   if (itemsQuery.isSuccess) {
     return (
       <WadTabContent
