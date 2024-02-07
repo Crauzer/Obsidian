@@ -13,4 +13,5 @@ export const common = {
   },
 
   copied: 'Copied!',
+  noResults: 'No results',
 };
