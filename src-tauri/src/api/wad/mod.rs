@@ -26,6 +26,21 @@ pub struct MountWadResponse {
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct SearchWadResponse {
+    pub items: Vec<SearchWadResponseItem>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SearchWadResponseItem {
+    pub id: Uuid,
+    pub name: String,
+    pub path: String,
+    pub extension_kind: LeagueFileKind,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct MountedWadDto {
     pub id: Uuid,
     pub name: String,
@@ -93,7 +108,7 @@ impl From<&WadTreeFile> for WadItemDto {
             path: value.path().to_string(),
             name_hash: value.name_hash(),
             path_hash: value.path_hash(),
-            extension_kind: guess_file_kind(value),
+            extension_kind: guess_file_kind(value.name()),
             is_selected: value.is_selected(),
             is_checked: value.is_checked(),
         }
@@ -115,8 +130,8 @@ impl From<&WadTreeDirectory> for WadItemDto {
     }
 }
 
-fn guess_file_kind(file: &WadTreeFile) -> LeagueFileKind {
-    if let Some(extension) = Path::new(file.name()).extension() {
+fn guess_file_kind(file_name: impl AsRef<str>) -> LeagueFileKind {
+    if let Some(extension) = Path::new(file_name.as_ref()).extension() {
         if let Some(extension) = extension.to_str() {
             return get_league_file_kind_from_extension(extension);
         }

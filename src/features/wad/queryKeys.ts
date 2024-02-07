@@ -7,4 +7,5 @@ export const wadQueryKeys = {
   wadParentItems: (wadId: string, parentId: string | undefined) =>
     ['wad', wadId, 'items', parentId, 'items'] as const,
   wadTree: (wadId: string) => ['wad', wadId, 'tree'] as const,
+  wadSearch: (wadId: string, query: string) => ['wad', wadId, 'search', query] as const,
 };

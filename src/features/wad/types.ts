@@ -12,6 +12,17 @@ export type ExtractMountedWadResponse = {
   actionId: string;
 };
 
+export type SearchWadResponse = {
+  items: SearchWadResponseItem[];
+};
+
+export type SearchWadResponseItem = {
+  id: string;
+  name: string;
+  path: string;
+  extensionKind: LeagueFileKind;
+};
+
 export type MountedWad = {
   id: string;
   name: string;

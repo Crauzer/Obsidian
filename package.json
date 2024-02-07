@@ -51,6 +51,7 @@
     "tauri-plugin-upload-api": "github:tauri-apps/tauri-plugin-upload#v1",
     "tauri-plugin-window-state-api": "github:tauri-apps/tauri-plugin-window-state#v1",
     "ts-pattern": "^5.0.5",
+    "usehooks-ts": "^2.12.1",
     "uuid": "^9.0.1",
     "vite-plugin-svgr": "^3.2.0",
     "zod": "^3.22.4"

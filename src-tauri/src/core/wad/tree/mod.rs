@@ -141,11 +141,11 @@ impl WadTreePathable for WadTree {
         uuid::uuid!("00000000-0000-0000-0000-000000000000")
     }
 
-    fn name(&self) -> &str {
-        ""
+    fn name(&self) -> Arc<str> {
+        "".into()
     }
-    fn path(&self) -> &str {
-        ""
+    fn path(&self) -> Arc<str> {
+        "".into()
     }
     fn name_hash(&self) -> u64 {
         0

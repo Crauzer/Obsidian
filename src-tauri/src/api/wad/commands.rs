@@ -1,6 +1,8 @@
 mod extract_wad_items;
+mod search_wad;
 
 pub use extract_wad_items::*;
+pub use search_wad::*;
 
 use super::{
     MountWadResponse, MountedWadDto, MountedWadsResponse, WadItemDto, WadItemPathComponentDto,

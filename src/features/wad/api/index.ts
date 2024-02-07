@@ -9,3 +9,4 @@ export * from './reorderMountedWad';
 export * from './unmountWad';
 export * from './updateMountedWadItemSelection';
 export * from './extractWadItems';
+export * from './searchWad';

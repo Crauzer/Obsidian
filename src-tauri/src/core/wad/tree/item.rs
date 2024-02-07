@@ -59,8 +59,8 @@ pub struct WadTreeDirectory {
 
 pub trait WadTreePathable {
     fn id(&self) -> Uuid;
-    fn name(&self) -> &str;
-    fn path(&self) -> &str;
+    fn name(&self) -> Arc<str>;
+    fn path(&self) -> Arc<str>;
     fn name_hash(&self) -> u64;
     fn path_hash(&self) -> u64;
 }
@@ -194,14 +194,14 @@ impl WadTreePathable for WadTreeItem {
         }
     }
 
-    fn name(&self) -> &str {
+    fn name(&self) -> Arc<str> {
         match self {
             WadTreeItem::File(file) => file.name(),
             WadTreeItem::Directory(directory) => directory.name(),
         }
     }
 
-    fn path(&self) -> &str {
+    fn path(&self) -> Arc<str> {
         match self {
             WadTreeItem::File(file) => file.path(),
             WadTreeItem::Directory(directory) => directory.path(),
@@ -228,12 +228,12 @@ impl WadTreePathable for WadTreeDirectory {
         self.id
     }
 
-    fn name(&self) -> &str {
-        &self.name
+    fn name(&self) -> Arc<str> {
+        self.name.clone()
     }
 
-    fn path(&self) -> &str {
-        &self.path
+    fn path(&self) -> Arc<str> {
+        self.path.clone()
     }
 
     fn name_hash(&self) -> u64 {
@@ -250,12 +250,12 @@ impl WadTreePathable for WadTreeFile {
         self.id
     }
 
-    fn name(&self) -> &str {
-        &self.name
+    fn name(&self) -> Arc<str> {
+        self.name.clone()
     }
 
-    fn path(&self) -> &str {
-        &self.path
+    fn path(&self) -> Arc<str> {
+        self.path.clone()
     }
 
     fn name_hash(&self) -> u64 {

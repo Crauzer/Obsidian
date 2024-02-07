@@ -1,5 +1,6 @@
 use std::iter;
 use std::path::{Path, PathBuf};
+use std::str::FromStr;
 
 use color_eyre::eyre::{eyre, ContextCompat};
 use itertools::Itertools;
@@ -22,7 +23,6 @@ pub async fn extract_wad_items(
     mounted_wads: tauri::State<'_, MountedWadsState>,
     wad_hashtable: tauri::State<'_, WadHashtableState>,
 ) -> Result<(), ApiError> {
-    tracing::info!("parent_item_id = {:?}", &parent_item_id);
     let mut mounted_wads = mounted_wads.0.lock();
 
     let (wad_tree, wad) = mounted_wads
@@ -30,7 +30,6 @@ pub async fn extract_wad_items(
         .wrap_err("failed to find wad")?;
 
     let parent_item = parent_item_id.map_or(None, |parent_item_id| {
-        tracing::info!("parent_item_id = {}", &parent_item_id);
         match wad_tree.find_item(|item| item.id() == parent_item_id) {
             Some(WadTreeItem::Directory(parent)) => Some(parent),
             _ => return None,
@@ -71,17 +70,16 @@ pub async fn extract_wad_items(
     )?;
     wad::prepare_extraction_directories_relative(
         chunks.iter(),
-        parent_item.map(|x| Path::new(x.path())),
+        parent_item.map(|x| PathBuf::from_str(&x.path()).unwrap()),
         &wad_hashtable.0.lock(),
         &extract_directory,
     )?;
     let progress_offset = 0.1;
 
-    tracing::info!("{:#?}", &parent_item);
     wad::extract_wad_chunks_relative(
         &mut decoder,
         &chunks,
-        parent_item.map(|x| Path::new(x.path())),
+        parent_item.map(|x| PathBuf::from_str(&x.path()).unwrap()),
         &wad_hashtable.0.lock(),
         PathBuf::from(extract_directory),
         |progress, message| {

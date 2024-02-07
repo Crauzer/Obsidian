@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import React, { useCallback, useMemo } from 'react';
 import { FaChevronRight } from 'react-icons/fa';
 import { FcFolder } from 'react-icons/fc';
@@ -15,11 +16,22 @@ import { WadItem, WadItemPathComponent } from '../../types';
 export type WadBreadcrumbsProps = {
   wadId: string;
   pathComponents: WadItemPathComponent[];
+
+  className?: string;
 };
 
-export const WadBreadcrumbs: React.FC<WadBreadcrumbsProps> = ({ wadId, pathComponents }) => {
+export const WadBreadcrumbs: React.FC<WadBreadcrumbsProps> = ({
+  wadId,
+  pathComponents,
+  className,
+}) => {
   return (
-    <div className="flex w-full flex-row rounded border border-gray-600 bg-gray-900 p-1 shadow-inner">
+    <div
+      className={clsx(
+        'flex w-full flex-row rounded border border-gray-600 bg-gray-900 p-1 shadow-inner',
+        className,
+      )}
+    >
       <WadBreadcrumb
         wadId={wadId}
         name={<Icon size="md" className="fill-obsidian-500" icon={ArchiveIcon} />}
