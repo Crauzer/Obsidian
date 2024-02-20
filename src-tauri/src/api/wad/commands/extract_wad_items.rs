@@ -30,33 +30,18 @@ pub async fn extract_wad_items(
         .wrap_err("failed to find wad")?;
 
     let parent_item = parent_item_id.map_or(None, |parent_item_id| {
-        match wad_tree.find_item(|item| item.id() == parent_item_id) {
+        match wad_tree.item_storage().get(&parent_item_id) {
             Some(WadTreeItem::Directory(parent)) => Some(parent),
-            _ => return None,
+            _ => None,
         }
     });
 
-    let extraction_items = match parent_item {
-        Some(parent_item) => resolve_items(items.iter(), parent_item),
-        None => resolve_items(items.iter(), wad_tree),
-    };
-
     // get chunks for extraction
-    let chunks = extraction_items
+    let chunks = items
         .iter()
-        .flat_map(|item| match item {
-            WadTreeItem::File(item) => vec![*item.chunk()].into_iter(),
-            WadTreeItem::Directory(item) => {
-                let mut chunks = Vec::<WadChunk>::new();
-
-                item.traverse_items(&mut |item| {
-                    if let WadTreeItem::File(item) = item {
-                        chunks.push(*item.chunk());
-                    }
-                });
-
-                chunks.into_iter()
-            }
+        .filter_map(|item_id| match wad_tree.item_storage().get(item_id) {
+            Some(WadTreeItem::File(item)) => Some(*item.chunk()),
+            _ => None,
         })
         .collect_vec();
 
@@ -95,16 +80,4 @@ pub async fn extract_wad_items(
     tracing::info!("extraction complete (wad_id = {})", wad_id);
 
     Ok(())
-}
-
-fn resolve_items<'parent>(
-    extraction_items: impl Iterator<Item = &Uuid>,
-    parent: &'parent impl WadTreeParent,
-) -> Vec<&'parent WadTreeItem> {
-    extraction_items
-        .filter_map(|item_id| {
-            // this is quite sub-optimal since it's a linear search
-            parent.find_item(|item| item.id() == *item_id)
-        })
-        .collect_vec()
 }

@@ -9,6 +9,7 @@ use super::{
     WadItemSelectionUpdate,
 };
 use crate::core::wad;
+use crate::core::wad::tree::WadTree;
 use crate::{
     api::error::ApiError,
     core::wad::{
@@ -20,6 +21,7 @@ use crate::{
 };
 use color_eyre::eyre::{eyre, Context, ContextCompat};
 use itertools::Itertools;
+use std::collections::HashMap;
 use std::{
     collections::VecDeque,
     fs::File,
@@ -88,22 +90,26 @@ pub async fn get_wad_parent_items(
 
     match parent_id {
         Some(parent_id) => {
-            let item = wad_tree.find_item(|item| item.id() == parent_id);
-            let item = item.ok_or(ApiError::from_message("failed to find item"))?;
+            let item = wad_tree
+                .item_storage()
+                .get(&parent_id)
+                .ok_or(ApiError::from_message("failed to find item"))?;
 
             match item {
                 WadTreeItem::File(_) => Err(ApiError::from_message("cannot get items of file")),
                 WadTreeItem::Directory(directory) => Ok(directory
                     .items()
                     .iter()
-                    .map(|(_, item)| WadItemDto::from(item))
+                    .filter_map(|id| wad_tree.item_storage().get(id))
+                    .map(|item| WadItemDto::from(item))
                     .collect_vec()),
             }
         }
         None => Ok(wad_tree
             .items()
             .iter()
-            .map(|(_, item)| WadItemDto::from(item))
+            .filter_map(|id| wad_tree.item_storage().get(id))
+            .map(|item| WadItemDto::from(item))
             .collect_vec()),
     }
 }
@@ -111,53 +117,22 @@ pub async fn get_wad_parent_items(
 #[tauri::command]
 pub async fn update_mounted_wad_item_selection(
     wad_id: Uuid,
-    parent_item_id: Option<Uuid>,
-    reset_selection: bool,
-    item_selections: Vec<WadItemSelectionUpdate>,
+    item_selections: HashMap<Uuid, bool>,
     mounted_wads: tauri::State<'_, MountedWadsState>,
 ) -> Result<(), ApiError> {
-    if let Some(wad_tree) = mounted_wads.0.lock().wad_trees_mut().get_mut(&wad_id) {
-        match parent_item_id {
-            None => {
-                update_parent_items_selection(wad_tree, reset_selection, &item_selections);
-            }
-            Some(parent_item_id) => {
-                let parent_item = wad_tree
-                    .find_item_mut(|item| item.id() == parent_item_id)
-                    .wrap_err(format!(
-                        "failed to find parent wad item (parent_item_id = {})",
-                        parent_item_id
-                    ))?;
+    let mut mounted_wads = mounted_wads.0.lock();
+    let Some((wad_tree, _wad)) = mounted_wads.get_wad_mut(wad_id) else {
+        return Err(eyre!("failed to get wad tree (wad_id: {})", wad_id))?;
+    };
 
-                if let WadTreeItem::Directory(directory) = parent_item {
-                    update_parent_items_selection(directory, reset_selection, &item_selections);
-                }
-            }
+    // apply selection
+    for (item_id, is_selected) in item_selections {
+        if let Some(item) = wad_tree.item_storage_mut().get_mut(&item_id) {
+            item.set_is_selected(is_selected);
         };
     }
 
     Ok(())
-}
-
-pub(crate) fn update_parent_items_selection(
-    parent: &mut impl WadTreeParent,
-    reset_selection: bool,
-    item_selections: &Vec<WadItemSelectionUpdate>,
-) {
-    let parent_items = parent.items_mut();
-
-    if reset_selection {
-        for (_, item) in parent_items.iter_mut() {
-            item.set_is_selected(false);
-        }
-    }
-
-    // apply selection
-    for item_selection_update in item_selections {
-        parent_items
-            .index_mut(item_selection_update.index)
-            .set_is_selected(item_selection_update.is_selected);
-    }
 }
 
 #[tauri::command]
@@ -303,7 +278,9 @@ pub fn get_mounted_wad_directory_path_components(
 
     if let Some(wad_tree) = mounted_wads_guard.wad_trees().get(&wad_id) {
         let mut path_components = VecDeque::<PathComponentInternal>::new();
-        collect_path_components(wad_tree, &mut path_components, &|item| item.id() == item_id);
+        collect_path_components(wad_tree, &mut path_components, wad_tree, &|item| {
+            item.id() == item_id
+        });
 
         return Ok(path_components
             .iter()
@@ -329,18 +306,21 @@ struct PathComponentInternal {
     path: Arc<str>,
 }
 
-fn collect_path_components<'p>(
-    parent: &'p (impl WadTreeParent + WadTreePathable),
+fn collect_path_components<'wad>(
+    parent: &'wad (impl WadTreeParent + WadTreePathable),
     path_components: &mut VecDeque<PathComponentInternal>,
+    wad_tree: &'wad WadTree,
     condition: &dyn Fn(&WadTreeItem) -> bool,
-) -> Option<&'p WadTreeItem> {
+) -> Option<&'wad WadTreeItem> {
     path_components.push_back(PathComponentInternal {
         id: parent.id(),
         name: parent.name().into(),
         path: parent.path().into(),
     });
 
-    for (_, item) in parent.items() {
+    for item_id in parent.items() {
+        let item = wad_tree.item_storage().get(item_id)?;
+
         if condition(&item) {
             path_components.push_back(PathComponentInternal {
                 id: item.id(),
@@ -351,7 +331,9 @@ fn collect_path_components<'p>(
         }
 
         if let WadTreeItem::Directory(directory) = item {
-            if let Some(item) = collect_path_components(directory, path_components, condition) {
+            if let Some(item) =
+                collect_path_components(directory, path_components, wad_tree, condition)
+            {
                 return Some(item);
             }
         }

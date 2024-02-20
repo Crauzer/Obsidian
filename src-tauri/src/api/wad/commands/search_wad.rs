@@ -36,7 +36,7 @@ pub async fn search_wad(
         .wrap_err("failed to find wad")?;
 
     let mut item_map = HashMap::new();
-    wad_tree.traverse_items(&mut |item| {
+    for (_, item) in wad_tree.item_storage() {
         if let WadTreeItem::File(item) = item {
             item_map.insert(
                 item.path().to_string(),
@@ -48,7 +48,7 @@ pub async fn search_wad(
                 },
             );
         }
-    });
+    }
 
     let set = fst::Set::from_iter(
         item_map

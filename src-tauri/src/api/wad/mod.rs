@@ -58,7 +58,7 @@ pub struct WadItemPathComponentDto {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct WadItemSelectionUpdate {
-    pub index: usize,
+    pub item: usize,
     pub is_selected: bool,
 }
 

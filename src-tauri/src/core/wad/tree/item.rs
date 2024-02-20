@@ -1,16 +1,13 @@
-use crate::core::wad::tree::utils::find_parent_item_mut;
-use std::{iter::Peekable, sync::Arc};
+use std::collections::HashMap;
+use std::path::PathBuf;
+use std::sync::Arc;
+use std::vec;
 
-use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+use xxhash_rust::xxh3::xxh3_64;
 
-use crate::state::WadHashtable;
-
-use super::utils::{
-    add_item_to_parent, find_parent_item, traverse_parent_items, traverse_parent_items_mut,
-};
-use super::{WadChunk, WadTreeError};
+use super::{WadChunk, WadTree};
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub enum WadTreeItemKind {
@@ -35,6 +32,7 @@ pub enum WadTreeItem {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct WadTreeFile {
     pub(super) id: Uuid,
+    pub(super) parent_id: Option<Uuid>,
     pub(super) name: Arc<str>,
     pub(super) path: Arc<str>,
     pub(super) name_hash: u64,
@@ -47,6 +45,7 @@ pub struct WadTreeFile {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct WadTreeDirectory {
     pub(super) id: Uuid,
+    pub(super) parent_id: Option<Uuid>,
     pub(super) name: Arc<str>,
     pub(super) path: Arc<str>,
     pub(super) name_hash: u64,
@@ -54,11 +53,13 @@ pub struct WadTreeDirectory {
     pub(super) is_selected: bool,
     pub(super) is_checked: bool,
     pub(super) is_expanded: bool,
-    pub(super) items: IndexMap<WadTreeItemKey, WadTreeItem>,
+    pub(super) items: Vec<Uuid>,
+    pub(super) item_path_lookup: HashMap<PathBuf, Uuid>,
 }
 
 pub trait WadTreePathable {
     fn id(&self) -> Uuid;
+    fn parent_id(&self) -> Option<Uuid>;
     fn name(&self) -> Arc<str>;
     fn path(&self) -> Arc<str>;
     fn name_hash(&self) -> u64;
@@ -67,27 +68,8 @@ pub trait WadTreePathable {
 
 pub trait WadTreeParent {
     fn is_root(&self) -> bool;
-    fn items(&self) -> &IndexMap<WadTreeItemKey, WadTreeItem>;
-    fn items_mut(&mut self) -> &mut IndexMap<WadTreeItemKey, WadTreeItem>;
-
-    fn traverse_items(&self, cb: &mut impl FnMut(&WadTreeItem));
-    fn traverse_items_mut(&mut self, cb: &mut impl FnMut(&mut WadTreeItem));
-
-    fn find_item<'p>(&'p self, condition: impl Fn(&WadTreeItem) -> bool)
-        -> Option<&'p WadTreeItem>;
-    fn find_item_mut<'p>(
-        &'p mut self,
-        condition: impl Fn(&WadTreeItem) -> bool,
-    ) -> Option<&'p mut WadTreeItem>;
-}
-
-pub(super) trait WadTreeParentInternal: WadTreeParent {
-    fn add_item(
-        &mut self,
-        path_components: &mut Peekable<std::str::Split<char>>,
-        chunk: &WadChunk,
-        hashtable: &WadHashtable,
-    ) -> Result<(), WadTreeError>;
+    fn items(&self) -> &[Uuid];
+    fn items_mut(&mut self) -> &mut Vec<Uuid>;
 }
 
 pub trait WadTreeSelectable {
@@ -112,6 +94,23 @@ impl WadTreeItem {
 }
 
 impl WadTreeFile {
+    pub fn new(name: Arc<str>, path: Arc<str>, parent_id: Option<Uuid>, chunk: &WadChunk) -> Self {
+        let name_hash = xxh3_64(name.as_bytes());
+        let path_hash = xxh3_64(path.as_bytes());
+
+        Self {
+            id: Uuid::new_v4(),
+            parent_id,
+            name,
+            path,
+            name_hash,
+            path_hash,
+            is_selected: false,
+            is_checked: false,
+            chunk: *chunk,
+        }
+    }
+
     pub fn id(&self) -> Uuid {
         self.id
     }
@@ -127,6 +126,25 @@ impl WadTreeFile {
 }
 
 impl WadTreeDirectory {
+    pub fn new(name: Arc<str>, path: Arc<str>, parent_id: Option<Uuid>) -> Self {
+        let name_hash = xxh3_64(name.as_bytes());
+        let path_hash = xxh3_64(path.as_bytes());
+
+        Self {
+            id: Uuid::new_v4(),
+            parent_id,
+            name,
+            path,
+            name_hash,
+            path_hash,
+            is_selected: false,
+            is_expanded: false,
+            is_checked: false,
+            items: vec![],
+            item_path_lookup: HashMap::new(),
+        }
+    }
+
     pub fn id(&self) -> Uuid {
         self.id
     }
@@ -139,6 +157,18 @@ impl WadTreeDirectory {
     pub fn is_expanded(&self) -> bool {
         self.is_expanded
     }
+    pub fn item_path_lookup(&self) -> &HashMap<PathBuf, Uuid> {
+        &self.item_path_lookup
+    }
+
+    pub fn sort(&mut self, wad_tree: &WadTree) {
+        self.items.sort_by(|a, b| {
+            let a = wad_tree.item_storage().get(a);
+            let b = wad_tree.item_storage().get(b);
+
+            a.cmp(&b)
+        });
+    }
 }
 
 impl WadTreeParent for WadTreeDirectory {
@@ -146,43 +176,12 @@ impl WadTreeParent for WadTreeDirectory {
         false
     }
 
-    fn items(&self) -> &IndexMap<WadTreeItemKey, WadTreeItem> {
+    fn items(&self) -> &[Uuid] {
         &self.items
     }
 
-    fn items_mut(&mut self) -> &mut IndexMap<WadTreeItemKey, WadTreeItem> {
+    fn items_mut(&mut self) -> &mut Vec<Uuid> {
         &mut self.items
-    }
-
-    fn traverse_items(&self, mut cb: &mut impl FnMut(&WadTreeItem)) {
-        traverse_parent_items(self, &mut cb)
-    }
-    fn traverse_items_mut(&mut self, mut cb: &mut impl FnMut(&mut WadTreeItem)) {
-        traverse_parent_items_mut(self, &mut cb)
-    }
-
-    fn find_item<'p>(
-        &'p self,
-        condition: impl Fn(&WadTreeItem) -> bool,
-    ) -> Option<&'p WadTreeItem> {
-        find_parent_item(self, &condition)
-    }
-    fn find_item_mut<'p>(
-        &'p mut self,
-        condition: impl Fn(&WadTreeItem) -> bool,
-    ) -> Option<&'p mut WadTreeItem> {
-        find_parent_item_mut(self, &condition)
-    }
-}
-
-impl WadTreeParentInternal for WadTreeDirectory {
-    fn add_item(
-        &mut self,
-        path_components: &mut Peekable<std::str::Split<char>>,
-        chunk: &WadChunk,
-        hashtable: &WadHashtable,
-    ) -> Result<(), WadTreeError> {
-        add_item_to_parent(self, path_components, chunk, &hashtable)
     }
 }
 
@@ -191,6 +190,13 @@ impl WadTreePathable for WadTreeItem {
         match self {
             WadTreeItem::File(file) => file.id(),
             WadTreeItem::Directory(directory) => directory.id(),
+        }
+    }
+
+    fn parent_id(&self) -> Option<Uuid> {
+        match self {
+            WadTreeItem::File(file) => file.parent_id(),
+            WadTreeItem::Directory(directory) => directory.parent_id(),
         }
     }
 
@@ -228,6 +234,10 @@ impl WadTreePathable for WadTreeDirectory {
         self.id
     }
 
+    fn parent_id(&self) -> Option<Uuid> {
+        self.parent_id
+    }
+
     fn name(&self) -> Arc<str> {
         self.name.clone()
     }
@@ -248,6 +258,10 @@ impl WadTreePathable for WadTreeDirectory {
 impl WadTreePathable for WadTreeFile {
     fn id(&self) -> Uuid {
         self.id
+    }
+
+    fn parent_id(&self) -> Option<Uuid> {
+        self.parent_id
     }
 
     fn name(&self) -> Arc<str> {
