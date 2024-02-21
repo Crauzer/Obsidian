@@ -1,7 +1,7 @@
-use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::vec;
+use std::{collections::HashMap, path::Path};
 
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -159,6 +159,12 @@ impl WadTreeDirectory {
     }
     pub fn item_path_lookup(&self) -> &HashMap<PathBuf, Uuid> {
         &self.item_path_lookup
+    }
+
+    pub fn store_item(&mut self, item_id: Uuid, path: impl AsRef<Path>) {
+        self.item_path_lookup
+            .insert(path.as_ref().to_path_buf(), item_id);
+        self.items.push(item_id);
     }
 
     pub fn sort(&mut self, wad_tree: &WadTree) {

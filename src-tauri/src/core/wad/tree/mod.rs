@@ -80,6 +80,8 @@ impl WadTree {
             tree.create_item_from_chunk(chunk, Path::new(path.as_ref()))?;
         }
 
+        tracing::info!("{:#?}", tree.item_storage);
+
         tree.sort();
 
         Ok(tree)
@@ -128,15 +130,22 @@ impl WadTree {
             };
 
             if path_components.peek().is_none() {
-                self.store_item(
-                    &current_path,
-                    WadTreeItem::File(WadTreeFile::new(
-                        path_component.to_str().unwrap().into(),
-                        path.as_ref().to_str().unwrap().into(),
-                        None,
-                        chunk,
-                    )),
+                let file = WadTreeFile::new(
+                    path_component.to_str().unwrap().into(),
+                    path.as_ref().to_str().unwrap().into(),
+                    current_parent_id,
+                    chunk,
                 );
+
+                if let Some(current_parent_id) = current_parent_id {
+                    if let WadTreeItem::Directory(parent) =
+                        self.item_storage.get_mut(&current_parent_id).unwrap()
+                    {
+                        parent.store_item(file.id(), &current_path);
+                    }
+                }
+
+                self.store_item(&current_path, WadTreeItem::File(file));
 
                 return Ok(());
             }
@@ -153,9 +162,17 @@ impl WadTree {
                 None => {
                     let directory = WadTreeDirectory::new(
                         path_component.to_str().unwrap().into(),
-                        path.as_ref().to_str().unwrap().into(),
+                        current_path.to_string_lossy().into(),
                         current_parent_id,
                     );
+
+                    if let Some(current_parent_id) = current_parent_id {
+                        if let WadTreeItem::Directory(parent) =
+                            self.item_storage.get_mut(&current_parent_id).unwrap()
+                        {
+                            parent.store_item(current_parent_id, &current_path);
+                        }
+                    }
 
                     current_parent_id = Some(directory.id());
                     self.store_item(&current_path, WadTreeItem::Directory(directory));
