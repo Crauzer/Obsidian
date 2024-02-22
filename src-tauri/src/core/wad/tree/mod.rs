@@ -80,8 +80,6 @@ impl WadTree {
             tree.create_item_from_chunk(chunk, Path::new(path.as_ref()))?;
         }
 
-        tracing::info!("{:#?}", tree.item_storage);
-
         tree.sort();
 
         Ok(tree)
@@ -137,15 +135,18 @@ impl WadTree {
                     chunk,
                 );
 
-                if let Some(current_parent_id) = current_parent_id {
-                    if let WadTreeItem::Directory(parent) =
-                        self.item_storage.get_mut(&current_parent_id).unwrap()
-                    {
-                        parent.store_item(file.id(), &current_path);
+                match current_parent_id {
+                    Some(current_parent_id) => {
+                        if let WadTreeItem::Directory(parent) =
+                            self.item_storage.get_mut(&current_parent_id).unwrap()
+                        {
+                            parent.store_item(file.id(), &current_path);
+                        }
+                    }
+                    None => {
+                        self.add_item(&current_path, WadTreeItem::File(file));
                     }
                 }
-
-                self.store_item(&current_path, WadTreeItem::File(file));
 
                 return Ok(());
             }
@@ -166,17 +167,24 @@ impl WadTree {
                         current_parent_id,
                     );
 
-                    if let Some(current_parent_id) = current_parent_id {
-                        if let WadTreeItem::Directory(parent) =
-                            self.item_storage.get_mut(&current_parent_id).unwrap()
-                        {
-                            parent.store_item(current_parent_id, &current_path);
+                    match current_parent_id {
+                        Some(id) => {
+                            if let WadTreeItem::Directory(parent) =
+                                self.item_storage.get_mut(&id).unwrap()
+                            {
+                                parent.store_item(directory.id(), &current_path);
+                            }
+
+                            current_parent_id = Some(directory.id());
+                            self.store_item(&current_path, WadTreeItem::Directory(directory));
+                            current_parent_path = Some(current_path);
+                        }
+                        None => {
+                            current_parent_id = Some(directory.id());
+                            self.add_item(&current_path, WadTreeItem::Directory(directory));
+                            current_parent_path = Some(current_path);
                         }
                     }
-
-                    current_parent_id = Some(directory.id());
-                    self.store_item(&current_path, WadTreeItem::Directory(directory));
-                    current_parent_path = Some(current_path);
                 }
             };
         }
@@ -210,6 +218,11 @@ impl WadTree {
         self.chunk_item_ids
             .insert(path.as_ref().to_path_buf(), item.id());
         self.item_storage.insert(item.id(), item);
+    }
+
+    pub fn add_item(&mut self, path: impl AsRef<Path>, item: WadTreeItem) {
+        self.items.push(item.id());
+        self.store_item(path, item);
     }
 
     pub fn wad_id(&self) -> Uuid {

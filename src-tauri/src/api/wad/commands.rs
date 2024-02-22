@@ -1,6 +1,7 @@
 mod extract_wad_items;
 mod search_wad;
 
+use color_eyre::owo_colors::OwoColorize;
 pub use extract_wad_items::*;
 pub use search_wad::*;
 
@@ -19,7 +20,7 @@ use crate::{
     state::{MountedWadsState, SettingsState, WadHashtableState},
     utils::actions::emit_action_progress,
 };
-use color_eyre::eyre::{eyre, Context, ContextCompat};
+use color_eyre::eyre::{self, eyre, Context, ContextCompat};
 use itertools::Itertools;
 use std::collections::HashMap;
 use std::{
@@ -265,38 +266,30 @@ pub async fn move_mounted_wad(
 
 #[tauri::command]
 pub fn get_mounted_wad_directory_path_components(
-    wad_id: String,
-    item_id: String,
+    wad_id: Uuid,
+    item_id: Uuid,
     mounted_wads: tauri::State<'_, MountedWadsState>,
 ) -> Result<Vec<WadItemPathComponentDto>, ApiError> {
-    let wad_id = uuid::Uuid::parse_str(&wad_id)
-        .map_err(|_| ApiError::from_message("failed to parse wad_id"))?;
-    let item_id = uuid::Uuid::parse_str(&item_id)
-        .map_err(|_| ApiError::from_message("failed to parse item_id"))?;
-
     let mounted_wads_guard = mounted_wads.0.lock();
 
-    if let Some(wad_tree) = mounted_wads_guard.wad_trees().get(&wad_id) {
-        let mut path_components = VecDeque::<PathComponentInternal>::new();
-        collect_path_components(wad_tree, &mut path_components, wad_tree, &|item| {
-            item.id() == item_id
-        });
+    let Some(wad_tree) = mounted_wads_guard.wad_trees().get(&wad_id) else {
+        return Err(ApiError::from_message(format!(
+            "failed to get wad tree ({})",
+            wad_id
+        )));
+    };
 
-        return Ok(path_components
-            .iter()
-            .skip(1) // skip tree root
-            .map(|component| WadItemPathComponentDto {
-                item_id: component.id,
-                name: component.name.to_string(),
-                path: component.path.to_string(),
-            })
-            .collect_vec());
-    }
+    let mut path_components = VecDeque::<PathComponentInternal>::new();
+    collect_path_components(item_id, &mut path_components, wad_tree)?;
 
-    Err(ApiError::from_message(format!(
-        "failed to get wad tree ({})",
-        wad_id
-    )))
+    Ok(path_components
+        .iter()
+        .map(|component| WadItemPathComponentDto {
+            item_id: component.id,
+            name: component.name.to_string(),
+            path: component.path.to_string(),
+        })
+        .collect_vec())
 }
 
 #[derive(Debug)]
@@ -307,39 +300,24 @@ struct PathComponentInternal {
 }
 
 fn collect_path_components<'wad>(
-    parent: &'wad (impl WadTreeParent + WadTreePathable),
+    item_id: Uuid,
     path_components: &mut VecDeque<PathComponentInternal>,
     wad_tree: &'wad WadTree,
-    condition: &dyn Fn(&WadTreeItem) -> bool,
-) -> Option<&'wad WadTreeItem> {
-    path_components.push_back(PathComponentInternal {
-        id: parent.id(),
-        name: parent.name().into(),
-        path: parent.path().into(),
+) -> eyre::Result<()> {
+    let item = wad_tree
+        .item_storage()
+        .get(&item_id)
+        .wrap_err("failed to find item")?;
+
+    path_components.push_front(PathComponentInternal {
+        id: item.id(),
+        name: item.name().into(),
+        path: item.path().into(),
     });
 
-    for item_id in parent.items() {
-        let item = wad_tree.item_storage().get(item_id)?;
+    let Some(parent_id) = item.parent_id() else {
+        return Ok(());
+    };
 
-        if condition(&item) {
-            path_components.push_back(PathComponentInternal {
-                id: item.id(),
-                name: item.name().into(),
-                path: item.path().into(),
-            });
-            return Some(item);
-        }
-
-        if let WadTreeItem::Directory(directory) = item {
-            if let Some(item) =
-                collect_path_components(directory, path_components, wad_tree, condition)
-            {
-                return Some(item);
-            }
-        }
-    }
-
-    path_components.pop_back();
-
-    None
+    collect_path_components(parent_id, path_components, wad_tree)
 }
