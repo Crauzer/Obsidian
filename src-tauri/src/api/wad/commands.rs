@@ -1,20 +1,18 @@
 mod extract_wad_items;
 mod search_wad;
 
-use color_eyre::owo_colors::OwoColorize;
 pub use extract_wad_items::*;
 pub use search_wad::*;
 
 use super::{
     MountWadResponse, MountedWadDto, MountedWadsResponse, WadItemDto, WadItemPathComponentDto,
-    WadItemSelectionUpdate,
 };
 use crate::core::wad;
 use crate::core::wad::tree::WadTree;
 use crate::{
     api::error::ApiError,
     core::wad::{
-        tree::{WadTreeItem, WadTreeParent, WadTreePathable, WadTreeSelectable},
+        tree::{WadTreeParent, WadTreePathable, WadTreeSelectable},
         Wad,
     },
     state::{MountedWadsState, SettingsState, WadHashtableState},
@@ -26,7 +24,6 @@ use std::collections::HashMap;
 use std::{
     collections::VecDeque,
     fs::File,
-    ops::IndexMut,
     path::{Path, PathBuf},
     str::FromStr,
     sync::Arc,
@@ -90,22 +87,17 @@ pub async fn get_wad_parent_items(
     };
 
     match parent_id {
-        Some(parent_id) => {
-            let item = wad_tree
-                .item_storage()
-                .get(&parent_id)
-                .ok_or(ApiError::from_message("failed to find item"))?;
-
-            match item {
-                WadTreeItem::File(_) => Err(ApiError::from_message("cannot get items of file")),
-                WadTreeItem::Directory(directory) => Ok(directory
-                    .items()
-                    .iter()
-                    .filter_map(|id| wad_tree.item_storage().get(id))
-                    .map(|item| WadItemDto::from(item))
-                    .collect_vec()),
-            }
-        }
+        Some(parent_id) => Ok(wad_tree
+            .item_storage()
+            .iter()
+            .filter_map(|(_, item)| {
+                if item.parent_id() == Some(parent_id) {
+                    Some(WadItemDto::from(item))
+                } else {
+                    None
+                }
+            })
+            .collect_vec()),
         None => Ok(wad_tree
             .items()
             .iter()

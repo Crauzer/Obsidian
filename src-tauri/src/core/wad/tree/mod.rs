@@ -95,14 +95,17 @@ impl WadTree {
 
         let item_ids = self.item_storage.keys().map(|x| *x).collect_vec();
         for item_id in item_ids.iter() {
-            let Some(WadTreeItem::Directory(mut directory)) = self.item_storage.remove(item_id)
-            else {
+            let Some(item) = self.item_storage.remove(item_id) else {
                 continue;
             };
 
-            directory.sort(&self);
-            self.item_storage
-                .insert(directory.id(), WadTreeItem::Directory(directory));
+            if let WadTreeItem::Directory(mut directory) = item {
+                directory.sort(&self);
+                self.item_storage
+                    .insert(directory.id(), WadTreeItem::Directory(directory));
+            } else {
+                self.item_storage.insert(item.id(), item);
+            }
         }
     }
 
@@ -141,6 +144,7 @@ impl WadTree {
                             self.item_storage.get_mut(&current_parent_id).unwrap()
                         {
                             parent.store_item(file.id(), &current_path);
+                            self.store_item(&current_path, WadTreeItem::File(file));
                         }
                     }
                     None => {
