@@ -34,6 +34,7 @@ pub struct SearchWadResponse {
 #[serde(rename_all = "camelCase")]
 pub struct SearchWadResponseItem {
     pub id: Uuid,
+    pub parent_id: Option<Uuid>,
     pub name: String,
     pub path: String,
     pub extension_kind: LeagueFileKind,

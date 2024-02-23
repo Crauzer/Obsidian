@@ -86,7 +86,7 @@ impl WadTree {
     }
 
     pub fn sort(&mut self) {
-        self.items.sort_by(|a, b| {
+        self.items.sort_unstable_by(|a, b| {
             let a = self.item_storage.get(a);
             let b = self.item_storage.get(b);
 

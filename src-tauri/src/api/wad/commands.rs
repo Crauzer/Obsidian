@@ -8,7 +8,7 @@ use super::{
     MountWadResponse, MountedWadDto, MountedWadsResponse, WadItemDto, WadItemPathComponentDto,
 };
 use crate::core::wad;
-use crate::core::wad::tree::WadTree;
+use crate::core::wad::tree::{WadTree, WadTreeItem};
 use crate::{
     api::error::ApiError,
     core::wad::{
@@ -86,25 +86,24 @@ pub async fn get_wad_parent_items(
         return Err(eyre!("failed to get wad tree (wad_id: {})", wad_id))?;
     };
 
-    match parent_id {
-        Some(parent_id) => Ok(wad_tree
-            .item_storage()
-            .iter()
-            .filter_map(|(_, item)| {
-                if item.parent_id() == Some(parent_id) {
-                    Some(WadItemDto::from(item))
-                } else {
-                    None
-                }
-            })
-            .collect_vec()),
-        None => Ok(wad_tree
-            .items()
-            .iter()
-            .filter_map(|id| wad_tree.item_storage().get(id))
-            .map(|item| WadItemDto::from(item))
-            .collect_vec()),
-    }
+    let parent_items = match parent_id {
+        Some(parent_id) => {
+            let Some(item) = wad_tree.item_storage().get(&parent_id) else {
+                return Err(eyre!("failed to get item (item_id: {})", parent_id))?;
+            };
+            let WadTreeItem::Directory(directory) = item else {
+                return Err(eyre!("item is not a directory (item_id: {})", parent_id))?;
+            };
+
+            directory.items().iter()
+        }
+        None => wad_tree.items().iter(),
+    };
+
+    Ok(parent_items
+        .filter_map(|id| wad_tree.item_storage().get(id))
+        .map(|item| WadItemDto::from(item))
+        .collect_vec())
 }
 
 #[tauri::command]

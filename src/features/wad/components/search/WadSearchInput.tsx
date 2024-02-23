@@ -4,10 +4,13 @@ import React, { forwardRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaSearch } from 'react-icons/fa';
 import { MdDataArray } from 'react-icons/md';
+import { generatePath } from 'react-router-dom';
 import { useDebounceCallback } from 'usehooks-ts';
 
 import { getLeagueFileKindIcon, getLeagueFileKindIconColor, useSearchWad } from '../..';
 import { Icon, Input, Popover } from '../../../../components';
+import { appRoutes } from '../../../../lib/router';
+import { composeUrlQuery } from '../../../../utils';
 
 export type WadSearchInputProps = { wadId: string };
 
@@ -59,13 +62,17 @@ export const WadSearchInput: React.FC<WadSearchInputProps> = ({ wadId }) => {
                     item,
                     index,
                   })}
-                  className="flex flex-row items-center gap-2 rounded p-1 py-2 transition-colors duration-150 hover:cursor-pointer hover:bg-gray-600 hover:shadow-inner"
                 >
-                  <Icon
-                    className={clsx(getLeagueFileKindIconColor(item.extensionKind))}
-                    icon={getLeagueFileKindIcon(item.extensionKind)}
-                  />
-                  <p className="text-base">{item.path}</p>
+                  <a
+                    className="flex flex-row items-center gap-2 rounded p-1 py-2 transition-colors duration-150 hover:cursor-pointer hover:bg-gray-600 hover:shadow-inner"
+                    href={composeUrlQuery(appRoutes.mountedWads, { wadId, itemId: item.parentId })}
+                  >
+                    <Icon
+                      className={clsx(getLeagueFileKindIconColor(item.extensionKind))}
+                      icon={getLeagueFileKindIcon(item.extensionKind)}
+                    />
+                    <p className="text-base">{item.path}</p>
+                  </a>
                 </li>
               ))}
             </ul>

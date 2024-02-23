@@ -18,6 +18,7 @@ export type SearchWadResponse = {
 
 export type SearchWadResponseItem = {
   id: string;
+  parentId?: string;
   name: string;
   path: string;
   extensionKind: LeagueFileKind;

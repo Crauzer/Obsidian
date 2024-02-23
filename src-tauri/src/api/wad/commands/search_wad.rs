@@ -42,6 +42,7 @@ pub async fn search_wad(
                 item.path().to_string(),
                 SearchWadItemStorage {
                     id: item.id(),
+                    parent_id: item.parent_id(),
                     name: item.name(),
                     path: item.path(),
                     chunk: item.chunk().clone(),
@@ -70,6 +71,7 @@ pub async fn search_wad(
 
         results.push(SearchWadResponseItem {
             id: item_storage.id,
+            parent_id: item_storage.parent_id,
             name: item_storage.name.to_string(),
             path: item_storage.path.to_string(),
             extension_kind: guess_file_kind(&item_storage.name),
@@ -83,6 +85,7 @@ pub async fn search_wad(
 
 struct SearchWadItemStorage {
     pub id: Uuid,
+    pub parent_id: Option<Uuid>,
     pub name: Arc<str>,
     pub path: Arc<str>,
     pub chunk: WadChunk,
