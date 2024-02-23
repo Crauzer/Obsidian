@@ -71,7 +71,7 @@ export const WadSearchInput: React.FC<WadSearchInputProps> = ({ wadId }) => {
                       className={clsx(getLeagueFileKindIconColor(item.extensionKind))}
                       icon={getLeagueFileKindIcon(item.extensionKind)}
                     />
-                    <p className="text-base">{item.path}</p>
+                    <p className="text-sm">{item.path}</p>
                   </a>
                 </li>
               ))}
