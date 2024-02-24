@@ -109,6 +109,7 @@ pub async fn get_wad_parent_items(
 #[tauri::command]
 pub async fn update_mounted_wad_item_selection(
     wad_id: Uuid,
+    reset_selection: bool,
     item_selections: HashMap<Uuid, bool>,
     mounted_wads: tauri::State<'_, MountedWadsState>,
 ) -> Result<(), ApiError> {
@@ -116,6 +117,12 @@ pub async fn update_mounted_wad_item_selection(
     let Some((wad_tree, _wad)) = mounted_wads.get_wad_mut(wad_id) else {
         return Err(eyre!("failed to get wad tree (wad_id: {})", wad_id))?;
     };
+
+    if reset_selection {
+        wad_tree.item_storage_mut().values_mut().for_each(|item| {
+            item.set_is_selected(false);
+        });
+    }
 
     // apply selection
     for (item_id, is_selected) in item_selections {

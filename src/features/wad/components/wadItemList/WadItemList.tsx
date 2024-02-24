@@ -5,7 +5,7 @@ import { Virtuoso } from 'react-virtuoso';
 
 import { createArrayRange } from '../../../../utils/array';
 import { useUpdateMountedWadItemSelection } from '../../api';
-import { WadItem, WadItemSelectionUpdate } from '../../types';
+import { WadItem } from '../../types';
 import { WadItemListRow } from './WadItemListRow';
 
 export type WadItemListProps = {
@@ -19,40 +19,40 @@ export const WadItemList: React.FC<WadItemListProps> = ({ wadId, parentItemId, d
 
   const updateMountedWadItemSelection = useUpdateMountedWadItemSelection();
 
+  const handleShiftClick = (index: number) => {
+    const startIndex = Math.min(latestSelectedIndex ?? 0, index);
+    const endIndex = Math.max(latestSelectedIndex ?? 0, index);
+
+    updateMountedWadItemSelection.mutate({
+      wadId,
+      parentId: parentItemId,
+      resetSelection: false,
+      itemSelections: new Map(
+        createArrayRange(endIndex - startIndex + 1, startIndex).map((x) => [data[x].id, true]),
+      ),
+    });
+  };
+
   const onRowClicked = (index: number, _isRightClick: boolean) => {
     setLatestSelectedIndex(index);
 
     if (isHotkeyPressed('shift')) {
-      const startIndex = Math.min(latestSelectedIndex ?? 0, index);
-      const endIndex = Math.max(latestSelectedIndex ?? 0, index);
+      handleShiftClick(index);
+    } else if (isHotkeyPressed('ctrl')) {
+      const item = data[index];
 
       updateMountedWadItemSelection.mutate({
         wadId,
-        parentItemId,
+        parentId: parentItemId,
         resetSelection: false,
-        itemSelections: createArrayRange(
-          endIndex - startIndex + 1,
-          startIndex,
-        ).map<WadItemSelectionUpdate>((x) => {
-          return {
-            index: x,
-            isSelected: true,
-          };
-        }),
-      });
-    } else if (isHotkeyPressed('ctrl')) {
-      updateMountedWadItemSelection.mutate({
-        wadId,
-        parentItemId,
-        resetSelection: false,
-        itemSelections: [{ index, isSelected: !data[index].isSelected }],
+        itemSelections: new Map([[item.id, !item.isSelected]]),
       });
     } else {
       updateMountedWadItemSelection.mutate({
         wadId,
-        parentItemId,
+        parentId: parentItemId,
         resetSelection: true,
-        itemSelections: [{ index, isSelected: true }],
+        itemSelections: new Map([[data[index].id, true]]),
       });
     }
   };

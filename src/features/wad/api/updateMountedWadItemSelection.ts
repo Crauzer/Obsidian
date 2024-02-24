@@ -5,22 +5,26 @@ import { wadQueryKeys } from '..';
 import { wadCommands } from '../commands';
 import { WadItem, WadItemSelectionUpdate } from '../types';
 
+export type UseUpdateMountedWadItemSelectionContext = {
+  wadId: string;
+  parentId?: string;
+  resetSelection: boolean;
+  itemSelections: Map<string, boolean>;
+};
+
 export type UpdateMountedWadItemSelectionContext = {
   wadId: string;
-  parentItemId?: string;
   resetSelection: boolean;
-  itemSelections: WadItemSelectionUpdate[];
+  itemSelections: Map<string, boolean>;
 };
 
 export const updateMountedWadItemSelection = ({
   wadId,
-  parentItemId,
   resetSelection,
   itemSelections,
 }: UpdateMountedWadItemSelectionContext) =>
   tauri.invoke(wadCommands.updateMountedWadItemSelection, {
     wadId,
-    parentItemId,
     resetSelection,
     itemSelections,
   });
@@ -29,38 +33,15 @@ export const useUpdateMountedWadItemSelection = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: updateMountedWadItemSelection,
-    onMutate: async ({ wadId, parentItemId, itemSelections }) => {
-      await queryClient.cancelQueries({
-        queryKey: wadQueryKeys.wadParentItems(wadId, parentItemId),
-      });
-
-      const previousItems = queryClient.getQueryData<WadItem[]>(
-        wadQueryKeys.wadParentItems(wadId, parentItemId),
-      );
-
-      let items = [...(previousItems ?? [])];
-      for (const itemSelection of itemSelections) {
-        items[itemSelection.index].isSelected = itemSelection.isSelected;
-      }
-
-      queryClient.setQueryData(wadQueryKeys.wadParentItems(wadId, parentItemId), items);
-
-      return { previousItems };
+    mutationFn: ({
+      wadId,
+      resetSelection,
+      itemSelections,
+    }: UseUpdateMountedWadItemSelectionContext) => {
+      return updateMountedWadItemSelection({ wadId, resetSelection, itemSelections });
     },
-    onError: (_error, variables, context) => {
-      if (!context?.previousItems) {
-        return;
-      }
-
-      queryClient.setQueryData(
-        wadQueryKeys.wadParentItems(variables.wadId, variables.parentItemId),
-        context.previousItems,
-      );
+    onSuccess: (_, { wadId, parentId }) => {
+      queryClient.invalidateQueries({ queryKey: wadQueryKeys.wadParentItems(wadId, parentId) });
     },
-    onSettled: (_data, _error, variables) =>
-      queryClient.invalidateQueries({
-        queryKey: wadQueryKeys.wadParentItems(variables.wadId, variables.parentItemId),
-      }),
   });
 };
