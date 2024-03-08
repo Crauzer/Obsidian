@@ -64,7 +64,7 @@ pub async fn search_wad(
     let mut i = 0;
     let mut results = vec![];
     while let Some(key) = stream.next()
-        && i < 10
+        && i < 50
     {
         let key = str::from_utf8(key).unwrap();
         let item_storage = item_map.get(key).unwrap();

@@ -1,10 +1,9 @@
 import clsx from 'clsx';
 import { useCombobox } from 'downshift';
-import React, { forwardRef, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaSearch } from 'react-icons/fa';
 import { MdDataArray } from 'react-icons/md';
-import { generatePath } from 'react-router-dom';
 import { useDebounceCallback } from 'usehooks-ts';
 
 import { getLeagueFileKindIcon, getLeagueFileKindIconColor, useSearchWad } from '../..';
@@ -45,7 +44,12 @@ export const WadSearchInput: React.FC<WadSearchInputProps> = ({ wadId }) => {
           right={<Icon size="md" icon={FaSearch} />}
         />
       </Popover.Anchor>
-      <Popover.Content side="bottom" sideOffset={6} align="end" className="min-w-[500px]">
+      <Popover.Content
+        side="bottom"
+        sideOffset={6}
+        align="end"
+        className="max-h-[600px] min-w-[500px] overflow-y-scroll"
+      >
         {isOpen && (
           <>
             {searchWad.data?.items.length === 0 && (
@@ -64,7 +68,7 @@ export const WadSearchInput: React.FC<WadSearchInputProps> = ({ wadId }) => {
                   })}
                 >
                   <a
-                    className="flex flex-row items-center gap-2 rounded p-1 py-2 transition-colors duration-150 hover:cursor-pointer hover:bg-gray-600 hover:shadow-inner"
+                    className="flex flex-row items-center gap-2 rounded p-1 py-2 transition-colors duration-100 hover:cursor-pointer hover:bg-gray-600 hover:shadow-inner"
                     href={composeUrlQuery(appRoutes.mountedWads, { wadId, itemId: item.parentId })}
                   >
                     <Icon
