@@ -6,6 +6,7 @@ use color_eyre::eyre::{self, Ok};
 use eyre::Context;
 use std::{
     collections::HashMap,
+    ffi::OsStr,
     fs::{self, DirBuilder},
     io::{self, Read, Seek},
     path::{Path, PathBuf},
@@ -139,13 +140,30 @@ pub fn extract_wad_chunk_absolute<'wad, TSource: Read + Seek>(
         chunk_path.as_ref().display()
     ))?;
 
+    let mut chunk_path = chunk_path.as_ref().to_path_buf();
+    if chunk_path.extension().is_none() {
+        tracing::warn!(
+            "chunk has no extension, prepending '.' (chunk_path: {})",
+            chunk_path.display()
+        );
+
+        chunk_path = chunk_path.with_file_name(OsStr::new(
+            &(".".to_string()
+                + &chunk_path
+                    .file_name()
+                    .unwrap()
+                    .to_string_lossy()
+                    .to_string()),
+        ));
+    }
+
     let Err(error) = fs::write(&extract_directory.as_ref().join(&chunk_path), &chunk_data) else {
         return Ok(());
     };
     if error.kind() != io::ErrorKind::InvalidFilename {
         return Err(error).wrap_err(format!(
             "failed to write chunk (chunk_path: {})",
-            chunk_path.as_ref().display()
+            chunk_path.display()
         ));
     }
 

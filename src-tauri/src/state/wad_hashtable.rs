@@ -29,7 +29,7 @@ impl WadHashtable {
         self.items
             .get(&path_hash)
             .map(|x| x.clone())
-            .unwrap_or_else(|| format!("{:#0x}", path_hash).into())
+            .unwrap_or_else(|| format!("{:x}", path_hash).into())
     }
 
     pub fn add_from_dir(&mut self, dir: impl AsRef<Path>) -> eyre::Result<()> {
