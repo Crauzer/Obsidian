@@ -45,13 +45,19 @@ pub enum WadTreeError {
     Other { message: String },
 }
 
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Hash)]
+pub struct WadItemKindPath {
+    pub kind: WadTreeItemKind,
+    pub path: Arc<str>,
+}
+
 #[derive(Debug)]
 pub struct WadTree {
     wad_id: Uuid,
     wad_path: Arc<str>,
     items: Vec<Uuid>,
     item_storage: HashMap<Uuid, WadTreeItem>,
-    chunk_item_ids: HashMap<PathBuf, Uuid>,
+    chunk_item_ids: HashMap<WadItemKindPath, Uuid>,
 }
 
 impl WadTree {
@@ -144,20 +150,31 @@ impl WadTree {
                             self.item_storage.get_mut(&current_parent_id).unwrap()
                         {
                             parent.store_item(file.id(), &current_path);
-                            self.store_item(&current_path, WadTreeItem::File(file));
+                            self.store_item(
+                                current_path.to_string_lossy().to_string().into(),
+                                WadTreeItem::File(file),
+                            );
                         }
                     }
                     None => {
-                        self.add_item(&current_path, WadTreeItem::File(file));
+                        self.add_item(
+                            current_path.to_string_lossy().to_string().into(),
+                            WadTreeItem::File(file),
+                        );
                     }
                 }
 
                 return Ok(());
             }
 
-            match self.resolve_item_by_path_mut(&current_path) {
+            match self.resolve_item_by_path_mut(
+                WadTreeItemKind::Directory,
+                current_path.to_string_lossy().as_ref().into(),
+            ) {
                 Some(item) => {
                     let WadTreeItem::Directory(directory) = item else {
+                        tracing::error!("{:#?}", item);
+
                         return Err(WadTreeError::NotADirectory { item_id: item.id() });
                     };
 
@@ -180,12 +197,18 @@ impl WadTree {
                             }
 
                             current_parent_id = Some(directory.id());
-                            self.store_item(&current_path, WadTreeItem::Directory(directory));
+                            self.store_item(
+                                current_path.to_string_lossy().to_string().into(),
+                                WadTreeItem::Directory(directory),
+                            );
                             current_parent_path = Some(current_path);
                         }
                         None => {
                             current_parent_id = Some(directory.id());
-                            self.add_item(&current_path, WadTreeItem::Directory(directory));
+                            self.add_item(
+                                current_path.to_string_lossy().to_string().into(),
+                                WadTreeItem::Directory(directory),
+                            );
                             current_parent_path = Some(current_path);
                         }
                     }
@@ -203,28 +226,43 @@ impl WadTree {
         }
     }
 
-    fn resolve_item_by_path(&self, path: impl AsRef<Path>) -> Option<&WadTreeItem> {
-        if let Some(item_id) = self.chunk_item_ids.get(path.as_ref()) {
+    fn resolve_item_by_path(&self, kind: WadTreeItemKind, path: Arc<str>) -> Option<&WadTreeItem> {
+        if let Some(item_id) = self.chunk_item_ids.get(&WadItemKindPath {
+            kind,
+            path: path.clone(),
+        }) {
             self.item_storage.get(item_id)
         } else {
             None
         }
     }
-    fn resolve_item_by_path_mut(&mut self, path: impl AsRef<Path>) -> Option<&mut WadTreeItem> {
-        if let Some(item_id) = self.chunk_item_ids.get_mut(path.as_ref()) {
+    fn resolve_item_by_path_mut(
+        &mut self,
+        kind: WadTreeItemKind,
+        path: Arc<str>,
+    ) -> Option<&mut WadTreeItem> {
+        if let Some(item_id) = self.chunk_item_ids.get_mut(&WadItemKindPath {
+            kind,
+            path: path.clone(),
+        }) {
             self.item_storage.get_mut(item_id)
         } else {
             None
         }
     }
 
-    pub fn store_item(&mut self, path: impl AsRef<Path>, item: WadTreeItem) {
-        self.chunk_item_ids
-            .insert(path.as_ref().to_path_buf(), item.id());
+    pub fn store_item(&mut self, path: Arc<str>, item: WadTreeItem) {
+        self.chunk_item_ids.insert(
+            WadItemKindPath {
+                kind: item.kind(),
+                path: path.as_ref().into(),
+            },
+            item.id(),
+        );
         self.item_storage.insert(item.id(), item);
     }
 
-    pub fn add_item(&mut self, path: impl AsRef<Path>, item: WadTreeItem) {
+    pub fn add_item(&mut self, path: Arc<str>, item: WadTreeItem) {
         self.items.push(item.id());
         self.store_item(path, item);
     }
@@ -243,7 +281,7 @@ impl WadTree {
         &mut self.item_storage
     }
 
-    pub fn chunk_item_ids(&self) -> &HashMap<PathBuf, Uuid> {
+    pub fn chunk_item_ids(&self) -> &HashMap<WadItemKindPath, Uuid> {
         &self.chunk_item_ids
     }
 }

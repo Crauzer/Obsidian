@@ -67,7 +67,7 @@ pub async fn mount_wads(
         wad_ids.push(
             mounted_wads_guard
                 .mount_wad(wad, wad_path.to_str().unwrap().into(), &wad_hashtable)
-                .map_err(|_| ApiError::from_message("failed to mount wad"))?,
+                .wrap_err("failed to mount wad")?,
         )
     }
 

@@ -24,7 +24,7 @@ export type ApiError = z.infer<typeof apiErrorSchema>;
 export const apiErrorSchema = z.object({
   title: z.string().nullable().optional(),
   message: z.string(),
-  extensions: z.array(apiErrorExtensionSchema).optional(),
+  extensions: z.array(apiErrorExtensionSchema).optional().nullable(),
 });
 
 export const getApiErrorExtension = <

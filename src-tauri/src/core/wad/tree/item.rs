@@ -85,6 +85,13 @@ pub trait WadTreeExpandable {
 }
 
 impl WadTreeItem {
+    pub fn kind(&self) -> WadTreeItemKind {
+        match self {
+            WadTreeItem::File(_) => WadTreeItemKind::File,
+            WadTreeItem::Directory(_) => WadTreeItemKind::Directory,
+        }
+    }
+
     pub fn id(&self) -> Uuid {
         match self {
             WadTreeItem::File(file) => file.id(),
