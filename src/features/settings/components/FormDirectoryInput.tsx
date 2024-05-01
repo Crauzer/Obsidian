@@ -43,6 +43,7 @@ export const FormDirectoryInput = <TFieldValues extends FieldValues>({
       error={error ? error.message ?? true : false}
       left={
         <ActionIcon
+          type="button"
           icon={FaFolder}
           iconClassName="shadow"
           variant="ghost"

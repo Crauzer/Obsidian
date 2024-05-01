@@ -46,17 +46,7 @@ export const useRefreshHashtables = () => {
               render: (
                 <Toast.Warning
                   title={t('wadHashtablesMissing.title')}
-                  message={
-                    <span>
-                      {t('wadHashtablesMissing.message.0')}
-                      <Link
-                        href="https://github.com/CommunityDragon/Data/tree/master/hashes/lol"
-                        target="_blank"
-                      >
-                        {t('wadHashtablesMissing.message.1')}
-                      </Link>
-                    </span>
-                  }
+                  message={<WadHashtablesMissingToastMessage />}
                 />
               ),
               autoClose: false,
@@ -75,4 +65,20 @@ export const useRefreshHashtables = () => {
   }, [actionId, loadHashtablesMutation, t]);
 
   return { handleRefresh, loadHashtablesMutation };
+};
+
+const WadHashtablesMissingToastMessage = () => {
+  const [t] = useTranslation();
+
+  return (
+    <div>
+      <p>{t('wadHashtablesMissing.message.0')}</p>
+      <p>
+        {t('wadHashtablesMissing.message.1')}
+        <Link href="https://github.com/Crauzer/Obsidian" target="_blank">
+          {t('wadHashtablesMissing.message.2')}
+        </Link>
+      </p>
+    </div>
+  );
 };

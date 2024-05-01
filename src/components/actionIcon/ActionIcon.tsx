@@ -13,7 +13,7 @@ export type ActionIconProps = {
   iconClassName?: string;
 } & ButtonProps<'button'>;
 
-export const ActionIcon: React.FC<ActionIconProps> = forwardRef<HTMLButtonElement, ActionIconProps>(
+export const ActionIcon = forwardRef<HTMLButtonElement, ActionIconProps>(
   ({ size = 'md', variant, icon, iconClassName, ...props }, ref) => {
     return (
       <Button

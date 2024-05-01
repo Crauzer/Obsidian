@@ -22,7 +22,7 @@ export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(
             'flex h-6 w-6 items-center justify-center rounded border border-gray-600 bg-gray-700 transition-colors hover:border-obsidian-500 hover:bg-gray-600'
           }
         >
-          <RadixCheckbox.Indicator className="min-h-4 min-w-4 block rounded text-obsidian-500">
+          <RadixCheckbox.Indicator className="block min-h-4 min-w-4 rounded text-obsidian-500">
             <Icon size="sm" icon={FaCheck} />
           </RadixCheckbox.Indicator>
         </RadixCheckbox.Root>

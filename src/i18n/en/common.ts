@@ -7,8 +7,9 @@ export const common = {
   wadHashtablesMissing: {
     title: 'No Wad hashtables installed locally!',
     message: {
-      '0': 'You can get updated hashtables from the ',
-      '1': 'CDragon Data repository',
+      '0': 'In order to correctly display mounted Wad files, you need to set up Wad hashtables.',
+      '1': 'You can find a guide on how to set up Wad hashtables in the documentation on the ',
+      '2': 'project page',
     },
   },
 
