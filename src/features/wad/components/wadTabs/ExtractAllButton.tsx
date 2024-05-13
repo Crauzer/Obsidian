@@ -21,7 +21,7 @@ export const ExtractAllButton: React.FC<ExtractAllButtonProps> = ({ wadId }) => 
   const [actionId] = useState(uuidv4());
   const [isLoadingOverlayOpen, setIsLoadingOverlayOpen] = useState(false);
 
-  const settings = useSettings();
+  const settings = useSettings({});
   const pickDirectory = usePickDirectory();
   const extractMountedWad = useExtractMountedWad();
 
@@ -44,7 +44,7 @@ export const ExtractAllButton: React.FC<ExtractAllButtonProps> = ({ wadId }) => 
     setIsLoadingOverlayOpen(true);
 
     pickDirectory.mutate(
-      { initialDirectory: settings.data?.defaultExtractionDirectory },
+      { initialDirectory: settings.data?.defaultExtractionDirectory ?? undefined },
       {
         onSuccess: (directory) => {
           extractMountedWad.mutate(

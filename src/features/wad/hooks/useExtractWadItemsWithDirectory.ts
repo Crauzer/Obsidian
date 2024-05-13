@@ -21,7 +21,7 @@ export const useExtractWadItemsWithDirectory = () => {
 
   const [isExtracting, setIsExtracting] = useState(false);
 
-  const settings = useSettings();
+  const settings = useSettings({});
 
   const pickDirectory = usePickDirectory();
   const extractWadItems = useExtractWadItems();
@@ -35,7 +35,7 @@ export const useExtractWadItemsWithDirectory = () => {
     setIsExtracting(true);
 
     pickDirectory.mutate(
-      { initialDirectory: settings.data?.defaultExtractionDirectory },
+      { initialDirectory: settings.data?.defaultExtractionDirectory ?? undefined },
       {
         onSuccess: ({ path }) => {
           extractWadItems.mutate(
