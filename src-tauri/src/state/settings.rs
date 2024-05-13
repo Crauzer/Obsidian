@@ -8,19 +8,28 @@ use tracing::info;
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Settings {
+    pub open_directory_after_extraction: bool,
     pub default_mount_directory: Option<String>,
     pub default_extraction_directory: Option<String>,
 }
 
 impl Settings {
-    pub fn load_or_default(location: impl AsRef<Path>) -> eyre::Result<Self> {
+    pub fn load_or_default(location: impl AsRef<Path>) -> Self {
         info!("loading settings...");
 
-        match File::open(location) {
-            Ok(file) => Ok(serde_json::from_reader::<File, Self>(file)?),
-            Err(_) => {
-                tracing::warn!("failed to open settings file, using default settings...");
-                Ok(Self::default())
+        let Ok(file) = File::open(location) else {
+            tracing::error!("failed to open settings file, using default settings...");
+            return Self::default();
+        };
+
+        match serde_json::from_reader::<File, Self>(file) {
+            Ok(settings) => settings,
+            Err(error) => {
+                tracing::error!(
+                    "failed to parse settings file, using default settings | error: {}",
+                    error
+                );
+                Self::default()
             }
         }
     }
@@ -34,6 +43,7 @@ impl Settings {
 impl Default for Settings {
     fn default() -> Self {
         Self {
+            open_directory_after_extraction: true,
             default_mount_directory: None,
             default_extraction_directory: None,
         }

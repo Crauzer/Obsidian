@@ -1,52 +1,55 @@
 import { DevTool } from '@hookform/devtools';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React from 'react';
-import { FormProvider, SubmitErrorHandler, useForm } from 'react-hook-form';
+import React, { useCallback, useEffect } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
 
 import {
   SettingsFormData,
   createSettingsFromFormData,
   settingsFormDataSchema,
-  useSettings,
   useUpdateSettings,
 } from '..';
-import { Button, Toast } from '../../../components';
-import { toastAutoClose } from '../../../utils/toast';
+import { Form } from '../../../components';
 import { FormDirectoryInput } from './FormDirectoryInput';
 
-export type SettingsFormProps = {};
+export type SettingsFormProps = {
+  defaultValues: SettingsFormData;
+};
 
-export const SettingsForm: React.FC<SettingsFormProps> = ({}) => {
+export const SettingsForm: React.FC<SettingsFormProps> = ({ defaultValues }) => {
   const [t] = useTranslation('settings');
 
-  const settings = useSettings();
-  const updateSettings = useUpdateSettings();
+  const { mutate: updateSettingsMutate } = useUpdateSettings();
 
   const formMethods = useForm<SettingsFormData>({
-    values: settings.data,
+    reValidateMode: 'onBlur',
+    defaultValues,
     resolver: zodResolver(settingsFormDataSchema),
   });
-  const { control, handleSubmit } = formMethods;
+  const { control, watch, handleSubmit } = formMethods;
 
-  const handleFormSubmit = (data: SettingsFormData) => {
-    updateSettings.mutate(
-      { settings: createSettingsFromFormData(data) },
-      {
-        onSuccess: () => {
-          toast.success(<Toast.Success message={t('submit.success')} />, {
-            autoClose: toastAutoClose.veryShort,
-          });
-        },
-      },
-    );
-  };
+  // update settings when any value changes
+  const onSubmit = useCallback(
+    (data: SettingsFormData) => {
+      console.log('data', data);
+      updateSettingsMutate({ settings: createSettingsFromFormData(data) });
+    },
+    [updateSettingsMutate],
+  );
+  useEffect(() => {
+    const subscription = watch(() => handleSubmit(onSubmit)());
+
+    return () => subscription.unsubscribe();
+  }, [handleSubmit, onSubmit, watch]);
 
   return (
     <FormProvider {...formMethods}>
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="flex w-full flex-col gap-8">
+      <form className="flex w-full flex-col gap-8">
         <div className="flex flex-col gap-4">
+          <Form.Checkbox control={control} name="openDirectoryAfterExtraction">
+            {t('openDirectoryAfterExtraction')}
+          </Form.Checkbox>
           <FormDirectoryInput
             control={control}
             name="defaultMountDirectory"
@@ -59,10 +62,6 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({}) => {
           />
         </div>
         <DevTool control={control} />
-
-        <Button type="submit" variant="filled" className="ml-auto">
-          Submit
-        </Button>
       </form>
     </FormProvider>
   );
