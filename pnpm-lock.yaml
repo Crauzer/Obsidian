@@ -106,10 +106,10 @@ dependencies:
     version: 4.7.7(react-dom@18.2.0)(react@18.2.0)
   tauri-plugin-store-api:
     specifier: github:tauri-apps/tauri-plugin-store#v1
-    version: github.com/tauri-apps/tauri-plugin-store/02243686d0507d2aeeb2924cd889dd0bcb47ecef
+    version: github.com/tauri-apps/tauri-plugin-store/b1ce9b38662a2990dddb30de1af88509a45e4625
   tauri-plugin-upload-api:
     specifier: github:tauri-apps/tauri-plugin-upload#v1
-    version: github.com/tauri-apps/tauri-plugin-upload/56d958697109d854bca19050403b017c9a28b434
+    version: github.com/tauri-apps/tauri-plugin-upload/bc69007a912fc0c0c9fe3e3d20f1a9773ae9c86b
   tauri-plugin-window-state-api:
     specifier: github:tauri-apps/tauri-plugin-window-state#v1
     version: github.com/tauri-apps/tauri-plugin-window-state/002cf15f6a1e4969a678a4ade680cd60477a8a53
@@ -6383,16 +6383,16 @@ packages:
     resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
     dev: false
 
-  github.com/tauri-apps/tauri-plugin-store/02243686d0507d2aeeb2924cd889dd0bcb47ecef:
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/02243686d0507d2aeeb2924cd889dd0bcb47ecef}
+  github.com/tauri-apps/tauri-plugin-store/b1ce9b38662a2990dddb30de1af88509a45e4625:
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/b1ce9b38662a2990dddb30de1af88509a45e4625}
     name: tauri-plugin-store-api
     version: 0.0.0
     dependencies:
       '@tauri-apps/api': 1.5.3
     dev: false
 
-  github.com/tauri-apps/tauri-plugin-upload/56d958697109d854bca19050403b017c9a28b434:
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-upload/tar.gz/56d958697109d854bca19050403b017c9a28b434}
+  github.com/tauri-apps/tauri-plugin-upload/bc69007a912fc0c0c9fe3e3d20f1a9773ae9c86b:
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-upload/tar.gz/bc69007a912fc0c0c9fe3e3d20f1a9773ae9c86b}
     name: tauri-plugin-upload-api
     version: 0.0.0
     dependencies:

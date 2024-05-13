@@ -65,7 +65,7 @@ fn main() -> eyre::Result<()> {
                     .app_config_dir()
                     .unwrap()
                     .join("settings.json"),
-            )?;
+            );
 
             *app.state::<WadHashtableState>().0.lock() = WadHashtable::new()?;
 

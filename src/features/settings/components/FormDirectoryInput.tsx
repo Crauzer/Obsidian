@@ -7,6 +7,7 @@ import {
   useController,
 } from 'react-hook-form';
 import { FaFolder } from 'react-icons/fa';
+import { PiX } from 'react-icons/pi';
 
 import { ActionIcon, TextField, TextFieldProps } from '../../../components';
 import { usePickDirectory } from '../../fs';
@@ -56,6 +57,16 @@ export const FormDirectoryInput = <TFieldValues extends FieldValues>({
                 },
               },
             );
+          }}
+        />
+      }
+      right={
+        <ActionIcon
+          type="button"
+          icon={PiX}
+          variant="ghost"
+          onClick={() => {
+            onChange(null);
           }}
         />
       }

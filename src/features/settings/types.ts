@@ -3,12 +3,14 @@ import { z } from 'zod';
 import { pathStringSchema } from '../../utils';
 
 export type Settings = {
-  defaultMountDirectory: string;
-  defaultExtractionDirectory: string;
+  openDirectoryAfterExtraction: boolean;
+  defaultMountDirectory: string | null;
+  defaultExtractionDirectory: string | null;
 };
 
 export type SettingsFormData = z.infer<typeof settingsFormDataSchema>;
 export const settingsFormDataSchema = z.object({
-  defaultMountDirectory: pathStringSchema,
-  defaultExtractionDirectory: pathStringSchema,
+  openDirectoryAfterExtraction: z.boolean(),
+  defaultMountDirectory: pathStringSchema.nullable(),
+  defaultExtractionDirectory: pathStringSchema.nullable(),
 });

@@ -2,13 +2,15 @@ use std::iter;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
 
-use color_eyre::eyre::{eyre, ContextCompat};
+use color_eyre::eyre::{eyre, Context, ContextCompat};
 use itertools::Itertools;
+use tauri::Manager;
 use uuid::Uuid;
 
 use crate::api::wad::commands::ApiError;
 use crate::core::wad::tree::{WadTreeItem, WadTreeParent, WadTreePathable};
 use crate::core::wad::{self, WadChunk};
+use crate::state::SettingsState;
 use crate::utils::actions::emit_action_progress;
 use crate::{MountedWadsState, WadHashtableState};
 
@@ -22,6 +24,7 @@ pub async fn extract_wad_items(
     extract_directory: String,
     mounted_wads: tauri::State<'_, MountedWadsState>,
     wad_hashtable: tauri::State<'_, WadHashtableState>,
+    settings: tauri::State<'_, SettingsState>,
 ) -> Result<(), ApiError> {
     let mut mounted_wads = mounted_wads.0.lock();
 
@@ -66,7 +69,7 @@ pub async fn extract_wad_items(
         &chunks,
         parent_item.map(|x| PathBuf::from_str(&x.path()).unwrap()),
         &wad_hashtable.0.lock(),
-        PathBuf::from(extract_directory),
+        PathBuf::from(extract_directory.clone()),
         |progress, message| {
             emit_action_progress(
                 &app_handle,
@@ -78,6 +81,14 @@ pub async fn extract_wad_items(
     )?;
 
     tracing::info!("extraction complete (wad_id = {})", wad_id);
+
+    if settings.0.read().open_directory_after_extraction {
+        tauri::api::shell::open(&app_handle.shell_scope(), extract_directory.clone(), None)
+            .wrap_err(format!(
+                "failed to open extraction directory: {}",
+                extract_directory
+            ))?;
+    }
 
     Ok(())
 }

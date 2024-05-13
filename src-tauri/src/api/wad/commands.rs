@@ -183,23 +183,18 @@ pub async fn unmount_wad(
 #[tauri::command]
 pub async fn extract_mounted_wad(
     app_handle: tauri::AppHandle,
-    wad_id: String,
-    action_id: String,
+    wad_id: Uuid,
+    action_id: Uuid,
     extract_directory: String,
     mounted_wads: tauri::State<'_, MountedWadsState>,
     wad_hashtable: tauri::State<'_, WadHashtableState>,
+    settings: tauri::State<'_, SettingsState>,
 ) -> Result<(), ApiError> {
     info!("extracting mounted wad (wad_id: {})", wad_id);
 
-    let action_id = Uuid::from_str(&action_id).wrap_err(format!(
-        "failed to parse action_id (action_id = {})",
-        action_id
-    ))?;
     let mut mounted_wads = mounted_wads.0.lock();
     let wad_hashtable = wad_hashtable.0.lock();
 
-    let wad_id = uuid::Uuid::parse_str(&wad_id)
-        .map_err(|_| ApiError::from_message("failed to parse wad_id"))?;
     let wad = mounted_wads
         .wads_mut()
         .get_mut(&wad_id)
@@ -207,8 +202,6 @@ pub async fn extract_mounted_wad(
             "failed to find wad (wad_id: {})",
             wad_id
         )))?;
-
-    let extract_directory = PathBuf::from(extract_directory);
 
     emit_action_progress(
         &app_handle,
@@ -218,6 +211,7 @@ pub async fn extract_mounted_wad(
     )?;
 
     // pre-create all chunk directories
+    let extract_directory = PathBuf::from(extract_directory);
     wad::prepare_extraction_directories_absolute(
         wad.chunks().iter(),
         &wad_hashtable,
@@ -231,7 +225,7 @@ pub async fn extract_mounted_wad(
         &mut decoder,
         &chunks,
         &wad_hashtable,
-        extract_directory,
+        extract_directory.clone(),
         |progress, message| {
             emit_action_progress(
                 &app_handle,
@@ -242,7 +236,19 @@ pub async fn extract_mounted_wad(
         },
     )?;
 
-    info!("extraction complete (wad_id = {})", wad_id);
+    tracing::info!("extraction complete (wad_id = {})", wad_id);
+
+    if settings.0.read().open_directory_after_extraction {
+        tauri::api::shell::open(
+            &app_handle.shell_scope(),
+            extract_directory.to_str().unwrap(),
+            None,
+        )
+        .wrap_err(format!(
+            "failed to open extraction directory: {}",
+            extract_directory.display()
+        ))?;
+    }
 
     Ok(())
 }
