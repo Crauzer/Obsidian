@@ -83,11 +83,10 @@ pub async fn extract_wad_items(
     tracing::info!("extraction complete (wad_id = {})", wad_id);
 
     if settings.0.read().open_directory_after_extraction {
-        tauri::api::shell::open(&app_handle.shell_scope(), extract_directory.clone(), None)
-            .wrap_err(format!(
-                "failed to open extraction directory: {}",
-                extract_directory
-            ))?;
+        open::that(&extract_directory).wrap_err(format!(
+            "failed to open extraction directory: {}",
+            extract_directory
+        ))?;
     }
 
     Ok(())

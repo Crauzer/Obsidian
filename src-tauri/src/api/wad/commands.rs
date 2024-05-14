@@ -239,12 +239,7 @@ pub async fn extract_mounted_wad(
     tracing::info!("extraction complete (wad_id = {})", wad_id);
 
     if settings.0.read().open_directory_after_extraction {
-        tauri::api::shell::open(
-            &app_handle.shell_scope(),
-            extract_directory.to_str().unwrap(),
-            None,
-        )
-        .wrap_err(format!(
+        open::that(extract_directory.as_os_str()).wrap_err(format!(
             "failed to open extraction directory: {}",
             extract_directory.display()
         ))?;
