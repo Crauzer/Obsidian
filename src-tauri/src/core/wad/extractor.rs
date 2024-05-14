@@ -160,21 +160,22 @@ pub fn extract_wad_chunk_absolute<'wad, TSource: Read + Seek>(
     let Err(error) = fs::write(&extract_directory.as_ref().join(&chunk_path), &chunk_data) else {
         return Ok(());
     };
-    if error.kind() != io::ErrorKind::InvalidFilename {
+    if error.kind() == io::ErrorKind::InvalidFilename {
+        let hashed_path = format!(".{:x}", chunk.path_hash());
+        let hashed_path = Path::new(&hashed_path);
+
+        tracing::warn!(
+            "invalid chunk filename, writing as hashed path (chunk_path: {}, hashed_path: {})",
+            chunk_path.display(),
+            hashed_path.display()
+        );
+        fs::write(&extract_directory.as_ref().join(hashed_path), &chunk_data)?;
+
+        Ok(())
+    } else {
         return Err(error).wrap_err(format!(
             "failed to write chunk (chunk_path: {})",
             chunk_path.display()
         ));
     }
-
-    let hashed_path = format!("{:#0x}", chunk.path_hash());
-    let hashed_path = Path::new(&hashed_path);
-
-    tracing::warn!(
-        "invalid chunk filename, writing as {}",
-        hashed_path.display()
-    );
-    fs::write(&extract_directory.as_ref().join(hashed_path), &chunk_data)?;
-
-    Ok(())
 }
