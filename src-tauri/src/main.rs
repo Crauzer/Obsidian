@@ -30,7 +30,7 @@ use crate::{
 };
 use color_eyre::eyre;
 use parking_lot::{lock_api::RwLock, Mutex};
-use paths::LOGS_DIR;
+use paths::{LOGS_DIR, SETTINGS_FILE};
 use state::{
     ActionsState, MountedWads, MountedWadsState, Settings, SettingsState, WadHashtableState,
 };
@@ -64,7 +64,7 @@ fn main() -> eyre::Result<()> {
                 app.path_resolver()
                     .app_config_dir()
                     .unwrap()
-                    .join("settings.json"),
+                    .join(SETTINGS_FILE),
             );
 
             *app.state::<WadHashtableState>().0.lock() = WadHashtable::new()?;
@@ -92,23 +92,6 @@ fn main() -> eyre::Result<()> {
             update_mounted_wad_item_selection,
             update_settings,
         ])
-        .on_window_event(|event| {
-            if let tauri::WindowEvent::CloseRequested { .. } = event.event() {
-                let app_handle = event.window().app_handle();
-                let settings = app_handle.state::<SettingsState>();
-                let settings = settings.0.read();
-
-                settings
-                    .save(
-                        app_handle
-                            .path_resolver()
-                            .app_config_dir()
-                            .unwrap()
-                            .join("settings.json"),
-                    )
-                    .expect("failed to save settings")
-            }
-        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 
