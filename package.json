@@ -11,7 +11,8 @@
     "lint": "eslint --fix \"./**/*.{ts,tsx}\"",
     "test": "vitest --run",
     "testWatch": "vitest",
-    "prepare": "husky"
+    "prepare": "husky",
+    "release": "commit-and-tag-version"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^16.3.0",
@@ -71,6 +72,7 @@
     "@typescript-eslint/parser": "^5.62.0",
     "@vitejs/plugin-react": "^4.0.3",
     "autoprefixer": "^10.4.16",
+    "commit-and-tag-version": "^12.4.1",
     "eslint": "~8.46.0",
     "eslint-config-prettier": "8.1.0",
     "eslint-plugin-cypress": "^2.13.4",
