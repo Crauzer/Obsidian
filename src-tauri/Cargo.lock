@@ -2181,7 +2181,7 @@ dependencies = [
 
 [[package]]
 name = "obsidian"
-version = "6.0.0"
+version = "6.0.0-beta.1"
 dependencies = [
  "byteorder",
  "chrono",
