@@ -50,38 +50,36 @@ export const WadSearchInput: React.FC<WadSearchInputProps> = ({ wadId }) => {
         align="end"
         className="max-h-[600px] min-w-[500px] overflow-y-scroll"
       >
-        {isOpen && (
-          <>
-            {searchWad.data?.items.length === 0 && (
-              <div className="flex flex-col items-center justify-center gap-1">
-                <Icon size="xl" icon={MdDataArray} />
-                <p className="select-none text-base text-gray-50">{t('noResults')}</p>
-              </div>
-            )}
-            <ul {...getMenuProps({}, { suppressRefError: true })} className="flex flex-col">
-              {searchWad.data?.items.map((item, index) => (
-                <li
-                  key={index}
-                  {...getItemProps({
-                    item,
-                    index,
-                  })}
+        <>
+          {searchWad.data?.items.length === 0 && (
+            <div className="flex flex-col items-center justify-center gap-1">
+              <Icon size="xl" icon={MdDataArray} />
+              <p className="select-none text-base text-gray-50">{t('noResults')}</p>
+            </div>
+          )}
+          <ul {...getMenuProps({}, { suppressRefError: true })} className="flex flex-col">
+            {searchWad.data?.items.map((item, index) => (
+              <li
+                key={index}
+                {...getItemProps({
+                  item,
+                  index,
+                })}
+              >
+                <a
+                  className="flex flex-row items-center gap-2 rounded p-1 py-2 transition-colors duration-100 hover:cursor-pointer hover:bg-gray-600 hover:shadow-inner"
+                  href={composeUrlQuery(appRoutes.mountedWads, { wadId, itemId: item.parentId })}
                 >
-                  <a
-                    className="flex flex-row items-center gap-2 rounded p-1 py-2 transition-colors duration-100 hover:cursor-pointer hover:bg-gray-600 hover:shadow-inner"
-                    href={composeUrlQuery(appRoutes.mountedWads, { wadId, itemId: item.parentId })}
-                  >
-                    <Icon
-                      className={clsx(getLeagueFileKindIconColor(item.extensionKind))}
-                      icon={getLeagueFileKindIcon(item.extensionKind)}
-                    />
-                    <p className="text-sm">{item.path}</p>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
+                  <Icon
+                    className={clsx(getLeagueFileKindIconColor(item.extensionKind))}
+                    icon={getLeagueFileKindIcon(item.extensionKind)}
+                  />
+                  <p className="text-sm">{item.path}</p>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </>
       </Popover.Content>
     </Popover.Root>
   );

@@ -15,30 +15,40 @@ import { RxDragHandleDots2 } from 'react-icons/rx';
 
 import { CloseIcon } from '../../../../assets';
 import { Icon, Tooltip } from '../../../../components';
-import { useMountedWads, useReorderMountedWad, useUnmountWad } from '../../api';
+import { useReorderMountedWad, useUnmountWad } from '../../api';
 import { MountedWad } from '../../types';
 import { MountWadsButton } from './MountWadsButton';
 import { WadDirectoryTabContent, WadRootTabContent } from './WadTabContent';
 import { WadTabContextMenu } from './WadTabContextMenu';
 
 export type WadTabsProps = {
+  wads: MountedWad[];
+
   selectedWad?: string;
   selectedItemId?: string;
   onSelectedWadChanged?: (selectedWad: string) => void;
+  onWadClose?: (wadId: string) => void;
 };
 
 export const WadTabs: React.FC<WadTabsProps> = ({
+  wads,
   selectedWad,
   selectedItemId,
   onSelectedWadChanged,
+  onWadClose,
 }) => {
-  const mountedWadsQuery = useMountedWads();
-
   const unmountWadMutation = useUnmountWad();
   const reorderWadMutation = useReorderMountedWad();
 
   const handleTabClose = (wadId: string) => {
-    unmountWadMutation.mutate({ wadId });
+    unmountWadMutation.mutate(
+      { wadId },
+      {
+        onSuccess: () => {
+          onWadClose?.(wadId);
+        },
+      },
+    );
   };
 
   const handleDragEnd: OnDragEndResponder = (result, _provided) => {
@@ -50,67 +60,63 @@ export const WadTabs: React.FC<WadTabsProps> = ({
     }
   };
 
-  if (mountedWadsQuery.isSuccess) {
-    return (
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <RadixTabs.Root
-          className="flex w-full flex-col gap-2"
-          orientation="horizontal"
-          value={selectedWad}
-          onValueChange={onSelectedWadChanged}
-        >
-          <div className="flex w-full flex-row">
-            <Droppable droppableId="wad_tabs" direction="horizontal">
-              {(provided, snapshot) => (
-                <RadixTabs.List
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  className={clsx(
-                    'flex flex-1',
-                    'data-[orientation=horizontal]:flex-row data-[orientation=vertical]:flex-col',
-                    'rounded rounded-r-none border border-gray-700 bg-gray-800 transition-colors',
-                    'overflow-x-scroll [scrollbar-gutter:stable]',
-                    'relative min-h-[2.5rem]',
-                    { 'border-obsidian-500 ': snapshot.isDraggingOver },
-                  )}
-                >
-                  {mountedWadsQuery.data.wads.map((mountedWad, index) => {
-                    return (
-                      <Draggable key={mountedWad.id} draggableId={mountedWad.id} index={index}>
-                        {(provided, snapshot) => (
-                          <TabTrigger
-                            key={mountedWad.id}
-                            mountedWad={mountedWad}
-                            provided={provided}
-                            snapshot={snapshot}
-                            handleTabClose={handleTabClose}
-                          />
-                        )}
-                      </Draggable>
-                    );
-                  })}
-                </RadixTabs.List>
-              )}
-            </Droppable>
-            <MountWadsButton />
-          </div>
-          {mountedWadsQuery.data.wads.map((mountedWad) => {
-            return (
-              <RadixTabs.Content key={mountedWad.id} className="flex-1" value={mountedWad.id}>
-                {selectedItemId ? (
-                  <WadDirectoryTabContent wadId={mountedWad.id} selectedItemId={selectedItemId} />
-                ) : (
-                  <WadRootTabContent wadId={mountedWad.id} />
+  return (
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <RadixTabs.Root
+        className="flex w-full flex-col gap-2"
+        orientation="horizontal"
+        value={selectedWad}
+        onValueChange={onSelectedWadChanged}
+      >
+        <div className="flex w-full flex-row">
+          <Droppable droppableId="wad_tabs" direction="horizontal">
+            {(provided, snapshot) => (
+              <RadixTabs.List
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                className={clsx(
+                  'flex flex-1',
+                  'data-[orientation=horizontal]:flex-row data-[orientation=vertical]:flex-col',
+                  'rounded rounded-r-none border border-gray-700 bg-gray-800 transition-colors',
+                  'overflow-x-scroll [scrollbar-gutter:stable]',
+                  'relative min-h-[2.5rem]',
+                  { 'border-obsidian-500 ': snapshot.isDraggingOver },
                 )}
-              </RadixTabs.Content>
-            );
-          })}
-        </RadixTabs.Root>
-      </DragDropContext>
-    );
-  }
-
-  return null;
+              >
+                {wads.map((mountedWad, index) => {
+                  return (
+                    <Draggable key={mountedWad.id} draggableId={mountedWad.id} index={index}>
+                      {(provided, snapshot) => (
+                        <TabTrigger
+                          key={mountedWad.id}
+                          mountedWad={mountedWad}
+                          provided={provided}
+                          snapshot={snapshot}
+                          handleTabClose={handleTabClose}
+                        />
+                      )}
+                    </Draggable>
+                  );
+                })}
+              </RadixTabs.List>
+            )}
+          </Droppable>
+          <MountWadsButton />
+        </div>
+        {wads.map((mountedWad) => {
+          return (
+            <RadixTabs.Content key={mountedWad.id} className="flex-1" value={mountedWad.id}>
+              {selectedItemId ? (
+                <WadDirectoryTabContent wadId={mountedWad.id} selectedItemId={selectedItemId} />
+              ) : (
+                <WadRootTabContent wadId={mountedWad.id} />
+              )}
+            </RadixTabs.Content>
+          );
+        })}
+      </RadixTabs.Root>
+    </DragDropContext>
+  );
 };
 
 type TabTriggerProps = {
