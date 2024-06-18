@@ -3,7 +3,7 @@ import React, { useCallback, useMemo } from 'react';
 import { FaChevronRight } from 'react-icons/fa';
 import { FcFolder } from 'react-icons/fc';
 import { MdDataArray } from 'react-icons/md';
-import { useNavigate } from 'react-router-dom';
+import { generatePath, useNavigate } from 'react-router-dom';
 import { Virtuoso } from 'react-virtuoso';
 
 import { useWadParentItems } from '../..';
@@ -65,7 +65,7 @@ const WadBreadcrumb: React.FC<WadBreadcrumbProps> = ({ wadId, name, itemId }) =>
         variant="ghost"
         className="rounded-none rounded-l px-[6px] py-1"
         draggable={false}
-        href={composeUrlQuery(appRoutes.mountedWads, { wadId, itemId: itemId })}
+        href={composeUrlQuery(generatePath(appRoutes.mountedWad, { wadId }), { itemId: itemId })}
       >
         {name}
       </Button>
