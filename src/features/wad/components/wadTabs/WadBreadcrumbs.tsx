@@ -28,7 +28,7 @@ export const WadBreadcrumbs: React.FC<WadBreadcrumbsProps> = ({
   return (
     <div
       className={clsx(
-        'flex w-full flex-row rounded border border-gray-600 bg-gray-900 p-1 shadow-inner',
+        'flex w-full flex-row flex-wrap rounded border border-gray-600 bg-gray-900 p-1 shadow-inner',
         className,
       )}
     >

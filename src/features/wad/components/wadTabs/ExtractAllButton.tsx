@@ -80,7 +80,7 @@ export const ExtractAllButton: React.FC<ExtractAllButtonProps> = ({ wadId }) => 
               extractWad();
             }}
           >
-            <Icon size="sm" icon={LuFileDown} />
+            <Icon size="md" icon={LuFileDown} />
           </Button>
         </Tooltip.Trigger>
         <Tooltip.Content>{t('toolbar.extractAll.tooltip')}</Tooltip.Content>

@@ -29,7 +29,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
         <div
           className={clsx(
-            'flex h-full w-full flex-row items-center gap-1 rounded-md border border-gray-500 bg-gray-700 px-2 shadow-inner transition-colors',
+            'flex h-[40px] w-full flex-row items-center gap-1 rounded-md border border-gray-500 bg-gray-700 px-2 shadow-inner transition-colors',
             {
               'border-obsidian-500/70': isFocused || error,
             },

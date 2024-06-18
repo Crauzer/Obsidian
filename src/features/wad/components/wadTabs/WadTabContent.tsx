@@ -1,19 +1,12 @@
-import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
 
-import { ArchiveIcon } from '../../../../assets';
-import { Breadcrumbs, Icon, Input, Tooltip } from '../../../../components';
-import { appRoutes } from '../../../../lib/router';
-import { composeUrlQuery } from '../../../../utils';
 import { useWadDirectoryPathComponents, useWadParentItems } from '../../api';
 import { WadItem, WadItemPathComponent } from '../../types';
 import { WadSearchInput } from '../search';
 import { WadItemList } from '../wadItemList';
 import { ExtractAllButton } from './ExtractAllButton';
 import { WadBreadcrumbs } from './WadBreadcrumbs';
-import { WadTabToolbar } from './toolbar';
 
 export type WadRootTabContentProps = { wadId: string };
 
@@ -78,9 +71,13 @@ const WadTabContent: React.FC<WadTabContentProps> = ({
   return (
     <div className="flex h-full flex-col gap-2">
       <div className="flex h-full flex-col rounded border border-gray-600 bg-gray-900">
-        <div className="flex w-full flex-row gap-2 border-b border-gray-600 bg-gray-800 p-2">
+        <div className="flex w-full flex-row flex-wrap items-center gap-2 border-b border-gray-600 bg-gray-800 p-2">
           <ExtractAllButton wadId={wadId} />
-          <WadBreadcrumbs className="flex-1" wadId={wadId} pathComponents={pathComponents} />
+          <WadBreadcrumbs
+            className="min-w-[400px] flex-1"
+            wadId={wadId}
+            pathComponents={pathComponents}
+          />
           <WadSearchInput wadId={wadId} />
         </div>
         <WadItemList wadId={wadId} parentItemId={parentItemId} data={items} />

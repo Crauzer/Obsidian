@@ -58,6 +58,7 @@ export const Button: ButtonComponent = forwardRef(
         ref={ref}
         className={clsx(
           'flex items-center rounded-md border transition-colors duration-150',
+          'h-fit',
           getTextSizeClass(size),
           getJustifyClass(justify),
           {

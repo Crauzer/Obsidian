@@ -36,11 +36,11 @@ export const WadSearchInput: React.FC<WadSearchInputProps> = ({ wadId }) => {
         open ? openMenu() : closeMenu();
       }}
     >
-      <Popover.Anchor className="flex h-full">
+      <Popover.Anchor asChild>
         <Input
           {...getInputProps()}
-          className="w-[500px]"
           placeholder="Search"
+          className="w-full md:w-[350px]"
           right={<Icon size="md" icon={FaSearch} />}
         />
       </Popover.Anchor>
