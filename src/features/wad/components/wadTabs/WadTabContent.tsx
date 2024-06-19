@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 
 import { useWadDirectoryPathComponents, useWadParentItems } from '../../api';
 import { WadItem, WadItemPathComponent } from '../../types';
@@ -80,7 +81,16 @@ const WadTabContent: React.FC<WadTabContentProps> = ({
           />
           <WadSearchInput wadId={wadId} />
         </div>
-        <WadItemList wadId={wadId} parentItemId={parentItemId} data={items} />
+
+        <PanelGroup className="w-full" direction="horizontal">
+          <Panel defaultSize={70} minSize={30}>
+            <WadItemList wadId={wadId} parentItemId={parentItemId} data={items} />
+          </Panel>
+          <PanelResizeHandle className="w-[1px] bg-gray-600" />
+          <Panel defaultSize={30} minSize={30}>
+            <div className="h-full bg-gray-950"></div>
+          </Panel>
+        </PanelGroup>
       </div>
     </div>
   );

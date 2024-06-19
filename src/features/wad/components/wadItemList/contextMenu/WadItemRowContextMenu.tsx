@@ -28,14 +28,6 @@ export const WadItemRowContextMenu: React.FC<WadItemRowContextMenuProps> = ({
 }) => {
   const [t] = useTranslation(['wad', 'common']);
 
-  const handleCopyName = useCallback(async () => {
-    await writeText(item.name);
-
-    toast.info(<Toast.Info message={t('common:copied')} />, {
-      autoClose: toastAutoClose.veryShort,
-    });
-  }, [item.name, t]);
-
   const handleCopyPath = useCallback(async () => {
     await writeText(item.path);
 
@@ -51,15 +43,55 @@ export const WadItemRowContextMenu: React.FC<WadItemRowContextMenuProps> = ({
         <ExtractItem wadId={wadId} parentItemId={parentItemId} item={item} />
         <ExtractSelectedItem wadId={wadId} parentItemId={parentItemId} item={item} />
         <ContextMenu.Separator />
-        <ContextMenu.Item className="flex flex-row items-center gap-2" onClick={handleCopyName}>
-          <Icon icon={VscCopy} size="md" />
-          {t('wad:contextMenu.copyName')}
-        </ContextMenu.Item>
-        <ContextMenu.Item className="flex flex-row items-center gap-2" onClick={handleCopyPath}>
-          <Icon icon={VscCopy} size="md" />
-          {t('wad:contextMenu.copyPath')}
-        </ContextMenu.Item>
+        <CopyNameItem item={item} />
+        <CopyPathItem item={item} />
       </ContextMenu.Content>
     </ContextMenu.Root>
+  );
+};
+
+type CopyNameItemProps = {
+  item: WadItem;
+};
+
+const CopyNameItem = ({ item }: CopyNameItemProps) => {
+  const [t] = useTranslation(['wad', 'common']);
+
+  const handleCopyName = useCallback(async () => {
+    await writeText(item.name);
+
+    toast.info(<Toast.Info message={t('common:copied')} />, {
+      autoClose: toastAutoClose.veryShort,
+    });
+  }, [item.name, t]);
+
+  return (
+    <ContextMenu.Item className="flex flex-row items-center gap-2" onClick={handleCopyName}>
+      <Icon icon={VscCopy} size="md" />
+      {t('wad:contextMenu.copyName')}
+    </ContextMenu.Item>
+  );
+};
+
+type CopyPathItemProps = {
+  item: WadItem;
+};
+
+export const CopyPathItem = ({ item }: CopyPathItemProps) => {
+  const [t] = useTranslation(['wad', 'common']);
+
+  const handleCopyPath = useCallback(async () => {
+    await writeText(item.path);
+
+    toast.info(<Toast.Info message={t('common:copied')} />, {
+      autoClose: toastAutoClose.veryShort,
+    });
+  }, [item.path, t]);
+
+  return (
+    <ContextMenu.Item className="flex flex-row items-center gap-2" onClick={handleCopyPath}>
+      <Icon icon={VscCopy} size="md" />
+      {t('wad:contextMenu.copyPath')}
+    </ContextMenu.Item>
   );
 };

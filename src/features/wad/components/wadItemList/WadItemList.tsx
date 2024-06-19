@@ -58,7 +58,7 @@ export const WadItemList: React.FC<WadItemListProps> = ({ wadId, parentItemId, d
   };
 
   return (
-    <div style={{ flex: '1 1 auto' }}>
+    <div className="h-full flex-auto">
       <AutoSizer>
         {({ height, width }) => (
           <Virtuoso
