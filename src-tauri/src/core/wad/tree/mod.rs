@@ -1,4 +1,5 @@
 use std::{
+    clone,
     collections::HashMap,
     io::{Read, Seek},
     path::{self, Path, PathBuf},
@@ -14,9 +15,15 @@ mod item;
 
 pub use item::*;
 
-use crate::state::WadHashtable;
+use crate::{
+    core::league_file::{
+        get_extension_from_league_file_kind, get_league_file_kind_from_extension,
+        identify_league_file, LeagueFileKind,
+    },
+    state::WadHashtable,
+};
 
-use super::{Wad, WadChunk};
+use super::{Wad, WadChunk, WadDecoder, WadError};
 
 #[derive(Error, Debug)]
 pub enum WadTreeError {
@@ -41,6 +48,9 @@ pub enum WadTreeError {
     #[error("not a directory: (item_id: {item_id})")]
     NotADirectory { item_id: Uuid },
 
+    #[error("wad error: {0}")]
+    WadError(#[from] WadError),
+
     #[error("{message}")]
     Other { message: String },
 }
@@ -62,7 +72,7 @@ pub struct WadTree {
 
 impl WadTree {
     pub fn from_wad<TSource>(
-        wad: &Wad<TSource>,
+        wad: &mut Wad<TSource>,
         wad_id: Uuid,
         wad_path: impl Into<Arc<str>>,
         hashtable: &WadHashtable,
@@ -72,6 +82,7 @@ impl WadTree {
     {
         info!("creating wad tree for wad (wad_id: {})", wad_id);
 
+        // create tree
         let mut tree = WadTree {
             wad_id,
             wad_path: wad_path.into(),
@@ -80,15 +91,41 @@ impl WadTree {
             chunk_item_ids: HashMap::default(),
         };
 
-        for (_, chunk) in wad.chunks() {
-            let path = Self::resolve_path(chunk.path_hash, &hashtable);
+        let (mut decoder, chunks) = wad.decode();
+
+        // create all items recursively
+        for (chunk_path_hash, chunk) in chunks.iter() {
+            let path = match hashtable.items().get(chunk_path_hash) {
+                Some(path) => path.clone(),
+                None => Self::guess_chunk_path(*chunk_path_hash, chunk, &mut decoder)?,
+            };
 
             tree.create_item_from_chunk(chunk, Path::new(path.as_ref()))?;
         }
 
+        // sort everything
         tree.sort();
 
         Ok(tree)
+    }
+
+    fn guess_chunk_path<TSource: Read + Seek>(
+        chunk_path_hash: u64,
+        chunk: &WadChunk,
+        decoder: &mut WadDecoder<TSource>,
+    ) -> Result<Arc<str>, WadError> {
+        let data = decoder.load_chunk_decompressed(chunk)?;
+        let file_kind = identify_league_file(&data);
+
+        match file_kind {
+            LeagueFileKind::Unknown => Ok(format!("{:#0x}", chunk_path_hash).into()),
+            _ => Ok(format!(
+                "{:#0x}.{}",
+                chunk_path_hash,
+                get_extension_from_league_file_kind(file_kind)
+            )
+            .into()),
+        }
     }
 
     pub fn sort(&mut self) {
