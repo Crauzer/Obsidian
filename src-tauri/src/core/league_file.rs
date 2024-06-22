@@ -38,6 +38,7 @@ static LEAGUE_FILE_MAGIC_BYTES: &[LeagueFileMagicBytes] = &[
         LeagueFileKind::Skeleton,
     ),
     LeagueFileMagicBytes::from_bytes(b"TEX\0", LeagueFileKind::Texture),
+    LeagueFileMagicBytes::from_bytes(b"<svg", LeagueFileKind::Svg),
 ];
 
 #[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -57,6 +58,7 @@ pub enum LeagueFileKind {
     Skeleton,
     StaticMeshAscii,
     StaticMeshBinary,
+    Svg,
     Texture,
     TextureDds,
     Unknown,
@@ -126,6 +128,7 @@ pub fn get_league_file_kind_from_extension(mut extension: &str) -> LeagueFileKin
         "skl" => LeagueFileKind::Skeleton,
         "skn" => LeagueFileKind::SimpleSkin,
         "stringtable" => LeagueFileKind::RiotStringTable,
+        "svg" => LeagueFileKind::Svg,
         "tex" => LeagueFileKind::Texture,
         "wgeo" => LeagueFileKind::WorldGeometry,
         "wpk" => LeagueFileKind::WwisePackage,
@@ -155,6 +158,7 @@ pub fn get_extension_from_league_file_kind(kind: LeagueFileKind) -> &'static str
         LeagueFileKind::WorldGeometry => "wgeo",
         LeagueFileKind::WwiseBank => "bnk",
         LeagueFileKind::WwisePackage => "wpk",
+        LeagueFileKind::Svg => "svg",
     }
 }
 
