@@ -27,7 +27,7 @@ impl MountedWads {
 
     pub fn mount_wad(
         &mut self,
-        wad: Wad<File>,
+        mut wad: Wad<File>,
         wad_path: Arc<str>,
         hashtable: &WadHashtable,
     ) -> Result<Uuid, WadTreeError> {
@@ -36,9 +36,8 @@ impl MountedWads {
         info!("mounting wad (id: {}, path: {})", id, wad_path);
 
         self.wad_trees
-            .insert(id, WadTree::from_wad(&wad, id, wad_path, hashtable)?);
+            .insert(id, WadTree::from_wad(&mut wad, id, wad_path, hashtable)?);
         self.wads.insert(id, wad);
-
         Ok(id)
     }
 

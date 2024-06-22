@@ -1,5 +1,8 @@
 use crate::{
-    core::wad::{WadChunk, WadDecoder},
+    core::{
+        league_file::{get_extension_from_league_file_kind, identify_league_file, LeagueFileKind},
+        wad::{WadChunk, WadDecoder},
+    },
     state::WadHashtable,
 };
 use color_eyre::eyre::{self, Ok};
@@ -140,42 +143,82 @@ pub fn extract_wad_chunk_absolute<'wad, TSource: Read + Seek>(
         chunk_path.as_ref().display()
     ))?;
 
-    let mut chunk_path = chunk_path.as_ref().to_path_buf();
-    if chunk_path.extension().is_none() {
-        tracing::warn!(
-            "chunk has no extension, prepending '.' (chunk_path: {})",
-            chunk_path.display()
-        );
-
-        chunk_path = chunk_path.with_file_name(OsStr::new(
-            &(".".to_string()
-                + &chunk_path
-                    .file_name()
-                    .unwrap()
-                    .to_string_lossy()
-                    .to_string()),
-        ));
-    }
-
+    let chunk_path = resolve_final_chunk_path(chunk_path, &chunk_data);
     let Err(error) = fs::write(&extract_directory.as_ref().join(&chunk_path), &chunk_data) else {
         return Ok(());
     };
+
+    // This will happen if the filename is too long
     if error.kind() == io::ErrorKind::InvalidFilename {
-        let hashed_path = format!(".{:x}", chunk.path_hash());
-        let hashed_path = Path::new(&hashed_path);
-
-        tracing::warn!(
-            "invalid chunk filename, writing as hashed path (chunk_path: {}, hashed_path: {})",
-            chunk_path.display(),
-            hashed_path.display()
-        );
-        fs::write(&extract_directory.as_ref().join(hashed_path), &chunk_data)?;
-
-        Ok(())
+        write_long_filename_chunk(chunk, chunk_path, extract_directory, &chunk_data)
     } else {
         return Err(error).wrap_err(format!(
             "failed to write chunk (chunk_path: {})",
             chunk_path.display()
         ));
     }
+}
+
+fn resolve_final_chunk_path(chunk_path: impl AsRef<Path>, chunk_data: &Box<[u8]>) -> PathBuf {
+    let mut chunk_path = chunk_path.as_ref().to_path_buf();
+    if chunk_path.extension().is_none() {
+        // check for known extensions
+        match identify_league_file(&chunk_data) {
+            LeagueFileKind::Unknown => {
+                tracing::warn!(
+                    "chunk has no known extension, prepending '.' (chunk_path: {})",
+                    chunk_path.display()
+                );
+
+                chunk_path = chunk_path.with_file_name(OsStr::new(
+                    &(".".to_string()
+                        + &chunk_path
+                            .file_name()
+                            .unwrap()
+                            .to_string_lossy()
+                            .to_string()),
+                ));
+            }
+            file_kind => {
+                let extension = get_extension_from_league_file_kind(file_kind);
+                chunk_path.set_extension(extension);
+            }
+        }
+    }
+
+    chunk_path
+}
+
+fn write_long_filename_chunk(
+    chunk: &WadChunk,
+    chunk_path: impl AsRef<Path>,
+    extract_directory: impl AsRef<Path>,
+    chunk_data: &Box<[u8]>,
+) -> eyre::Result<()> {
+    let hashed_path = format!(".{:x}", chunk.path_hash());
+    tracing::warn!(
+        "invalid chunk filename, writing as hashed path (chunk_path: {}, hashed_path: {})",
+        chunk_path.as_ref().display(),
+        &hashed_path
+    );
+
+    let file_kind = identify_league_file(&chunk_data);
+    let extension = get_extension_from_league_file_kind(file_kind);
+
+    match file_kind {
+        LeagueFileKind::Unknown => {
+            fs::write(&extract_directory.as_ref().join(hashed_path), &chunk_data)?;
+        }
+        _ => {
+            fs::write(
+                &extract_directory
+                    .as_ref()
+                    .join(format!("{:x}", chunk.path_hash()))
+                    .with_extension(extension),
+                &chunk_data,
+            )?;
+        }
+    }
+
+    Ok(())
 }
