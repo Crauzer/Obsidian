@@ -1,7 +1,6 @@
 import { writeText } from '@tauri-apps/api/clipboard';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { HiClipboardCopy } from 'react-icons/hi';
 import { VscCopy } from 'react-icons/vsc';
 import { toast } from 'react-toastify';
 
@@ -26,16 +25,6 @@ export const WadItemRowContextMenu: React.FC<WadItemRowContextMenuProps> = ({
 
   children,
 }) => {
-  const [t] = useTranslation(['wad', 'common']);
-
-  const handleCopyPath = useCallback(async () => {
-    await writeText(item.path);
-
-    toast.info(<Toast.Info message={t('common:copied')} />, {
-      autoClose: toastAutoClose.veryShort,
-    });
-  }, [item.path, t]);
-
   return (
     <ContextMenu.Root>
       <ContextMenu.Trigger asChild>{children}</ContextMenu.Trigger>
