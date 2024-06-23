@@ -1,7 +1,15 @@
 import clsx from 'clsx';
 import { BsFillFileEarmarkImageFill, BsTable } from 'react-icons/bs';
 import { FaFile } from 'react-icons/fa';
-import { PiBoneDuotone, PiCodeDuotone, PiCubeFocusFill, PiFileAudioDuotone } from 'react-icons/pi';
+import {
+  PiBoneDuotone,
+  PiCodeDuotone,
+  PiCubeFocusFill,
+  PiFileAudioDuotone,
+  PiFilePlusDuotone,
+  PiGridFourDuotone,
+} from 'react-icons/pi';
+import { PiFileSvgFill } from 'react-icons/pi';
 import { match } from 'ts-pattern';
 
 import { AnimationIcon, ForestIcon } from '../../assets';
@@ -27,6 +35,9 @@ export const getLeagueFileKindIcon = (kind: LeagueFileKind) => {
     .with('world_geometry', () => ForestIcon)
     .with('wwise_bank', () => PiFileAudioDuotone)
     .with('wwise_package', () => PiFileAudioDuotone)
+    .with('light_grid', () => PiGridFourDuotone)
+    .with('property_bin_override', () => PiFilePlusDuotone)
+    .with('svg', () => PiFileSvgFill)
     .exhaustive();
 };
 
@@ -50,5 +61,8 @@ export const getLeagueFileKindIconColor = (kind: LeagueFileKind) => {
     .with('world_geometry', () => clsx('fill-green-600'))
     .with('wwise_bank', () => clsx('fill-red-500'))
     .with('wwise_package', () => clsx('fill-red-500'))
+    .with('light_grid', () => clsx('fill-yellow-500'))
+    .with('property_bin_override', () => clsx('fill-blue-500'))
+    .with('svg', () => clsx('fill-green-600'))
     .exhaustive();
 };
