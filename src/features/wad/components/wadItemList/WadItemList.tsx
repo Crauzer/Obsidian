@@ -5,16 +5,17 @@ import { Virtuoso } from 'react-virtuoso';
 
 import { createArrayRange } from '../../../../utils/array';
 import { useUpdateMountedWadItemSelection } from '../../api';
+import { useWadContext } from '../../providers';
 import { WadItem } from '../../types';
 import { WadItemListRow } from './WadItemListRow';
 
 export type WadItemListProps = {
-  wadId: string;
   parentItemId?: string;
   data: WadItem[];
 };
 
-export const WadItemList: React.FC<WadItemListProps> = ({ wadId, parentItemId, data }) => {
+export const WadItemList: React.FC<WadItemListProps> = ({ parentItemId, data }) => {
+  const { wadId } = useWadContext();
   const [latestSelectedIndex, setLatestSelectedIndex] = useState<number | undefined>();
 
   const updateMountedWadItemSelection = useUpdateMountedWadItemSelection();

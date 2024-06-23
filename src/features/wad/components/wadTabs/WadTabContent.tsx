@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 
 import { useWadDirectoryPathComponents, useWadParentItems } from '../../api';
+import { WadContext, WadContextState } from '../../providers';
 import { WadItem, WadItemPathComponent } from '../../types';
 import { WadSearchInput } from '../search';
 import { WadItemList } from '../wadItemList';
@@ -69,29 +70,42 @@ const WadTabContent: React.FC<WadTabContentProps> = ({
 }) => {
   const [t] = useTranslation('mountedWads');
 
-  return (
-    <div className="flex h-full flex-col gap-2">
-      <div className="flex h-full flex-col rounded border border-gray-600 bg-gray-900">
-        <div className="flex w-full flex-row flex-wrap items-center gap-2 border-b border-gray-600 bg-gray-800 p-2">
-          <ExtractAllButton wadId={wadId} />
-          <WadBreadcrumbs
-            className="min-w-[400px] flex-1"
-            wadId={wadId}
-            pathComponents={pathComponents}
-          />
-          <WadSearchInput wadId={wadId} />
-        </div>
+  const [currentPreviewItemId, setCurrentPreviewItemId] = useState<string | null>(null);
 
-        <PanelGroup className="w-full" direction="horizontal">
-          <Panel defaultSize={70} minSize={30}>
-            <WadItemList wadId={wadId} parentItemId={parentItemId} data={items} />
-          </Panel>
-          <PanelResizeHandle className="w-[1px] bg-gray-600" />
-          <Panel defaultSize={30} minSize={30}>
-            <div className="h-full bg-gray-950"></div>
-          </Panel>
-        </PanelGroup>
+  const wadState = useMemo<WadContextState>(
+    () => ({
+      wadId,
+      currentPreviewItemId,
+      changeCurrentPreviewItemId: (item) => setCurrentPreviewItemId(item),
+    }),
+    [currentPreviewItemId, wadId],
+  );
+
+  return (
+    <WadContext.Provider value={wadState}>
+      <div className="flex h-full flex-col gap-2">
+        <div className="flex h-full flex-col rounded border border-gray-600 bg-gray-900">
+          <div className="flex w-full flex-row flex-wrap items-center gap-2 border-b border-gray-600 bg-gray-800 p-2">
+            <ExtractAllButton wadId={wadId} />
+            <WadBreadcrumbs
+              className="min-w-[400px] flex-1"
+              wadId={wadId}
+              pathComponents={pathComponents}
+            />
+            <WadSearchInput wadId={wadId} />
+          </div>
+
+          <PanelGroup className="w-full" direction="horizontal">
+            <Panel defaultSize={70} minSize={30}>
+              <WadItemList parentItemId={parentItemId} data={items} />
+            </Panel>
+            <PanelResizeHandle className="w-[1px] bg-gray-600" />
+            <Panel defaultSize={30} minSize={30}>
+              <div className="h-full bg-gray-950"></div>
+            </Panel>
+          </PanelGroup>
+        </div>
       </div>
-    </div>
+    </WadContext.Provider>
   );
 };
