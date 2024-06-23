@@ -66,3 +66,5 @@ export const getLeagueFileKindIconColor = (kind: LeagueFileKind) => {
     .with('svg', () => clsx('fill-green-600'))
     .exhaustive();
 };
+
+export const isLeagueFilePreviewable = (kind: LeagueFileKind) => match(kind).otherwise(() => false);
