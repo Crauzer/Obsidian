@@ -46,6 +46,8 @@ static LEAGUE_FILE_MAGIC_BYTES: &[LeagueFilePattern] = &[
 pub enum LeagueFileKind {
     Animation,
     Jpeg,
+    Js,
+    Json,
     LightGrid,
     LuaObj,
     MapGeometry,
@@ -118,6 +120,8 @@ pub fn get_league_file_kind_from_extension(extension: impl AsRef<str>) -> League
         "bnk" => LeagueFileKind::WwiseBank,
         "dds" => LeagueFileKind::TextureDds,
         "jpg" => LeagueFileKind::Jpeg,
+        "js" => LeagueFileKind::Js,
+        "json" => LeagueFileKind::Json,
         "luaobj" => LeagueFileKind::LuaObj,
         "mapgeo" => LeagueFileKind::MapGeometry,
         "png" => LeagueFileKind::Png,
@@ -139,6 +143,8 @@ pub fn get_extension_from_league_file_kind(kind: LeagueFileKind) -> &'static str
     match kind {
         LeagueFileKind::Animation => "anm",
         LeagueFileKind::Jpeg => "jpg",
+        LeagueFileKind::Js => "js",
+        LeagueFileKind::Json => "json",
         LeagueFileKind::LightGrid => "lightgrid",
         LeagueFileKind::LuaObj => "luaobj",
         LeagueFileKind::MapGeometry => "mapgeo",
@@ -151,13 +157,13 @@ pub fn get_extension_from_league_file_kind(kind: LeagueFileKind) -> &'static str
         LeagueFileKind::Skeleton => "skl",
         LeagueFileKind::StaticMeshAscii => "sco",
         LeagueFileKind::StaticMeshBinary => "scb",
+        LeagueFileKind::Svg => "svg",
         LeagueFileKind::Texture => "tex",
         LeagueFileKind::TextureDds => "dds",
         LeagueFileKind::Unknown => "",
         LeagueFileKind::WorldGeometry => "wgeo",
         LeagueFileKind::WwiseBank => "bnk",
         LeagueFileKind::WwisePackage => "wpk",
-        LeagueFileKind::Svg => "svg",
     }
 }
 
