@@ -1,7 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
+import { generatePath, useNavigate, useSearchParams } from 'react-router-dom';
 
+import { appRoutes } from '../../../../lib/router';
+import { composeUrlQuery } from '../../../../utils';
 import { useWadDirectoryPathComponents, useWadParentItems } from '../../api';
 import { WadContext, WadContextState } from '../../providers';
 import { WadItem, WadItemPathComponent } from '../../types';
@@ -68,7 +71,7 @@ const WadTabContent: React.FC<WadTabContentProps> = ({
   items,
   pathComponents,
 }) => {
-  const [t] = useTranslation('mountedWads');
+  const navigate = useNavigate();
 
   const [currentPreviewItemId, setCurrentPreviewItemId] = useState<string | null>(null);
 
@@ -77,8 +80,17 @@ const WadTabContent: React.FC<WadTabContentProps> = ({
       wadId,
       currentPreviewItemId,
       changeCurrentPreviewItemId: (item) => setCurrentPreviewItemId(item),
+      navigate: (item) => {
+        if (item) {
+          navigate(
+            composeUrlQuery(generatePath(appRoutes.mountedWad, { wadId }), { itemId: item }),
+          );
+        } else {
+          navigate(generatePath(appRoutes.mountedWad, { wadId }));
+        }
+      },
     }),
-    [currentPreviewItemId, wadId],
+    [currentPreviewItemId, navigate, wadId],
   );
 
   return (

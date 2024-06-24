@@ -1,9 +1,9 @@
 import clsx from 'clsx';
 import React, { MouseEventHandler, useCallback } from 'react';
-import { useSearchParams } from 'react-router-dom';
 
 import { FolderIcon } from '../../../../assets';
 import { Icon } from '../../../../components';
+import { useWadContext } from '../../providers';
 import { WadItem } from '../../types';
 import { getLeagueFileKindIcon, getLeagueFileKindIconColor } from '../../utils';
 import { WadItemRowContextMenu } from './contextMenu';
@@ -22,19 +22,14 @@ export const WadItemListRow: React.FC<WadItemListRowProps> = ({
   item,
   onClick,
 }) => {
-  const [, setSearchParams] = useSearchParams();
+  const { navigate } = useWadContext();
 
   const handleDoubleClick = useCallback(() => {
     if (item.kind !== 'directory') {
       return;
     }
-
-    // TODO: setting url query here isn't a good idea
-    setSearchParams((params) => {
-      params.set('itemId', item.id);
-      return params;
-    });
-  }, [item.id, item.kind, setSearchParams]);
+    navigate(item.id);
+  }, [item.id, item.kind, navigate]);
 
   return (
     <WadItemRowContextMenu wadId={wadId} parentItemId={parentItemId} item={item}>
