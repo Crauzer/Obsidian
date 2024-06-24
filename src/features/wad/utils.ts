@@ -67,4 +67,16 @@ export const getLeagueFileKindIconColor = (kind: LeagueFileKind) => {
     .exhaustive();
 };
 
-export const isLeagueFilePreviewable = (kind: LeagueFileKind) => match(kind).otherwise(() => false);
+export const isLeagueFilePreviewable = (kind: LeagueFileKind) =>
+  match(kind)
+    .with('jpeg', () => true)
+    .with('png', () => true)
+    .with('svg', () => true)
+    .with('texture', () => true)
+    .with('texture_dds', () => true)
+    .with('property_bin', () => true)
+    .with('property_bin_override', () => true)
+    .with('static_mesh_ascii', () => true)
+    .with('static_mesh_binary', () => true)
+    .with('simple_skin', () => true)
+    .otherwise(() => false);

@@ -1,44 +1,44 @@
 use serde::{Deserialize, Serialize};
 
-static LEAGUE_FILE_MAGIC_BYTES: &[LeagueFileMagicBytes] = &[
-    LeagueFileMagicBytes::from_bytes(b"r3d2Mesh", LeagueFileKind::StaticMeshBinary),
-    LeagueFileMagicBytes::from_bytes(b"r3d2sklt", LeagueFileKind::Skeleton),
-    LeagueFileMagicBytes::from_bytes(b"r3d2ammd", LeagueFileKind::Animation),
-    LeagueFileMagicBytes::from_bytes(b"r3d2canm", LeagueFileKind::Animation),
-    LeagueFileMagicBytes::from_fn(
+static LEAGUE_FILE_MAGIC_BYTES: &[LeagueFilePattern] = &[
+    LeagueFilePattern::from_bytes(b"r3d2Mesh", LeagueFileKind::StaticMeshBinary),
+    LeagueFilePattern::from_bytes(b"r3d2sklt", LeagueFileKind::Skeleton),
+    LeagueFilePattern::from_bytes(b"r3d2ammd", LeagueFileKind::Animation),
+    LeagueFilePattern::from_bytes(b"r3d2canm", LeagueFileKind::Animation),
+    LeagueFilePattern::from_fn(
         |data| u32::from_le_bytes(data[4..8].try_into().unwrap()) == 1,
         8,
         LeagueFileKind::WwisePackage,
     ),
-    LeagueFileMagicBytes::from_fn(|data| &data[1..4] == b"PNG", 4, LeagueFileKind::Png),
-    LeagueFileMagicBytes::from_bytes(b"DDS ", LeagueFileKind::TextureDds),
-    LeagueFileMagicBytes::from_bytes(&[0x33, 0x22, 0x11, 0x00], LeagueFileKind::SimpleSkin),
-    LeagueFileMagicBytes::from_bytes(b"PROP", LeagueFileKind::PropertyBin),
-    LeagueFileMagicBytes::from_bytes(b"BKHD", LeagueFileKind::WwiseBank),
-    LeagueFileMagicBytes::from_bytes(b"WGEO", LeagueFileKind::WorldGeometry),
-    LeagueFileMagicBytes::from_bytes(b"OEGM", LeagueFileKind::MapGeometry),
-    LeagueFileMagicBytes::from_bytes(b"[Obj", LeagueFileKind::StaticMeshAscii),
-    LeagueFileMagicBytes::from_fn(|data| &data[1..5] == b"LuaQ", 5, LeagueFileKind::LuaObj),
-    LeagueFileMagicBytes::from_bytes(b"PreLoad", LeagueFileKind::Preload),
-    LeagueFileMagicBytes::from_fn(
+    LeagueFilePattern::from_fn(|data| &data[1..4] == b"PNG", 4, LeagueFileKind::Png),
+    LeagueFilePattern::from_bytes(b"DDS ", LeagueFileKind::TextureDds),
+    LeagueFilePattern::from_bytes(&[0x33, 0x22, 0x11, 0x00], LeagueFileKind::SimpleSkin),
+    LeagueFilePattern::from_bytes(b"PROP", LeagueFileKind::PropertyBin),
+    LeagueFilePattern::from_bytes(b"BKHD", LeagueFileKind::WwiseBank),
+    LeagueFilePattern::from_bytes(b"WGEO", LeagueFileKind::WorldGeometry),
+    LeagueFilePattern::from_bytes(b"OEGM", LeagueFileKind::MapGeometry),
+    LeagueFilePattern::from_bytes(b"[Obj", LeagueFileKind::StaticMeshAscii),
+    LeagueFilePattern::from_fn(|data| &data[1..5] == b"LuaQ", 5, LeagueFileKind::LuaObj),
+    LeagueFilePattern::from_bytes(b"PreLoad", LeagueFileKind::Preload),
+    LeagueFilePattern::from_fn(
         |data| u32::from_le_bytes(data[..4].try_into().unwrap()) == 3,
         4,
         LeagueFileKind::LightGrid,
     ),
-    LeagueFileMagicBytes::from_bytes(b"RST", LeagueFileKind::RiotStringTable),
-    LeagueFileMagicBytes::from_bytes(b"PTCH", LeagueFileKind::PropertyBinOverride),
-    LeagueFileMagicBytes::from_fn(
+    LeagueFilePattern::from_bytes(b"RST", LeagueFileKind::RiotStringTable),
+    LeagueFilePattern::from_bytes(b"PTCH", LeagueFileKind::PropertyBinOverride),
+    LeagueFilePattern::from_fn(
         |data| ((u32::from_le_bytes(data[..4].try_into().unwrap()) & 0x00FFFFFF) == 0x00FFD8FF),
         3,
         LeagueFileKind::Jpeg,
     ),
-    LeagueFileMagicBytes::from_fn(
+    LeagueFilePattern::from_fn(
         |data| u32::from_le_bytes(data[4..8].try_into().unwrap()) == 0x22FD4FC3,
         8,
         LeagueFileKind::Skeleton,
     ),
-    LeagueFileMagicBytes::from_bytes(b"TEX\0", LeagueFileKind::Texture),
-    LeagueFileMagicBytes::from_bytes(b"<svg", LeagueFileKind::Svg),
+    LeagueFilePattern::from_bytes(b"TEX\0", LeagueFileKind::Texture),
+    LeagueFilePattern::from_bytes(b"<svg", LeagueFileKind::Svg),
 ];
 
 #[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -67,21 +67,21 @@ pub enum LeagueFileKind {
     WwisePackage,
 }
 
-enum LeagueFileMagicBytesPattern {
+enum LeagueFilePatternKind {
     Bytes(&'static [u8]),
     Fn(fn(&[u8]) -> bool),
 }
 
-struct LeagueFileMagicBytes {
-    pattern: LeagueFileMagicBytesPattern,
+struct LeagueFilePattern {
+    pattern: LeagueFilePatternKind,
     min_length: usize,
     kind: LeagueFileKind,
 }
 
-impl LeagueFileMagicBytes {
+impl LeagueFilePattern {
     const fn from_bytes(bytes: &'static [u8], kind: LeagueFileKind) -> Self {
         Self {
-            pattern: LeagueFileMagicBytesPattern::Bytes(bytes),
+            pattern: LeagueFilePatternKind::Bytes(bytes),
             min_length: bytes.len(),
             kind,
         }
@@ -89,7 +89,7 @@ impl LeagueFileMagicBytes {
 
     const fn from_fn(f: fn(&[u8]) -> bool, min_length: usize, kind: LeagueFileKind) -> Self {
         Self {
-            pattern: LeagueFileMagicBytesPattern::Fn(f),
+            pattern: LeagueFilePatternKind::Fn(f),
             min_length,
             kind,
         }
@@ -98,22 +98,21 @@ impl LeagueFileMagicBytes {
     fn matches(&self, data: &[u8]) -> bool {
         data.len() >= self.min_length
             && match self.pattern {
-                LeagueFileMagicBytesPattern::Bytes(bytes) => &data[..bytes.len()] == bytes,
-                LeagueFileMagicBytesPattern::Fn(f) => f(data),
+                LeagueFilePatternKind::Bytes(bytes) => &data[..bytes.len()] == bytes,
+                LeagueFilePatternKind::Fn(f) => f(data),
             }
     }
 }
 
-pub fn get_league_file_kind_from_extension(mut extension: &str) -> LeagueFileKind {
-    if extension.len() == 0 {
+pub fn get_league_file_kind_from_extension(extension: impl AsRef<str>) -> LeagueFileKind {
+    if extension.as_ref().len() == 0 {
         return LeagueFileKind::Unknown;
     }
 
-    if extension.starts_with('.') {
-        extension = &extension[1..];
-    }
-
-    match extension {
+    match match extension.as_ref().starts_with('.') {
+        true => &extension.as_ref()[1..],
+        false => extension.as_ref(),
+    } {
         "anm" => LeagueFileKind::Animation,
         "bin" => LeagueFileKind::PropertyBin,
         "bnk" => LeagueFileKind::WwiseBank,
