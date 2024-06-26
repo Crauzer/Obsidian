@@ -30,7 +30,7 @@ export const WadItemRowContextMenu: React.FC<WadItemRowContextMenuProps> = ({
 }) => {
   return (
     <ContextMenu.Root>
-      <ContextMenu.Trigger asChild>{children}</ContextMenu.Trigger>
+      <ContextMenu.Trigger>{children}</ContextMenu.Trigger>
       <ContextMenu.Content>
         {item.kind === 'file' && (
           <>

@@ -70,6 +70,11 @@ export type WadFileItem = {
   path: string;
   nameHash: number;
   pathHash: number;
+
+  compressionKind: WadChunkCompressionKind;
+  compressedSize: number;
+  uncompressedSize: number;
+
   extensionKind: LeagueFileKind;
   isSelected: boolean;
   isChecked: boolean;
@@ -120,3 +125,5 @@ export type LeagueFileKind =
   | 'world_geometry'
   | 'wwise_bank'
   | 'wwise_package';
+
+export type WadChunkCompressionKind = 'raw' | 'gzip' | 'file_redirect' | 'zstd' | 'zstd_multi';

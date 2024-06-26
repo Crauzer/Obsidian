@@ -9,7 +9,10 @@ use uuid::Uuid;
 
 use crate::core::{
     league_file::{get_league_file_kind_from_extension, LeagueFileKind},
-    wad::tree::{WadTreeDirectory, WadTreeFile, WadTreeItem, WadTreePathable},
+    wad::{
+        tree::{WadTreeDirectory, WadTreeFile, WadTreeItem, WadTreePathable},
+        WadChunk, WadChunkCompression,
+    },
 };
 
 #[derive(Serialize, Deserialize)]
@@ -63,6 +66,16 @@ pub struct WadItemSelectionUpdate {
     pub is_selected: bool,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum WadChunkCompressionDto {
+    None,
+    GZip,
+    Satellite,
+    Zstd,
+    ZstdMulti,
+}
+
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", tag = "kind")]
 pub enum WadItemDto {
@@ -73,6 +86,10 @@ pub enum WadItemDto {
         path: String,
         name_hash: u64,
         path_hash: u64,
+
+        compression_kind: WadChunkCompressionDto,
+        compressed_size: usize,
+        uncompressed_size: usize,
 
         extension_kind: LeagueFileKind,
         is_selected: bool,
@@ -109,6 +126,9 @@ impl From<&WadTreeFile> for WadItemDto {
             path: value.path().to_string(),
             name_hash: value.name_hash(),
             path_hash: value.path_hash(),
+            compression_kind: value.chunk().compression_type().into(),
+            compressed_size: value.chunk().compressed_size(),
+            uncompressed_size: value.chunk().uncompressed_size(),
             extension_kind: guess_file_kind(value.name()),
             is_selected: value.is_selected(),
             is_checked: value.is_checked(),
@@ -127,6 +147,18 @@ impl From<&WadTreeDirectory> for WadItemDto {
             is_selected: value.is_selected(),
             is_checked: value.is_checked(),
             is_expanded: value.is_expanded(),
+        }
+    }
+}
+
+impl From<WadChunkCompression> for WadChunkCompressionDto {
+    fn from(value: WadChunkCompression) -> Self {
+        match value {
+            WadChunkCompression::None => Self::None,
+            WadChunkCompression::GZip => Self::GZip,
+            WadChunkCompression::Satellite => Self::Satellite,
+            WadChunkCompression::Zstd => Self::Zstd,
+            WadChunkCompression::ZstdMulti => Self::ZstdMulti,
         }
     }
 }

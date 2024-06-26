@@ -59,6 +59,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@commitlint/config-conventional": "^19.2.2",
     "@hookform/devtools": "^4.3.1",
     "@tanstack/eslint-plugin-query": "^4.36.0",
     "@tauri-apps/cli": "^1.4.0",
