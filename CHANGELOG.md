@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [6.0.0-beta.2](https://github.com/Crauzer/Obsidian/compare/6.0.0-beta.1...6.0.0-beta.2) (2024-06-26)
+
+
+### Features
+
+* add preview context menu item ([607af03](https://github.com/Crauzer/Obsidian/commit/607af034b2b380d24b0147141aa80193d1fb435e))
+* add simple tooltips to rows ([062ffce](https://github.com/Crauzer/Obsidian/commit/062ffced04ae2d79731ee38012e8ce1fbf9d297d))
+* add svg detection ([2f0044d](https://github.com/Crauzer/Obsidian/commit/2f0044d1fadb34703882bc0885f3eb44cc1e0f4a))
+* identify chunk extensions ([e7cd5aa](https://github.com/Crauzer/Obsidian/commit/e7cd5aadb6753fbabbe0e76b6827c4152b13eeb5))
+
+
+### Bug Fixes
+
+* add support for new league file kinds ([993ceb7](https://github.com/Crauzer/Obsidian/commit/993ceb7b196372d8ab6fbefedc09e6686b9232c5))
+* adjust toolbar responsivity ([a10b1c8](https://github.com/Crauzer/Obsidian/commit/a10b1c879319e7c747a6d1c3d10468c298c710f1))
+* breadcrumb routing ([93dc33b](https://github.com/Crauzer/Obsidian/commit/93dc33bc0ac312b1b82b9e88707cae202c9c3d5a))
+
 ## [6.0.0-beta.2](https://github.com/Crauzer/Obsidian/compare/v6.0.0-beta.1...v6.0.0-beta.2) (2024-06-26)
 
 

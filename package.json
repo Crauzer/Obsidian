@@ -12,7 +12,7 @@
     "test": "vitest --run",
     "testWatch": "vitest",
     "prepare": "husky",
-    "release": "commit-and-tag-version"
+    "release": "commit-and-tag-version -t \"\""
   },
   "dependencies": {
     "@hello-pangea/dnd": "^16.3.0",
