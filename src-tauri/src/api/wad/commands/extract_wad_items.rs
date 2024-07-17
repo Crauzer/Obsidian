@@ -1,15 +1,13 @@
-use std::iter;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::str::FromStr;
 
-use color_eyre::eyre::{eyre, Context, ContextCompat};
+use color_eyre::eyre::{Context, ContextCompat};
 use itertools::Itertools;
-use tauri::Manager;
 use uuid::Uuid;
 
 use crate::api::wad::commands::ApiError;
-use crate::core::wad::tree::{WadTreeItem, WadTreeParent, WadTreePathable};
-use crate::core::wad::{self, WadChunk};
+use crate::core::wad::tree::{WadTreeItem, WadTreePathable};
+use crate::core::wad::{self};
 use crate::state::SettingsState;
 use crate::utils::actions::emit_action_progress;
 use crate::{MountedWadsState, WadHashtableState};

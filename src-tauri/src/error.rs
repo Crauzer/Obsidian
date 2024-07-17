@@ -11,7 +11,7 @@ pub enum Error {
     #[error("http error: {0}")]
     Http(#[from] reqwest::Error),
     #[error("wad error: {0}")]
-    Wad(#[from] crate::core::wad::WadError),
+    Wad(#[from] league_toolkit::core::wad::WadError),
     #[error("error: {0}")]
     Other(#[from] Box<dyn std::error::Error + Send + Sync + 'static>),
 }

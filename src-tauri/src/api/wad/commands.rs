@@ -2,6 +2,7 @@ mod extract_wad_items;
 mod search_wad;
 
 pub use extract_wad_items::*;
+use league_toolkit::core::wad::Wad;
 pub use search_wad::*;
 
 use super::{
@@ -11,10 +12,7 @@ use crate::core::wad;
 use crate::core::wad::tree::{WadTree, WadTreeItem};
 use crate::{
     api::error::ApiError,
-    core::wad::{
-        tree::{WadTreeParent, WadTreePathable, WadTreeSelectable},
-        Wad,
-    },
+    core::wad::tree::{WadTreeParent, WadTreePathable, WadTreeSelectable},
     state::{MountedWadsState, SettingsState, WadHashtableState},
     utils::actions::emit_action_progress,
 };

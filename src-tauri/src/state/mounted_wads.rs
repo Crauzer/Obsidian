@@ -1,14 +1,12 @@
 use indexmap::IndexMap;
+use league_toolkit::core::wad::Wad;
 use parking_lot::Mutex;
 use std::{collections::HashMap, fs::File, sync::Arc};
 
 use tracing::info;
 use uuid::Uuid;
 
-use crate::core::wad::{
-    tree::{WadTree, WadTreeError},
-    Wad,
-};
+use crate::core::wad::tree::{WadTree, WadTreeError};
 
 use super::WadHashtable;
 

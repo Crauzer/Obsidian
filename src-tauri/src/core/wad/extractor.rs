@@ -1,12 +1,12 @@
 use crate::{
-    core::{
-        league_file::{get_extension_from_league_file_kind, identify_league_file, LeagueFileKind},
-        wad::{WadChunk, WadDecoder},
+    core::league_file::{
+        get_extension_from_league_file_kind, identify_league_file, LeagueFileKind,
     },
     state::WadHashtable,
 };
 use color_eyre::eyre::{self, Ok};
 use eyre::Context;
+use league_toolkit::core::wad::{WadChunk, WadDecoder};
 use std::{
     collections::HashMap,
     ffi::OsStr,

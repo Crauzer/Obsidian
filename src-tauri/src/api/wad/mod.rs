@@ -1,6 +1,7 @@
 mod commands;
 
 pub use commands::*;
+use league_toolkit::core::wad::WadChunkCompression;
 
 use std::path::Path;
 
@@ -9,10 +10,7 @@ use uuid::Uuid;
 
 use crate::core::{
     league_file::{get_league_file_kind_from_extension, LeagueFileKind},
-    wad::{
-        tree::{WadTreeDirectory, WadTreeFile, WadTreeItem, WadTreePathable},
-        WadChunk, WadChunkCompression,
-    },
+    wad::tree::{WadTreeDirectory, WadTreeFile, WadTreeItem, WadTreePathable},
 };
 
 #[derive(Serialize, Deserialize)]

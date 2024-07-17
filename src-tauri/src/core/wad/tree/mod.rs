@@ -1,5 +1,4 @@
 use std::{
-    clone,
     collections::HashMap,
     io::{Read, Seek},
     path::{self, Path, PathBuf},
@@ -7,6 +6,7 @@ use std::{
 };
 
 use itertools::Itertools;
+use league_toolkit::core::wad::{Wad, WadChunk, WadDecoder, WadError};
 use thiserror::Error;
 use tracing::info;
 use uuid::Uuid;
@@ -17,13 +17,10 @@ pub use item::*;
 
 use crate::{
     core::league_file::{
-        get_extension_from_league_file_kind, get_league_file_kind_from_extension,
-        identify_league_file, LeagueFileKind,
+        get_extension_from_league_file_kind, identify_league_file, LeagueFileKind,
     },
     state::WadHashtable,
 };
-
-use super::{Wad, WadChunk, WadDecoder, WadError};
 
 #[derive(Error, Debug)]
 pub enum WadTreeError {
