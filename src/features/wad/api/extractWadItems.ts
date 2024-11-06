@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { tauri } from '@tauri-apps/api';
+import { invoke } from '@tauri-apps/api/core';
 
 import { wadCommands } from '../commands';
 
@@ -18,7 +18,7 @@ export const extractWadItems = ({
   items,
   extractDirectory,
 }: ExtractWadItemsContext) =>
-  tauri.invoke(wadCommands.extractWadItems, {
+  invoke(wadCommands.extractWadItems, {
     wadId,
     actionId,
     parentItemId,

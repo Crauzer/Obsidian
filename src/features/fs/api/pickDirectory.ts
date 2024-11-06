@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { tauri } from '@tauri-apps/api';
+import { invoke } from '@tauri-apps/api/core';
 
 import { PickDirectoryResponse, fsCommands } from '..';
 
@@ -8,7 +8,7 @@ export type PickDirectoryContext = {
 };
 
 export const pickDirectory = ({ initialDirectory }: PickDirectoryContext) =>
-  tauri.invoke<PickDirectoryResponse>(fsCommands.pickDirectory, { initialDirectory });
+  invoke<PickDirectoryResponse>(fsCommands.pickDirectory, { initialDirectory });
 
 export const usePickDirectory = () => {
   return useMutation({ mutationFn: pickDirectory });

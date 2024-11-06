@@ -1,12 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
-import { tauri } from '@tauri-apps/api';
+import { invoke } from '@tauri-apps/api/core';
 
 import { WadHashtableStatus } from '..';
 import { wadHashtableCommands } from '../commands';
 import { wadHashtableQueryKeys } from '../queryKeys';
 
 export const getWadHashtableStatus = () =>
-  tauri.invoke<WadHashtableStatus>(wadHashtableCommands.getWadHashtableStatus);
+  invoke<WadHashtableStatus>(wadHashtableCommands.getWadHashtableStatus);
 
 export const useWadHashtableStatus = () => {
   return useQuery({

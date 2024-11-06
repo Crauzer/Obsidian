@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { tauri } from '@tauri-apps/api';
+import { invoke } from '@tauri-apps/api/core';
 
 import { wadQueryKeys } from '..';
 import { wadCommands } from '../commands';
@@ -14,7 +14,7 @@ export const getWadDirectoryPathComponents = ({
   wadId,
   itemId,
 }: UseWadDirectoryPathComponentsContext) =>
-  tauri.invoke<WadItemPathComponent[]>(wadCommands.getMountedWadDirectoryPathComponents, {
+  invoke<WadItemPathComponent[]>(wadCommands.getMountedWadDirectoryPathComponents, {
     wadId,
     itemId,
   });

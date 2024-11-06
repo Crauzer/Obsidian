@@ -1,9 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
-import { tauri } from '@tauri-apps/api';
+import { invoke } from '@tauri-apps/api/core';
 
 import { PickFileResponse, fsCommands } from '..';
 
-export const pickFile = () => tauri.invoke<PickFileResponse>(fsCommands.pickFile);
+export const pickFile = () => invoke<PickFileResponse>(fsCommands.pickFile);
 
 export const usePickFile = () => {
   return useMutation({ mutationFn: pickFile });

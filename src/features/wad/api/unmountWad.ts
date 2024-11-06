@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { tauri } from '@tauri-apps/api';
+import { invoke } from '@tauri-apps/api/core';
 
 import { wadQueryKeys } from '..';
 import { queryClient } from '../../../lib/query';
@@ -11,7 +11,7 @@ export type UseUnmountWadContext = {
 };
 
 export const unmountWad = ({ wadId }: UseUnmountWadContext) =>
-  tauri.invoke(wadCommands.unmountWad, { wadId });
+  invoke(wadCommands.unmountWad, { wadId });
 
 export const useUnmountWad = () => {
   return useMutation({

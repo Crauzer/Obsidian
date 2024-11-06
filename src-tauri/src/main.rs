@@ -51,6 +51,8 @@ fn main() -> eyre::Result<()> {
     tauri::Builder::default()
         .plugin(tauri_plugin_window_state::Builder::default().build())
         .plugin(tauri_plugin_upload::init())
+        .plugin(tauri_plugin_http::init())
+        .plugin(tauri_plugin_clipboard_manager::init())
         .manage(MountedWadsState(Mutex::new(MountedWads::new())))
         .manage(SettingsState(RwLock::new(Settings::default())))
         .manage(WadHashtableState(Mutex::new(WadHashtable::default())))

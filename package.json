@@ -12,7 +12,8 @@
     "test": "vitest --run",
     "testWatch": "vitest",
     "prepare": "husky",
-    "release": "commit-and-tag-version -t \"\""
+    "release": "commit-and-tag-version -t \"\"",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^16.3.0",
@@ -30,7 +31,9 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "@tanstack/react-query": "^5.8.1",
     "@tanstack/react-query-devtools": "^5.8.1",
-    "@tauri-apps/api": "^1.4.0",
+    "@tauri-apps/api": "^2.0.0",
+    "@tauri-apps/plugin-clipboard-manager": "^2.0.0",
+    "@tauri-apps/plugin-http": "^2.0.1",
     "clsx": "^2.0.0",
     "downshift": "^8.2.3",
     "framer-motion": "^10.16.4",
@@ -62,7 +65,7 @@
     "@commitlint/config-conventional": "^19.2.2",
     "@hookform/devtools": "^4.3.1",
     "@tanstack/eslint-plugin-query": "^4.36.0",
-    "@tauri-apps/cli": "^1.4.0",
+    "@tauri-apps/cli": "^2.0.4",
     "@testing-library/react": "14.0.0",
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "@types/node": "^20.8.3",
