@@ -43,7 +43,7 @@ impl WadHashtable {
             info!("loading wad hasthable: {:?}", wad_hashtable_entry.path());
             self.add_from_file(&mut File::open(wad_hashtable_entry.path())?)?;
         }
-
+        info!("loaded");
         self.is_loaded = true;
 
         Ok(())

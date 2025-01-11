@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { tauri } from '@tauri-apps/api';
+import { core } from '@tauri-apps/api';
 
 import { wadQueryKeys } from '..';
 import { queryClient } from '../../../lib/query';
@@ -11,7 +11,7 @@ export type UseReorderMountedWadContext = {
 };
 
 export const reorderMountedWad = ({ sourceIndex, destIndex }: UseReorderMountedWadContext) =>
-  tauri.invoke(wadCommands.moveMountedWad, { sourceIndex, destIndex });
+  core.invoke(wadCommands.moveMountedWad, { sourceIndex, destIndex });
 
 export const useReorderMountedWad = () => {
   return useMutation({

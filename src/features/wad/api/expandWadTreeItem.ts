@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { tauri } from '@tauri-apps/api';
+import { core } from '@tauri-apps/api';
 
 import { wadQueryKeys } from '..';
 import { queryClient } from '../../../lib/query';
@@ -12,7 +12,7 @@ export type UseExpandWadTreeItemContext = {
 };
 
 export const expandWadTreeItem = ({ wadId, itemId, isExpanded }: UseExpandWadTreeItemContext) =>
-  tauri.invoke(wadCommands.expandWadTreeItem, {
+  core.invoke(wadCommands.expandWadTreeItem, {
     wadId,
     itemId,
     isExpanded,

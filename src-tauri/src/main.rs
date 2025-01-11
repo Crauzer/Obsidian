@@ -51,6 +51,8 @@ fn main() -> eyre::Result<()> {
     tauri::Builder::default()
         .plugin(tauri_plugin_window_state::Builder::default().build())
         .plugin(tauri_plugin_upload::init())
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_http::init())
         .manage(MountedWadsState(Mutex::new(MountedWads::new())))
         .manage(SettingsState(RwLock::new(Settings::default())))
         .manage(WadHashtableState(Mutex::new(WadHashtable::default())))
@@ -60,12 +62,8 @@ fn main() -> eyre::Result<()> {
 
             create_app_directories(app)?;
 
-            *app.state::<SettingsState>().0.write() = Settings::load_or_default(
-                app.path_resolver()
-                    .app_config_dir()
-                    .unwrap()
-                    .join(SETTINGS_FILE),
-            );
+            *app.state::<SettingsState>().0.write() =
+                Settings::load_or_default(app.path().app_config_dir().unwrap().join(SETTINGS_FILE));
 
             *app.state::<WadHashtableState>().0.lock() = WadHashtable::new()?;
 
@@ -104,11 +102,7 @@ fn initialize_logging(
     color_eyre::install()?;
 
     let appender = tracing_appender::rolling::hourly(
-        app_handle
-            .path_resolver()
-            .app_data_dir()
-            .unwrap()
-            .join(LOGS_DIR),
+        app_handle.path().app_data_dir().unwrap().join(LOGS_DIR),
         "obsidian",
     );
     let (non_blocking_appender, guard) = tracing_appender::non_blocking(appender);
@@ -127,12 +121,7 @@ fn initialize_logging(
 
 fn create_app_directories(app: &mut App) -> eyre::Result<()> {
     info!("creating app directories");
-    try_create_dir(
-        app.path_resolver()
-            .app_data_dir()
-            .unwrap()
-            .join(WAD_HASHTABLES_DIR),
-    )?;
+    try_create_dir(app.path().app_data_dir().unwrap().join(WAD_HASHTABLES_DIR))?;
 
     Ok(())
 }

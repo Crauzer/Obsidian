@@ -30,7 +30,9 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "@tanstack/react-query": "^5.8.1",
     "@tanstack/react-query-devtools": "^5.8.1",
-    "@tauri-apps/api": "^1.4.0",
+    "@tauri-apps/api": "^2.0.0",
+    "@tauri-apps/plugin-clipboard-manager": "^2.2.0",
+    "@tauri-apps/plugin-http": "^2.2.0",
     "clsx": "^2.0.0",
     "downshift": "^8.2.3",
     "framer-motion": "^10.16.4",
@@ -62,7 +64,7 @@
     "@commitlint/config-conventional": "^19.2.2",
     "@hookform/devtools": "^4.3.1",
     "@tanstack/eslint-plugin-query": "^4.36.0",
-    "@tauri-apps/cli": "^1.4.0",
+    "@tauri-apps/cli": "^2.2.4",
     "@testing-library/react": "14.0.0",
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "@types/node": "^20.8.3",
@@ -92,5 +94,6 @@
     "vite": "^4.4.4",
     "vite-plugin-eslint": "^1.8.1",
     "vitest": "^1.2.2"
-  }
+  },
+  "packageManager": "pnpm@8.3.1+sha512.d264f6640bf4f09de7cfcc547568515bcf0613cf485a03e8ff16616fa69c4172b6f9a0a2925ee44fb060df565c9c9a8eaf061749e77af318cb77f6684a7051f3"
 }

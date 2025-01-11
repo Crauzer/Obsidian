@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { tauri } from '@tauri-apps/api';
+import { core } from '@tauri-apps/api';
 
 import { Settings, settingsCommands, settingsQueryKeys } from '..';
 import { queryClient } from '../../../lib/query';
@@ -9,7 +9,7 @@ export type UseUpdateSettingsContext = {
 };
 
 export const updateSettings = ({ settings }: UseUpdateSettingsContext) =>
-  tauri.invoke(settingsCommands.updateSettings, { settings });
+  core.invoke(settingsCommands.updateSettings, { settings });
 
 export const useUpdateSettings = () => {
   return useMutation({

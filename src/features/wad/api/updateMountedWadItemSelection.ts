@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { tauri } from '@tauri-apps/api';
+import { core } from '@tauri-apps/api';
 
 import { wadQueryKeys } from '..';
 import { wadCommands } from '../commands';
@@ -23,7 +23,7 @@ export const updateMountedWadItemSelection = ({
   resetSelection,
   itemSelections,
 }: UpdateMountedWadItemSelectionContext) =>
-  tauri.invoke(wadCommands.updateMountedWadItemSelection, {
+  core.invoke(wadCommands.updateMountedWadItemSelection, {
     wadId,
     resetSelection,
     itemSelections,

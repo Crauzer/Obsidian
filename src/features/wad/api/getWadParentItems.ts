@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { tauri } from '@tauri-apps/api';
+import { core } from '@tauri-apps/api';
 
 import { wadQueryKeys } from '..';
 import { wadCommands } from '../commands';
@@ -11,7 +11,7 @@ export type UseWadDirectoryItemsContext = {
 };
 
 export const getWadParentItems = ({ wadId, parentId }: UseWadDirectoryItemsContext) =>
-  tauri.invoke<WadItem[]>(wadCommands.getWadParentItems, { wadId, parentId });
+  core.invoke<WadItem[]>(wadCommands.getWadParentItems, { wadId, parentId });
 
 export const useWadParentItems = ({ wadId, parentId }: UseWadDirectoryItemsContext) => {
   return useQuery({
