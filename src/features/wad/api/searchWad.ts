@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { tauri } from '@tauri-apps/api';
+import { core } from '@tauri-apps/api';
 
 import { wadQueryKeys } from '..';
 import { wadCommands } from '../commands';
@@ -11,7 +11,7 @@ export type SearchWadContext = {
 };
 
 export const searchWad = ({ wadId, query }: SearchWadContext) =>
-  tauri.invoke<SearchWadResponse>(wadCommands.searchWad, { wadId, query });
+  core.invoke<SearchWadResponse>(wadCommands.searchWad, { wadId, query });
 
 export const useSearchWad = ({ wadId, query }: SearchWadContext) => {
   return useQuery({

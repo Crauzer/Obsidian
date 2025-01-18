@@ -1,4 +1,4 @@
-import { writeText } from '@tauri-apps/api/clipboard';
+import { writeText } from '@tauri-apps/plugin-clipboard-manager';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PiEyeDuotone } from 'react-icons/pi';

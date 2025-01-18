@@ -1,9 +1,12 @@
 mod extract_wad_items;
 mod search_wad;
 
+use color_eyre::owo_colors::OwoColorize;
 pub use extract_wad_items::*;
 use league_toolkit::core::wad::Wad;
 pub use search_wad::*;
+use tauri::Manager as _;
+use tauri_plugin_dialog::{DialogExt as _, FileDialogBuilder};
 
 use super::{
     MountWadResponse, MountedWadDto, MountedWadsResponse, WadItemDto, WadItemPathComponentDto,
@@ -26,12 +29,13 @@ use std::{
     str::FromStr,
     sync::Arc,
 };
-use tauri::{api::dialog, Manager};
+// use tauri_plugin_dialog::Dialog;
 use tracing::info;
 use uuid::Uuid;
 
 #[tauri::command]
 pub async fn mount_wads(
+    app: tauri::AppHandle,
     wad_paths: Option<Vec<String>>,
     mounted_wads: tauri::State<'_, MountedWadsState>,
     wad_hashtable: tauri::State<'_, WadHashtableState>,
@@ -42,7 +46,9 @@ pub async fn mount_wads(
     let wad_paths = match wad_paths {
         Some(wad_paths) => wad_paths.iter().map(PathBuf::from).collect_vec(),
         None => {
-            let mut dialog = dialog::blocking::FileDialogBuilder::new()
+            let mut dialog = app
+                .dialog()
+                .file()
                 .add_filter(".wad files", &["wad.client"]);
 
             if let Some(default_mount_directory) = &settings.0.read().default_mount_directory {
@@ -50,8 +56,11 @@ pub async fn mount_wads(
             }
 
             dialog
-                .pick_files()
+                .blocking_pick_files()
                 .ok_or(ApiError::from_message("Failed to pick files"))?
+                .into_iter()
+                .filter_map(|p| p.into_path().ok())
+                .collect()
         }
     };
 
@@ -167,7 +176,7 @@ pub async fn unmount_wad(
     let wad_id =
         Uuid::parse_str(&wad_id).map_err(|_| ApiError::from_message("failed to parse wad_id"))?;
 
-    if let Some(window) = app_handle.get_window(format!("wad_{}", wad_id).as_str()) {
+    if let Some(window) = app_handle.get_webview_window(format!("wad_{}", wad_id).as_str()) {
         window
             .close()
             .map_err(|_| ApiError::from_message("failed to close window"))?;

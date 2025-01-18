@@ -1,14 +1,17 @@
 use parking_lot::{Mutex, RwLock};
-use tauri::api::http::{Client, ClientBuilder};
+use tauri_plugin_http::reqwest::{redirect, Client, ClientBuilder};
 
 pub struct HttpClientProvider {
-    client: tauri::api::http::Client,
+    client: Client,
 }
 
 impl HttpClientProvider {
     pub fn new() -> Self {
         Self {
-            client: ClientBuilder::new().max_redirections(3).build().unwrap(),
+            client: ClientBuilder::new()
+                .redirect(redirect::Policy::limited(3))
+                .build()
+                .unwrap(),
         }
     }
 

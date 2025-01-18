@@ -3,6 +3,7 @@ use crate::api::ApiResult;
 use crate::{api::error::ApiError, state::WadHashtableState};
 use color_eyre::eyre::{self, Context};
 use octocrab::models::repos::ContentItems;
+use tauri::Manager as _;
 use tracing::info;
 use walkdir::WalkDir;
 
@@ -23,9 +24,9 @@ pub async fn load_wad_hashtables(
     info!("loading wad hashtables");
 
     let wad_hashtables_dir = app
-        .path_resolver()
+        .path()
         .app_data_dir()
-        .ok_or(ApiError::from_message("failed to get app data dir"))?
+        .map_err(|_| ApiError::from_message("failed to get app data dir"))?
         .join("wad_hashtables");
 
     if wad_hashtables_dir

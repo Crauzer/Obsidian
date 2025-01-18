@@ -34,7 +34,7 @@ export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(
           checked={checked}
           onCheckedChange={handleCheckedChange}
         >
-          <RadixCheckbox.Indicator className="block min-h-4 min-w-4 rounded text-gray-800">
+          <RadixCheckbox.Indicator className="min-h-4 min-w-4 block rounded text-gray-800">
             <Icon size="sm" icon={FaCheck} />
           </RadixCheckbox.Indicator>
         </RadixCheckbox.Root>
