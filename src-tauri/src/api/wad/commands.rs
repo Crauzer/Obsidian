@@ -68,7 +68,7 @@ pub async fn mount_wads(
     let mut wad_ids: Vec<Uuid> = vec![];
 
     for wad_path in &wad_paths {
-        let wad = Wad::mount(File::open(&wad_path).expect("failed to open wad file"))
+        let wad = Wad::mount(File::open(wad_path).expect("failed to open wad file"))
             .expect("failed to mount wad file");
 
         wad_ids.push(
@@ -78,7 +78,7 @@ pub async fn mount_wads(
         )
     }
 
-    return Ok(MountWadResponse { wad_ids });
+    Ok(MountWadResponse { wad_ids })
 }
 
 #[tauri::command]
