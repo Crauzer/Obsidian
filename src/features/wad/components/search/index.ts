@@ -1,1 +1,1 @@
-export * from './WadSearchInput';
+export * from "./WadSearchInput";

@@ -1,1 +1,1 @@
-export * from './WadProvider';
+export * from "./WadProvider";

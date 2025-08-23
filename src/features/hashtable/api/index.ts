@@ -1,2 +1,2 @@
-export * from './getWadHashtableStatus';
-export * from './loadWadHashtables';
+export * from "./getWadHashtableStatus";
+export * from "./loadWadHashtables";

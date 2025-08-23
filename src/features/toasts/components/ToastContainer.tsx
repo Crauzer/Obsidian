@@ -1,10 +1,10 @@
-import React from 'react';
-import { MdClose } from 'react-icons/md';
-import { ToastContainer as ToastifyContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import type React from "react";
+import { MdClose } from "react-icons/md";
+import { ToastContainer as ToastifyContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-import { ActionIcon } from '../../../components';
-import { createToastClassName } from '../../../utils/toast';
+import { ActionIcon } from "../../../components";
+import { createToastClassName } from "../../../utils/toast";
 
 export const ToastContainer: React.FC = () => {
   return (
@@ -12,7 +12,9 @@ export const ToastContainer: React.FC = () => {
       position="bottom-right"
       newestOnTop
       className="flex flex-col gap-2"
-      bodyClassName={() => 'text-sm font-med block p-3 gap-2 flex flex-row gap-2 w-fit'}
+      bodyClassName={() =>
+        "text-sm font-med block p-3 gap-2 flex flex-row gap-2 w-fit"
+      }
       toastClassName={(props) => createToastClassName(props)}
       closeButton={({ closeToast }) => (
         <ActionIcon

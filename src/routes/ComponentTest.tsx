@@ -1,10 +1,10 @@
-import { DevTool } from '@hookform/devtools';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
-import { z } from 'zod';
+import { DevTool } from "@hookform/devtools";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import { z } from "zod";
 
-import { Button, Form, Kbd } from '../components';
+import { Button, Form, Kbd } from "../components";
 
 type ComponentTestFormData = z.infer<typeof componentTestFormDataSchema>;
 const componentTestFormDataSchema = z.object({
@@ -45,35 +45,35 @@ export default function ComponentTest() {
         <div className="flex h-fit flex-row gap-2">
           <Button
             onClick={() => {
-              toast('Hi', { type: 'default' });
+              toast("Hi", { type: "default" });
             }}
           >
             Default
           </Button>
           <Button
             onClick={() => {
-              toast('Hi', { type: 'info' });
+              toast("Hi", { type: "info" });
             }}
           >
             Info
           </Button>
           <Button
             onClick={() => {
-              toast('Hi', { type: 'success' });
+              toast("Hi", { type: "success" });
             }}
           >
             Success
           </Button>
           <Button
             onClick={() => {
-              toast('Hi', { type: 'error' });
+              toast("Hi", { type: "error" });
             }}
           >
             Error
           </Button>
           <Button
             onClick={() => {
-              toast('Hi', { type: 'warning' });
+              toast("Hi", { type: "warning" });
             }}
           >
             Warning
@@ -98,7 +98,10 @@ const FormCard = () => {
     <div className="flex flex-col gap-2">
       <h1 className="text-xl text-gray-50">Form:</h1>
       <div className="flex flex-row gap-2">
-        <form className="flex flex-col gap-2" onSubmit={handleSubmit(handleFormSubmit)}>
+        <form
+          className="flex flex-col gap-2"
+          onSubmit={handleSubmit(handleFormSubmit)}
+        >
           <Form.Input control={control} name="testInput" label="ffgff" />
           <Form.Checkbox control={control} name="testCheckbox">
             Test 123

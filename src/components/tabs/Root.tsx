@@ -1,4 +1,4 @@
-import * as RadixTabs from '@radix-ui/react-tabs';
+import * as RadixTabs from "@radix-ui/react-tabs";
 
 export type TabsRootProps = RadixTabs.TabsProps;
 

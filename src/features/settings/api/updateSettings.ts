@@ -1,8 +1,7 @@
-import { useMutation } from '@tanstack/react-query';
-import { core } from '@tauri-apps/api';
-
-import { Settings, settingsCommands, settingsQueryKeys } from '..';
-import { queryClient } from '../../../lib/query';
+import { useMutation } from "@tanstack/react-query";
+import { core } from "@tauri-apps/api";
+import { queryClient } from "../../../lib/query";
+import { type Settings, settingsCommands, settingsQueryKeys } from "..";
 
 export type UseUpdateSettingsContext = {
   settings: Settings;
@@ -17,14 +16,19 @@ export const useUpdateSettings = () => {
     onMutate: async ({ settings }) => {
       await queryClient.cancelQueries({ queryKey: settingsQueryKeys.settings });
 
-      const previousData = queryClient.getQueryData<Settings>(settingsQueryKeys.settings);
+      const previousData = queryClient.getQueryData<Settings>(
+        settingsQueryKeys.settings,
+      );
       queryClient.setQueryData(settingsQueryKeys.settings, settings);
 
       return { previousData };
     },
     onError: (_error, _variables, context) => {
       if (context?.previousData) {
-        queryClient.setQueryData(settingsQueryKeys.settings, context.previousData);
+        queryClient.setQueryData(
+          settingsQueryKeys.settings,
+          context.previousData,
+        );
       }
     },
     onSettled: () => {

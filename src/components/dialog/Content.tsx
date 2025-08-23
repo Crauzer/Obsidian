@@ -1,5 +1,5 @@
-import RadixDialog from '@radix-ui/react-dialog';
-import React from 'react';
+import RadixDialog from "@radix-ui/react-dialog";
+import type React from "react";
 
 export type DialogContentProps = RadixDialog.DialogContentProps;
 

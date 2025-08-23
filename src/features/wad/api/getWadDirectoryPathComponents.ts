@@ -1,9 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
-import { core } from '@tauri-apps/api';
+import { useQuery } from "@tanstack/react-query";
+import { core } from "@tauri-apps/api";
 
-import { wadQueryKeys } from '..';
-import { wadCommands } from '../commands';
-import { WadItemPathComponent } from '../types';
+import { wadQueryKeys } from "..";
+import { wadCommands } from "../commands";
+import type { WadItemPathComponent } from "../types";
 
 export type UseWadDirectoryPathComponentsContext = {
   wadId: string;
@@ -14,10 +14,13 @@ export const getWadDirectoryPathComponents = ({
   wadId,
   itemId,
 }: UseWadDirectoryPathComponentsContext) =>
-  core.invoke<WadItemPathComponent[]>(wadCommands.getMountedWadDirectoryPathComponents, {
-    wadId,
-    itemId,
-  });
+  core.invoke<WadItemPathComponent[]>(
+    wadCommands.getMountedWadDirectoryPathComponents,
+    {
+      wadId,
+      itemId,
+    },
+  );
 
 export const useWadDirectoryPathComponents = ({
   wadId,

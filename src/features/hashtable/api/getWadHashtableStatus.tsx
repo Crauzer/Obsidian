@@ -1,9 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
-import { core } from '@tauri-apps/api';
+import { useQuery } from "@tanstack/react-query";
+import { core } from "@tauri-apps/api";
 
-import { WadHashtableStatus } from '..';
-import { wadHashtableCommands } from '../commands';
-import { wadHashtableQueryKeys } from '../queryKeys';
+import type { WadHashtableStatus } from "..";
+import { wadHashtableCommands } from "../commands";
+import { wadHashtableQueryKeys } from "../queryKeys";
 
 export const getWadHashtableStatus = () =>
   core.invoke<WadHashtableStatus>(wadHashtableCommands.getWadHashtableStatus);

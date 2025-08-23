@@ -1,1 +1,1 @@
-export * from './useRefreshHashtables';
+export * from "./useRefreshHashtables";

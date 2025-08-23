@@ -1,17 +1,23 @@
-import clsx from 'clsx';
-import React, { useCallback, useMemo } from 'react';
-import { FaChevronRight } from 'react-icons/fa';
-import { FcFolder } from 'react-icons/fc';
-import { MdDataArray } from 'react-icons/md';
-import { generatePath, useNavigate } from 'react-router-dom';
-import { Virtuoso } from 'react-virtuoso';
-
-import { useWadParentItems } from '../..';
-import { ArchiveIcon } from '../../../../assets';
-import { ActionIcon, Button, Icon, Menu, Spinner } from '../../../../components';
-import { appRoutes } from '../../../../lib/router';
-import { composeUrlQuery } from '../../../../utils';
-import { WadItem, WadItemPathComponent } from '../../types';
+import clsx from "clsx";
+import type React from "react";
+import { useCallback, useMemo } from "react";
+import { FaChevronRight } from "react-icons/fa";
+import { FcFolder } from "react-icons/fc";
+import { MdDataArray } from "react-icons/md";
+import { generatePath, useNavigate } from "react-router-dom";
+import { Virtuoso } from "react-virtuoso";
+import { ArchiveIcon } from "../../../../assets";
+import {
+  ActionIcon,
+  Button,
+  Icon,
+  Menu,
+  Spinner,
+} from "../../../../components";
+import { appRoutes } from "../../../../lib/router";
+import { composeUrlQuery } from "../../../../utils";
+import { useWadParentItems } from "../..";
+import type { WadItem, WadItemPathComponent } from "../../types";
 
 export type WadBreadcrumbsProps = {
   wadId: string;
@@ -28,13 +34,15 @@ export const WadBreadcrumbs: React.FC<WadBreadcrumbsProps> = ({
   return (
     <div
       className={clsx(
-        'flex w-full flex-row flex-wrap rounded border border-gray-600 bg-gray-900 p-1 shadow-inner',
+        "flex w-full flex-row flex-wrap rounded border border-gray-600 bg-gray-900 p-1 shadow-inner",
         className,
       )}
     >
       <WadBreadcrumb
         wadId={wadId}
-        name={<Icon size="md" className="fill-obsidian-500" icon={ArchiveIcon} />}
+        name={
+          <Icon size="md" className="fill-obsidian-500" icon={ArchiveIcon} />
+        }
       />
       {pathComponents.map((pathComponent, index) => {
         return (
@@ -56,7 +64,11 @@ type WadBreadcrumbProps = {
   itemId?: string;
 };
 
-const WadBreadcrumb: React.FC<WadBreadcrumbProps> = ({ wadId, name, itemId }) => {
+const WadBreadcrumb: React.FC<WadBreadcrumbProps> = ({
+  wadId,
+  name,
+  itemId,
+}) => {
   return (
     <div className="flex flex-row items-center rounded transition-colors hover:bg-gray-600/40">
       <Button
@@ -65,7 +77,9 @@ const WadBreadcrumb: React.FC<WadBreadcrumbProps> = ({ wadId, name, itemId }) =>
         variant="ghost"
         className="rounded-none rounded-l px-[6px] py-1"
         draggable={false}
-        href={composeUrlQuery(generatePath(appRoutes.mountedWad, { wadId }), { itemId: itemId })}
+        href={composeUrlQuery(generatePath(appRoutes.mountedWad, { wadId }), {
+          itemId: itemId,
+        })}
       >
         {name}
       </Button>
@@ -81,7 +95,9 @@ type WadBreadcrumbChildrenMenuProps = {
   children?: React.ReactNode;
 };
 
-export const WadBreadcrumbChildrenMenu: React.FC<WadBreadcrumbChildrenMenuProps> = ({
+export const WadBreadcrumbChildrenMenu: React.FC<
+  WadBreadcrumbChildrenMenuProps
+> = ({
   wadId,
   parentId,
 
@@ -94,7 +110,7 @@ export const WadBreadcrumbChildrenMenu: React.FC<WadBreadcrumbChildrenMenuProps>
       return undefined;
     }
 
-    return items.data.filter((item) => item.kind === 'directory');
+    return items.data.filter((item) => item.kind === "directory");
   }, [items.data, items.isSuccess]);
 
   return (
@@ -111,7 +127,7 @@ export const WadBreadcrumbChildrenMenu: React.FC<WadBreadcrumbChildrenMenuProps>
         {items.isFetching && <Spinner />}
         {childrenDirectories && childrenDirectories.length > 0 ? (
           <Virtuoso
-            style={{ height: '100%' }}
+            style={{ height: "100%" }}
             data={childrenDirectories}
             itemContent={(index, item) => (
               <WadBreadcrumbChildrenMenuItem wadId={wadId} item={item} />
@@ -135,14 +151,15 @@ export type WadBreadcrumbChildrenMenuItemProps = {
   item: WadItem;
 };
 
-export const WadBreadcrumbChildrenMenuItem: React.FC<WadBreadcrumbChildrenMenuItemProps> = ({
-  wadId,
-  item,
-}) => {
+export const WadBreadcrumbChildrenMenuItem: React.FC<
+  WadBreadcrumbChildrenMenuItemProps
+> = ({ wadId, item }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(composeUrlQuery(appRoutes.mountedWads, { wadId, itemId: item.id }));
+    navigate(
+      composeUrlQuery(appRoutes.mountedWads, { wadId, itemId: item.id }),
+    );
   };
 
   return (

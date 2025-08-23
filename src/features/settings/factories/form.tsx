@@ -1,4 +1,4 @@
-import { Settings, SettingsFormData } from '..';
+import type { Settings, SettingsFormData } from "..";
 
 export const createSettigsFormData = (settings: Settings): SettingsFormData => {
   return {
@@ -8,7 +8,9 @@ export const createSettigsFormData = (settings: Settings): SettingsFormData => {
   };
 };
 
-export const createSettingsFromFormData = (data: SettingsFormData): Settings => {
+export const createSettingsFromFormData = (
+  data: SettingsFormData,
+): Settings => {
   return {
     openDirectoryAfterExtraction: data.openDirectoryAfterExtraction,
     defaultExtractionDirectory: data.defaultExtractionDirectory,

@@ -1,14 +1,19 @@
-import clsx from 'clsx';
-import React, { forwardRef } from 'react';
+import clsx from "clsx";
+import type React from "react";
+import { forwardRef } from "react";
 
-import {
+import type {
   ClickableVariant,
   ElementRef,
   JustifyContent,
   PolymorphicPropsWithRef,
   Size,
-} from '../../types';
-import { getClickableVariantClass, getJustifyClass, getTextSizeClass } from '../../utils';
+} from "../../types";
+import {
+  getClickableVariantClass,
+  getJustifyClass,
+  getTextSizeClass,
+} from "../../utils";
 
 type BaseButtonProps = {
   variant?: ClickableVariant;
@@ -23,24 +28,25 @@ type BaseButtonProps = {
   right?: React.ReactNode;
 };
 
-export type ButtonProps<TAs extends React.ElementType> = PolymorphicPropsWithRef<
-  TAs,
-  BaseButtonProps
-> &
-  React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
+export type ButtonProps<TAs extends React.ElementType> =
+  PolymorphicPropsWithRef<TAs, BaseButtonProps> &
+    React.DetailedHTMLProps<
+      React.ButtonHTMLAttributes<HTMLButtonElement>,
+      HTMLButtonElement
+    >;
 
-type ButtonComponent = <TAs extends React.ElementType = 'button'>(
+type ButtonComponent = <TAs extends React.ElementType = "button">(
   props: ButtonProps<TAs>,
 ) => React.ReactNode;
 
 export const Button: ButtonComponent = forwardRef(
-  <TAs extends React.ElementType = 'button'>(
+  <TAs extends React.ElementType = "button">(
     {
       className,
       as,
-      variant = 'default',
-      size = 'md',
-      justify = 'center',
+      variant = "default",
+      size = "md",
+      justify = "center",
       fullWidth = false,
       compact = false,
       left,
@@ -50,23 +56,23 @@ export const Button: ButtonComponent = forwardRef(
     }: ButtonProps<TAs>,
     ref: ElementRef<TAs>,
   ) => {
-    const Component = as || 'button';
+    const Component = as || "button";
 
     return (
       <Component
         {...buttonProps}
         ref={ref}
         className={clsx(
-          'flex items-center rounded-md border transition-colors duration-150',
-          'h-fit',
+          "flex items-center rounded-md border transition-colors duration-150",
+          "h-fit",
           getTextSizeClass(size),
           getJustifyClass(justify),
           {
-            'p-2': compact,
-            'px-4 py-2': !compact,
+            "p-2": compact,
+            "px-4 py-2": !compact,
           },
           {
-            'w-full': fullWidth,
+            "w-full": fullWidth,
           },
           getClickableVariantClass(variant),
           className,

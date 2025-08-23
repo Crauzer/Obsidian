@@ -1,10 +1,14 @@
-import { useQuery } from '@tanstack/react-query';
-import { core } from '@tauri-apps/api';
+import { useQuery } from "@tanstack/react-query";
+import { core } from "@tauri-apps/api";
 
-import { AppDirectoryResponse, fsCommands, fsQueryKeys } from '..';
+import { type AppDirectoryResponse, fsCommands, fsQueryKeys } from "..";
 
-export const getAppDirectory = () => core.invoke<AppDirectoryResponse>(fsCommands.getAppDirectory);
+export const getAppDirectory = () =>
+  core.invoke<AppDirectoryResponse>(fsCommands.getAppDirectory);
 
 export const useAppDirectory = () => {
-  return useQuery({ queryKey: fsQueryKeys.appDirectory, queryFn: getAppDirectory });
+  return useQuery({
+    queryKey: fsQueryKeys.appDirectory,
+    queryFn: getAppDirectory,
+  });
 };

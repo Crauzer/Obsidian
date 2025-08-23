@@ -1,5 +1,5 @@
-import * as RadixLabel from '@radix-ui/react-label';
-import React from 'react';
+import * as RadixLabel from "@radix-ui/react-label";
+import type React from "react";
 
 export type LabelProps = RadixLabel.LabelProps;
 

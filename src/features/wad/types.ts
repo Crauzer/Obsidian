@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export type MountedWadsResponse = {
   wads: MountedWad[];
@@ -65,7 +65,7 @@ export type WadItemsPage = {
 
 export type WadFileItem = {
   id: string;
-  kind: 'file';
+  kind: "file";
   name: string;
   path: string;
   nameHash: number;
@@ -83,7 +83,7 @@ export type WadFileItem = {
 export type WadDirectoryItem = z.infer<typeof wadDirectoryItemSchema>;
 export const wadDirectoryItemSchema = z.object({
   id: z.string().uuid(),
-  kind: z.literal('directory'),
+  kind: z.literal("directory"),
   name: z.string(),
   path: z.string(),
   nameHash: z.number(),
@@ -96,7 +96,7 @@ export const wadDirectoryItemSchema = z.object({
 export type WadItem = WadFileItem | WadDirectoryItem;
 
 export type WadItemKind = z.infer<typeof wadItemKindSchema>;
-export const wadItemKindSchema = z.enum(['file', 'directory']);
+export const wadItemKindSchema = z.enum(["file", "directory"]);
 
 export type WadItemSelectionUpdate = {
   index: number;
@@ -104,28 +104,33 @@ export type WadItemSelectionUpdate = {
 };
 
 export type LeagueFileKind =
-  | 'animation'
-  | 'jpeg'
-  | 'light_grid'
-  | 'lua_obj'
-  | 'map_geometry'
-  | 'png'
-  | 'preload'
-  | 'property_bin'
-  | 'property_bin_override'
-  | 'riot_string_table'
-  | 'simple_skin'
-  | 'skeleton'
-  | 'static_mesh_ascii'
-  | 'static_mesh_binary'
-  | 'svg'
-  | 'texture'
-  | 'texture_dds'
-  | 'unknown'
-  | 'world_geometry'
-  | 'wwise_bank'
-  | 'wwise_package';
+  | "animation"
+  | "jpeg"
+  | "light_grid"
+  | "lua_obj"
+  | "map_geometry"
+  | "png"
+  | "preload"
+  | "property_bin"
+  | "property_bin_override"
+  | "riot_string_table"
+  | "simple_skin"
+  | "skeleton"
+  | "static_mesh_ascii"
+  | "static_mesh_binary"
+  | "svg"
+  | "texture"
+  | "texture_dds"
+  | "unknown"
+  | "world_geometry"
+  | "wwise_bank"
+  | "wwise_package";
 
-export type WadChunkCompressionKind = 'raw' | 'gzip' | 'file_redirect' | 'zstd' | 'zstd_multi';
+export type WadChunkCompressionKind =
+  | "raw"
+  | "gzip"
+  | "file_redirect"
+  | "zstd"
+  | "zstd_multi";
 
-export type WadChunkPreviewType = 'image';
+export type WadChunkPreviewType = "image";

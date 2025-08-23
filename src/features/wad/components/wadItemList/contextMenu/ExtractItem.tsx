@@ -1,14 +1,12 @@
-import { forwardRef } from 'react';
-import { useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { FaSave } from 'react-icons/fa';
-import { VscSave } from 'react-icons/vsc';
-import { v4 as uuidv4 } from 'uuid';
-
-import { useExtractWadItemsWithDirectory } from '../../..';
-import { ContextMenu, Icon, LoadingOverlay } from '../../../../../components';
-import { useActionProgress } from '../../../../actions';
-import { WadItem } from '../../../types';
+import { forwardRef, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { FaSave } from "react-icons/fa";
+import { VscSave } from "react-icons/vsc";
+import { v4 as uuidv4 } from "uuid";
+import { ContextMenu, Icon, LoadingOverlay } from "../../../../../components";
+import { useActionProgress } from "../../../../actions";
+import { useExtractWadItemsWithDirectory } from "../../..";
+import type { WadItem } from "../../../types";
 
 type ExtractItemProps = {
   wadId: string;
@@ -18,11 +16,12 @@ type ExtractItemProps = {
 
 export const ExtractItem = forwardRef<HTMLDivElement, ExtractItemProps>(
   ({ wadId, parentItemId, item }, ref) => {
-    const [t] = useTranslation('wad');
+    const [t] = useTranslation("wad");
 
     const [actionId] = useState<string>(uuidv4());
 
-    const { isExtracting, extractWadItemsWithDirectory } = useExtractWadItemsWithDirectory();
+    const { isExtracting, extractWadItemsWithDirectory } =
+      useExtractWadItemsWithDirectory();
     const actionProgress = useActionProgress(actionId);
 
     const progress = useMemo(() => {
@@ -39,12 +38,17 @@ export const ExtractItem = forwardRef<HTMLDivElement, ExtractItemProps>(
           ref={ref}
           className="flex flex-row items-center gap-2"
           onClick={() => {
-            extractWadItemsWithDirectory({ wadId, parentItemId, items: [item.id], actionId });
+            extractWadItemsWithDirectory({
+              wadId,
+              parentItemId,
+              items: [item.id],
+              actionId,
+            });
           }}
           onSelect={(e) => e.preventDefault()}
         >
           <Icon icon={VscSave} size="md" />
-          {t('contextMenu.extract')}
+          {t("contextMenu.extract")}
         </ContextMenu.Item>
         <LoadingOverlay
           open={isExtracting}

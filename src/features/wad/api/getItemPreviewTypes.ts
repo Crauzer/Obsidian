@@ -1,12 +1,15 @@
-import { useQuery } from '@tanstack/react-query';
-import { core } from '@tauri-apps/api';
+import { useQuery } from "@tanstack/react-query";
+import { core } from "@tauri-apps/api";
 
-import { wadCommands } from '../commands';
-import { wadQueryKeys } from '../queryKeys';
-import { WadChunkPreviewType } from '../types';
+import { wadCommands } from "../commands";
+import { wadQueryKeys } from "../queryKeys";
+import type { WadChunkPreviewType } from "../types";
 
 export const getItemPreviewTypes = (wadId: string, itemId: string) =>
-  core.invoke<WadChunkPreviewType[]>(wadCommands.getChunkPreviewTypes, { wadId, itemId });
+  core.invoke<WadChunkPreviewType[]>(wadCommands.getChunkPreviewTypes, {
+    wadId,
+    itemId,
+  });
 
 export const useItemPreviewTypes = ({
   wadId,

@@ -1,1 +1,1 @@
-export * from './useFileDrop';
+export * from "./useFileDrop";

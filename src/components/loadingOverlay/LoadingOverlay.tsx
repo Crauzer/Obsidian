@@ -1,7 +1,7 @@
-import * as RadixDialog from '@radix-ui/react-dialog';
-import React from 'react';
+import * as RadixDialog from "@radix-ui/react-dialog";
+import type React from "react";
 
-import { Progress } from '../progress';
+import { Progress } from "../progress";
 
 export type LoadingOverlayProps = {
   open: boolean;

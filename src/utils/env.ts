@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export type Env = z.infer<typeof envSchema>;
 export const envSchema = z.object({

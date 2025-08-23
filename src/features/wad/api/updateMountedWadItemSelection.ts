@@ -1,9 +1,9 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { core } from '@tauri-apps/api';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { core } from "@tauri-apps/api";
 
-import { wadQueryKeys } from '..';
-import { wadCommands } from '../commands';
-import { WadItem, WadItemSelectionUpdate } from '../types';
+import { wadQueryKeys } from "..";
+import { wadCommands } from "../commands";
+import { WadItem, WadItemSelectionUpdate } from "../types";
 
 export type UseUpdateMountedWadItemSelectionContext = {
   wadId: string;
@@ -38,10 +38,16 @@ export const useUpdateMountedWadItemSelection = () => {
       resetSelection,
       itemSelections,
     }: UseUpdateMountedWadItemSelectionContext) => {
-      return updateMountedWadItemSelection({ wadId, resetSelection, itemSelections });
+      return updateMountedWadItemSelection({
+        wadId,
+        resetSelection,
+        itemSelections,
+      });
     },
     onSuccess: (_, { wadId, parentId }) => {
-      queryClient.invalidateQueries({ queryKey: wadQueryKeys.wadParentItems(wadId, parentId) });
+      queryClient.invalidateQueries({
+        queryKey: wadQueryKeys.wadParentItems(wadId, parentId),
+      });
     },
   });
 };

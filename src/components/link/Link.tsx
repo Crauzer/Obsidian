@@ -1,5 +1,5 @@
-import clsx from 'clsx';
-import React from 'react';
+import clsx from "clsx";
+import type React from "react";
 
 export type LinkProps = React.DetailedHTMLProps<
   React.AnchorHTMLAttributes<HTMLAnchorElement>,
@@ -11,7 +11,7 @@ export const Link: React.FC<LinkProps> = ({ className, ...props }) => {
     <a
       {...props}
       className={clsx(
-        'font-bold text-obsidian-500 transition-colors hover:text-obsidian-600 hover:underline',
+        "font-bold text-obsidian-500 transition-colors hover:text-obsidian-600 hover:underline",
         className,
       )}
     >

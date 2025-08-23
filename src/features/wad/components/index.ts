@@ -1,2 +1,2 @@
-export * from './wadTabs';
-export * from './wadDropZone';
+export * from "./wadDropZone";
+export * from "./wadTabs";

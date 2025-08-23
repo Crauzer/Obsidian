@@ -1,7 +1,7 @@
-import { useMutation } from '@tanstack/react-query';
-import { core } from '@tauri-apps/api';
+import { useMutation } from "@tanstack/react-query";
+import { core } from "@tauri-apps/api";
 
-import { wadCommands } from '../commands';
+import { wadCommands } from "../commands";
 
 export type ExtractWadItemsContext = {
   wadId: string;

@@ -1,16 +1,20 @@
 import {
-  Control,
-  FieldPath,
-  FieldValues,
+  type Control,
+  type FieldPath,
+  type FieldValues,
   Path,
   RegisterOptions,
   useController,
-} from 'react-hook-form';
-import { FaFolder } from 'react-icons/fa';
-import { PiX } from 'react-icons/pi';
+} from "react-hook-form";
+import { FaFolder } from "react-icons/fa";
+import { PiX } from "react-icons/pi";
 
-import { ActionIcon, TextField, TextFieldProps } from '../../../components';
-import { usePickDirectory } from '../../fs';
+import {
+  ActionIcon,
+  TextField,
+  type TextFieldProps,
+} from "../../../components";
+import { usePickDirectory } from "../../fs";
 
 export type FormDirectoryInputProps<
   TFieldValues extends FieldValues,
@@ -38,10 +42,10 @@ export const FormDirectoryInput = <TFieldValues extends FieldValues>({
       {...props}
       ref={ref}
       className="min-w-[500px]"
-      value={value ?? ''}
+      value={value ?? ""}
       onBlur={onBlur}
       onChange={onChange}
-      error={error ? error.message ?? true : false}
+      error={error ? (error.message ?? true) : false}
       left={
         <ActionIcon
           type="button"

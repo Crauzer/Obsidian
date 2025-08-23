@@ -1,8 +1,8 @@
-import clsx from 'clsx';
-import React from 'react';
+import clsx from "clsx";
+import React from "react";
 
-import { isElement } from '../../utils';
-import { BreadcrumbItem } from './Item';
+import { isElement } from "../../utils";
+import { BreadcrumbItem } from "./Item";
 
 export type BreadcrumbsRootProps = {
   separator?: React.ReactNode;
@@ -12,7 +12,7 @@ export type BreadcrumbsRootProps = {
 };
 
 export const BreadcrumbsRoot: React.FC<BreadcrumbsRootProps> = ({
-  separator = '/',
+  separator = "/",
   className,
   children,
 }) => {
@@ -41,5 +41,9 @@ export const BreadcrumbsRoot: React.FC<BreadcrumbsRootProps> = ({
     [],
   );
 
-  return <div className={clsx(className, 'flex flex-row flex-wrap gap-1')}>{items}</div>;
+  return (
+    <div className={clsx(className, "flex flex-row flex-wrap gap-1")}>
+      {items}
+    </div>
+  );
 };

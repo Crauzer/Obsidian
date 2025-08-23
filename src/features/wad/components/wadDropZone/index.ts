@@ -1,1 +1,1 @@
-export * from './WadDropZone';
+export * from "./WadDropZone";

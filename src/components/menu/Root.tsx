@@ -1,5 +1,5 @@
-import * as RadixMenu from '@radix-ui/react-dropdown-menu';
-import React from 'react';
+import * as RadixMenu from "@radix-ui/react-dropdown-menu";
+import type React from "react";
 
 export type MenuRootProps = RadixMenu.DropdownMenuProps;
 

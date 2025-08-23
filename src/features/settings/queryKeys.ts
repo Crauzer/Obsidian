@@ -1,3 +1,3 @@
 export const settingsQueryKeys = {
-  settings: ['settings'] as const,
+  settings: ["settings"] as const,
 };

@@ -1,20 +1,20 @@
-import * as RadixContextMenu from '@radix-ui/react-context-menu';
-import clsx from 'clsx';
-import React from 'react';
-import { PiCaretRight, PiCheckBold, PiCircleFill } from 'react-icons/pi';
+import * as RadixContextMenu from "@radix-ui/react-context-menu";
+import clsx from "clsx";
+import React from "react";
+import { PiCaretRight, PiCheckBold, PiCircleFill } from "react-icons/pi";
 
-import { Icon } from '../icon';
-import { ContextMenuContent } from './Content';
-import { ContextMenuItem } from './Item';
-import { ContextMenuRoot } from './Root';
-import { ContextMenuSeparator } from './Separator';
-import { ContextMenuTrigger } from './Trigger';
+import { Icon } from "../icon";
+import { ContextMenuContent } from "./Content";
+import { ContextMenuItem } from "./Item";
+import { ContextMenuRoot } from "./Root";
+import { ContextMenuSeparator } from "./Separator";
+import { ContextMenuTrigger } from "./Trigger";
 
-export * from './Root';
-export * from './Trigger';
-export * from './Content';
-export * from './Item';
-export * from './Separator';
+export * from "./Content";
+export * from "./Item";
+export * from "./Root";
+export * from "./Separator";
+export * from "./Trigger";
 
 const ContextMenuGroup = RadixContextMenu.Group;
 
@@ -33,8 +33,8 @@ const ContextMenuSubTrigger = React.forwardRef<
   <RadixContextMenu.SubTrigger
     ref={ref}
     className={clsx(
-      'focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none',
-      inset && 'pl-8',
+      "focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none",
+      inset && "pl-8",
       className,
     )}
     {...props}
@@ -53,21 +53,21 @@ const ContextMenuSubContent = React.forwardRef<
     ref={ref}
     className={clsx(
       className,
-      'flex min-w-[250px] flex-col gap-y-1 rounded-lg border border-gray-500 bg-gray-700/75 p-2 shadow-xl backdrop-blur',
-      'will-change-[opacity,transform]',
-      'max-h-[--radix-context-menu-content-available-height] overflow-y-auto overflow-x-hidden',
+      "flex min-w-[250px] flex-col gap-y-1 rounded-lg border border-gray-500 bg-gray-700/75 p-2 shadow-xl backdrop-blur",
+      "will-change-[opacity,transform]",
+      "max-h-[--radix-context-menu-content-available-height] overflow-y-auto overflow-x-hidden",
 
-      'data-[state=open]:data-[side=top]:animate-slideAndFadeInFromTop',
-      'data-[state=open]:data-[side=right]:animate-slideAndFadeInFromRight',
-      'data-[state=open]:data-[side=bottom]:animate-slideAndFadeInFromBottom',
-      'data-[state=open]:data-[side=left]:animate-slideAndFadeInFromLeft',
+      "data-[state=open]:data-[side=top]:animate-slideAndFadeInFromTop",
+      "data-[state=open]:data-[side=right]:animate-slideAndFadeInFromRight",
+      "data-[state=open]:data-[side=bottom]:animate-slideAndFadeInFromBottom",
+      "data-[state=open]:data-[side=left]:animate-slideAndFadeInFromLeft",
 
-      'data-[state=closed]:data-[side=top]:animate-slideAndFadeOutFromTop',
-      'data-[state=closed]:data-[side=right]:animate-slideAndFadeOutFromRight',
-      'data-[state=closed]:data-[side=bottom]:animate-slideAndFadeOutFromBottom',
-      'data-[state=closed]:data-[side=left]:animate-slideAndFadeOutFromLeft',
+      "data-[state=closed]:data-[side=top]:animate-slideAndFadeOutFromTop",
+      "data-[state=closed]:data-[side=right]:animate-slideAndFadeOutFromRight",
+      "data-[state=closed]:data-[side=bottom]:animate-slideAndFadeOutFromBottom",
+      "data-[state=closed]:data-[side=left]:animate-slideAndFadeOutFromLeft",
 
-      'origin-[--radix-context-menu-content-transform-origin]',
+      "origin-[--radix-context-menu-content-transform-origin]",
     )}
     {...props}
   />
@@ -81,7 +81,7 @@ const ContextMenuCheckboxItem = React.forwardRef<
   <RadixContextMenu.CheckboxItem
     ref={ref}
     className={clsx(
-      'focus:bg-accent focus:text-accent-foreground relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+      "focus:bg-accent focus:text-accent-foreground relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className,
     )}
     checked={checked}
@@ -104,7 +104,7 @@ const ContextMenuRadioItem = React.forwardRef<
   <RadixContextMenu.RadioItem
     ref={ref}
     className={clsx(
-      'focus:bg-accent focus:text-accent-foreground relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+      "focus:bg-accent focus:text-accent-foreground relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className,
     )}
     {...props}
@@ -128,8 +128,8 @@ const ContextMenuLabel = React.forwardRef<
   <RadixContextMenu.Label
     ref={ref}
     className={clsx(
-      'text-foreground px-2 py-1.5 text-sm font-semibold',
-      inset && 'pl-8',
+      "text-foreground px-2 py-1.5 text-sm font-semibold",
+      inset && "pl-8",
       className,
     )}
     {...props}
@@ -137,15 +137,21 @@ const ContextMenuLabel = React.forwardRef<
 ));
 ContextMenuLabel.displayName = RadixContextMenu.Label.displayName;
 
-const ContextMenuShortcut = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => {
+const ContextMenuShortcut = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLSpanElement>) => {
   return (
     <span
-      className={clsx('text-muted-foreground ml-auto text-xs tracking-widest', className)}
+      className={clsx(
+        "text-muted-foreground ml-auto text-xs tracking-widest",
+        className,
+      )}
       {...props}
     />
   );
 };
-ContextMenuShortcut.displayName = 'ContextMenuShortcut';
+ContextMenuShortcut.displayName = "ContextMenuShortcut";
 
 export const ContextMenu = {
   Root: ContextMenuRoot,

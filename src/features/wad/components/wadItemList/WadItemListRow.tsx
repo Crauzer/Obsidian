@@ -1,12 +1,12 @@
-import clsx from 'clsx';
-import React, { MouseEventHandler, useCallback } from 'react';
+import clsx from "clsx";
+import React, { type MouseEventHandler, useCallback } from "react";
 
-import { FolderIcon } from '../../../../assets';
-import { Icon, Tooltip } from '../../../../components';
-import { useWadContext } from '../../providers';
-import { WadItem } from '../../types';
-import { getLeagueFileKindIcon, getLeagueFileKindIconColor } from '../../utils';
-import { WadItemRowContextMenu } from './contextMenu';
+import { FolderIcon } from "../../../../assets";
+import { Icon, Tooltip } from "../../../../components";
+import { useWadContext } from "../../providers";
+import type { WadItem } from "../../types";
+import { getLeagueFileKindIcon, getLeagueFileKindIconColor } from "../../utils";
+import { WadItemRowContextMenu } from "./contextMenu";
 
 export type WadItemListRowProps = {
   wadId: string;
@@ -16,9 +16,18 @@ export type WadItemListRowProps = {
   onClick?: MouseEventHandler;
 };
 
-export const WadItemListRow = ({ wadId, parentItemId, item, onClick }: WadItemListRowProps) => {
+export const WadItemListRow = ({
+  wadId,
+  parentItemId,
+  item,
+  onClick,
+}: WadItemListRowProps) => {
   return (
-    <WadItemRowContextMenu wadId={wadId} parentItemId={parentItemId} item={item}>
+    <WadItemRowContextMenu
+      wadId={wadId}
+      parentItemId={parentItemId}
+      item={item}
+    >
       <WadItemListRowContent item={item} onClick={onClick} />
     </WadItemRowContextMenu>
   );
@@ -29,11 +38,14 @@ type WadItemListRowContentProps = {
   onClick?: MouseEventHandler;
 };
 
-const WadItemListRowContent = ({ item, onClick }: WadItemListRowContentProps) => {
+const WadItemListRowContent = ({
+  item,
+  onClick,
+}: WadItemListRowContentProps) => {
   const { navigate } = useWadContext();
 
   const handleDoubleClick = useCallback(() => {
-    if (item.kind !== 'directory') {
+    if (item.kind !== "directory") {
       return;
     }
 
@@ -43,11 +55,11 @@ const WadItemListRowContent = ({ item, onClick }: WadItemListRowContentProps) =>
   return (
     <div
       className={clsx(
-        'text-md box-border flex select-none flex-row border py-1 pl-2 text-gray-50 hover:cursor-pointer',
-        { 'hover:bg-gray-700/25': !item.isSelected },
+        "text-md box-border flex select-none flex-row border py-1 pl-2 text-gray-50 hover:cursor-pointer",
+        { "hover:bg-gray-700/25": !item.isSelected },
         {
-          'border-obsidian-500/40 bg-obsidian-700/40': item.isSelected,
-          'border-transparent': !item.isSelected,
+          "border-obsidian-500/40 bg-obsidian-700/40": item.isSelected,
+          "border-transparent": !item.isSelected,
         },
       )}
       onClick={(e) => onClick?.(e)}
@@ -57,7 +69,7 @@ const WadItemListRowContent = ({ item, onClick }: WadItemListRowContentProps) =>
       <Tooltip.Root>
         <Tooltip.Trigger asChild>
           <div className="flex flex-row items-center gap-2">
-            {item.kind === 'directory' ? (
+            {item.kind === "directory" ? (
               <Icon size="md" className="fill-amber-500" icon={FolderIcon} />
             ) : (
               <Icon
@@ -74,20 +86,26 @@ const WadItemListRowContent = ({ item, onClick }: WadItemListRowContentProps) =>
             <span className="font-bold">Path: </span>
             <span className="rounded-lg bg-gray-900/50 p-1">{item.path}</span>
           </span>
-          {item.kind === 'file' && (
+          {item.kind === "file" && (
             <>
-              {' '}
+              {" "}
               <span>
                 <span className="font-bold">Compression: </span>
-                <span className="rounded-lg bg-gray-900/50 p-1">{item.compressionKind}</span>
+                <span className="rounded-lg bg-gray-900/50 p-1">
+                  {item.compressionKind}
+                </span>
               </span>
               <span>
                 <span className="font-bold">Compressed Size: </span>
-                <span className="rounded-lg bg-gray-900/50 p-1">{item.compressedSize}</span>
+                <span className="rounded-lg bg-gray-900/50 p-1">
+                  {item.compressedSize}
+                </span>
               </span>
               <span>
                 <span className="font-bold">Uncompressed Size: </span>
-                <span className="rounded-lg bg-gray-900/50 p-1">{item.uncompressedSize}</span>
+                <span className="rounded-lg bg-gray-900/50 p-1">
+                  {item.uncompressedSize}
+                </span>
               </span>
             </>
           )}

@@ -1,1 +1,1 @@
-export * from './Infobar';
+export * from "./Infobar";

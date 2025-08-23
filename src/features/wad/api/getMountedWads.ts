@@ -1,12 +1,16 @@
-import { useQuery } from '@tanstack/react-query';
-import { core } from '@tauri-apps/api';
+import { useQuery } from "@tanstack/react-query";
+import { core } from "@tauri-apps/api";
 
-import { wadQueryKeys } from '..';
-import { wadCommands } from '../commands';
-import { MountedWadsResponse } from '../types';
+import { wadQueryKeys } from "..";
+import { wadCommands } from "../commands";
+import type { MountedWadsResponse } from "../types";
 
-export const getMountedWads = () => core.invoke<MountedWadsResponse>(wadCommands.getMountedWads);
+export const getMountedWads = () =>
+  core.invoke<MountedWadsResponse>(wadCommands.getMountedWads);
 
 export const useMountedWads = () => {
-  return useQuery({ queryKey: wadQueryKeys.mountedWads, queryFn: getMountedWads });
+  return useQuery({
+    queryKey: wadQueryKeys.mountedWads,
+    queryFn: getMountedWads,
+  });
 };

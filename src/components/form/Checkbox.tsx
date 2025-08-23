@@ -1,7 +1,12 @@
-import { CheckedState } from '@radix-ui/react-checkbox';
-import { Control, FieldValues, Path, useController } from 'react-hook-form';
+import type { CheckedState } from "@radix-ui/react-checkbox";
+import {
+  type Control,
+  type FieldValues,
+  type Path,
+  useController,
+} from "react-hook-form";
 
-import { Checkbox, CheckboxProps } from '..';
+import { Checkbox, type CheckboxProps } from "..";
 
 export type FormCheckboxProps<TFieldValues extends FieldValues> = {
   name: Path<TFieldValues>;
@@ -19,7 +24,7 @@ export const FormCheckbox = <TFieldValues extends FieldValues>({
   } = useController({ name, control });
 
   const handleCheckedChange = (checked: CheckedState) => {
-    onChange(checked === 'indeterminate' ? undefined : checked);
+    onChange(checked === "indeterminate" ? undefined : checked);
   };
 
   return (

@@ -1,22 +1,28 @@
-import React, { useState } from 'react';
-import { isHotkeyPressed } from 'react-hotkeys-hook';
-import AutoSizer from 'react-virtualized-auto-sizer';
-import { Virtuoso } from 'react-virtuoso';
+import type React from "react";
+import { useState } from "react";
+import { isHotkeyPressed } from "react-hotkeys-hook";
+import AutoSizer from "react-virtualized-auto-sizer";
+import { Virtuoso } from "react-virtuoso";
 
-import { createArrayRange } from '../../../../utils/array';
-import { useUpdateMountedWadItemSelection } from '../../api';
-import { useWadContext } from '../../providers';
-import { WadItem } from '../../types';
-import { WadItemListRow } from './WadItemListRow';
+import { createArrayRange } from "../../../../utils/array";
+import { useUpdateMountedWadItemSelection } from "../../api";
+import { useWadContext } from "../../providers";
+import type { WadItem } from "../../types";
+import { WadItemListRow } from "./WadItemListRow";
 
 export type WadItemListProps = {
   parentItemId?: string;
   data: WadItem[];
 };
 
-export const WadItemList: React.FC<WadItemListProps> = ({ parentItemId, data }) => {
+export const WadItemList: React.FC<WadItemListProps> = ({
+  parentItemId,
+  data,
+}) => {
   const { wadId } = useWadContext();
-  const [latestSelectedIndex, setLatestSelectedIndex] = useState<number | undefined>();
+  const [latestSelectedIndex, setLatestSelectedIndex] = useState<
+    number | undefined
+  >();
 
   const updateMountedWadItemSelection = useUpdateMountedWadItemSelection();
 
@@ -29,7 +35,10 @@ export const WadItemList: React.FC<WadItemListProps> = ({ parentItemId, data }) 
       parentId: parentItemId,
       resetSelection: false,
       itemSelections: new Map(
-        createArrayRange(endIndex - startIndex + 1, startIndex).map((x) => [data[x].id, true]),
+        createArrayRange(endIndex - startIndex + 1, startIndex).map((x) => [
+          data[x].id,
+          true,
+        ]),
       ),
     });
   };
@@ -37,9 +46,9 @@ export const WadItemList: React.FC<WadItemListProps> = ({ parentItemId, data }) 
   const onRowClicked = (index: number, _isRightClick: boolean) => {
     setLatestSelectedIndex(index);
 
-    if (isHotkeyPressed('shift')) {
+    if (isHotkeyPressed("shift")) {
       handleShiftClick(index);
-    } else if (isHotkeyPressed('ctrl')) {
+    } else if (isHotkeyPressed("ctrl")) {
       const item = data[index];
 
       updateMountedWadItemSelection.mutate({
@@ -71,7 +80,9 @@ export const WadItemList: React.FC<WadItemListProps> = ({ parentItemId, data }) 
                 wadId={wadId}
                 parentItemId={parentItemId}
                 index={index}
-                onClick={(event) => onRowClicked(index, event.type === 'contextmenu')}
+                onClick={(event) =>
+                  onRowClicked(index, event.type === "contextmenu")
+                }
               />
             )}
           />

@@ -1,11 +1,11 @@
 export const route = {
   componentTest: {
-    title: 'Component Test',
+    title: "Component Test",
   },
   explorer: {
-    title: 'Explorer',
+    title: "Explorer",
   },
   mountedWads: {
-    title: 'Mounted Wads',
+    title: "Mounted Wads",
   },
 };

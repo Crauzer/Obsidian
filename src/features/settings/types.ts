@@ -1,6 +1,6 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { pathStringSchema } from '../../utils';
+import { pathStringSchema } from "../../utils";
 
 export type Settings = {
   openDirectoryAfterExtraction: boolean;

@@ -1,5 +1,5 @@
-import * as RadixPopover from '@radix-ui/react-popover';
-import React from 'react';
+import * as RadixPopover from "@radix-ui/react-popover";
+import type React from "react";
 
 export type PopoverTriggerProps = RadixPopover.PopoverTriggerProps;
 

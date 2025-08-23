@@ -1,15 +1,15 @@
-import { useTranslation } from 'react-i18next';
-import { LuPackagePlus } from 'react-icons/lu';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { useTranslation } from "react-i18next";
+import { LuPackagePlus } from "react-icons/lu";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
-import { Button, Icon, Tooltip } from '../../../../components';
-import { appRoutes } from '../../../../lib/router';
-import { composeUrlQuery } from '../../../../utils';
-import { useMountWads } from '../../api';
+import { Button, Icon, Tooltip } from "../../../../components";
+import { appRoutes } from "../../../../lib/router";
+import { composeUrlQuery } from "../../../../utils";
+import { useMountWads } from "../../api";
 
 export const MountWadsButton = () => {
-  const [t] = useTranslation('mountedWads');
+  const [t] = useTranslation("mountedWads");
   const navigate = useNavigate();
 
   const mountWadsMutation = useMountWads();
@@ -23,9 +23,11 @@ export const MountWadsButton = () => {
             return;
           }
 
-          toast.success(t('mount.success', { count: wadIds.length }));
+          toast.success(t("mount.success", { count: wadIds.length }));
 
-          navigate(composeUrlQuery(appRoutes.mountedWads, { wadId: wadIds[0] }));
+          navigate(
+            composeUrlQuery(appRoutes.mountedWads, { wadId: wadIds[0] }),
+          );
         },
       },
     );
@@ -42,7 +44,7 @@ export const MountWadsButton = () => {
           <Icon size="lg" icon={LuPackagePlus} />
         </Button>
       </Tooltip.Trigger>
-      <Tooltip.Content side="bottom">{t('mount.tooltip')}</Tooltip.Content>
+      <Tooltip.Content side="bottom">{t("mount.tooltip")}</Tooltip.Content>
     </Tooltip.Root>
   );
 };

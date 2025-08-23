@@ -1,8 +1,13 @@
-import { generatePath, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import {
+  generatePath,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 
-import { Spinner } from '../components';
-import { WadDropZone, WadTabs, useMountedWads } from '../features/wad';
-import { appRoutes } from '../lib/router';
+import { Spinner } from "../components";
+import { useMountedWads, WadDropZone, WadTabs } from "../features/wad";
+import { appRoutes } from "../lib/router";
 
 export default function MountedWadItem() {
   const [searchParams] = useSearchParams();
@@ -25,7 +30,7 @@ export default function MountedWadItem() {
             wads={mountedWadsQuery.data.wads}
             selectedWad={wadId}
             onSelectedWadChanged={handleSelectedWadChanged}
-            selectedItemId={searchParams.get('itemId') ?? undefined}
+            selectedItemId={searchParams.get("itemId") ?? undefined}
           />
         </>
       )}

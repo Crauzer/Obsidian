@@ -1,9 +1,8 @@
-import { useMutation } from '@tanstack/react-query';
-import { core } from '@tauri-apps/api';
-
-import { wadQueryKeys } from '..';
-import { queryClient } from '../../../lib/query';
-import { wadCommands } from '../commands';
+import { useMutation } from "@tanstack/react-query";
+import { core } from "@tauri-apps/api";
+import { queryClient } from "../../../lib/query";
+import { wadQueryKeys } from "..";
+import { wadCommands } from "../commands";
 
 export type UseExpandWadTreeItemContext = {
   wadId: string;
@@ -11,7 +10,11 @@ export type UseExpandWadTreeItemContext = {
   isExpanded: boolean;
 };
 
-export const expandWadTreeItem = ({ wadId, itemId, isExpanded }: UseExpandWadTreeItemContext) =>
+export const expandWadTreeItem = ({
+  wadId,
+  itemId,
+  isExpanded,
+}: UseExpandWadTreeItemContext) =>
   core.invoke(wadCommands.expandWadTreeItem, {
     wadId,
     itemId,
@@ -22,7 +25,9 @@ export const useExpandWadTreeItem = () => {
   return useMutation({
     mutationFn: expandWadTreeItem,
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: wadQueryKeys.wadTree(variables.wadId) });
+      queryClient.invalidateQueries({
+        queryKey: wadQueryKeys.wadTree(variables.wadId),
+      });
     },
   });
 };

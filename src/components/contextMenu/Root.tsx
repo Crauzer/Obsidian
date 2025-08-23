@@ -1,5 +1,5 @@
-import * as RadixContextMenu from '@radix-ui/react-context-menu';
-import React from 'react';
+import * as RadixContextMenu from "@radix-ui/react-context-menu";
+import type React from "react";
 
 export type ContextMenuRootProps = RadixContextMenu.ContextMenuProps;
 

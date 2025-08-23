@@ -1,1 +1,1 @@
-export * from './WadItemList';
+export * from "./WadItemList";

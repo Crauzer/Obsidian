@@ -1,1 +1,1 @@
-export * from './WadTabs';
+export * from "./WadTabs";

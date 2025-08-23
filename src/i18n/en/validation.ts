@@ -1,3 +1,3 @@
 export const validation = {
-  mustBeAPath: 'Must be a valid path',
+  mustBeAPath: "Must be a valid path",
 };

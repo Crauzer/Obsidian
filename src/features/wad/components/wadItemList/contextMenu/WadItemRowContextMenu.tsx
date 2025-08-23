@@ -1,19 +1,20 @@
-import { writeText } from '@tauri-apps/plugin-clipboard-manager';
-import React, { useCallback, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { PiEyeDuotone } from 'react-icons/pi';
-import { VscCopy } from 'react-icons/vsc';
-import { toast } from 'react-toastify';
-import { Skeleton } from '~/components';
-import { useItemPreviewTypes } from '~/features/wad';
+import { writeText } from "@tauri-apps/plugin-clipboard-manager";
+import type React from "react";
+import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { PiEyeDuotone } from "react-icons/pi";
+import { VscCopy } from "react-icons/vsc";
+import { toast } from "react-toastify";
+import { Skeleton } from "~/components";
+import { useItemPreviewTypes } from "~/features/wad";
 
-import { ContextMenu, Icon, Toast } from '../../../../../components';
-import { toastAutoClose } from '../../../../../utils/toast';
-import { useWadContext } from '../../../providers';
-import { WadFileItem, WadItem } from '../../../types';
-import { isLeagueFilePreviewable } from '../../../utils';
-import { ExtractItem } from './ExtractItem';
-import { ExtractSelectedItem } from './ExtractSelectedItem';
+import { ContextMenu, Icon, Toast } from "../../../../../components";
+import { toastAutoClose } from "../../../../../utils/toast";
+import { useWadContext } from "../../../providers";
+import type { WadFileItem, WadItem } from "../../../types";
+import { isLeagueFilePreviewable } from "../../../utils";
+import { ExtractItem } from "./ExtractItem";
+import { ExtractSelectedItem } from "./ExtractSelectedItem";
 
 type WadItemRowContextMenuProps = {
   wadId: string;
@@ -46,8 +47,10 @@ export const WadItemRowContextMenu: React.FC<WadItemRowContextMenuProps> = ({
     <ContextMenu.Root onOpenChange={handleOpenChange}>
       <ContextMenu.Trigger>{children}</ContextMenu.Trigger>
       <ContextMenu.Content>
-        {item.kind === 'file' && previewTypesQuery.isLoading && <Skeleton className="w-full" />}
-        {item.kind === 'file' && previewTypesQuery.isSuccess && (
+        {item.kind === "file" && previewTypesQuery.isLoading && (
+          <Skeleton className="w-full" />
+        )}
+        {item.kind === "file" && previewTypesQuery.isSuccess && (
           <ContextMenu.Sub>
             <ContextMenu.SubTrigger>Preview as</ContextMenu.SubTrigger>
             <ContextMenu.Portal>
@@ -55,14 +58,18 @@ export const WadItemRowContextMenu: React.FC<WadItemRowContextMenuProps> = ({
             </ContextMenu.Portal>
           </ContextMenu.Sub>
         )}
-        {item.kind === 'file' && (
+        {item.kind === "file" && (
           <>
             <PreviewItem item={item} />
             <ContextMenu.Separator />
           </>
         )}
         <ExtractItem wadId={wadId} parentItemId={parentItemId} item={item} />
-        <ExtractSelectedItem wadId={wadId} parentItemId={parentItemId} item={item} />
+        <ExtractSelectedItem
+          wadId={wadId}
+          parentItemId={parentItemId}
+          item={item}
+        />
         <ContextMenu.Separator />
         <CopyNameItem item={item} />
         <CopyPathItem item={item} />
@@ -76,20 +83,23 @@ type CopyNameItemProps = {
 };
 
 const CopyNameItem = ({ item }: CopyNameItemProps) => {
-  const [t] = useTranslation(['wad', 'common']);
+  const [t] = useTranslation(["wad", "common"]);
 
   const handleCopyName = useCallback(async () => {
     await writeText(item.name);
 
-    toast.info(<Toast.Info message={t('common:copied')} />, {
+    toast.info(<Toast.Info message={t("common:copied")} />, {
       autoClose: toastAutoClose.veryShort,
     });
   }, [item.name, t]);
 
   return (
-    <ContextMenu.Item className="flex flex-row items-center gap-2" onClick={handleCopyName}>
+    <ContextMenu.Item
+      className="flex flex-row items-center gap-2"
+      onClick={handleCopyName}
+    >
       <Icon icon={VscCopy} size="md" />
-      {t('wad:contextMenu.copyName')}
+      {t("wad:contextMenu.copyName")}
     </ContextMenu.Item>
   );
 };
@@ -99,20 +109,23 @@ type CopyPathItemProps = {
 };
 
 export const CopyPathItem = ({ item }: CopyPathItemProps) => {
-  const [t] = useTranslation(['wad', 'common']);
+  const [t] = useTranslation(["wad", "common"]);
 
   const handleCopyPath = useCallback(async () => {
     await writeText(item.path);
 
-    toast.info(<Toast.Info message={t('common:copied')} />, {
+    toast.info(<Toast.Info message={t("common:copied")} />, {
       autoClose: toastAutoClose.veryShort,
     });
   }, [item.path, t]);
 
   return (
-    <ContextMenu.Item className="flex flex-row items-center gap-2" onClick={handleCopyPath}>
+    <ContextMenu.Item
+      className="flex flex-row items-center gap-2"
+      onClick={handleCopyPath}
+    >
       <Icon icon={VscCopy} size="md" />
-      {t('wad:contextMenu.copyPath')}
+      {t("wad:contextMenu.copyPath")}
     </ContextMenu.Item>
   );
 };
@@ -123,7 +136,7 @@ type PreviewItemProps = {
 
 const PreviewItem = ({ item }: PreviewItemProps) => {
   const { changeCurrentPreviewItemId } = useWadContext();
-  const [t] = useTranslation(['wad', 'common']);
+  const [t] = useTranslation(["wad", "common"]);
 
   const handleClick = useCallback(() => {
     changeCurrentPreviewItemId(item.id);
@@ -136,7 +149,7 @@ const PreviewItem = ({ item }: PreviewItemProps) => {
       onClick={handleClick}
     >
       <Icon icon={PiEyeDuotone} size="md" />
-      {t('wad:contextMenu.preview')}
+      {t("wad:contextMenu.preview")}
     </ContextMenu.Item>
   );
 };

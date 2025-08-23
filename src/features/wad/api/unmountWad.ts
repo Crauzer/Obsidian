@@ -1,10 +1,9 @@
-import { useMutation } from '@tanstack/react-query';
-import { core } from '@tauri-apps/api';
-
-import { wadQueryKeys } from '..';
-import { queryClient } from '../../../lib/query';
-import { wadCommands } from '../commands';
-import { MountedWadsResponse } from '../types';
+import { useMutation } from "@tanstack/react-query";
+import { core } from "@tauri-apps/api";
+import { queryClient } from "../../../lib/query";
+import { wadQueryKeys } from "..";
+import { wadCommands } from "../commands";
+import type { MountedWadsResponse } from "../types";
 
 export type UseUnmountWadContext = {
   wadId: string;
@@ -19,10 +18,14 @@ export const useUnmountWad = () => {
     onMutate: async ({ wadId }) => {
       await queryClient.cancelQueries({ queryKey: wadQueryKeys.mountedWads });
 
-      const previousData = queryClient.getQueryData<MountedWadsResponse>(wadQueryKeys.mountedWads);
+      const previousData = queryClient.getQueryData<MountedWadsResponse>(
+        wadQueryKeys.mountedWads,
+      );
       if (previousData) {
         queryClient.setQueryData(wadQueryKeys.mountedWads, {
-          wads: previousData.wads.filter((mountedWad) => mountedWad.id != wadId),
+          wads: previousData.wads.filter(
+            (mountedWad) => mountedWad.id != wadId,
+          ),
         } satisfies MountedWadsResponse);
       }
 
@@ -30,7 +33,10 @@ export const useUnmountWad = () => {
     },
     onError: (_error, _variables, context) => {
       if (context?.previousData) {
-        queryClient.setQueryData(wadQueryKeys.mountedWads, context.previousData);
+        queryClient.setQueryData(
+          wadQueryKeys.mountedWads,
+          context.previousData,
+        );
       }
     },
     onSettled: () => {

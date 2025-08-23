@@ -1,6 +1,7 @@
-import * as RadixLabel from '@radix-ui/react-label';
-import clsx from 'clsx';
-import React, { forwardRef, useState } from 'react';
+import * as RadixLabel from "@radix-ui/react-label";
+import clsx from "clsx";
+import type React from "react";
+import { forwardRef, useState } from "react";
 
 export type TextFieldProps = {
   label?: React.ReactNode;
@@ -9,20 +10,35 @@ export type TextFieldProps = {
 
   right?: React.ReactNode;
   left?: React.ReactNode;
-} & React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
+} & React.DetailedHTMLProps<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  HTMLInputElement
+>;
 
 export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
   (
-    { label, labelPostfix = ':', error, right, left, className, onBlur, onFocus, ...props },
+    {
+      label,
+      labelPostfix = ":",
+      error,
+      right,
+      left,
+      className,
+      onBlur,
+      onFocus,
+      ...props
+    },
     ref,
   ) => {
     const [isFocused, setIsFocused] = useState(false);
 
     return (
-      <div className={clsx('flex flex-col gap-1', className)}>
+      <div className={clsx("flex flex-col gap-1", className)}>
         {label && (
           <RadixLabel.Root
-            className={clsx('text-base text-gray-50', { 'text-obsidian-500': error })}
+            className={clsx("text-base text-gray-50", {
+              "text-obsidian-500": error,
+            })}
             htmlFor={props.id}
           >
             {label}
@@ -31,9 +47,9 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
         )}
         <div
           className={clsx(
-            'flex flex-row items-center gap-1 rounded-md border border-gray-500 bg-gray-700 shadow-inner transition-colors',
+            "flex flex-row items-center gap-1 rounded-md border border-gray-500 bg-gray-700 shadow-inner transition-colors",
             {
-              'border-obsidian-500/70': isFocused || error,
+              "border-obsidian-500/70": isFocused || error,
             },
           )}
         >
@@ -53,7 +69,9 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
           />
           {right}
         </div>
-        {error && typeof error === 'string' && <p className="text-sm text-obsidian-500">{error}</p>}
+        {error && typeof error === "string" && (
+          <p className="text-sm text-obsidian-500">{error}</p>
+        )}
       </div>
     );
   },

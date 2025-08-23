@@ -1,9 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
-import { core } from '@tauri-apps/api';
+import { useQuery } from "@tanstack/react-query";
+import { core } from "@tauri-apps/api";
 
-import { wadQueryKeys } from '..';
-import { wadCommands } from '../commands';
-import { MountedWad } from '../types';
+import { wadQueryKeys } from "..";
+import { wadCommands } from "../commands";
+import type { MountedWad } from "../types";
 
 export const getMountedWad = (wadId: string) =>
   core.invoke<MountedWad>(wadCommands.getMountedWad, { wadId });

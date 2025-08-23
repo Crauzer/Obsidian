@@ -1,8 +1,14 @@
-import { Spinner } from '../components';
-import { SettingsForm, createSettigsFormData, useSettings } from '../features/settings';
+import { Spinner } from "../components";
+import {
+  createSettigsFormData,
+  SettingsForm,
+  useSettings,
+} from "../features/settings";
 
 export default function Settings() {
-  const settings = useSettings({ select: (data) => createSettigsFormData(data) });
+  const settings = useSettings({
+    select: (data) => createSettigsFormData(data),
+  });
 
   return (
     <div className="flex w-full flex-col gap-4 p-4">

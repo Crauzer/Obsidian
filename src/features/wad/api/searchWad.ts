@@ -1,9 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
-import { core } from '@tauri-apps/api';
+import { useQuery } from "@tanstack/react-query";
+import { core } from "@tauri-apps/api";
 
-import { wadQueryKeys } from '..';
-import { wadCommands } from '../commands';
-import { SearchWadResponse } from '../types';
+import { wadQueryKeys } from "..";
+import { wadCommands } from "../commands";
+import type { SearchWadResponse } from "../types";
 
 export type SearchWadContext = {
   wadId: string;

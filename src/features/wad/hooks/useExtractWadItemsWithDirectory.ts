@@ -1,12 +1,12 @@
-import { useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
+import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
-import { actionsQueryKeys } from '../../actions';
-import { usePickDirectory } from '../../fs';
-import { useSettings } from '../../settings';
-import { useExtractWadItems } from '../api';
+import { actionsQueryKeys } from "../../actions";
+import { usePickDirectory } from "../../fs";
+import { useSettings } from "../../settings";
+import { useExtractWadItems } from "../api";
 
 export type UseExtractWadItemsWithDirectoryContext = {
   wadId: string;
@@ -16,7 +16,7 @@ export type UseExtractWadItemsWithDirectoryContext = {
 };
 
 export const useExtractWadItemsWithDirectory = () => {
-  const [t] = useTranslation('mountedWads');
+  const [t] = useTranslation("mountedWads");
   const queryClient = useQueryClient();
 
   const [isExtracting, setIsExtracting] = useState(false);
@@ -35,7 +35,10 @@ export const useExtractWadItemsWithDirectory = () => {
     setIsExtracting(true);
 
     pickDirectory.mutate(
-      { initialDirectory: settings.data?.defaultExtractionDirectory ?? undefined },
+      {
+        initialDirectory:
+          settings.data?.defaultExtractionDirectory ?? undefined,
+      },
       {
         onSuccess: ({ path }) => {
           extractWadItems.mutate(
@@ -48,12 +51,12 @@ export const useExtractWadItemsWithDirectory = () => {
             },
             {
               onSuccess: () => {
-                toast.success(t('extraction.success'));
+                toast.success(t("extraction.success"));
               },
               onSettled: () => {
                 setIsExtracting(false);
                 queryClient.resetQueries({
-                  queryKey: actionsQueryKeys.actionProgress('actionId'),
+                  queryKey: actionsQueryKeys.actionProgress("actionId"),
                 });
               },
             },

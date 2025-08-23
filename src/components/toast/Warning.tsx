@@ -1,11 +1,14 @@
-import React from 'react';
+import type React from "react";
 
 export type ToastWarningProps = {
   title?: React.ReactNode;
   message?: React.ReactNode;
 };
 
-export const ToastWarning: React.FC<ToastWarningProps> = ({ title, message }) => {
+export const ToastWarning: React.FC<ToastWarningProps> = ({
+  title,
+  message,
+}) => {
   if (title) {
     return (
       <div className="flex flex-col gap-2">

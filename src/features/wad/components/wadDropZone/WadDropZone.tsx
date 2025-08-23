@@ -1,8 +1,7 @@
-import React from 'react';
-import { PiArchiveTrayDuotone } from 'react-icons/pi';
-
-import { useMountWads } from '../..';
-import { useFileDrop } from '../../../../hooks';
+import type React from "react";
+import { PiArchiveTrayDuotone } from "react-icons/pi";
+import { useFileDrop } from "../../../../hooks";
+import { useMountWads } from "../..";
 
 export const WadDropZone: React.FC = () => {
   const { mutate: mountWadsMutate } = useMountWads();

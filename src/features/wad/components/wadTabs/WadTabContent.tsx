@@ -1,21 +1,23 @@
-import React, { useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
-import { generatePath, useNavigate, useSearchParams } from 'react-router-dom';
+import type React from "react";
+import { useMemo, useState } from "react";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import { generatePath, useNavigate } from "react-router-dom";
 
-import { appRoutes } from '../../../../lib/router';
-import { composeUrlQuery } from '../../../../utils';
-import { useWadDirectoryPathComponents, useWadParentItems } from '../../api';
-import { WadContext, WadContextState } from '../../providers';
-import { WadItem, WadItemPathComponent } from '../../types';
-import { WadSearchInput } from '../search';
-import { WadItemList } from '../wadItemList';
-import { ExtractAllButton } from './ExtractAllButton';
-import { WadBreadcrumbs } from './WadBreadcrumbs';
+import { appRoutes } from "../../../../lib/router";
+import { composeUrlQuery } from "../../../../utils";
+import { useWadDirectoryPathComponents, useWadParentItems } from "../../api";
+import { WadContext, type WadContextState } from "../../providers";
+import type { WadItem, WadItemPathComponent } from "../../types";
+import { WadSearchInput } from "../search";
+import { WadItemList } from "../wadItemList";
+import { ExtractAllButton } from "./ExtractAllButton";
+import { WadBreadcrumbs } from "./WadBreadcrumbs";
 
 export type WadRootTabContentProps = { wadId: string };
 
-export const WadRootTabContent: React.FC<WadRootTabContentProps> = ({ wadId }) => {
+export const WadRootTabContent: React.FC<WadRootTabContentProps> = ({
+  wadId,
+}) => {
   const itemsQuery = useWadParentItems({ wadId, parentId: undefined });
 
   if (itemsQuery.isSuccess) {
@@ -41,7 +43,10 @@ export const WadDirectoryTabContent: React.FC<WadDirectoryTabContentProps> = ({
   wadId,
   selectedItemId,
 }) => {
-  const pathComponentsQuery = useWadDirectoryPathComponents({ wadId, itemId: selectedItemId });
+  const pathComponentsQuery = useWadDirectoryPathComponents({
+    wadId,
+    itemId: selectedItemId,
+  });
   const itemsQuery = useWadParentItems({ wadId, parentId: selectedItemId });
 
   if (itemsQuery.isSuccess) {
@@ -73,7 +78,9 @@ const WadTabContent: React.FC<WadTabContentProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  const [currentPreviewItemId, setCurrentPreviewItemId] = useState<string | null>(null);
+  const [currentPreviewItemId, setCurrentPreviewItemId] = useState<
+    string | null
+  >(null);
 
   const wadState = useMemo<WadContextState>(
     () => ({
@@ -83,7 +90,9 @@ const WadTabContent: React.FC<WadTabContentProps> = ({
       navigate: (item) => {
         if (item) {
           navigate(
-            composeUrlQuery(generatePath(appRoutes.mountedWad, { wadId }), { itemId: item }),
+            composeUrlQuery(generatePath(appRoutes.mountedWad, { wadId }), {
+              itemId: item,
+            }),
           );
         } else {
           navigate(generatePath(appRoutes.mountedWad, { wadId }));

@@ -1,25 +1,25 @@
 import {
   DragDropContext,
   Draggable,
-  DraggableProvided,
-  DraggableProvidedDragHandleProps,
-  DraggableStateSnapshot,
+  type DraggableProvided,
+  type DraggableProvidedDragHandleProps,
+  type DraggableStateSnapshot,
   Droppable,
-  OnDragEndResponder,
-} from '@hello-pangea/dnd';
-import * as RadixTabs from '@radix-ui/react-tabs';
-import clsx from 'clsx';
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { RxDragHandleDots2 } from 'react-icons/rx';
+  type OnDragEndResponder,
+} from "@hello-pangea/dnd";
+import * as RadixTabs from "@radix-ui/react-tabs";
+import clsx from "clsx";
+import type React from "react";
+import { useTranslation } from "react-i18next";
+import { RxDragHandleDots2 } from "react-icons/rx";
 
-import { CloseIcon } from '../../../../assets';
-import { Icon, Tooltip } from '../../../../components';
-import { useReorderMountedWad, useUnmountWad } from '../../api';
-import { MountedWad } from '../../types';
-import { MountWadsButton } from './MountWadsButton';
-import { WadDirectoryTabContent, WadRootTabContent } from './WadTabContent';
-import { WadTabContextMenu } from './WadTabContextMenu';
+import { CloseIcon } from "../../../../assets";
+import { Icon, Tooltip } from "../../../../components";
+import { useReorderMountedWad, useUnmountWad } from "../../api";
+import type { MountedWad } from "../../types";
+import { MountWadsButton } from "./MountWadsButton";
+import { WadDirectoryTabContent, WadRootTabContent } from "./WadTabContent";
+import { WadTabContextMenu } from "./WadTabContextMenu";
 
 export type WadTabsProps = {
   wads: MountedWad[];
@@ -75,17 +75,21 @@ export const WadTabs: React.FC<WadTabsProps> = ({
                 ref={provided.innerRef}
                 {...provided.droppableProps}
                 className={clsx(
-                  'flex flex-1',
-                  'data-[orientation=horizontal]:flex-row data-[orientation=vertical]:flex-col',
-                  'rounded rounded-r-none border border-gray-700 bg-gray-800 transition-colors',
-                  'overflow-x-scroll [scrollbar-gutter:stable]',
-                  'relative min-h-[2.5rem]',
-                  { 'border-obsidian-500 ': snapshot.isDraggingOver },
+                  "flex flex-1",
+                  "data-[orientation=horizontal]:flex-row data-[orientation=vertical]:flex-col",
+                  "rounded rounded-r-none border border-gray-700 bg-gray-800 transition-colors",
+                  "overflow-x-scroll [scrollbar-gutter:stable]",
+                  "relative min-h-[2.5rem]",
+                  { "border-obsidian-500 ": snapshot.isDraggingOver },
                 )}
               >
                 {wads.map((mountedWad, index) => {
                   return (
-                    <Draggable key={mountedWad.id} draggableId={mountedWad.id} index={index}>
+                    <Draggable
+                      key={mountedWad.id}
+                      draggableId={mountedWad.id}
+                      index={index}
+                    >
                       {(provided, snapshot) => (
                         <TabTrigger
                           key={mountedWad.id}
@@ -105,9 +109,16 @@ export const WadTabs: React.FC<WadTabsProps> = ({
         </div>
         {wads.map((mountedWad) => {
           return (
-            <RadixTabs.Content key={mountedWad.id} className="flex-1" value={mountedWad.id}>
+            <RadixTabs.Content
+              key={mountedWad.id}
+              className="flex-1"
+              value={mountedWad.id}
+            >
               {selectedItemId ? (
-                <WadDirectoryTabContent wadId={mountedWad.id} selectedItemId={selectedItemId} />
+                <WadDirectoryTabContent
+                  wadId={mountedWad.id}
+                  selectedItemId={selectedItemId}
+                />
               ) : (
                 <WadRootTabContent wadId={mountedWad.id} />
               )}
@@ -141,14 +152,18 @@ const TabTrigger: React.FC<TabTriggerProps> = ({
             <RadixTabs.Trigger
               value={mountedWad.id}
               className={clsx(
-                'group flex h-full flex-row items-center justify-center gap-1 rounded-t-sm border-r border-r-gray-600 bg-gray-800 px-[0.5rem] py-[0.25rem] text-sm hover:bg-gray-700',
-                'data-[state=active]:border-t-2 data-[state=active]:border-t-obsidian-700 data-[state=active]:bg-gray-700',
-                { 'border-t border-t-obsidian-700 ': snapshot.isDragging },
+                "group flex h-full flex-row items-center justify-center gap-1 rounded-t-sm border-r border-r-gray-600 bg-gray-800 px-[0.5rem] py-[0.25rem] text-sm hover:bg-gray-700",
+                "data-[state=active]:border-t-2 data-[state=active]:border-t-obsidian-700 data-[state=active]:bg-gray-700",
+                { "border-t border-t-obsidian-700 ": snapshot.isDragging },
               )}
             >
-              <TabTriggerDragHandle dragHandleProps={provided.dragHandleProps} />
+              <TabTriggerDragHandle
+                dragHandleProps={provided.dragHandleProps}
+              />
               {mountedWad.name}
-              <TabTriggerCloseButton onClick={() => handleTabClose(mountedWad.id)} />
+              <TabTriggerCloseButton
+                onClick={() => handleTabClose(mountedWad.id)}
+              />
             </RadixTabs.Trigger>
           </WadTabContextMenu>
         </div>
@@ -164,8 +179,10 @@ type TabTriggerDragHandleProps = {
   dragHandleProps: DraggableProvidedDragHandleProps | null;
 };
 
-const TabTriggerDragHandle: React.FC<TabTriggerDragHandleProps> = ({ dragHandleProps }) => {
-  const [t] = useTranslation('mountedWads');
+const TabTriggerDragHandle: React.FC<TabTriggerDragHandleProps> = ({
+  dragHandleProps,
+}) => {
+  const [t] = useTranslation("mountedWads");
 
   return (
     <Tooltip.Root>
@@ -177,7 +194,9 @@ const TabTriggerDragHandle: React.FC<TabTriggerDragHandleProps> = ({ dragHandleP
           <Icon size="md" className="text-gray-400" icon={RxDragHandleDots2} />
         </div>
       </Tooltip.Trigger>
-      <Tooltip.Content className="text-sm">{t('tab.dndTooltip')}</Tooltip.Content>
+      <Tooltip.Content className="text-sm">
+        {t("tab.dndTooltip")}
+      </Tooltip.Content>
     </Tooltip.Root>
   );
 };
@@ -186,8 +205,10 @@ type TabTriggerCloseButtonProps = {
   onClick: React.MouseEventHandler<SVGSVGElement>;
 };
 
-const TabTriggerCloseButton: React.FC<TabTriggerCloseButtonProps> = ({ onClick }) => {
-  const [t] = useTranslation('mountedWads');
+const TabTriggerCloseButton: React.FC<TabTriggerCloseButtonProps> = ({
+  onClick,
+}) => {
+  const [t] = useTranslation("mountedWads");
 
   return (
     <Tooltip.Root>
@@ -197,7 +218,7 @@ const TabTriggerCloseButton: React.FC<TabTriggerCloseButtonProps> = ({ onClick }
         </span>
       </Tooltip.Trigger>
       <Tooltip.Content side="top" className="text-sm">
-        {t('tab.closeTooltip')}
+        {t("tab.closeTooltip")}
       </Tooltip.Content>
     </Tooltip.Root>
   );

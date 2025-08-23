@@ -1,6 +1,11 @@
-import { Control, FieldValues, Path, useController } from 'react-hook-form';
+import {
+  type Control,
+  type FieldValues,
+  type Path,
+  useController,
+} from "react-hook-form";
 
-import { TextField, TextFieldProps } from '..';
+import { TextField, type TextFieldProps } from "..";
 
 export type FormTextFieldProps<TFieldValues extends FieldValues> = {
   name: Path<TFieldValues>;
@@ -26,7 +31,7 @@ export const FormTextField = <TFieldValues extends FieldValues>({
       value={value}
       onChange={onChange}
       onBlur={onBlur}
-      error={error ? error.message ?? true : false}
+      error={error ? (error.message ?? true) : false}
     />
   );
 };

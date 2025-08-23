@@ -1,13 +1,20 @@
-import * as RadixProgress from '@radix-ui/react-progress';
-import clsx from 'clsx';
-import React from 'react';
+import * as RadixProgress from "@radix-ui/react-progress";
+import clsx from "clsx";
+import type React from "react";
 
-export const Progress: React.FC<RadixProgress.ProgressProps> = ({ className, value, ...props }) => {
+export const Progress: React.FC<RadixProgress.ProgressProps> = ({
+  className,
+  value,
+  ...props
+}) => {
   return (
     <RadixProgress.Progress
       {...props}
       value={value}
-      className={clsx('relative h-4 overflow-hidden rounded bg-gray-800/50', className)}
+      className={clsx(
+        "relative h-4 overflow-hidden rounded bg-gray-800/50",
+        className,
+      )}
     >
       <RadixProgress.Indicator
         className="h-full w-full bg-obsidian-600"

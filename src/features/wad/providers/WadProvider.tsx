@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext } from "react";
 
 export type WadContextState = {
   wadId: string;
@@ -10,7 +10,7 @@ export type WadContextState = {
 };
 
 export const WadContext = createContext<WadContextState>({
-  wadId: '',
+  wadId: "",
   currentPreviewItemId: null,
   changeCurrentPreviewItemId: () => {},
   navigate: () => {},

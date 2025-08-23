@@ -1,3 +1,3 @@
 export const fsQueryKeys = {
-  appDirectory: ['fs', 'app_directory'],
+  appDirectory: ["fs", "app_directory"],
 };

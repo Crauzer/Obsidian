@@ -1,2 +1,2 @@
-export * from './getSettings';
-export * from './updateSettings';
+export * from "./getSettings";
+export * from "./updateSettings";

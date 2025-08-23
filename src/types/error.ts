@@ -1,11 +1,11 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const emptyExtensionSchema = z.object({
-  kind: z.literal('empty'),
+  kind: z.literal("empty"),
 });
 
 export const wadHashtablesMissingExtensionSchema = z.object({
-  kind: z.literal('wadHashtablesMissing'),
+  kind: z.literal("wadHashtablesMissing"),
 });
 
 const apiErrorExtensions = {
@@ -15,7 +15,7 @@ const apiErrorExtensions = {
 export type ApiErrorExtensionKind = keyof typeof apiErrorExtensions;
 
 export type ApiErrorExtension = z.infer<typeof apiErrorExtensionSchema>;
-const apiErrorExtensionSchema = z.discriminatedUnion('kind', [
+const apiErrorExtensionSchema = z.discriminatedUnion("kind", [
   emptyExtensionSchema,
   wadHashtablesMissingExtensionSchema,
 ]);
@@ -33,5 +33,7 @@ export const getApiErrorExtension = <
   error: ApiError,
   extension: TExtension,
 ): z.infer<TExtension> | undefined => {
-  return extension.parse(error.extensions?.find((x) => x.kind === extension.shape.kind.value));
+  return extension.parse(
+    error.extensions?.find((x) => x.kind === extension.shape.kind.value),
+  );
 };

@@ -1,6 +1,6 @@
-import * as RadixTooltip from '@radix-ui/react-tooltip';
-import clsx from 'clsx';
-import React from 'react';
+import * as RadixTooltip from "@radix-ui/react-tooltip";
+import clsx from "clsx";
+import type React from "react";
 
 export type TooltipContentProps = RadixTooltip.TooltipContentProps;
 
@@ -17,7 +17,7 @@ export const TooltipContent: React.FC<TooltipContentProps> = ({
         sideOffset={sideOffset}
         collisionPadding={8}
         className={clsx(
-          'rounded border border-gray-600/50 bg-gray-800/50 px-2 py-1 text-sm text-gray-50 shadow-xl backdrop-blur',
+          "rounded border border-gray-600/50 bg-gray-800/50 px-2 py-1 text-sm text-gray-50 shadow-xl backdrop-blur",
           className,
         )}
       >

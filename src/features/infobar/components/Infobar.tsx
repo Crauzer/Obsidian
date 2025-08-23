@@ -1,26 +1,34 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { LuFolderSync } from 'react-icons/lu';
-import { VscFileSymlinkDirectory } from 'react-icons/vsc';
-import { Id as ToastId, toast } from 'react-toastify';
-import { v4 as uuidv4 } from 'uuid';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { LuFolderSync } from "react-icons/lu";
+import { VscFileSymlinkDirectory } from "react-icons/vsc";
+import { Id as ToastId, toast } from "react-toastify";
+import { v4 as uuidv4 } from "uuid";
 
-import { CDragonLogoIcon, ToolboxIcon } from '../../../assets';
-import { ActionIcon, Button, Link, Popover, Spinner, Toast, Tooltip } from '../../../components';
+import { CDragonLogoIcon, ToolboxIcon } from "../../../assets";
+import {
+  ActionIcon,
+  Button,
+  Link,
+  Popover,
+  Spinner,
+  Toast,
+  Tooltip,
+} from "../../../components";
 import {
   apiErrorSchema,
   getApiErrorExtension,
   wadHashtablesMissingExtensionSchema,
-} from '../../../types/error';
-import { env } from '../../../utils';
-import { useActionProgress } from '../../actions';
-import { useAppDirectory, useOpenPath } from '../../fs';
-import { useLoadWadHashtables, useWadHashtableStatus } from '../../hashtable';
-import { ToolboxContent } from '../../toolbox';
-import { useRefreshHashtables } from '../hooks';
+} from "../../../types/error";
+import { env } from "../../../utils";
+import { useActionProgress } from "../../actions";
+import { useAppDirectory, useOpenPath } from "../../fs";
+import { useLoadWadHashtables, useWadHashtableStatus } from "../../hashtable";
+import { ToolboxContent } from "../../toolbox";
+import { useRefreshHashtables } from "../hooks";
 
 export const Infobar = () => {
-  const [t] = useTranslation('common');
+  const [t] = useTranslation("common");
 
   const appDirectory = useAppDirectory();
   const openPath = useOpenPath();
@@ -56,7 +64,7 @@ export const Infobar = () => {
               onClick={handleOpenAppDirectory}
             />
           </Tooltip.Trigger>
-          <Tooltip.Content>{t('infobar.appDirectory')}</Tooltip.Content>
+          <Tooltip.Content>{t("infobar.appDirectory")}</Tooltip.Content>
         </Tooltip.Root>
       )}
     </div>
@@ -64,7 +72,7 @@ export const Infobar = () => {
 };
 
 const WadHashtablesIcon = () => {
-  const [t] = useTranslation('common');
+  const [t] = useTranslation("common");
   const { handleRefresh, loadHashtablesMutation } = useRefreshHashtables();
   const wadHashtableStatus = useWadHashtableStatus();
 
@@ -91,10 +99,15 @@ const WadHashtablesIcon = () => {
             <Spinner className="h-5 w-5" />
           </Button>
         ) : (
-          <ActionIcon size="md" variant="ghost" icon={LuFolderSync} onClick={handleRefresh} />
+          <ActionIcon
+            size="md"
+            variant="ghost"
+            icon={LuFolderSync}
+            onClick={handleRefresh}
+          />
         )}
       </Tooltip.Trigger>
-      <Tooltip.Content>{t('infobar.refreshHashtables')}</Tooltip.Content>
+      <Tooltip.Content>{t("infobar.refreshHashtables")}</Tooltip.Content>
     </Tooltip.Root>
   );
 };

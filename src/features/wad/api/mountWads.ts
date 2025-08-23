@@ -1,10 +1,9 @@
-import { useMutation } from '@tanstack/react-query';
-import { core } from '@tauri-apps/api';
-
-import { wadQueryKeys } from '..';
-import { queryClient } from '../../../lib/query';
-import { wadCommands } from '../commands';
-import { MountWadResponse } from '../types';
+import { useMutation } from "@tanstack/react-query";
+import { core } from "@tauri-apps/api";
+import { queryClient } from "../../../lib/query";
+import { wadQueryKeys } from "..";
+import { wadCommands } from "../commands";
+import type { MountWadResponse } from "../types";
 
 export type MountWadsContext = {
   wadPaths?: string[];

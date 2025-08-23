@@ -1,15 +1,15 @@
 export const settings = {
   wadHashtableSources: {
-    title: 'Wad Hashtable sources',
+    title: "Wad Hashtable sources",
   },
-  openDirectoryAfterExtraction: 'Open directory after extraction',
+  openDirectoryAfterExtraction: "Open directory after extraction",
   defaultMountDirectory: {
-    label: 'Default mount directory',
+    label: "Default mount directory",
   },
   defaultExtractionDirectory: {
-    label: 'Default extraction directory',
+    label: "Default extraction directory",
   },
   submit: {
-    success: 'Saved!',
+    success: "Saved!",
   },
 };

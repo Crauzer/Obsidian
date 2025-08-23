@@ -1,8 +1,8 @@
-import { defaultNamespace, resources } from './lib/i18next';
+import { defaultNamespace, resources } from "./lib/i18next";
 
-declare module 'i18next' {
+declare module "i18next" {
   interface CustomTypeOptions {
     defaultNS: typeof defaultNamespace;
-    resources: (typeof resources)['en'];
+    resources: (typeof resources)["en"];
   }
 }
