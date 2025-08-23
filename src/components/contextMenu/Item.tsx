@@ -1,10 +1,11 @@
 import * as RadixContextMenu from '@radix-ui/react-context-menu';
 import clsx from 'clsx';
-import { forwardRef } from 'react';
+import React from 'react';
 
-export type ContextMenuItemProps = RadixContextMenu.MenuItemProps;
-
-export const ContextMenuItem = forwardRef<HTMLDivElement, ContextMenuItemProps>((props, ref) => {
+export const ContextMenuItem = React.forwardRef<
+  React.ElementRef<typeof RadixContextMenu.Item>,
+  React.ComponentPropsWithoutRef<typeof RadixContextMenu.Item>
+>((props, ref) => {
   return (
     <RadixContextMenu.Item
       {...props}
@@ -19,3 +20,5 @@ export const ContextMenuItem = forwardRef<HTMLDivElement, ContextMenuItemProps>(
     />
   );
 });
+
+ContextMenuItem.displayName = RadixContextMenu.Item.displayName;

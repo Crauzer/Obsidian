@@ -127,3 +127,5 @@ export type LeagueFileKind =
   | 'wwise_package';
 
 export type WadChunkCompressionKind = 'raw' | 'gzip' | 'file_redirect' | 'zstd' | 'zstd_multi';
+
+export type WadChunkPreviewType = 'image';

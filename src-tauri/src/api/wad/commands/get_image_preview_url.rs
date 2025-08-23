@@ -1,0 +1,85 @@
+use image::ImageFormat;
+use league_toolkit::{file::LeagueFileKind, render::texture::Texture};
+use std::io::Cursor;
+use tauri::Manager;
+use uuid::Uuid;
+
+use crate::{api::error::ApiError, core::wad::tree::WadTreeItem, state::MountedWadsState};
+
+#[tauri::command]
+pub fn get_image_preview_url(
+    wad_id: Uuid,
+    item_id: Uuid,
+    mounted_wads: tauri::State<'_, MountedWadsState>,
+    app: tauri::AppHandle,
+) -> Result<String, ApiError> {
+    let cache_dir = app
+        .path()
+        .app_cache_dir()
+        .map_err(|e| ApiError::from_message(format!("Failed to get cache directory: {}", e)))?;
+
+    let mut mounted_wads_guard = mounted_wads.0.lock();
+
+    let Some(wad_tree) = mounted_wads_guard.wad_trees().get(&wad_id) else {
+        return Err(ApiError::from_message(format!(
+            "Wad tree not found: {}",
+            wad_id
+        )));
+    };
+
+    let Some(item) = wad_tree.item_storage().get(&item_id) else {
+        return Err(ApiError::from_message(format!(
+            "Item not found: {}",
+            item_id
+        )));
+    };
+
+    let WadTreeItem::File(wad_tree_file) = item else {
+        return Err(ApiError::from_message(format!(
+            "Item is not a file: {}",
+            item_id
+        )));
+    };
+
+    let chunk = *wad_tree_file.chunk();
+
+    let Some(wad) = mounted_wads_guard.wads_mut().get_mut(&wad_id) else {
+        return Err(ApiError::from_message(format!("Wad not found: {}", wad_id)));
+    };
+
+    let (mut decoder, _) = wad.decode();
+
+    let chunk_data = decoder
+        .load_chunk_decompressed(&chunk)
+        .map_err(|e| ApiError::from_message(format!("Failed to load chunk: {}", e)))?;
+
+    let kind = LeagueFileKind::identify_from_bytes(&chunk_data);
+    let image_preview_url = cache_dir.join(format!("{}.png", item_id));
+    match kind {
+        LeagueFileKind::Texture | LeagueFileKind::TextureDds => {
+            let mut reader = Cursor::new(chunk_data);
+            let texture = Texture::from_reader(&mut reader)
+                .map_err(|e| ApiError::from_message(format!("Failed to load texture: {}", e)))?;
+
+            let image = texture
+                .decode_mipmap(0)
+                .map_err(|e| ApiError::from_message(format!("Failed to decode texture: {}", e)))?;
+
+            let image = image.into_rgba_image().map_err(|e| {
+                ApiError::from_message(format!("Failed to convert texture to image: {}", e))
+            })?;
+
+            image
+                .save_with_format(&image_preview_url, ImageFormat::Png)
+                .map_err(|e| ApiError::from_message(format!("Failed to save image: {}", e)))?;
+        }
+        _ => {
+            return Err(ApiError::from_message(format!(
+                "Item is not a texture: {}",
+                item_id
+            )));
+        }
+    }
+
+    Ok(image_preview_url.to_string_lossy().to_string())
+}

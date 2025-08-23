@@ -8,4 +8,9 @@ export const wadQueryKeys = {
     ['wad', wadId, 'items', parentId, 'items'] as const,
   wadTree: (wadId: string) => ['wad', wadId, 'tree'] as const,
   wadSearch: (wadId: string, query: string) => ['wad', wadId, 'search', query] as const,
+
+  itemPreviewTypes: (wadId: string, itemId: string) =>
+    ['wad', wadId, 'items', itemId, 'preview_types'] as const,
+  imagePreviewUrl: (wadId: string, itemId: string) =>
+    ['wad', wadId, 'items', itemId, 'preview_url'] as const,
 };

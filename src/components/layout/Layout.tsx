@@ -60,8 +60,8 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ items }) => {
   return (
     <RadixNavigationMenu.Root className="w-full">
       <RadixNavigationMenu.List className="flex items-center gap-2 ">
-        {items.map((item) => (
-          <NavigationMenuItem {...item} />
+        {items.map((item, index) => (
+          <NavigationMenuItem key={index} {...item} />
         ))}
         <NavigationMenuItem
           className="ml-auto"

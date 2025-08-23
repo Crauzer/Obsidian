@@ -14,6 +14,9 @@
     "prepare": "husky",
     "release": "commit-and-tag-version -t \"\""
   },
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "dependencies": {
     "@hello-pangea/dnd": "^16.3.0",
     "@hookform/resolvers": "^3.3.2",
@@ -94,7 +97,8 @@
     "typescript": "^5.2.2",
     "vite": "^4.4.4",
     "vite-plugin-eslint": "^1.8.1",
+    "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^1.2.2"
   },
-  "packageManager": "pnpm@8.3.1+sha512.d264f6640bf4f09de7cfcc547568515bcf0613cf485a03e8ff16616fa69c4172b6f9a0a2925ee44fb060df565c9c9a8eaf061749e77af318cb77f6684a7051f3"
+  "packageManager": "pnpm@10.0.0"
 }

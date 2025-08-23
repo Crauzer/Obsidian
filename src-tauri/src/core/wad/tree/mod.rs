@@ -6,7 +6,10 @@ use std::{
 };
 
 use itertools::Itertools;
-use league_toolkit::core::wad::{Wad, WadChunk, WadDecoder, WadError};
+use league_toolkit::{
+    file::LeagueFileKind,
+    wad::{Wad, WadChunk, WadDecoder, WadError},
+};
 use thiserror::Error;
 use tracing::info;
 use uuid::Uuid;
@@ -15,12 +18,7 @@ mod item;
 
 pub use item::*;
 
-use crate::{
-    core::league_file::{
-        get_extension_from_league_file_kind, identify_league_file, LeagueFileKind,
-    },
-    state::WadHashtable,
-};
+use crate::state::WadHashtable;
 
 #[derive(Error, Debug)]
 pub enum WadTreeError {
@@ -112,16 +110,11 @@ impl WadTree {
         decoder: &mut WadDecoder<TSource>,
     ) -> Result<Arc<str>, WadError> {
         let data = decoder.load_chunk_decompressed(chunk)?;
-        let file_kind = identify_league_file(&data);
+        let file_kind = LeagueFileKind::identify_from_bytes(&data);
 
         match file_kind {
             LeagueFileKind::Unknown => Ok(format!("{:#0x}", chunk_path_hash).into()),
-            _ => Ok(format!(
-                "{:#0x}.{}",
-                chunk_path_hash,
-                get_extension_from_league_file_kind(file_kind)
-            )
-            .into()),
+            _ => Ok(format!("{:#0x}.{}", chunk_path_hash, file_kind.extension().unwrap()).into()),
         }
     }
 

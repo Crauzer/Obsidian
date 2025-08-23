@@ -1,5 +1,5 @@
 use indexmap::IndexMap;
-use league_toolkit::core::wad::Wad;
+use league_toolkit::wad::Wad;
 use parking_lot::Mutex;
 use std::{collections::HashMap, fs::File, sync::Arc};
 

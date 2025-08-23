@@ -1,9 +1,11 @@
 import { writeText } from '@tauri-apps/plugin-clipboard-manager';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PiEyeDuotone } from 'react-icons/pi';
 import { VscCopy } from 'react-icons/vsc';
 import { toast } from 'react-toastify';
+import { Skeleton } from '~/components';
+import { useItemPreviewTypes } from '~/features/wad';
 
 import { ContextMenu, Icon, Toast } from '../../../../../components';
 import { toastAutoClose } from '../../../../../utils/toast';
@@ -28,10 +30,31 @@ export const WadItemRowContextMenu: React.FC<WadItemRowContextMenuProps> = ({
 
   children,
 }) => {
+  const [open, setOpen] = useState(false);
+
+  const previewTypesQuery = useItemPreviewTypes({
+    wadId,
+    itemId: item.id,
+    enabled: open,
+  });
+
+  const handleOpenChange = useCallback((open: boolean) => {
+    setOpen(open);
+  }, []);
+
   return (
-    <ContextMenu.Root>
+    <ContextMenu.Root onOpenChange={handleOpenChange}>
       <ContextMenu.Trigger>{children}</ContextMenu.Trigger>
       <ContextMenu.Content>
+        {item.kind === 'file' && previewTypesQuery.isLoading && <Skeleton className="w-full" />}
+        {item.kind === 'file' && previewTypesQuery.isSuccess && (
+          <ContextMenu.Sub>
+            <ContextMenu.SubTrigger>Preview as</ContextMenu.SubTrigger>
+            <ContextMenu.Portal>
+              <ContextMenu.SubContent></ContextMenu.SubContent>
+            </ContextMenu.Portal>
+          </ContextMenu.Sub>
+        )}
         {item.kind === 'file' && (
           <>
             <PreviewItem item={item} />

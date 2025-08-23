@@ -36,6 +36,7 @@ const WadItemListRowContent = ({ item, onClick }: WadItemListRowContentProps) =>
     if (item.kind !== 'directory') {
       return;
     }
+
     navigate(item.id);
   }, [item.id, item.kind, navigate]);
 

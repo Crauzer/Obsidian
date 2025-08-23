@@ -10,3 +10,4 @@ export * from './unmountWad';
 export * from './updateMountedWadItemSelection';
 export * from './extractWadItems';
 export * from './searchWad';
+export * from './getItemPreviewTypes';

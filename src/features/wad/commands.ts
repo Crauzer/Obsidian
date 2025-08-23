@@ -2,6 +2,8 @@ export const wadCommands = {
   expandWadTreeItem: 'expand_wad_tree_item' as const,
   extractMountedWad: 'extract_mounted_wad' as const,
   extractWadItems: 'extract_wad_items' as const,
+  getChunkPreviewTypes: 'get_chunk_preview_types' as const,
+  getImagePreviewUrl: 'get_image_preview_url' as const,
   getMountedWad: 'get_mounted_wad' as const,
   getMountedWadDirectoryPathComponents: 'get_mounted_wad_directory_path_components' as const,
   getMountedWads: 'get_mounted_wads' as const,

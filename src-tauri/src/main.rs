@@ -19,9 +19,10 @@ use crate::{
         hashtable::{get_wad_hashtable_status, load_wad_hashtables},
         settings::{get_settings, update_settings},
         wad::{
-            extract_mounted_wad, extract_wad_items, get_mounted_wad_directory_path_components,
-            get_mounted_wads, get_wad_parent_items, mount_wads, move_mounted_wad, search_wad,
-            unmount_wad, update_mounted_wad_item_selection,
+            extract_mounted_wad, extract_wad_items, get_chunk_preview_types, get_image_preview_url,
+            get_mounted_wad_directory_path_components, get_mounted_wads, get_wad_parent_items,
+            mount_wads, move_mounted_wad, search_wad, unmount_wad,
+            update_mounted_wad_item_selection,
         },
     },
     paths::WAD_HASHTABLES_DIR,
@@ -89,6 +90,8 @@ fn main() -> eyre::Result<()> {
             unmount_wad,
             update_mounted_wad_item_selection,
             update_settings,
+            get_image_preview_url,
+            get_chunk_preview_types,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

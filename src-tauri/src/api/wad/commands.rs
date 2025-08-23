@@ -1,12 +1,16 @@
 mod extract_wad_items;
+mod get_chunk_preview_types;
+mod get_image_preview_url;
 mod search_wad;
 
-use color_eyre::owo_colors::OwoColorize;
 pub use extract_wad_items::*;
-use league_toolkit::core::wad::Wad;
+pub use get_chunk_preview_types::*;
+pub use get_image_preview_url::*;
 pub use search_wad::*;
+
+use league_toolkit::wad::Wad;
 use tauri::Manager as _;
-use tauri_plugin_dialog::{DialogExt as _, FileDialogBuilder};
+use tauri_plugin_dialog::DialogExt as _;
 
 use super::{
     MountWadResponse, MountedWadDto, MountedWadsResponse, WadItemDto, WadItemPathComponentDto,
@@ -19,14 +23,13 @@ use crate::{
     state::{MountedWadsState, SettingsState, WadHashtableState},
     utils::actions::emit_action_progress,
 };
-use color_eyre::eyre::{self, eyre, Context, ContextCompat};
+use color_eyre::eyre::{self, Context, ContextCompat, eyre};
 use itertools::Itertools;
 use std::collections::HashMap;
 use std::{
     collections::VecDeque,
     fs::File,
     path::{Path, PathBuf},
-    str::FromStr,
     sync::Arc,
 };
 // use tauri_plugin_dialog::Dialog;
@@ -109,7 +112,7 @@ pub async fn get_wad_parent_items(
 
     Ok(parent_items
         .filter_map(|id| wad_tree.item_storage().get(id))
-        .map(|item| WadItemDto::from(item))
+        .map(WadItemDto::from)
         .collect_vec())
 }
 
@@ -230,7 +233,7 @@ pub async fn extract_mounted_wad(
     let (mut decoder, chunks) = wad.decode();
     wad::extract_wad_chunks(
         &mut decoder,
-        &chunks,
+        chunks,
         &wad_hashtable,
         extract_directory.clone(),
         |progress, message| {
@@ -305,10 +308,10 @@ struct PathComponentInternal {
     path: Arc<str>,
 }
 
-fn collect_path_components<'wad>(
+fn collect_path_components(
     item_id: Uuid,
     path_components: &mut VecDeque<PathComponentInternal>,
-    wad_tree: &'wad WadTree,
+    wad_tree: &WadTree,
 ) -> eyre::Result<()> {
     let item = wad_tree
         .item_storage()
@@ -317,8 +320,8 @@ fn collect_path_components<'wad>(
 
     path_components.push_front(PathComponentInternal {
         id: item.id(),
-        name: item.name().into(),
-        path: item.path().into(),
+        name: item.name(),
+        path: item.path(),
     });
 
     let Some(parent_id) = item.parent_id() else {

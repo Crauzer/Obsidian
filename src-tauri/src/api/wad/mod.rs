@@ -1,17 +1,12 @@
 mod commands;
 
 pub use commands::*;
-use league_toolkit::core::wad::WadChunkCompression;
+use league_toolkit::{file::LeagueFileKind, wad::WadChunkCompression};
 
-use std::path::Path;
-
+use crate::core::wad::tree::{WadTreeDirectory, WadTreeFile, WadTreeItem, WadTreePathable};
 use serde::{self, Deserialize, Serialize};
+use std::path::Path;
 use uuid::Uuid;
-
-use crate::core::{
-    league_file::{get_league_file_kind_from_extension, LeagueFileKind},
-    wad::tree::{WadTreeDirectory, WadTreeFile, WadTreeItem, WadTreePathable},
-};
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -164,7 +159,7 @@ impl From<WadChunkCompression> for WadChunkCompressionDto {
 fn guess_file_kind(file_name: impl AsRef<str>) -> LeagueFileKind {
     if let Some(extension) = Path::new(file_name.as_ref()).extension() {
         if let Some(extension) = extension.to_str() {
-            return get_league_file_kind_from_extension(extension);
+            return LeagueFileKind::from_extension(extension);
         }
     }
 

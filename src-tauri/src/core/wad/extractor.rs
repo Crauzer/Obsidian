@@ -1,12 +1,10 @@
-use crate::{
-    core::league_file::{
-        get_extension_from_league_file_kind, identify_league_file, LeagueFileKind,
-    },
-    state::WadHashtable,
-};
+use crate::state::WadHashtable;
 use color_eyre::eyre::{self, Ok};
 use eyre::Context;
-use league_toolkit::core::wad::{WadChunk, WadDecoder};
+use league_toolkit::{
+    file::LeagueFileKind,
+    wad::{WadChunk, WadDecoder},
+};
 use std::{
     collections::HashMap,
     ffi::OsStr,
@@ -163,7 +161,7 @@ fn resolve_final_chunk_path(chunk_path: impl AsRef<Path>, chunk_data: &Box<[u8]>
     let mut chunk_path = chunk_path.as_ref().to_path_buf();
     if chunk_path.extension().is_none() {
         // check for known extensions
-        match identify_league_file(&chunk_data) {
+        match LeagueFileKind::identify_from_bytes(&chunk_data) {
             LeagueFileKind::Unknown => {
                 tracing::warn!(
                     "chunk has no known extension, prepending '.' (chunk_path: {})",
@@ -180,8 +178,9 @@ fn resolve_final_chunk_path(chunk_path: impl AsRef<Path>, chunk_data: &Box<[u8]>
                 ));
             }
             file_kind => {
-                let extension = get_extension_from_league_file_kind(file_kind);
-                chunk_path.set_extension(extension);
+                if let Some(extension) = file_kind.extension() {
+                    chunk_path = chunk_path.with_extension(extension);
+                }
             }
         }
     }
@@ -202,21 +201,21 @@ fn write_long_filename_chunk(
         &hashed_path
     );
 
-    let file_kind = identify_league_file(&chunk_data);
-    let extension = get_extension_from_league_file_kind(file_kind);
+    let file_kind = LeagueFileKind::identify_from_bytes(&chunk_data);
+    let extension = file_kind.extension();
 
     match file_kind {
         LeagueFileKind::Unknown => {
             fs::write(&extract_directory.as_ref().join(hashed_path), &chunk_data)?;
         }
         _ => {
-            fs::write(
-                &extract_directory
-                    .as_ref()
-                    .join(format!("{:x}", chunk.path_hash()))
-                    .with_extension(extension),
-                &chunk_data,
-            )?;
+            let mut path = extract_directory.as_ref().join(hashed_path);
+
+            if let Some(extension) = extension {
+                path = path.with_extension(extension);
+            }
+
+            fs::write(&path, &chunk_data)?;
         }
     }
 

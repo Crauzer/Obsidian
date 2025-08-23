@@ -3,13 +3,13 @@ use std::{collections::HashMap, str, sync::Arc};
 use color_eyre::eyre::{Context, ContextCompat};
 use fst::{self, IntoStreamer, Streamer};
 use itertools::Itertools;
-use league_toolkit::core::wad::WadChunk;
+use league_toolkit::wad::WadChunk;
 use uuid::Uuid;
 
 use crate::{
     api::{
         error::ApiError,
-        wad::{guess_file_kind, SearchWadResponse, SearchWadResponseItem},
+        wad::{SearchWadResponse, SearchWadResponseItem, guess_file_kind},
     },
     core::wad::tree::{WadTreeItem, WadTreePathable},
     state::{MountedWadsState, WadHashtableState},
