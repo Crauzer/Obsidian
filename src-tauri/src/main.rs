@@ -19,7 +19,7 @@ use crate::{
         hashtable::{get_wad_hashtable_status, load_wad_hashtables},
         settings::{get_settings, update_settings},
         wad::{
-            extract_mounted_wad, extract_wad_items, get_chunk_preview_types, get_image_preview_url,
+            extract_mounted_wad, extract_wad_items, get_chunk_preview_types, get_image_bytes,
             get_mounted_wad_directory_path_components, get_mounted_wads, get_wad_parent_items,
             mount_wads, move_mounted_wad, search_wad, unmount_wad,
             update_mounted_wad_item_selection,
@@ -59,7 +59,7 @@ fn main() -> eyre::Result<()> {
         .manage(WadHashtableState(Mutex::new(WadHashtable::default())))
         .manage(ActionsState(RwLock::new(HashMap::default())))
         .setup(|app| {
-            LOG_GUARD.lock().replace(initialize_logging(&app.handle())?);
+            LOG_GUARD.lock().replace(initialize_logging(app.handle())?);
 
             create_app_directories(app)?;
 
@@ -90,7 +90,7 @@ fn main() -> eyre::Result<()> {
             unmount_wad,
             update_mounted_wad_item_selection,
             update_settings,
-            get_image_preview_url,
+            get_image_bytes,
             get_chunk_preview_types,
         ])
         .run(tauri::generate_context!())

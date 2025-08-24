@@ -2,7 +2,7 @@ import type React from "react";
 import { useMemo, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { generatePath, useNavigate } from "react-router-dom";
-
+import { PreviewSection } from "~/features/wad-preview";
 import { appRoutes } from "../../../../lib/router";
 import { composeUrlQuery } from "../../../../utils";
 import { useWadDirectoryPathComponents, useWadParentItems } from "../../api";
@@ -122,7 +122,7 @@ const WadTabContent: React.FC<WadTabContentProps> = ({
             </Panel>
             <PanelResizeHandle className="w-[1px] bg-gray-600" />
             <Panel defaultSize={30} minSize={30}>
-              <div className="h-full bg-gray-950"></div>
+              <PreviewSection wadId={wadId} />
             </Panel>
           </PanelGroup>
         </div>

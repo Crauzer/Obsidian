@@ -14,11 +14,11 @@ export const getItemPreviewTypes = (wadId: string, itemId: string) =>
 export const useItemPreviewTypes = ({
   wadId,
   itemId,
-  enabled,
+  enabled = true,
 }: {
   wadId: string;
   itemId: string;
-  enabled: boolean;
+  enabled?: boolean;
 }) => {
   return useQuery({
     queryKey: wadQueryKeys.itemPreviewTypes(wadId, itemId),

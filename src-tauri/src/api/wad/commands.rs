@@ -1,11 +1,11 @@
 mod extract_wad_items;
 mod get_chunk_preview_types;
-mod get_image_preview_url;
+mod get_image_bytes;
 mod search_wad;
 
 pub use extract_wad_items::*;
 pub use get_chunk_preview_types::*;
-pub use get_image_preview_url::*;
+pub use get_image_bytes::*;
 pub use search_wad::*;
 
 use league_toolkit::wad::Wad;

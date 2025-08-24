@@ -1,23 +1,16 @@
 use image::ImageFormat;
 use league_toolkit::{file::LeagueFileKind, render::texture::Texture};
 use std::io::Cursor;
-use tauri::Manager;
 use uuid::Uuid;
 
 use crate::{api::error::ApiError, core::wad::tree::WadTreeItem, state::MountedWadsState};
 
 #[tauri::command]
-pub fn get_image_preview_url(
+pub fn get_image_bytes(
     wad_id: Uuid,
     item_id: Uuid,
     mounted_wads: tauri::State<'_, MountedWadsState>,
-    app: tauri::AppHandle,
-) -> Result<String, ApiError> {
-    let cache_dir = app
-        .path()
-        .app_cache_dir()
-        .map_err(|e| ApiError::from_message(format!("Failed to get cache directory: {}", e)))?;
-
+) -> Result<Vec<u8>, ApiError> {
     let mut mounted_wads_guard = mounted_wads.0.lock();
 
     let Some(wad_tree) = mounted_wads_guard.wad_trees().get(&wad_id) else {
@@ -53,11 +46,11 @@ pub fn get_image_preview_url(
         .load_chunk_decompressed(&chunk)
         .map_err(|e| ApiError::from_message(format!("Failed to load chunk: {}", e)))?;
 
-    let kind = LeagueFileKind::identify_from_bytes(&chunk_data);
-    let image_preview_url = cache_dir.join(format!("{}.png", item_id));
-    match kind {
+    match LeagueFileKind::identify_from_bytes(&chunk_data) {
         LeagueFileKind::Texture | LeagueFileKind::TextureDds => {
             let mut reader = Cursor::new(chunk_data);
+            let mut writer = Cursor::new(Vec::new());
+
             let texture = Texture::from_reader(&mut reader)
                 .map_err(|e| ApiError::from_message(format!("Failed to load texture: {}", e)))?;
 
@@ -70,16 +63,16 @@ pub fn get_image_preview_url(
             })?;
 
             image
-                .save_with_format(&image_preview_url, ImageFormat::Png)
+                .write_to(&mut writer, ImageFormat::Png)
                 .map_err(|e| ApiError::from_message(format!("Failed to save image: {}", e)))?;
+
+            Ok(writer.into_inner())
         }
         _ => {
-            return Err(ApiError::from_message(format!(
+            Err(ApiError::from_message(format!(
                 "Item is not a texture: {}",
                 item_id
-            )));
+            )))
         }
     }
-
-    Ok(image_preview_url.to_string_lossy().to_string())
 }
