@@ -3244,6 +3244,7 @@ version = "0.1.0"
 dependencies = [
  "bytemuck",
  "byteorder",
+ "camino",
  "chrono",
  "color-eyre",
  "flate2",
@@ -3259,6 +3260,7 @@ dependencies = [
  "octocrab",
  "open",
  "parking_lot",
+ "rayon",
  "reqwest 0.11.27",
  "serde",
  "serde_json",

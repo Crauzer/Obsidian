@@ -1,13 +1,10 @@
-use std::path::PathBuf;
 use std::sync::Arc;
-use std::vec;
-use std::{collections::HashMap, path::Path};
 
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use xxhash_rust::xxh3::xxh3_64;
 
-use super::{WadChunk, WadTree};
+use super::WadChunk;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub enum WadTreeItemKind {
@@ -15,12 +12,6 @@ pub enum WadTreeItemKind {
     File,
     #[serde(rename = "directory")]
     Directory,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct WadTreeItemKey {
-    pub path_hash: u64,
-    pub kind: WadTreeItemKind,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -54,7 +45,6 @@ pub struct WadTreeDirectory {
     pub(super) is_checked: bool,
     pub(super) is_expanded: bool,
     pub(super) items: Vec<Uuid>,
-    pub(super) item_path_lookup: HashMap<PathBuf, Uuid>,
 }
 
 pub trait WadTreePathable {
@@ -74,14 +64,6 @@ pub trait WadTreeParent {
 
 pub trait WadTreeSelectable {
     fn set_is_selected(&mut self, is_selected: bool);
-}
-
-pub trait WadTreeCheckable {
-    fn set_is_checked(&mut self, is_checked: bool);
-}
-
-pub trait WadTreeExpandable {
-    fn set_is_expanded(&mut self, is_expanded: bool);
 }
 
 impl WadTreeItem {
@@ -121,12 +103,15 @@ impl WadTreeFile {
     pub fn id(&self) -> Uuid {
         self.id
     }
+
     pub fn is_selected(&self) -> bool {
         self.is_selected
     }
+
     pub fn is_checked(&self) -> bool {
         self.is_checked
     }
+
     pub fn chunk(&self) -> &WadChunk {
         &self.chunk
     }
@@ -147,40 +132,24 @@ impl WadTreeDirectory {
             is_selected: false,
             is_expanded: false,
             is_checked: false,
-            items: vec![],
-            item_path_lookup: HashMap::new(),
+            items: Vec::new(),
         }
     }
 
     pub fn id(&self) -> Uuid {
         self.id
     }
+
     pub fn is_selected(&self) -> bool {
         self.is_selected
     }
+
     pub fn is_checked(&self) -> bool {
         self.is_checked
     }
+
     pub fn is_expanded(&self) -> bool {
         self.is_expanded
-    }
-    pub fn item_path_lookup(&self) -> &HashMap<PathBuf, Uuid> {
-        &self.item_path_lookup
-    }
-
-    pub fn store_item(&mut self, item_id: Uuid, path: impl AsRef<Path>) {
-        self.item_path_lookup
-            .insert(path.as_ref().to_path_buf(), item_id);
-        self.items.push(item_id);
-    }
-
-    pub fn sort(&mut self, wad_tree: &WadTree) {
-        self.items.sort_by(|a, b| {
-            let a = wad_tree.item_storage().get(a);
-            let b = wad_tree.item_storage().get(b);
-
-            a.cmp(&b)
-        });
     }
 }
 
@@ -315,8 +284,8 @@ impl WadTreeSelectable for WadTreeDirectory {
     }
 }
 
-impl WadTreeExpandable for WadTreeDirectory {
-    fn set_is_expanded(&mut self, is_expanded: bool) {
+impl WadTreeDirectory {
+    pub fn set_is_expanded(&mut self, is_expanded: bool) {
         self.is_expanded = is_expanded;
     }
 }
