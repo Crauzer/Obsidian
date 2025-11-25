@@ -2,7 +2,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 #![feature(io_error_more)]
 #![feature(anonymous_lifetime_in_impl_trait)]
-#![feature(let_chains)]
 
 #[macro_use]
 extern crate lazy_static;
@@ -13,18 +12,6 @@ mod state;
 mod utils;
 
 use crate::{
-    api::{
-        actions::get_action_progress,
-        fs::{get_app_directory, open_path, pick_directory, pick_file},
-        hashtable::{get_wad_hashtable_status, load_wad_hashtables},
-        settings::{get_settings, update_settings},
-        wad::{
-            extract_mounted_wad, extract_wad_items, get_chunk_preview_types, get_image_bytes,
-            get_mounted_wad_directory_path_components, get_mounted_wads, get_wad_parent_items,
-            mount_wads, move_mounted_wad, search_wad, unmount_wad,
-            update_mounted_wad_item_selection,
-        },
-    },
     paths::WAD_HASHTABLES_DIR,
     state::WadHashtable,
     utils::fs::try_create_dir,
@@ -70,29 +57,7 @@ fn main() -> eyre::Result<()> {
 
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![
-            extract_mounted_wad,
-            extract_wad_items,
-            get_action_progress,
-            get_app_directory,
-            get_mounted_wad_directory_path_components,
-            get_mounted_wads,
-            get_settings,
-            get_wad_hashtable_status,
-            get_wad_parent_items,
-            load_wad_hashtables,
-            mount_wads,
-            move_mounted_wad,
-            open_path,
-            pick_directory,
-            pick_file,
-            search_wad,
-            unmount_wad,
-            update_mounted_wad_item_selection,
-            update_settings,
-            get_image_bytes,
-            get_chunk_preview_types,
-        ])
+        .invoke_handler(generate_command_handler!())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 
