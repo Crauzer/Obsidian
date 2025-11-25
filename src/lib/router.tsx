@@ -5,11 +5,13 @@ const Settings = React.lazy(() => import("../routes/Settings"));
 const Root = React.lazy(() => import("../routes/Root"));
 const MountedWads = React.lazy(() => import("../routes/mounted-wads"));
 const MountedWad = React.lazy(() => import("../routes/mounted-wads.$wadId"));
+const GameExplorer = React.lazy(() => import("../routes/game-explorer"));
 const ComponentTest = React.lazy(() => import("../routes/ComponentTest"));
 
 export const appRoutes = {
   componentTest: "/componentTest" as const,
   explorer: "/explorer" as const,
+  gameExplorer: "/game-explorer" as const,
   mountedWads: "/mounted-wads" as const,
   mountedWad: "/mounted-wads/:wadId" as const,
   root: "/" as const,
@@ -24,6 +26,10 @@ export const router = createBrowserRouter([
 
     children: [
       { path: appRoutes.explorer },
+      {
+        path: appRoutes.gameExplorer,
+        element: <GameExplorer />,
+      },
       {
         path: appRoutes.mountedWads,
         element: <MountedWads />,

@@ -1,10 +1,9 @@
-use color_eyre::eyre::Context;
-
 use crate::{
     api::error::ApiError,
     paths::SETTINGS_FILE,
     state::{Settings, SettingsState},
 };
+use tauri::Manager;
 
 #[tauri::command]
 pub async fn get_settings(settings: tauri::State<'_, SettingsState>) -> Result<Settings, String> {
@@ -15,6 +14,7 @@ pub async fn get_settings(settings: tauri::State<'_, SettingsState>) -> Result<S
 
 #[tauri::command]
 pub async fn update_settings(
+    app: tauri::AppHandle,
     settings: Settings,
     settings_state: tauri::State<'_, SettingsState>,
 ) -> Result<(), ApiError> {
@@ -23,6 +23,10 @@ pub async fn update_settings(
     tracing::info!("updating settings: {:?}", settings);
 
     *settings_state = settings;
+
+    // Save to the app config directory (not the project directory)
+    let settings_path = app.path().app_config_dir().unwrap().join(SETTINGS_FILE);
+    settings_state.save(settings_path)?;
 
     Ok(())
 }

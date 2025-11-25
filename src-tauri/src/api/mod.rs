@@ -1,6 +1,7 @@
 pub mod actions;
 pub mod error;
 pub mod fs;
+pub mod game_explorer;
 pub mod hashtable;
 pub mod settings;
 pub mod wad;
@@ -20,6 +21,11 @@ macro_rules! generate_command_handler {
             $crate::api::fs::open_path,
             $crate::api::fs::pick_directory,
             $crate::api::fs::pick_file,
+            // game_explorer
+            $crate::api::game_explorer::get_game_explorer_status,
+            $crate::api::game_explorer::mount_game_explorer,
+            $crate::api::game_explorer::get_game_explorer_items,
+            $crate::api::game_explorer::get_game_explorer_path_components,
             // hashtable
             $crate::api::hashtable::get_wad_hashtable_status,
             $crate::api::hashtable::load_wad_hashtables,

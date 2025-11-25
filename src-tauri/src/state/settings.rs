@@ -11,6 +11,7 @@ pub struct Settings {
     pub open_directory_after_extraction: bool,
     pub default_mount_directory: Option<String>,
     pub default_extraction_directory: Option<String>,
+    pub league_directory: Option<String>,
 }
 
 impl Settings {
@@ -46,6 +47,7 @@ impl Default for Settings {
             open_directory_after_extraction: true,
             default_mount_directory: None,
             default_extraction_directory: None,
+            league_directory: None,
         }
     }
 }

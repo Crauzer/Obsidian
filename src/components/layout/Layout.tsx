@@ -29,6 +29,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         <BrandLogo />
         <NavigationMenu
           items={[
+            { title: t("gameExplorer.title"), href: appRoutes.gameExplorer },
             { title: t("mountedWads.title"), href: appRoutes.mountedWads },
           ]}
         />

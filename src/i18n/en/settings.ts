@@ -9,6 +9,9 @@ export const settings = {
   defaultExtractionDirectory: {
     label: "Default extraction directory",
   },
+  leagueDirectory: {
+    label: "League of Legends game directory",
+  },
   submit: {
     success: "Saved!",
   },

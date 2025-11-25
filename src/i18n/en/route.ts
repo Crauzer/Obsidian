@@ -5,6 +5,9 @@ export const route = {
   explorer: {
     title: "Explorer",
   },
+  gameExplorer: {
+    title: "Game Explorer",
+  },
   mountedWads: {
     title: "Mounted Wads",
   },

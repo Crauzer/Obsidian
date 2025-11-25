@@ -5,6 +5,7 @@ export const createSettigsFormData = (settings: Settings): SettingsFormData => {
     openDirectoryAfterExtraction: settings.openDirectoryAfterExtraction,
     defaultExtractionDirectory: settings.defaultExtractionDirectory,
     defaultMountDirectory: settings.defaultMountDirectory,
+    leagueDirectory: settings.leagueDirectory,
   };
 };
 
@@ -15,5 +16,6 @@ export const createSettingsFromFormData = (
     openDirectoryAfterExtraction: data.openDirectoryAfterExtraction,
     defaultExtractionDirectory: data.defaultExtractionDirectory,
     defaultMountDirectory: data.defaultMountDirectory,
+    leagueDirectory: data.leagueDirectory,
   };
 };

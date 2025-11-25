@@ -20,7 +20,8 @@ use color_eyre::eyre;
 use parking_lot::{lock_api::RwLock, Mutex};
 use paths::{LOGS_DIR, SETTINGS_FILE};
 use state::{
-    ActionsState, MountedWads, MountedWadsState, Settings, SettingsState, WadHashtableState,
+    ActionsState, GameExplorer, GameExplorerState, MountedWads, MountedWadsState, Settings,
+    SettingsState, WadHashtableState,
 };
 use std::{collections::HashMap, io::stdout};
 use tauri::{App, AppHandle, Manager};
@@ -45,6 +46,7 @@ fn main() -> eyre::Result<()> {
         .manage(SettingsState(RwLock::new(Settings::default())))
         .manage(WadHashtableState(Mutex::new(WadHashtable::default())))
         .manage(ActionsState(RwLock::new(HashMap::default())))
+        .manage(GameExplorerState(Mutex::new(GameExplorer::new())))
         .setup(|app| {
             LOG_GUARD.lock().replace(initialize_logging(app.handle())?);
 

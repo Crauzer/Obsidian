@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { core } from "@tauri-apps/api";
 import { queryClient } from "../../../lib/query";
+import { gameExplorerQueryKeys } from "../../game-explorer/queryKeys";
 import { type Settings, settingsCommands, settingsQueryKeys } from "..";
 
 export type UseUpdateSettingsContext = {
@@ -33,6 +34,12 @@ export const useUpdateSettings = () => {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: settingsQueryKeys.settings });
+      queryClient.invalidateQueries({
+        queryKey: gameExplorerQueryKeys.status,
+      });
+      queryClient.invalidateQueries({
+        queryKey: gameExplorerQueryKeys.mount,
+      });
     },
   });
 };

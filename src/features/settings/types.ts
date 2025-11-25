@@ -6,6 +6,7 @@ export type Settings = {
   openDirectoryAfterExtraction: boolean;
   defaultMountDirectory: string | null;
   defaultExtractionDirectory: string | null;
+  leagueDirectory: string | null;
 };
 
 export type SettingsFormData = z.infer<typeof settingsFormDataSchema>;
@@ -13,4 +14,5 @@ export const settingsFormDataSchema = z.object({
   openDirectoryAfterExtraction: z.boolean(),
   defaultMountDirectory: pathStringSchema.nullable(),
   defaultExtractionDirectory: pathStringSchema.nullable(),
+  leagueDirectory: pathStringSchema.nullable(),
 });

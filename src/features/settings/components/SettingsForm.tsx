@@ -62,6 +62,11 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({
             name="defaultExtractionDirectory"
             label={t("defaultExtractionDirectory.label")}
           />
+          <FormDirectoryInput
+            control={control}
+            name="leagueDirectory"
+            label={t("leagueDirectory.label")}
+          />
         </div>
         <DevTool control={control} />
       </form>
