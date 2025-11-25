@@ -14,9 +14,6 @@ export const PreviewSection = () => {
 
   const isImagePreviewType = previewTypes?.some((type) => type === "image");
 
-  console.log(previewTypes);
-  console.log(currentPreviewItemId);
-
   return (
     <div className="h-full bg-gray-950">
       {isImagePreviewType && currentPreviewItemId && (

@@ -122,7 +122,7 @@ const WadTabContent: React.FC<WadTabContentProps> = ({
             </Panel>
             <PanelResizeHandle className="w-[1px] bg-gray-600" />
             <Panel defaultSize={30} minSize={30}>
-              <PreviewSection wadId={wadId} />
+              <PreviewSection />
             </Panel>
           </PanelGroup>
         </div>

@@ -1,9 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { core } from "@tauri-apps/api";
 
-import { wadQueryKeys } from "..";
 import { wadCommands } from "../commands";
-import { WadItem, WadItemSelectionUpdate } from "../types";
+import { wadQueryKeys } from "../queryKeys";
 
 export type UseUpdateMountedWadItemSelectionContext = {
   wadId: string;
